@@ -16,6 +16,7 @@ from pathlib import Path
 
 import structlog
 
+from pipeline.adapters.base import FetchError
 from pipeline.adapters.rss import RssAdapter
 from pipeline.config import enabled_sources
 from pipeline.llm.summarize import (
@@ -73,8 +74,23 @@ def _ingest(
         try:
             adapter = _pick_adapter(source.type)
             fetched = adapter.fetch(source)
+        except FetchError as exc:
+            log.error(
+                "ingest.source.failed",
+                source_id=source.id,
+                error=type(exc).__name__,
+                message=str(exc),
+            )
+            stats.errors.append(
+                {
+                    "phase": "ingest",
+                    "source_id": source.id,
+                    "error": f"{type(exc).__name__}: {exc}",
+                }
+            )
+            continue
         except Exception as exc:
-            log.warning(
+            log.error(
                 "ingest.source.failed",
                 source_id=source.id,
                 error=type(exc).__name__,

@@ -64,12 +64,11 @@ def _derive_external_id(
     return hashlib.sha256(f"{canonical_url}|{published_day}".encode()).hexdigest()
 
 
-def _fetch_bytes(url: str) -> bytes:
+def _fetch_bytes(url: str) -> tuple[bytes, int]:
     """HTTP GET with explicit UA + redirect following.
 
-    Some publishers (Substack, Cloudflare-fronted blogs) reject the default
-    requests/Python UA. Keep it simple in skeleton — Plan 01-02 may layer
-    in tenacity retry.
+    Returns ``(body, status_code)``. Status 304 yields an empty body — caller
+    treats not-modified as success with zero new items.
     """
     accept_header = (
         "application/atom+xml,application/rss+xml,application/xml,*/*"
@@ -81,8 +80,10 @@ def _fetch_bytes(url: str) -> bytes:
             follow_redirects=True,
         ) as client:
             response = client.get(url)
+            if response.status_code == 304:
+                return b"", 304
             response.raise_for_status()
-            return response.content
+            return response.content, response.status_code
     except httpx.HTTPError as exc:
         raise FetchError(f"http error fetching {url}: {exc}") from exc
 
@@ -94,7 +95,11 @@ class RssAdapter(IngestAdapter):
         log = logger.bind(source_id=source.id, url=source.url)
         log.info("rss.fetch.start")
 
-        body = _fetch_bytes(source.url)
+        body, status_code = _fetch_bytes(source.url)
+        if status_code == 304:
+            log.info("rss.fetch.not_modified", status=304)
+            return []
+
         feed = feedparser.parse(body)
 
         if feed.bozo and not feed.entries:
