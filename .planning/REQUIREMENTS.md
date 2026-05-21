@@ -117,13 +117,50 @@ Filled in by the roadmapper. Status updated as phases progress.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| _(empty — populated by roadmapper)_ | | |
+| INGEST-01 | Phase 1 | Pending |
+| INGEST-02 | Phase 1 | Pending |
+| INGEST-07 | Phase 1 | Pending |
+| INGEST-08 | Phase 1 | Pending |
+| PIPELINE-01 | Phase 1 | Pending |
+| INGEST-03 | Phase 2 | Pending |
+| INGEST-04 | Phase 2 | Pending |
+| INGEST-05 | Phase 2 | Pending |
+| INGEST-06 | Phase 2 | Pending |
+| DEDUP-01 | Phase 3 | Pending |
+| DEDUP-02 | Phase 3 | Pending |
+| DEDUP-03 | Phase 3 | Pending |
+| DEDUP-04 | Phase 3 | Pending |
+| PIPELINE-02 | Phase 3 | Pending |
+| PIPELINE-03 | Phase 3 | Pending |
+| PIPELINE-04 | Phase 3 | Pending |
+| PIPELINE-05 | Phase 3 | Pending |
+| PIPELINE-06 | Phase 3 | Pending |
+| OBS-02 | Phase 3 | Pending |
+| DISPLAY-01 | Phase 4 | Pending |
+| DISPLAY-02 | Phase 4 | Pending |
+| DISPLAY-03 | Phase 4 | Pending |
+| DISPLAY-04 | Phase 4 | Pending |
+| DISPLAY-05 | Phase 4 | Pending |
+| DISPLAY-06 | Phase 4 | Pending |
+| DISPLAY-07 | Phase 4 | Pending |
+| DISPLAY-08 | Phase 4 | Pending |
+| ARCHIVE-01 | Phase 4 | Pending |
+| ARCHIVE-02 | Phase 4 | Pending |
+| ARCHIVE-03 | Phase 4 | Pending |
+| ARCHIVE-04 | Phase 4 | Pending |
+| OBS-01 | Phase 4 | Pending |
+| OPS-01 | Phase 5 | Pending |
+| OPS-02 | Phase 5 | Pending |
+| OPS-03 | Phase 5 | Pending |
+| OPS-04 | Phase 5 | Pending |
+| OPS-05 | Phase 5 | Pending |
+| OBS-03 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 33 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 33 ⚠ (will resolve after roadmap)
+- v1 requirements: 38 total
+- Mapped to phases: 38 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-21*
-*Last updated: 2026-05-21 after initial definition*
+*Last updated: 2026-05-21 after roadmap creation*
