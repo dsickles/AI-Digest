@@ -39,7 +39,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 **Wave 1**
 
-- [ ] 01-01-PLAN.md — Walking Skeleton: scaffold + 1 RSS source → SQLite → Gemini → HTML (`01-SKELETON.md`)
+- [x] 01-01-PLAN.md — Walking Skeleton: scaffold + 1 RSS source → SQLite → Gemini → HTML (`01-SKELETON.md`) *(2026-05-21)*
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -138,7 +138,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + First Digest | 0/5 | Not started | - |
+| 1. Foundation + First Digest | 1/5 | In progress (Wave 1 done) | - |
 | 2. Expand Ingestion | 0/TBD | Not started | - |
 | 3. AI Quality | 0/TBD | Not started | - |
 | 4. Dashboard + Archive | 0/TBD | Not started | - |
