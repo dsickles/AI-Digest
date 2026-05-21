@@ -133,12 +133,12 @@ def get_items_for_week(
     week_start_iso: str,
     week_end_iso: str,
 ) -> list[sqlite3.Row]:
-    """Return items whose ``published_at`` falls in [week_start, week_end), newest first."""
+    """Return items whose ``published_at`` falls in [week_start, week_end], newest first."""
     return conn.execute(
         """
         SELECT *
           FROM items
-         WHERE published_at >= ? AND published_at < ?
+         WHERE published_at >= ? AND published_at <= ?
          ORDER BY published_at DESC
         """,
         (week_start_iso, week_end_iso),

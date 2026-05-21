@@ -8,7 +8,7 @@ resolved week_id from the orchestrator.
 from __future__ import annotations
 
 import re
-from datetime import UTC, date, datetime, time, timedelta
+from datetime import UTC, date, datetime, time
 
 WEEK_ID_RE = re.compile(r"^(\d{4})-W(\d{2})$")
 
@@ -29,18 +29,23 @@ def parse_week_id(week_id: str) -> tuple[int, int]:
     week = int(match.group(2))
     if not (1 <= week <= 53):
         raise ValueError(f"week number out of range in {week_id!r}")
+    try:
+        date.fromisocalendar(year, week, 1)
+    except ValueError as exc:
+        raise ValueError(f"invalid ISO week id {week_id!r}") from exc
     return year, week
 
 
 def week_bounds(week_id: str) -> tuple[datetime, datetime]:
     """Return ``(week_start, week_end)`` as tz-aware UTC datetimes.
 
-    ``week_start`` is Monday 00:00 UTC; ``week_end`` is Monday of the next
-    week 00:00 UTC (half-open interval — use with ``>= start AND < end``).
-    Uses ``date.fromisocalendar`` so leap weeks (53-week years) work.
+    ``week_start`` is Monday 00:00:00 UTC; ``week_end`` is Sunday 23:59:59 UTC
+    (inclusive window for ``published_at`` filtering). Uses ``fromisocalendar``
+    so leap weeks (53-week years) work.
     """
     year, week = parse_week_id(week_id)
     monday = date.fromisocalendar(year, week, 1)
+    sunday = date.fromisocalendar(year, week, 7)
     week_start = datetime.combine(monday, time.min, tzinfo=UTC)
-    week_end = week_start + timedelta(days=7)
+    week_end = datetime.combine(sunday, time(23, 59, 59), tzinfo=UTC)
     return week_start, week_end

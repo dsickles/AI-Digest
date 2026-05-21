@@ -1,11 +1,15 @@
 """End-to-end orchestrator — wires ingest → store → summarize → render.
 
-Single function ``run_all`` for the skeleton; Plan 01-04 splits this
-into ``ingest`` / ``summarize`` / ``render`` / ``all`` subcommands.
+Public entry points: ``run_ingest``, ``run_summarize``, ``run_render``, ``run_all``.
+Each accepts ``week_id: str`` only — callers (CLI) resolve the current week.
 
 Per-source try/except gives us PROJECT.md per-source isolation
 (one bad feed cannot break the weekly run) even though the formal
 INGEST-06 requirement lands in Phase 2.
+
+Import boundary: adapter and LLM packages are imported lazily inside ingest/
+summarize paths so ``run_render`` can be imported without pulling network/LLM
+dependencies (D-20).
 """
 from __future__ import annotations
 
@@ -13,20 +17,13 @@ import json
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import structlog
 
-from pipeline.adapters.base import FetchError
-from pipeline.adapters.rss import RssAdapter
-from pipeline.config import enabled_sources
-from pipeline.llm.summarize import (
-    GeminiKeyMissing,
-    SummaryResult,
-    summarize_item,
-)
 from pipeline.models import NormalizedItem
 from pipeline.render.html import DigestCard, render_digest
-from pipeline.week import current_week_id, week_bounds
+from pipeline.week import week_bounds
 from store.db import (
     connect,
     finalize_pipeline_run,
@@ -38,6 +35,9 @@ from store.db import (
     upsert_item,
     upsert_source,
 )
+
+if TYPE_CHECKING:
+    from pipeline.llm.summarize import SummaryResult
 
 logger = structlog.get_logger(__name__)
 
@@ -59,6 +59,8 @@ class RunStats:
 
 def _pick_adapter(source_type: str):
     """One-line registry. Phase 2 grows this dict."""
+    from pipeline.adapters.rss import RssAdapter
+
     if source_type == "rss":
         return RssAdapter()
     raise ValueError(f"no adapter registered for source type {source_type!r}")
@@ -68,6 +70,8 @@ def _ingest(
     sources, conn, log, stats: RunStats
 ) -> list[NormalizedItem]:
     """Fetch every enabled source; per-source try/except keeps the run alive."""
+    from pipeline.adapters.base import FetchError
+
     all_items: list[NormalizedItem] = []
     for source in sources:
         upsert_source(conn, source)
@@ -137,7 +141,9 @@ def _ingest(
 def _summarize_week_items(
     *, week_id: str, week_start: datetime, week_end: datetime, conn, log, stats: RunStats
 ) -> dict[str, SummaryResult]:
-    """Summarize items in [week_start, week_end) that have no prior summary for this prompt."""
+    """Summarize items in [week_start, week_end] missing a current summary."""
+    from pipeline.llm.summarize import GeminiKeyMissing, SummaryResult, summarize_item
+
     rows = get_items_for_week(
         conn,
         week_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -227,24 +233,223 @@ def _build_cards(
     return cards
 
 
-def run_all(
-    week_id: str | None = None,
+def _build_cards_from_db(conn, rows, week_id: str) -> list[DigestCard]:
+    """Build render cards from SQLite only — no LLM (D-20 render path)."""
+    cards: list[DigestCard] = []
+    for row in rows:
+        existing = get_existing_summary(
+            conn, row["item_id"], week_id, "summarize_v1"
+        )
+        cards.append(
+            DigestCard(
+                title=row["title"],
+                publisher=row["publisher"],
+                canonical_url=row["canonical_url"],
+                published_at=datetime.fromisoformat(
+                    row["published_at"].replace("Z", "+00:00")
+                ),
+                tldr=existing["tldr"] if existing else None,
+                summary_confidence=(
+                    existing["summary_confidence"] if existing else "unavailable"
+                ),
+            )
+        )
+    return cards
+
+
+def _finalize(
+    conn,
+    run_id: str,
+    stats: RunStats,
+    *,
+    phase: str,
+) -> None:
+    status = "success" if not stats.errors else "partial"
+    finalize_pipeline_run(
+        conn,
+        run_id,
+        status=status,
+        items_fetched=stats.items_fetched,
+        summaries_written=stats.summaries_written,
+        items_degraded=stats.items_degraded,
+        cost_usd_estimate=stats.cost_usd_estimate,
+        errors_json=json.dumps(stats.errors),
+    )
+    conn.commit()
+    logger.info(
+        "orchestrator.complete",
+        phase=phase,
+        week_id=stats.week_id,
+        status=status,
+        items_fetched=stats.items_fetched,
+        summaries_written=stats.summaries_written,
+        items_degraded=stats.items_degraded,
+        cost_usd_estimate=round(stats.cost_usd_estimate, 6),
+        out_path=str(stats.out_path) if stats.out_path else None,
+    )
+
+
+def run_ingest(
+    week_id: str,
+    *,
+    db_path: Path | str | None = None,
+) -> RunStats:
+    """Fetch all enabled sources and upsert into SQLite (no week filter on fetch)."""
+    from pipeline.config import enabled_sources
+
+    init_db(db_path)
+    log = logger.bind(week_id=week_id)
+    stats = RunStats(week_id=week_id)
+
+    with connect(db_path) as conn:
+        run_id = insert_pipeline_run(conn, week_id=week_id, phase="ingest")
+        conn.commit()
+        try:
+            log.info("orchestrator.start", phase="ingest")
+            sources = enabled_sources()
+            if not sources:
+                log.warning("orchestrator.no_sources")
+            _ingest(sources, conn, log, stats)
+            _finalize(conn, run_id, stats, phase="ingest")
+            return stats
+        except Exception as exc:
+            log.error(
+                "orchestrator.failed",
+                phase="ingest",
+                error=type(exc).__name__,
+                message=str(exc),
+            )
+            stats.errors.append(
+                {"phase": "ingest", "error": f"{type(exc).__name__}: {exc}"}
+            )
+            finalize_pipeline_run(
+                conn,
+                run_id,
+                status="failed",
+                items_fetched=stats.items_fetched,
+                errors_json=json.dumps(stats.errors),
+            )
+            conn.commit()
+            raise
+
+
+def run_summarize(
+    week_id: str,
+    *,
+    db_path: Path | str | None = None,
+) -> RunStats:
+    """Summarize items in the week window that lack a current summary."""
+    init_db(db_path)
+    week_start, week_end = week_bounds(week_id)
+    log = logger.bind(week_id=week_id)
+    stats = RunStats(week_id=week_id)
+
+    with connect(db_path) as conn:
+        run_id = insert_pipeline_run(conn, week_id=week_id, phase="summarize")
+        conn.commit()
+        try:
+            log.info("orchestrator.start", phase="summarize")
+            _summarize_week_items(
+                week_id=week_id,
+                week_start=week_start,
+                week_end=week_end,
+                conn=conn,
+                log=log,
+                stats=stats,
+            )
+            _finalize(conn, run_id, stats, phase="summarize")
+            return stats
+        except Exception as exc:
+            log.error(
+                "orchestrator.failed",
+                phase="summarize",
+                error=type(exc).__name__,
+                message=str(exc),
+            )
+            stats.errors.append(
+                {"phase": "summarize", "error": f"{type(exc).__name__}: {exc}"}
+            )
+            finalize_pipeline_run(
+                conn,
+                run_id,
+                status="failed",
+                summaries_written=stats.summaries_written,
+                items_degraded=stats.items_degraded,
+                cost_usd_estimate=stats.cost_usd_estimate,
+                errors_json=json.dumps(stats.errors),
+            )
+            conn.commit()
+            raise
+
+
+def run_render(
+    week_id: str,
     *,
     db_path: Path | str | None = None,
     out_dir: Path | None = None,
 ) -> RunStats:
-    """Execute the full pipeline for ``week_id`` (defaults to current ISO week UTC).
-
-    Returns a ``RunStats`` summary for the CLI / observability layer.
-    """
+    """Render HTML from existing SQLite data — no network, no LLM (D-20)."""
     init_db(db_path)
-    resolved_week = week_id or current_week_id()
-    week_start, week_end = week_bounds(resolved_week)
-    log = logger.bind(week_id=resolved_week)
-    stats = RunStats(week_id=resolved_week)
+    week_start, week_end = week_bounds(week_id)
+    log = logger.bind(week_id=week_id)
+    stats = RunStats(week_id=week_id)
 
     with connect(db_path) as conn:
-        run_id = insert_pipeline_run(conn, week_id=resolved_week, phase="all")
+        run_id = insert_pipeline_run(conn, week_id=week_id, phase="render")
+        conn.commit()
+        try:
+            log.info("orchestrator.start", phase="render")
+            week_rows = get_items_for_week(
+                conn,
+                week_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            )
+            cards = _build_cards_from_db(conn, week_rows, week_id)
+            stats.out_path = render_digest(
+                week_id=week_id,
+                week_start=week_start,
+                week_end=week_end,
+                cards=cards,
+                out_dir=out_dir,
+            )
+            _finalize(conn, run_id, stats, phase="render")
+            return stats
+        except Exception as exc:
+            log.error(
+                "orchestrator.failed",
+                phase="render",
+                error=type(exc).__name__,
+                message=str(exc),
+            )
+            stats.errors.append(
+                {"phase": "render", "error": f"{type(exc).__name__}: {exc}"}
+            )
+            finalize_pipeline_run(
+                conn,
+                run_id,
+                status="failed",
+                errors_json=json.dumps(stats.errors),
+            )
+            conn.commit()
+            raise
+
+
+def run_all(
+    week_id: str,
+    *,
+    db_path: Path | str | None = None,
+    out_dir: Path | None = None,
+) -> RunStats:
+    """Execute ingest → summarize → render for ``week_id``."""
+    from pipeline.config import enabled_sources
+
+    init_db(db_path)
+    week_start, week_end = week_bounds(week_id)
+    log = logger.bind(week_id=week_id)
+    stats = RunStats(week_id=week_id)
+
+    with connect(db_path) as conn:
+        run_id = insert_pipeline_run(conn, week_id=week_id, phase="all")
         conn.commit()
 
         try:
@@ -255,7 +460,7 @@ def run_all(
 
             _ingest(sources, conn, log, stats)
             summaries = _summarize_week_items(
-                week_id=resolved_week,
+                week_id=week_id,
                 week_start=week_start,
                 week_end=week_end,
                 conn=conn,
@@ -270,39 +475,20 @@ def run_all(
             )
             cards = _build_cards(week_rows, summaries)
             stats.out_path = render_digest(
-                week_id=resolved_week,
+                week_id=week_id,
                 week_start=week_start,
                 week_end=week_end,
                 cards=cards,
                 out_dir=out_dir,
             )
 
-            status = "success" if not stats.errors else "partial"
-            finalize_pipeline_run(
-                conn,
-                run_id,
-                status=status,
-                items_fetched=stats.items_fetched,
-                summaries_written=stats.summaries_written,
-                items_degraded=stats.items_degraded,
-                cost_usd_estimate=stats.cost_usd_estimate,
-                errors_json=json.dumps(stats.errors),
-            )
-            conn.commit()
-            log.info(
-                "orchestrator.complete",
-                status=status,
-                items_fetched=stats.items_fetched,
-                summaries_written=stats.summaries_written,
-                items_degraded=stats.items_degraded,
-                cost_usd_estimate=round(stats.cost_usd_estimate, 6),
-                out_path=str(stats.out_path),
-            )
+            _finalize(conn, run_id, stats, phase="all")
             return stats
 
         except Exception as exc:
             log.error(
                 "orchestrator.failed",
+                phase="all",
                 error=type(exc).__name__,
                 message=str(exc),
             )
@@ -323,4 +509,10 @@ def run_all(
             raise
 
 
-__all__ = ["RunStats", "run_all"]
+__all__ = [
+    "RunStats",
+    "run_all",
+    "run_ingest",
+    "run_render",
+    "run_summarize",
+]
