@@ -91,7 +91,7 @@ Each task was committed atomically:
 2. **Task 2: Idempotent upsert and external_id contract tests** — `d6d9fd2` (feat)
 3. **Task 3: Per-source failure isolation in ingest** — `b812b87` (test)
 
-**Plan metadata:** `4eaa176` (docs: complete plan)
+**Plan metadata:** `4b18855` (docs: complete plan)
 
 ## Files Created/Modified
 
