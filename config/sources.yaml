@@ -1,15 +1,14 @@
 # AI Digest source registry — checked into git per INGEST-01.
 #
-# Phase 1 walking skeleton ships ONE source. Plan 01-02 expands to all three
-# D-01 seed sources (one-useful-thing, import-ai). Phase 2 adds YouTube,
-# Reddit/HN, and email→RSS adapters.
+# Phase 1 ships all three D-01 seed sources (CONTEXT.md). Phase 2 adds
+# YouTube, Reddit/HN, and email→RSS adapters.
 #
 # Schema (per pipeline.config.SourceConfig):
 #   id           Stable kebab-case identifier (used as items.source_id)
 #   type         Adapter type — only "rss" exists in Phase 1
 #   url          Feed URL (Atom or RSS 2.0)
 #   display_name Human-readable publisher name shown in the digest
-#   tag          Topic hint for later categorization (Phase 3)
+#   tag          Topic hint for later categorization (Phase 3) — not stored on items (D-02)
 #   enabled      true → fetched on every run; false → skipped silently
 sources:
   - id: simon-willison
@@ -17,4 +16,16 @@ sources:
     url: https://simonwillison.net/atom/everything/
     display_name: Simon Willison
     tag: technical
+    enabled: true
+  - id: one-useful-thing
+    type: rss
+    url: https://www.oneusefulthing.org/feed
+    display_name: One Useful Thing
+    tag: business
+    enabled: true
+  - id: import-ai
+    type: rss
+    url: https://importai.substack.com/feed
+    display_name: Import AI
+    tag: business
     enabled: true
