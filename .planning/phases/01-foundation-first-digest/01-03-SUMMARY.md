@@ -86,7 +86,7 @@ Each task was committed atomically:
 2. **Task 2: Grounding prompt, sentinel schema, confidence enum** — `bc0857a` (test)
 3. **Task 3: Degraded card rendering** — `cf7f80c` (feat)
 
-**Plan metadata:** `65ebcc2` (docs: complete plan)
+**Plan metadata:** `d9e5dbc` (docs: complete plan)
 
 ## Files Created/Modified
 
