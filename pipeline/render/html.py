@@ -21,6 +21,7 @@ import structlog
 logger = structlog.get_logger(__name__)
 
 DEFAULT_OUT_DIR = Path("out")
+DEGRADED_SUMMARY_LINE = "[summary unavailable — content too thin]"
 
 
 @dataclass(frozen=True)
@@ -130,15 +131,13 @@ def _render_card(card: DigestCard) -> str:
     url_safe = html.escape(card.canonical_url, quote=True)
     date_safe = html.escape(_format_date(card.published_at))
 
-    if card.tldr:
-        tldr_html = f'<p class="card-tldr">{html.escape(card.tldr)}</p>'
-    else:
+    is_degraded = card.tldr is None or card.summary_confidence == "unavailable"
+    if is_degraded:
         tldr_html = (
-            '<p class="card-tldr degraded">'
-            "Summary unavailable — content was too thin to summarize. "
-            "Open the source link to read the original."
-            "</p>"
+            f'<p class="card-tldr degraded">{html.escape(DEGRADED_SUMMARY_LINE)}</p>'
         )
+    else:
+        tldr_html = f'<p class="card-tldr">{html.escape(card.tldr or "")}</p>'
 
     return (
         '<article class="card">'
@@ -154,39 +153,6 @@ def _render_card(card: DigestCard) -> str:
     )
 
 
-def _is_displayable(card: DigestCard) -> bool:
-    """A card is rendered as a full article only when it has a real summary."""
-    return card.tldr is not None and card.summary_confidence != "unavailable"
-
-
-def _render_omitted_link(card: DigestCard) -> str:
-    """Render one omitted item as an inline title-only clickable link."""
-    title_safe = html.escape(card.title)
-    url_safe = html.escape(card.canonical_url, quote=True)
-    return f'<a href="{url_safe}" target="_blank" rel="noopener">{title_safe}</a>'
-
-
-def _render_pipeline_notes(omitted: list[DigestCard]) -> str:
-    """'Also seen this week' footer section listing skipped items as links."""
-    if not omitted:
-        return ""
-
-    count = len(omitted)
-    label = "item" if count == 1 else "items"
-    links = '<span class="sep">·</span>'.join(
-        _render_omitted_link(card) for card in omitted
-    )
-    return (
-        '<aside class="pipeline-notes" aria-label="Pipeline notes">'
-        "<h3>Also seen this week</h3>"
-        f"<p>{count} {label} omitted from the digest "
-        "(no body content to summarize): "
-        f"{links}"
-        "</p>"
-        "</aside>"
-    )
-
-
 def render_digest(
     *,
     week_id: str,
@@ -197,17 +163,13 @@ def render_digest(
 ) -> Path:
     """Write the weekly digest HTML and return the output path.
 
-    Cards with ``tldr is None`` (or ``summary_confidence == 'unavailable'``)
-    are NOT rendered as full articles — they appear as a single
-    "Also seen this week" footer section with title-only links so the
-    reader can still see them without paying scroll-tax for empty cards.
+    Every item renders as a card. Degraded summaries (``tldr is None`` or
+    ``summary_confidence == 'unavailable'``) show the D-05 sentinel line
+    inline — they are never omitted from the digest list.
     """
     out_root = out_dir or DEFAULT_OUT_DIR
     out_root.mkdir(parents=True, exist_ok=True)
     out_path = out_root / f"digest-{week_id}.html"
-
-    displayed = [c for c in cards if _is_displayable(c)]
-    omitted = [c for c in cards if not _is_displayable(c)]
 
     week_label_safe = html.escape(week_id)
     range_safe = html.escape(
@@ -217,15 +179,8 @@ def render_digest(
         datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
     )
 
-    if displayed:
-        cards_html = "\n".join(_render_card(card) for card in displayed)
-    elif omitted:
-        cards_html = (
-            '<p class="degraded">'
-            "Every item this week was a release-note or had no body content "
-            "to summarize. See the list below for source links."
-            "</p>"
-        )
+    if cards:
+        cards_html = "\n".join(_render_card(card) for card in cards)
     else:
         cards_html = (
             '<p class="degraded">'
@@ -235,10 +190,8 @@ def render_digest(
             "</p>"
         )
 
-    notes_html = _render_pipeline_notes(omitted)
-
-    displayed_count = len(displayed)
-    item_word = "item" if displayed_count == 1 else "items"
+    card_count = len(cards)
+    item_word = "item" if card_count == 1 else "items"
 
     document = f"""<!DOCTYPE html>
 <html lang="en">
@@ -253,11 +206,10 @@ def render_digest(
 <body>
 <header>
   <h1>AI Digest — {week_label_safe}</h1>
-  <p>{range_safe} · {displayed_count} {item_word}</p>
+  <p>{range_safe} · {card_count} {item_word}</p>
 </header>
 <main>
 {cards_html}
-{notes_html}
 </main>
 <footer>
   Generated {generated_safe} · Phase 1 walking skeleton
@@ -271,8 +223,7 @@ def render_digest(
         "render.digest.written",
         path=str(out_path),
         week_id=week_id,
-        displayed=displayed_count,
-        omitted=len(omitted),
+        card_count=card_count,
     )
     return out_path
 

@@ -165,6 +165,9 @@ def _summarize_week_items(
                 title=row["title"],
                 publisher=row["publisher"],
                 raw_content=row["raw_content"] or "",
+                canonical_url=row["canonical_url"],
+                item_id=item_id,
+                source_id=row["source_id"],
             )
         except GeminiKeyMissing as exc:
             log.error("summarize.key_missing", error=str(exc))
