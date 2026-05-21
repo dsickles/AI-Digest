@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>No GUID Feed</title>
+    <item>
+      <title>Entry Without GUID</title>
+      <link>https://example.com/posts/no-guid</link>
+      <pubDate>Mon, 19 May 2026 10:00:00 +0000</pubDate>
+      <description>Plain RSS summary body.</description>
+    </item>
+  </channel>
+</rss>

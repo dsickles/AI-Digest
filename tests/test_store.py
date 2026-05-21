@@ -44,6 +44,25 @@ def test_apply_schema_creates_items_table(apply_schema: Path) -> None:
     assert expected.issubset(actual), f"missing tables: {expected - actual}"
 
 
+def test_upsert_idempotent(apply_schema: Path) -> None:
+    """Re-upserting the same (source_id, external_id) keeps a single row (INGEST-08)."""
+    source = _make_source()
+    item = _make_item()
+
+    with connect(apply_schema) as conn:
+        upsert_source(conn, source)
+        first_id = upsert_item(conn, item)
+        second_id = upsert_item(conn, item)
+        conn.commit()
+        count = conn.execute(
+            "SELECT COUNT(*) FROM items WHERE source_id = ? AND external_id = ?",
+            (item.source_id, item.external_id),
+        ).fetchone()[0]
+
+    assert first_id == second_id, "upsert must preserve item_id on conflict"
+    assert count == 1, f"expected 1 item after duplicate upsert, got {count}"
+
+
 def test_upsert_item_is_idempotent(apply_schema: Path) -> None:
     """Re-upserting the same (source_id, external_id) returns the same item_id."""
     source = _make_source()

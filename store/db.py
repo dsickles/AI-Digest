@@ -87,41 +87,11 @@ def upsert_source(conn: sqlite3.Connection, source: SourceConfig) -> None:
 
 
 def upsert_item(conn: sqlite3.Connection, item: NormalizedItem) -> str:
-    """Insert an item or update the mutable columns when (source_id, external_id) collides.
+    """Insert an item or update mutable columns on (source_id, external_id) collision.
 
-    Returns the canonical ``item_id`` (existing one preserved on conflict so
-    downstream FKs in ``item_summaries`` stay stable).
+    Uses ``INSERT ... ON CONFLICT DO UPDATE`` so ``item_id`` stays stable and
+    ``ingested_at`` reflects the latest ingest (INGEST-08).
     """
-    existing = conn.execute(
-        "SELECT item_id FROM items WHERE source_id = ? AND external_id = ?",
-        (item.source_id, item.external_id),
-    ).fetchone()
-
-    if existing is not None:
-        item_id = existing["item_id"]
-        conn.execute(
-            """
-            UPDATE items
-               SET canonical_url = ?,
-                   title         = ?,
-                   publisher     = ?,
-                   published_at  = ?,
-                   raw_content   = ?,
-                   content_hash  = ?
-             WHERE item_id = ?
-            """,
-            (
-                item.canonical_url,
-                item.title,
-                item.publisher,
-                item.published_at_iso(),
-                item.raw_content,
-                item.content_hash,
-                item_id,
-            ),
-        )
-        return item_id
-
     item_id = uuid.uuid4().hex
     conn.execute(
         """
@@ -129,6 +99,14 @@ def upsert_item(conn: sqlite3.Connection, item: NormalizedItem) -> str:
             item_id, source_id, external_id, canonical_url, title,
             publisher, published_at, raw_content, content_hash
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(source_id, external_id) DO UPDATE SET
+            canonical_url = excluded.canonical_url,
+            title         = excluded.title,
+            publisher     = excluded.publisher,
+            published_at  = excluded.published_at,
+            raw_content   = excluded.raw_content,
+            content_hash  = excluded.content_hash,
+            ingested_at   = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
         """,
         (
             item_id,
@@ -142,7 +120,12 @@ def upsert_item(conn: sqlite3.Connection, item: NormalizedItem) -> str:
             item.content_hash,
         ),
     )
-    return item_id
+    row = conn.execute(
+        "SELECT item_id FROM items WHERE source_id = ? AND external_id = ?",
+        (item.source_id, item.external_id),
+    ).fetchone()
+    assert row is not None
+    return row["item_id"]
 
 
 def get_items_for_week(

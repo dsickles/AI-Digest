@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Import AI</title>
+    <item>
+      <guid isPermaLink="true">https://importai.substack.com/p/fixture-post</guid>
+      <title>Fixture Substack Post</title>
+      <link>https://importai.substack.com/p/fixture-post</link>
+      <pubDate>Sun, 18 May 2026 12:00:00 +0000</pubDate>
+      <content:encoded><![CDATA[<p>Substack body from content:encoded.</p>]]></content:encoded>
+    </item>
+  </channel>
+</rss>
