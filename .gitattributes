@@ -1,0 +1,10 @@
+# Normalize line endings across mac/Linux/Windows clones
+* text=auto eol=lf
+
+# Windows-only scripts (if ever added)
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# Treat lockfiles as text but never merge — regenerate via `uv lock`
+uv.lock text -merge
