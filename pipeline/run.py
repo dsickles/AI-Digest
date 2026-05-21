@@ -1,12 +1,13 @@
 """CLI entry point — ``python -m pipeline.run all`` (D-19).
 
-Plan 01-04 splits this into ``ingest``/``summarize``/``render``/``all``
-subcommands. Skeleton ships only ``all``; an unrecognized subcommand
-exits with usage and a non-zero status.
+Subcommands: ``ingest``, ``summarize``, ``render``, ``all``. Bare invocation
+(with no subcommand) aliases ``all``. ``--week YYYY-Www`` overrides the ISO
+week for backfill / replay (D-11, D-12).
 
 Loaded ONLY at the CLI boundary:
   - python-dotenv for ``.env`` (D-21)
   - structlog stdout configuration
+  - truststore for OS-native TLS trust
 
 Adapter / store / renderer modules must remain import-free of these
 to keep tests fast and unit-testable.
@@ -27,6 +28,11 @@ from dotenv import load_dotenv
 # CAs are honored without copying bundles. Must run before any
 # TLS-using import. Safe + cross-platform.
 truststore.inject_into_ssl()
+
+_WEEK_HELP = (
+    "ISO week id YYYY-Www (e.g. 2026-W19) for backfill / replay; "
+    "defaults to the current UTC ISO week."
+)
 
 
 def _configure_logging() -> None:
@@ -50,26 +56,73 @@ def _configure_logging() -> None:
     )
 
 
+def _add_week_arg(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--week",
+        dest="week_id",
+        default=None,
+        metavar="YYYY-Www",
+        help=_WEEK_HELP,
+    )
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="python -m pipeline.run",
-        description="AI Digest pipeline — RSS → SQLite → Gemini → HTML.",
+        description=(
+            "AI Digest pipeline — RSS → SQLite → Gemini → HTML. "
+            "Use --week to backfill or replay a past ISO week (UTC)."
+        ),
     )
+    _add_week_arg(parser)
+
     sub = parser.add_subparsers(dest="command")
+
+    ingest_cmd = sub.add_parser(
+        "ingest",
+        help="Fetch enabled sources and upsert into SQLite (network only).",
+    )
+    _add_week_arg(ingest_cmd)
+
+    summarize_cmd = sub.add_parser(
+        "summarize",
+        help="Summarize items in the week window missing a TL;DR (LLM).",
+    )
+    _add_week_arg(summarize_cmd)
+
+    render_cmd = sub.add_parser(
+        "render",
+        help="Render HTML digest from SQLite (no network, no LLM).",
+    )
+    _add_week_arg(render_cmd)
 
     all_cmd = sub.add_parser(
         "all",
         help="Run ingest → summarize → render in one pass (default).",
     )
-    all_cmd.add_argument(
-        "--week",
-        dest="week_id",
-        default=None,
-        help="ISO week id YYYY-Www (e.g. 2026-W19); defaults to current UTC week.",
-    )
-    all_cmd.set_defaults(command="all")
+    _add_week_arg(all_cmd)
 
     return parser
+
+
+def _resolve_week_id(args: argparse.Namespace) -> str:
+    from pipeline.week import current_week_id, parse_week_id
+
+    week_id = args.week_id or current_week_id()
+    parse_week_id(week_id)
+    return week_id
+
+
+def _print_stats(stats, *, command: str) -> None:
+    sys.stdout.write(f"\nPipeline {command} complete.\n")
+    sys.stdout.write(f"  week_id:           {stats.week_id}\n")
+    sys.stdout.write(f"  items_fetched:     {stats.items_fetched}\n")
+    sys.stdout.write(f"  summaries_written: {stats.summaries_written}\n")
+    sys.stdout.write(f"  items_degraded:    {stats.items_degraded}\n")
+    sys.stdout.write(f"  cost_usd_estimate: ${stats.cost_usd_estimate:.6f}\n")
+    sys.stdout.write(f"  errors:            {len(stats.errors)}\n")
+    if stats.out_path is not None:
+        sys.stdout.write(f"  digest:            {stats.out_path}\n")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -78,29 +131,34 @@ def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
 
-    command = getattr(args, "command", None) or "all"
-    if command != "all":
-        parser.error(f"unknown command: {command}")
-        return 2
+    command = args.command or "all"
+    week_id = _resolve_week_id(args)
 
-    from pipeline.orchestrator import run_all
-
-    week_id = getattr(args, "week_id", None)
     try:
-        stats = run_all(week_id=week_id)
+        if command == "ingest":
+            from pipeline.orchestrator import run_ingest
+
+            stats = run_ingest(week_id)
+        elif command == "summarize":
+            from pipeline.orchestrator import run_summarize
+
+            stats = run_summarize(week_id)
+        elif command == "render":
+            from pipeline.orchestrator import run_render
+
+            stats = run_render(week_id)
+        elif command == "all":
+            from pipeline.orchestrator import run_all
+
+            stats = run_all(week_id)
+        else:
+            parser.error(f"unknown command: {command}")
+            return 2
     except Exception as exc:
         sys.stderr.write(f"pipeline failed: {type(exc).__name__}: {exc}\n")
         return 1
 
-    sys.stdout.write(
-        f"\nDigest written: {stats.out_path}\n"
-        f"  week_id:           {stats.week_id}\n"
-        f"  items_fetched:     {stats.items_fetched}\n"
-        f"  summaries_written: {stats.summaries_written}\n"
-        f"  items_degraded:    {stats.items_degraded}\n"
-        f"  cost_usd_estimate: ${stats.cost_usd_estimate:.6f}\n"
-        f"  errors:            {len(stats.errors)}\n"
-    )
+    _print_stats(stats, command=command)
     return 0 if not stats.errors else 0  # partial success still returns 0
 
 
