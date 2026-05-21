@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 1 Plan 01-01 walking skeleton complete
-last_updated: "2026-05-21T23:15:00.000Z"
-last_activity: 2026-05-21 -- Plan 01-01 walking skeleton complete (30 items, 10 summaries, $0.001 cost)
+last_updated: "2026-05-21T23:40:00.000Z"
+last_activity: 2026-05-21 -- Plan 01-01 + post-review tweak (skip thin cards, footer with clickable links)
 progress:
   total_phases: 5
   completed_phases: 0
@@ -70,7 +70,9 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+| Todo | Surfaces in | Captured | Note |
+|------|-------------|----------|------|
+| **Decide Top N + max-cards-per-category knobs for Phase 3 ranking** | `/gsd-discuss-phase 3` | 2026-05-21 (Plan 01-01 review) | Without explicit limits, the ranker has no concrete target. User raised during Plan 01-01 review when discussing digest length scaling. Concrete proposals to evaluate: `top_n_briefing: 10`, `max_cards_per_category: 15`, configurable via `config/digest.yaml`. |
 
 ### Blockers/Concerns
 
