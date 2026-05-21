@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 from typing import Any
 
+import httpx
 import structlog
 from pydantic import BaseModel, Field
 from tenacity import (
@@ -18,6 +19,8 @@ from tenacity import (
     stop_after_attempt,
     wait_exponential,
 )
+
+from pipeline.content_enrich import EnrichableItem, prepare_input_text
 
 logger = structlog.get_logger(__name__)
 
@@ -135,7 +138,11 @@ def summarize_item(
     title: str,
     publisher: str,
     raw_content: str,
+    canonical_url: str = "",
+    item_id: str = "",
+    source_id: str = "",
     client: Any | None = None,
+    httpx_client: httpx.Client | None = None,
 ) -> SummaryResult:
     """Generate a TL;DR for one item.
 
@@ -147,8 +154,26 @@ def summarize_item(
     """
     log = logger.bind(component="summarize", title=title)
 
-    if _is_thin(raw_content):
-        log.info("summarize.thin_pre_check")
+    enrichment_triggered = False
+    input_text = raw_content
+    if canonical_url and item_id and source_id:
+        active_http = httpx_client or httpx.Client()
+        try:
+            input_text, enrichment_triggered = prepare_input_text(
+                EnrichableItem(
+                    source_id=source_id,
+                    item_id=item_id,
+                    canonical_url=canonical_url,
+                    raw_content=raw_content,
+                ),
+                active_http,
+            )
+        finally:
+            if httpx_client is None:
+                active_http.close()
+
+    if _is_thin(input_text):
+        log.info("summarize.thin_pre_check", enrichment_triggered=enrichment_triggered)
         return SummaryResult(
             tldr=None,
             summary_confidence="unavailable",
@@ -173,7 +198,7 @@ def summarize_item(
     user_content = _build_user_content(
         title=title,
         publisher=publisher,
-        raw_content=raw_content,
+        raw_content=input_text,
     )
 
     try:
@@ -207,15 +232,21 @@ def summarize_item(
     cost = _estimate_cost(input_tokens, output_tokens)
 
     if parsed.summary and parsed.summary.strip():
+        if enrichment_triggered and len(input_text.strip()) < 500:
+            confidence = "low"
+        else:
+            confidence = "high"
         log.info(
             "summarize.success",
             input_tokens=input_tokens,
             output_tokens=output_tokens,
             cost_usd_estimate=cost,
+            summary_confidence=confidence,
+            enrichment_triggered=enrichment_triggered,
         )
         return SummaryResult(
             tldr=parsed.summary.strip(),
-            summary_confidence="high" if parsed.reason is None else "low",
+            summary_confidence=confidence,
             prompt_version=PROMPT_VERSION,
             model_id=MODEL_ID,
             input_tokens=input_tokens,
