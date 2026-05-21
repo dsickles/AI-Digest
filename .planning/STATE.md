@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 Plan 01-02 three sources + idempotent upsert complete
-last_updated: "2026-05-22T00:10:00.000Z"
-last_activity: 2026-05-21 -- Plan 01-02 complete (3 D-01 sources, INGEST-08 upsert tests, per-source isolation)
+stopped_at: Phase 1 Plan 01-03 trafilatura + grounding sentinel + degraded cards complete
+last_updated: "2026-05-22T00:00:00.000Z"
+last_activity: 2026-05-21 -- Plan 01-03 complete (trafilatura enrichment, thin_content sentinel, inline degraded cards)
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 2
-  percent: 40
+  completed_plans: 3
+  percent: 60
 ---
 
 # Project State
@@ -26,30 +26,30 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 ## Current Position
 
 Phase: 1 of 5 (Foundation + First Digest)
-Plan: 01-02 of 01-05 complete (Three Sources + Idempotent Upsert)
-Status: Wave 2 complete, ready for Wave 3 (Plan 01-03)
-Last activity: 2026-05-21 -- Plan 01-02 complete (3 sources configured, upsert idempotent, per-source isolation tested)
+Plan: 01-03 of 01-05 complete (Trafilatura + Grounding Sentinel + Degraded Cards)
+Status: Wave 3 complete, ready for Wave 4 (Plan 01-04)
+Last activity: 2026-05-21 -- Plan 01-03 complete (trafilatura enrichment, thin_content sentinel, inline degraded cards)
 
-Progress: [████░░░░░░] 40%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 2
-- Average duration: ~1h 35m
-- Total execution time: ~3h 10m
+- Total plans completed: 3
+- Average duration: ~1h 15m
+- Total execution time: ~3h 55m
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 | 2/5 | 3h 10m | 1h 35m |
+| 1 | 3/5 | 3h 55m | 1h 15m |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (2h 45m, success), 01-02 (~25m, success — offline fixture tests only)
-- Trend: INGEST-08 proven; three-source registry live; live E2E across all feeds pending manual run
+- Last 5 plans: 01-01 (2h 45m, success), 01-02 (~25m, success), 01-03 (~45m, success)
+- Trend: PIPELINE-01 grounding live; enrichment + degraded cards hermetically tested
 
 *Updated after each plan completion*
 
@@ -70,6 +70,9 @@ Recent decisions affecting current work:
 - **01-02:** upsert_item uses SQLite ON CONFLICT DO UPDATE with ingested_at refresh — single round-trip idempotency (INGEST-08)
 - **01-02:** HTTP 304 Not Modified is success with zero new items, not FetchError
 - **01-02:** FetchError remains in adapters/base.py; orchestrator catches per-source without aborting run
+- **01-03:** Hybrid enrichment via trafilatura when RSS body < 500 chars; readability-lxml fallback; fetch failures log and continue with snippet
+- **01-03:** thin_content sentinel → summary_confidence unavailable; enrichment + short text → low; success → high
+- **01-03:** Degraded items render inline as cards with [summary unavailable — content too thin] (D-15), not footer-only
 
 ### Pending Todos
 
@@ -93,6 +96,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-22T00:10:00.000Z
-Stopped at: Phase 1 Plan 01-02 complete; ready for Plan 01-03 (trafilatura + grounding sentinel)
-Resume file: .planning/phases/01-foundation-first-digest/01-02-SUMMARY.md
+Last session: 2026-05-22T00:00:00.000Z
+Stopped at: Phase 1 Plan 01-03 complete; ready for Plan 01-04 (--week CLI + subcommands)
+Resume file: .planning/phases/01-foundation-first-digest/01-03-SUMMARY.md
