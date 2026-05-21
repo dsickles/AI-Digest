@@ -1,0 +1,245 @@
+"""Per-item Gemini summarizer (PIPELINE-01).
+
+Standard sync API — Batch is paid-only and skeleton stays free-tier.
+tenacity wraps the call to retry 429/5xx; Pydantic schema enforces
+the structured-output contract from summarize_v1.md.
+"""
+from __future__ import annotations
+
+import os
+from pathlib import Path
+from typing import Any
+
+import structlog
+from pydantic import BaseModel, Field
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
+
+logger = structlog.get_logger(__name__)
+
+PROMPT_VERSION = "summarize_v1"
+MODEL_ID = "gemini-2.5-flash-lite"
+MAX_OUTPUT_TOKENS = 256
+TEMPERATURE = 0.2
+
+# RESEARCH §2: paid Standard tier list price for cost_usd_estimate logging
+INPUT_COST_PER_M_TOKENS = 0.10
+OUTPUT_COST_PER_M_TOKENS = 0.40
+
+PROMPT_PATH = Path(__file__).resolve().parent / "prompts" / "summarize_v1.md"
+
+
+class SummaryResponse(BaseModel):
+    """Structured-output contract — must match the schema in summarize_v1.md."""
+
+    summary: str | None = Field(default=None)
+    reason: str | None = Field(default=None)
+
+
+class SummaryResult(BaseModel):
+    """What the orchestrator persists into ``item_summaries``."""
+
+    tldr: str | None
+    summary_confidence: str
+    prompt_version: str
+    model_id: str
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+    cost_usd_estimate: float | None = None
+
+
+class GeminiKeyMissing(RuntimeError):
+    """Raised when GEMINI_API_KEY is not set at summarize time."""
+
+
+def _load_prompt_body() -> str:
+    """Strip YAML frontmatter from summarize_v1.md, return the prompt body only."""
+    raw = PROMPT_PATH.read_text(encoding="utf-8")
+    if raw.startswith("---"):
+        parts = raw.split("---", 2)
+        if len(parts) >= 3:
+            return parts[2].strip()
+    return raw.strip()
+
+
+def _estimate_cost(input_tokens: int | None, output_tokens: int | None) -> float | None:
+    if input_tokens is None or output_tokens is None:
+        return None
+    return round(
+        input_tokens * INPUT_COST_PER_M_TOKENS / 1_000_000
+        + output_tokens * OUTPUT_COST_PER_M_TOKENS / 1_000_000,
+        6,
+    )
+
+
+def _build_user_content(*, title: str, publisher: str, raw_content: str) -> str:
+    """Render the per-item user message — keeps prompt + content separable."""
+    body = raw_content.strip() or "(no body content available)"
+    return (
+        f"Title: {title}\n"
+        f"Publisher: {publisher}\n"
+        "---\n"
+        f"{body}"
+    )
+
+
+def _is_thin(raw_content: str) -> bool:
+    """Pre-flight thin-content gate — saves an LLM call when there's nothing to summarize."""
+    return len(raw_content.strip().split()) < 30
+
+
+def _build_client() -> Any:
+    """Lazy import of google-genai so unit tests don't pay the SDK boot cost.
+
+    Raises ``GeminiKeyMissing`` when the env var is absent — caller maps
+    this to summary_confidence='unavailable'.
+    """
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    if not api_key:
+        raise GeminiKeyMissing(
+            "GEMINI_API_KEY is not set — add it to .env or export it before running summarize"
+        )
+    from google import genai
+
+    return genai.Client(api_key=api_key)
+
+
+@retry(
+    reraise=True,
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=2, min=4, max=60),
+    retry=retry_if_exception_type(Exception),
+)
+def _generate(client: Any, contents: list[str]) -> Any:
+    """One generate_content call wrapped with bounded retry (RESEARCH §2)."""
+    from google.genai import types
+
+    return client.models.generate_content(
+        model=MODEL_ID,
+        contents=contents,
+        config=types.GenerateContentConfig(
+            response_mime_type="application/json",
+            response_schema=SummaryResponse,
+            max_output_tokens=MAX_OUTPUT_TOKENS,
+            temperature=TEMPERATURE,
+        ),
+    )
+
+
+def summarize_item(
+    *,
+    title: str,
+    publisher: str,
+    raw_content: str,
+    client: Any | None = None,
+) -> SummaryResult:
+    """Generate a TL;DR for one item.
+
+    Returns a ``SummaryResult`` with ``summary_confidence`` set to:
+    - ``high``        — successful summary
+    - ``low``         — model returned a non-empty summary but flagged thin_content
+    - ``unavailable`` — pre-flight thin gate tripped, key missing, or
+                        unrecoverable parse/API error
+    """
+    log = logger.bind(component="summarize", title=title)
+
+    if _is_thin(raw_content):
+        log.info("summarize.thin_pre_check")
+        return SummaryResult(
+            tldr=None,
+            summary_confidence="unavailable",
+            prompt_version=PROMPT_VERSION,
+            model_id=MODEL_ID,
+        )
+
+    try:
+        active_client = client or _build_client()
+    except GeminiKeyMissing:
+        raise
+    except Exception as exc:
+        log.warning("summarize.client_init_failed", error=str(exc))
+        return SummaryResult(
+            tldr=None,
+            summary_confidence="unavailable",
+            prompt_version=PROMPT_VERSION,
+            model_id=MODEL_ID,
+        )
+
+    system_prompt = _load_prompt_body()
+    user_content = _build_user_content(
+        title=title,
+        publisher=publisher,
+        raw_content=raw_content,
+    )
+
+    try:
+        response = _generate(active_client, [system_prompt, user_content])
+    except Exception as exc:
+        log.warning("summarize.api_failed", error=type(exc).__name__, message=str(exc))
+        return SummaryResult(
+            tldr=None,
+            summary_confidence="unavailable",
+            prompt_version=PROMPT_VERSION,
+            model_id=MODEL_ID,
+        )
+
+    parsed: SummaryResponse | None = getattr(response, "parsed", None)
+    if parsed is None:
+        text = getattr(response, "text", "") or ""
+        try:
+            parsed = SummaryResponse.model_validate_json(text)
+        except Exception as exc:
+            log.warning("summarize.parse_failed", error=str(exc), raw=text[:200])
+            return SummaryResult(
+                tldr=None,
+                summary_confidence="unavailable",
+                prompt_version=PROMPT_VERSION,
+                model_id=MODEL_ID,
+            )
+
+    usage = getattr(response, "usage_metadata", None)
+    input_tokens = getattr(usage, "prompt_token_count", None) if usage else None
+    output_tokens = getattr(usage, "candidates_token_count", None) if usage else None
+    cost = _estimate_cost(input_tokens, output_tokens)
+
+    if parsed.summary and parsed.summary.strip():
+        log.info(
+            "summarize.success",
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            cost_usd_estimate=cost,
+        )
+        return SummaryResult(
+            tldr=parsed.summary.strip(),
+            summary_confidence="high" if parsed.reason is None else "low",
+            prompt_version=PROMPT_VERSION,
+            model_id=MODEL_ID,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            cost_usd_estimate=cost,
+        )
+
+    log.info("summarize.thin_post_model", reason=parsed.reason)
+    return SummaryResult(
+        tldr=None,
+        summary_confidence="unavailable",
+        prompt_version=PROMPT_VERSION,
+        model_id=MODEL_ID,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        cost_usd_estimate=cost,
+    )
+
+
+__all__ = [
+    "MODEL_ID",
+    "PROMPT_VERSION",
+    "GeminiKeyMissing",
+    "SummaryResponse",
+    "SummaryResult",
+    "summarize_item",
+]
