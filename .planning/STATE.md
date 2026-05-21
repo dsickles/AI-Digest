@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 Plan 01-01 walking skeleton complete
-last_updated: "2026-05-21T23:40:00.000Z"
-last_activity: 2026-05-21 -- Plan 01-01 + post-review tweak (skip thin cards, footer with clickable links)
+stopped_at: Phase 1 Plan 01-02 three sources + idempotent upsert complete
+last_updated: "2026-05-22T00:10:00.000Z"
+last_activity: 2026-05-21 -- Plan 01-02 complete (3 D-01 sources, INGEST-08 upsert tests, per-source isolation)
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 1
-  percent: 20
+  completed_plans: 2
+  percent: 40
 ---
 
 # Project State
@@ -26,30 +26,30 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 ## Current Position
 
 Phase: 1 of 5 (Foundation + First Digest)
-Plan: 01-01 of 01-05 complete (Walking Skeleton)
-Status: Wave 1 complete, ready for Wave 2 (Plan 01-02)
-Last activity: 2026-05-21 -- Plan 01-01 walking skeleton complete (30 items, 10 summaries, $0.001 cost)
+Plan: 01-02 of 01-05 complete (Three Sources + Idempotent Upsert)
+Status: Wave 2 complete, ready for Wave 3 (Plan 01-03)
+Last activity: 2026-05-21 -- Plan 01-02 complete (3 sources configured, upsert idempotent, per-source isolation tested)
 
-Progress: [██░░░░░░░░] 20%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 1
-- Average duration: ~2h 45m (includes uv install + cross-platform SSL diagnosis)
-- Total execution time: ~2.75 hours
+- Total plans completed: 2
+- Average duration: ~1h 35m
+- Total execution time: ~3h 10m
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 | 1/5 | 2h 45m | 2h 45m |
+| 1 | 2/5 | 3h 10m | 1h 35m |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (2h 45m, success — included unplanned uv install + truststore SSL fix)
-- Trend: One-shot E2E verified with real Gemini call ($0.001 / 10 summaries / 30 items)
+- Last 5 plans: 01-01 (2h 45m, success), 01-02 (~25m, success — offline fixture tests only)
+- Trend: INGEST-08 proven; three-source registry live; live E2E across all feeds pending manual run
 
 *Updated after each plan completion*
 
@@ -67,12 +67,16 @@ Recent decisions affecting current work:
 - **01-01:** Land `sources` table from RESEARCH schema day-one (not YAML-as-FK-text); items.source_id has real FK from start
 - **01-01:** upsert_item preserves item_id on `(source_id, external_id)` collision so item_summaries FK stays stable across re-ingests
 - **01-01:** Pre-flight thin-content gate (<30 words) skips LLM call before Gemini; correctly degraded 5/30 Datasette release-note items in live test
+- **01-02:** upsert_item uses SQLite ON CONFLICT DO UPDATE with ingested_at refresh — single round-trip idempotency (INGEST-08)
+- **01-02:** HTTP 304 Not Modified is success with zero new items, not FetchError
+- **01-02:** FetchError remains in adapters/base.py; orchestrator catches per-source without aborting run
 
 ### Pending Todos
 
 | Todo | Surfaces in | Captured | Note |
 |------|-------------|----------|------|
 | **Decide Top N + max-cards-per-category knobs for Phase 3 ranking** | `/gsd-discuss-phase 3` | 2026-05-21 (Plan 01-01 review) | Without explicit limits, the ranker has no concrete target. User raised during Plan 01-01 review when discussing digest length scaling. Concrete proposals to evaluate: `top_n_briefing: 10`, `max_cards_per_category: 15`, configurable via `config/digest.yaml`. |
+| **Live three-feed E2E re-run** | Manual / Plan 01-02 verification | 2026-05-21 (Plan 01-02) | Run `python -m pipeline.run all` twice outside sandbox; confirm item count stable across re-ingest for all three D-01 feeds. |
 
 ### Blockers/Concerns
 
@@ -89,6 +93,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-21T23:15:00.000Z
-Stopped at: Phase 1 Plan 01-01 walking skeleton complete; ready for Plan 01-02
-Resume file: .planning/phases/01-foundation-first-digest/01-01-SUMMARY.md
+Last session: 2026-05-22T00:10:00.000Z
+Stopped at: Phase 1 Plan 01-02 complete; ready for Plan 01-03 (trafilatura + grounding sentinel)
+Resume file: .planning/phases/01-foundation-first-digest/01-02-SUMMARY.md

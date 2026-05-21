@@ -43,7 +43,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-02-PLAN.md — All 3 D-01 sources + idempotent upsert + per-source failure isolation
+- [x] 01-02-PLAN.md — All 3 D-01 sources + idempotent upsert + per-source failure isolation *(2026-05-21)*
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -138,7 +138,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + First Digest | 1/5 | In progress (Wave 1 done) | - |
+| 1. Foundation + First Digest | 2/5 | In progress (Wave 2 done) | - |
 | 2. Expand Ingestion | 0/TBD | Not started | - |
 | 3. AI Quality | 0/TBD | Not started | - |
 | 4. Dashboard + Archive | 0/TBD | Not started | - |
