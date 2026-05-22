@@ -59,6 +59,13 @@ CATEGORY_LABELS = {
 }
 DEFAULT_CATEGORY = "technical"
 BRIEFING_HEADER_TEMPLATE = "Briefing — Top {n} this week"
+WEEKLY_ROLLUP_FAILURE_COPY = (
+    "This week's narrative roll-up couldn't be generated. The Top {n} stories are below."
+)
+PARTIAL_PUBLISH_COPY = (
+    "Pipeline cost estimate exceeded the weekly budget; this week's digest reflects "
+    "what completed before the cap."
+)
 
 # Summary-status values that warrant an in-place "couldn't be generated" card
 # instead of the footer aside. ``parse_error`` and ``api_error`` are bundled
@@ -232,6 +239,28 @@ main {
 }
 .briefing-item:last-child {
   margin-bottom: 0;
+}
+.weekly-synthesis {
+  margin-bottom: 1.5rem;
+}
+.weekly-synthesis-body {
+  margin: 0;
+  color: #c8cdd5;
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 400;
+}
+.rollup-failure-notice {
+  margin: 0 0 1.5rem;
+  color: #9aa3b2;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+.category-mini-rollup {
+  margin: 0 0 1rem;
+  color: #c8cdd5;
+  font-size: 1rem;
+  font-weight: 400;
 }
 """.strip()
 
@@ -427,8 +456,67 @@ def _group_main_feed_by_category(
     return grouped
 
 
-def _render_category_sections(main_feed: list[DigestCard]) -> str:
+def _rollup_row_value(row, key: str):
+    """Read a field from sqlite3.Row or mapping-like test fixtures."""
+    if row is None:
+        return None
+    if hasattr(row, "keys") and key in row.keys():
+        return row[key]
+    return getattr(row, key, None)
+
+
+def _rollup_status_ok(row) -> bool:
+    """True when a rollup row exists with status ok and non-empty narrative."""
+    if row is None:
+        return False
+    status = _rollup_row_value(row, "rollup_status")
+    narrative = _rollup_row_value(row, "narrative_md")
+    return status == "ok" and bool(narrative and str(narrative).strip())
+
+
+def _render_weekly_synthesis_section(
+    rollups_by_scope: dict[str, object],
+    *,
+    top_n: int,
+) -> str:
+    """Weekly synthesis or failure notice at top of main (D-58, D-66)."""
+    weekly_row = rollups_by_scope.get("weekly")
+    if _rollup_status_ok(weekly_row):
+        body = html.escape(str(_rollup_row_value(weekly_row, "narrative_md")), quote=False)
+        return (
+            f'<section class="weekly-synthesis">'
+            f'<p class="weekly-synthesis-body">{body}</p>'
+            "</section>"
+        )
+
+    failure_copy = WEEKLY_ROLLUP_FAILURE_COPY.format(n=top_n)
+    return (
+        f'<p class="rollup-failure-notice">'
+        f"{html.escape(failure_copy, quote=False)}"
+        "</p>"
+    )
+
+
+def _render_category_mini_rollup(
+    rollups_by_scope: dict[str, object],
+    category: str,
+) -> str:
+    """Per-category opener paragraph; omitted silently on failure (D-58)."""
+    scope = f"category:{category}"
+    row = rollups_by_scope.get(scope)
+    if not _rollup_status_ok(row):
+        return ""
+    body = html.escape(str(_rollup_row_value(row, "narrative_md")), quote=False)
+    return f'<p class="category-mini-rollup">{body}</p>'
+
+
+def _render_category_sections(
+    main_feed: list[DigestCard],
+    *,
+    rollups_by_scope: dict[str, object] | None = None,
+) -> str:
     """Render per-category sections; omit empty categories (D-65, D-24)."""
+    rollups = rollups_by_scope or {}
     grouped = _group_main_feed_by_category(main_feed)
     sections: list[str] = []
     for category in CATEGORY_ORDER:
@@ -436,10 +524,12 @@ def _render_category_sections(main_feed: list[DigestCard]) -> str:
         if not cards:
             continue
         label = html.escape(CATEGORY_LABELS[category])
+        mini_html = _render_category_mini_rollup(rollups, category)
         cards_html = "\n".join(_render_card(card) for card in cards)
         sections.append(
             f'<section class="category-section" data-category="{html.escape(category, quote=True)}">'
             f'<h2 class="category-header">{label}</h2>'
+            f"{mini_html}"
             f"{cards_html}"
             "</section>"
         )
@@ -480,6 +570,7 @@ def render_digest(
     out_dir: Path | None = None,
     pipeline_notice_pending_count: int = 0,
     pipeline_notice_failed_source_count: int = 0,
+    rollups_by_scope: dict[str, object] | None = None,
 ) -> Path:
     """Write the weekly digest HTML and return the output path.
 
@@ -496,6 +587,7 @@ def render_digest(
     from pipeline.config import load_digest_config
 
     top_n_briefing = load_digest_config().top_n_briefing
+    rollups = rollups_by_scope or {}
 
     main_feed, also_seen = _partition_cards(cards)
 
@@ -510,9 +602,18 @@ def render_digest(
     updated_safe = html.escape(updated_line)
 
     if main_feed:
+        synthesis_html = _render_weekly_synthesis_section(
+            rollups, top_n=top_n_briefing
+        )
         briefing_html = _render_briefing_section(main_feed, top_n=top_n_briefing)
-        category_html = _render_category_sections(main_feed)
-        cards_html = "\n".join(part for part in (briefing_html, category_html) if part)
+        category_html = _render_category_sections(
+            main_feed, rollups_by_scope=rollups
+        )
+        cards_html = "\n".join(
+            part
+            for part in (synthesis_html, briefing_html, category_html)
+            if part
+        )
     else:
         cards_html = (
             '<p class="card-degraded">'
@@ -575,5 +676,7 @@ __all__ = [
     "CATEGORY_ORDER",
     "DigestCard",
     "AlsoCoveredMember",
+    "PARTIAL_PUBLISH_COPY",
+    "WEEKLY_ROLLUP_FAILURE_COPY",
     "render_digest",
 ]
