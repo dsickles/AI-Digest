@@ -98,9 +98,11 @@ Recent decisions affecting current work:
 | Todo | Surfaces in | Captured | Note |
 |------|-------------|----------|------|
 | **Decide Top N + max-cards-per-category knobs for Phase 3 ranking** | `/gsd-discuss-phase 3` | 2026-05-21 (Plan 01-01 review) | Without explicit limits, the ranker has no concrete target. User raised during Plan 01-01 review when discussing digest length scaling. Concrete proposals to evaluate: `top_n_briefing: 10`, `max_cards_per_category: 15`, configurable via `config/digest.yaml`. |
+| **Gemini billing decision — DEFERRED until scale data exists** | Phase 4 readiness review OR earlier if a single weekly run exceeds ~30 quota-blocked items | 2026-05-22 (post Phase 2 visual UAT) | User explicit: "I'm not able to estimate actually the scale of items quite yet. we're gonna grow into that because that is the vertical approach. we don't know the long-term plan for how many items, and so we really can't make adequate billing decisions at this time." Acceptable to proceed on free tier (20 req/day) because LOCKED-01 quota-exhausted carve-out keeps the UX coherent (in-place "couldn't be generated this week" card). Re-evaluate when the source catalog stabilizes AND Phase 3 dedup is shipped — both should reduce per-run LLM volume. Decision inputs needed: actual items/week post-dedup, % items hitting 429 in a typical run, perceived reader impact. |
 | **Live three-feed E2E re-run** | Manual / Plan 01-02 verification | 2026-05-21 (Plan 01-02) | Run `python -m pipeline.run all` twice outside sandbox; confirm item count stable across re-ingest for all three D-01 feeds. |
 | **Live backfill UAT** | Manual / Plan 01-04 verification | 2026-05-21 (Plan 01-04) | Run `python -m pipeline.run render --week 2026-W19` outside sandbox; confirm `out/digest-2026-W19.html` produced. |
 | **Browser digest UAT** | Manual / Plan 01-05 | 2026-05-21 (Plan 01-05) | Open `out/digest-*.html`; confirm dark theme, Week of header, badges, rel=noopener links. |
+| **Phase 2 manual UAT tests 6 (confirmed-missing transcripts) + 7b (deliberate 404 source isolation)** | `02-UAT.md` | 2026-05-22 (Phase 2 close-out) | Tests 1–5, 7a passed visually during 8-source live run. Tests 6 + 7b require deliberate setup (find a captions-disabled YouTube video; misconfigure one RSS source URL) and are deferred to a follow-up session — not blocking Phase 3 entry since the underlying code is unit-tested. |
 
 ### Blockers/Concerns
 
@@ -118,6 +120,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-22T11:55:00.000Z
-Stopped at: Phase 2 complete (4/4 plans executed; 68/68 pytest; VERIFICATION.md committed); ready for Phase 3 discuss-phase
-Resume file: .planning/phases/02-expand-ingestion/02-VERIFICATION.md (phase exit) → next start point is `/gsd-discuss-phase 3`
+Last session: 2026-05-22T13:30:00.000Z
+Stopped at: Phase 2 close-out complete — 4/4 plans executed; 71/71 pytest after post-UAT corrections; W21 live UAT run (6 passed / 2 pending fault-injection); LOCKED-DIRECTIVES.md hard-gate established; VERIFICATION.md amended with Post-UAT Corrections section. Ready for Phase 3.
+Resume file: .planning/phases/02-expand-ingestion/02-VERIFICATION.md (phase exit, post-UAT amended) → next start point is `/gsd-discuss-phase 3`
+Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection); Gemini billing decision (after Phase 3 dedup ships).
