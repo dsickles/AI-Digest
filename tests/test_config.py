@@ -9,18 +9,18 @@ from pydantic import ValidationError
 from pipeline.config import RssSource, YoutubeSource, enabled_sources, load_sources
 
 
-def test_default_config_has_phase2_seed_sources() -> None:
-    """Plan 02-01 grows the catalog to the three D-01 RSS rows + two D-29 YouTube rows.
-
-    Plan 02-02 adds the remaining three RSS sources (D-33) to reach eight total.
-    """
+def test_default_config_has_eight_phase2_sources() -> None:
+    """Plan 02-02 reaches the 8-source target: 3 Phase-1 RSS + 3 D-33 RSS + 2 D-29 YouTube."""
     sources = load_sources()
-    assert len(sources) == 5
+    assert len(sources) == 8
     ids = {s.id for s in sources}
     assert ids == {
         "simon-willison",
         "one-useful-thing",
         "import-ai",
+        "where-your-ed-at",
+        "bensbites",
+        "last-week-in-ai",
         "how-i-ai",
         "nate-b-jones",
     }
@@ -43,6 +43,17 @@ def test_default_config_has_phase2_seed_sources() -> None:
         "https://www.youtube.com/feeds/videos.xml?channel_id=UCRYY7IEbkHLH_ScJCu9eWDQ"
     )
     assert how.tag == "technical"
+
+
+def test_d33_rss_sources_have_exact_urls() -> None:
+    """D-33: locked URLs and tags for the three new RSS publishers in plan 02-02."""
+    by_id = {s.id: s for s in load_sources()}
+    assert by_id["where-your-ed-at"].url == "https://www.wheresyoured.at/feed"
+    assert by_id["where-your-ed-at"].tag == "business"
+    assert by_id["bensbites"].url == "https://www.bensbites.com/feed"
+    assert by_id["bensbites"].tag == "business"
+    assert by_id["last-week-in-ai"].url == "https://lastweekin.ai/feed"
+    assert by_id["last-week-in-ai"].tag == "technical"
 
 
 def test_union_loads_mixed_sources(tmp_path: Path) -> None:

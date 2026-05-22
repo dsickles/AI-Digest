@@ -1,8 +1,9 @@
 # AI Digest source registry — checked into git per INGEST-01.
 #
-# Phase 1 shipped the three D-01 RSS seeds. Phase 2 adds two YouTube channels
-# (D-29) here in plan 02-01; three additional RSS publishers (D-33) land in
-# plan 02-02 so this catalog reaches the eight-source target.
+# Phase 1 shipped the three D-01 RSS seeds. Phase 2 reaches the eight-source
+# target: 3 Phase-1 RSS (Simon Willison, One Useful Thing, Import AI) plus
+# three D-33 RSS publishers (Where's Your Ed At, Ben's Bites, Last Week in AI)
+# plus two D-29 YouTube channels (How I AI, Nate B Jones).
 #
 # Schema (per pipeline.config.SourceConfig — D-36 discriminated union):
 #   id            Stable kebab-case identifier (used as items.source_id)
@@ -30,6 +31,24 @@ sources:
     url: https://importai.substack.com/feed
     display_name: Import AI
     tag: business
+    enabled: true
+  - id: where-your-ed-at
+    type: rss
+    url: https://www.wheresyoured.at/feed
+    display_name: Where's Your Ed At
+    tag: business
+    enabled: true
+  - id: bensbites
+    type: rss
+    url: https://www.bensbites.com/feed
+    display_name: Ben's Bites
+    tag: business
+    enabled: true
+  - id: last-week-in-ai
+    type: rss
+    url: https://lastweekin.ai/feed
+    display_name: Last Week in AI
+    tag: technical
     enabled: true
   - id: how-i-ai
     type: youtube
