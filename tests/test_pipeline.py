@@ -138,6 +138,37 @@ def test_ingest_logs_include_source_id(
     assert start_events[0].get("source_id") == "log-source"
 
 
+def test_write_last_run_md(tmp_path: Path) -> None:
+    """write_last_run_md creates out/last_run.md with week_id and LLM section."""
+    from datetime import UTC, datetime
+
+    from pipeline.reporting.last_run import RunSummary, write_last_run_md
+
+    out_path = tmp_path / "last_run.md"
+    summary = RunSummary(
+        week_id="2026-W21",
+        phase="all",
+        started_at=datetime(2026, 5, 21, 10, 0, 0, tzinfo=UTC),
+        finished_at=datetime(2026, 5, 21, 10, 5, 0, tzinfo=UTC),
+        status="success",
+        items_fetched=3,
+        summaries_written=2,
+        items_degraded=1,
+        llm_calls=2,
+        cost_usd_estimate=0.00042,
+        per_source=[("simon-willison", 2, []), ("import-ai", 1, ["FetchError: timeout"])],
+        errors=[{"phase": "ingest", "source_id": "import-ai", "error": "FetchError: timeout"}],
+        out_path=tmp_path / "digest-2026-W21.html",
+    )
+    written = write_last_run_md(summary, out_path=out_path)
+    assert written == out_path
+    body = out_path.read_text(encoding="utf-8")
+    assert "2026-W21" in body
+    assert "## LLM" in body
+    assert "llm_calls" in body
+    assert "GEMINI" not in body
+
+
 def test_week_override_threads_to_orchestrator(
     monkeypatch: pytest.MonkeyPatch, apply_schema: Path
 ) -> None:

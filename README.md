@@ -101,6 +101,25 @@ xdg-open out/digest-*.html
 ii out/digest-*.html
 ```
 
+## Debugging
+
+Every pipeline subcommand overwrites `out/last_run.md` with a markdown report:
+
+- Run metadata (`week_id`, phase, started/finished timestamps, status)
+- Per-source table (items fetched, one-line errors)
+- Totals (`summaries_written`, `items_degraded`)
+- LLM section (`llm_calls`, `cost_usd_estimate`)
+- Errors bullet list (one line per failure)
+
+After a run, inspect the report:
+
+```bash
+cat out/last_run.md
+```
+
+The report never contains your API key or full article bodies. For deeper
+inspection, query `data/aidigest.db` (`pipeline_runs` table holds run metrics).
+
 ## Test
 
 ```bash

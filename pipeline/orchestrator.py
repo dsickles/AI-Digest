@@ -24,6 +24,7 @@ import structlog
 
 from pipeline.models import NormalizedItem
 from pipeline.render.html import DigestCard, render_digest
+from pipeline.reporting.last_run import RunSummary, write_last_run_md
 from pipeline.week import week_bounds
 from store.db import (
     connect,
@@ -313,6 +314,31 @@ def _build_cards_from_db(conn, rows, week_id: str) -> list[DigestCard]:
     return cards
 
 
+def _write_last_run(stats: RunStats, *, status: str) -> None:
+    """Persist out/last_run.md for debugging (D-08)."""
+    per_source = [
+        (sid, s.items_fetched, s.errors)
+        for sid, s in sorted(stats.source_stats.items())
+    ]
+    write_last_run_md(
+        RunSummary(
+            week_id=stats.week_id,
+            phase=stats.phase,
+            started_at=stats.started_at,
+            finished_at=datetime.now(UTC),
+            status=status,
+            items_fetched=stats.items_fetched,
+            summaries_written=stats.summaries_written,
+            items_degraded=stats.items_degraded,
+            llm_calls=stats.llm_calls,
+            cost_usd_estimate=stats.cost_usd_estimate,
+            per_source=per_source,
+            errors=stats.errors,
+            out_path=stats.out_path,
+        )
+    )
+
+
 def _finalize(
     conn,
     run_id: str,
@@ -332,6 +358,7 @@ def _finalize(
         errors_json=json.dumps(stats.errors),
     )
     conn.commit()
+    _write_last_run(stats, status=status)
     logger.info(
         "orchestrator.complete",
         phase=phase,
@@ -386,6 +413,7 @@ def run_ingest(
                 errors_json=json.dumps(stats.errors),
             )
             conn.commit()
+            _write_last_run(stats, status="failed")
             raise
 
 
@@ -435,6 +463,7 @@ def run_summarize(
                 errors_json=json.dumps(stats.errors),
             )
             conn.commit()
+            _write_last_run(stats, status="failed")
             raise
 
 
@@ -487,6 +516,7 @@ def run_render(
                 errors_json=json.dumps(stats.errors),
             )
             conn.commit()
+            _write_last_run(stats, status="failed")
             raise
 
 
@@ -562,6 +592,7 @@ def run_all(
                 errors_json=json.dumps(stats.errors),
             )
             conn.commit()
+            _write_last_run(stats, status="failed")
             raise
 
 
