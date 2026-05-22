@@ -108,7 +108,7 @@ Plans:
   4. A structured `pipeline_report.json` accompanies each run (items ingested, deduped, LLM calls, cost USD, errors) and LLM spend stays within the $2/week target with a configurable hard stop
   5. The human reader can skim the full digest in ~15 minutes and get a coherent sense of "what happened in AI this week" — the Core Value hypothesis is testable
 
-**Plans:** 2/5 plans executed
+**Plans:** 3/5 plans executed
 
 Plans:
 **Wave 1**
@@ -121,7 +121,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 03-03-PLAN.md — Rank + Briefing Top N: cluster_ranks, numbered Briefing section (PIPELINE-03)
+- [x] 03-03-PLAN.md — Rank + Briefing Top N: cluster_ranks, numbered Briefing section (PIPELINE-03)
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
