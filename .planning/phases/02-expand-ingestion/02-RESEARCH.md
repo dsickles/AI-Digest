@@ -448,19 +448,22 @@ if fetch_succeeded and len(in_window) == 0:
 | A4 | Char-based ~4 chars/token heuristic acceptable for D-28 | Pattern 3 | Occasional over-limit Gemini calls |
 | A5 | Week-window filter for D-41 applied in orchestrator post-fetch | Pattern 5 | empty_feed false positives |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Extract shared `_fetch_bytes` to `adapters/http.py`?**  
    - What we know: RssAdapter and YoutubeAdapter need identical HTTP behavior.  
-   - Recommendation: Optional refactor; duplicate import from rss module acceptable for minimal diff.
+   - Recommendation: Optional refactor; duplicate import from rss module acceptable for minimal diff.  
+   - **RESOLVED:** Duplicate import from `pipeline/adapters/rss.py` chosen for minimal diff — see 02-01-PLAN.md task 2-01-03 action (YoutubeAdapter reuses `_fetch_bytes` from rss); 02-PATTERNS.md `pipeline/adapters/youtube.py` analog notes sibling-class pattern without `adapters/http.py`.
 
 2. **Catch-up CLI shape: flag vs subcommand?**  
    - What we know: D-23 placeholder `--only-pending-transcripts`; D-22 requires README + `--help` + UAT.  
-   - Recommendation: Flag on `ingest` or `all` that skips non-YouTube sources and only re-fetches `pending_local` — planner picks name.
+   - Recommendation: Flag on `ingest` or `all` that skips non-YouTube sources and only re-fetches `pending_local` — planner picks name.  
+   - **RESOLVED:** Chosen as `--only-pending-transcripts` flag on `ingest` and `all` subparsers — see 02-04-PLAN.md task 2-04-01; D-22 discoverability triad in task 2-04-02.
 
 3. **Confirm seed feed URLs live?**  
    - Locked URLs in D-33/D-29; integration tests should hit real feeds outside sandbox (manual UAT).  
-   - Recommendation: Plan includes one live `run ingest` verification task.
+   - Recommendation: Plan includes one live `run ingest` verification task.  
+   - **RESOLVED:** Manual UAT enumerated in 02-VALIDATION.md §Manual-Only Verifications and 02-UAT.md; automated paths use fixture XML (`tests/fixtures/feeds/youtube_channel.xml`) per 02-01-PLAN.md task 2-01-01; live `run all` gated in 02-01-PLAN.md and 02-02-PLAN.md task acceptance criteria when network/GEMINI available.
 
 ## Environment Availability
 

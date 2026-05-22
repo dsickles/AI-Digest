@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Phase 2 context gathered (CONTEXT.md committed); ready for plan-phase
-last_updated: "2026-05-22T03:39:22.814Z"
-last_activity: 2026-05-21 -- Plan 01-05 complete (observability + HTML polish + green test suite)
+status: ready_to_execute
+stopped_at: Phase 2 planned (4 plans across 4 waves); ready for execute-phase
+last_updated: "2026-05-22T11:45:00.000Z"
+last_activity: 2026-05-22 -- Phase 2 plan-phase complete (research + patterns + 4 plans verified, 2 iterations)
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 5
+  total_plans: 9
   completed_plans: 5
-  percent: 20
+  percent: 56
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-21)
 
 **Core value:** A coherent narrative of "what happened in AI this week" across all my sources — read in 15 minutes instead of 5+ hours of skimming feeds.
-**Current focus:** Phase 2 — Expand Ingestion (planning next)
+**Current focus:** Phase 2 — Expand Ingestion (ready to execute, 4 plans across 4 waves)
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation + First Digest) — **Complete**
-Plan: 01-05 of 01-05 complete (structlog, last_run.md, pipeline_runs metrics, HTML polish, pytest)
-Status: Phase 1 all waves complete; ready for Phase 2 discuss/plan
-Last activity: 2026-05-21 -- Plan 01-05 complete (observability + HTML polish + green test suite)
+Phase: 2 of 5 (Expand Ingestion) — **Planned, ready to execute**
+Plan: 02-01 → 02-04 written and verified (Waves 1–4); execution not started
+Status: Phase 2 plans pass plan-checker (iteration 2), requirements + decision coverage complete
+Last activity: 2026-05-22 -- Phase 2 plan-phase complete (4 plans verified, ROADMAP annotated, VALIDATION.md per-task map locked)
 
-Progress: [██████████] 100%
+Progress: [█████░░░░░] 56% (5/9 plans complete; 4 plans queued for Phase 2)
 
 ## Performance Metrics
 
@@ -91,7 +91,7 @@ Recent decisions affecting current work:
 
 ### Blockers/Concerns
 
-- YouTube transcript reliability from GHA cloud IPs (~20% failure expected) — Phase 2 planning may need a spike
+- YouTube transcript reliability from GHA cloud IPs — **resolved in Phase 2 design via D-23** (free-first transcript fetch, `pending_local` lifecycle state, local catch-up CLI in Plan 02-04); residual risk is operational and tracked in 02-VALIDATION.md manual UAT
 - Heartbeat provider (Healthchecks.io vs email) — decide during Phase 5 planning
 
 ## Deferred Items
@@ -104,6 +104,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-22T03:39:22.793Z
-Stopped at: Phase 2 context gathered (CONTEXT.md committed); ready for plan-phase
-Resume file: .planning/phases/02-expand-ingestion/02-CONTEXT.md
+Last session: 2026-05-22T11:45:00.000Z
+Stopped at: Phase 2 planned (4 PLAN.md files committed); ready for execute-phase
+Resume file: .planning/phases/02-expand-ingestion/02-01-PLAN.md (Wave 1 entry point)

@@ -73,7 +73,24 @@ Plans:
   4. The human reader sees noticeably broader coverage — video voices appear alongside the expanded set of blog/newsletter voices in the same plain-HTML digest
   5. Items that fail any pipeline stage (transcript fetch, summary, full-text enrichment) render in-place in their natural sort position with plain-English in-card explanations — no footer aside, no relegation (per the project Reader-surface language policy and In-place degradation rendering rules)
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 02-01-PLAN.md — Schema migration + config union + YoutubeAdapter → first digest with YouTube items (INGEST-03)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 02-02-PLAN.md — Typed failure isolation + 3 new RSS sources → eight-source digest with categorized errors in last_run.md (INGEST-06)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 02-03-PLAN.md — Renderer rewrite: in-place degradation (D-25) + header pipeline notice (D-26); supersedes Phase 1 D-05
+
+**Wave 4** *(blocked on Waves 1 + 3 completion)*
+
+- [ ] 02-04-PLAN.md — Local catch-up CLI `--only-pending-transcripts` + D-22 discoverability triad (INGEST-03 recovery)
 
 **Notes:** Addresses PITFALLS #7 (YouTube transcript gaps from cloud IP — best-effort fetch + `transcript_status` flag; cloud-first with local catch-up path). Phase 2 also rewrites the Phase-1 renderer to remove the "Also seen this week" footer aside (Phase 1 D-05 is superseded by the project-level in-place degradation rule). PITFALLS #15 (HN/Reddit URL unwrapping) and #21 (rate limiting for forum sources) no longer apply to v1 — Reddit/HN dropped per Editorial Principle (see INGEST-V2-04 community pulse). PITFALLS #5 (KTN secret URL management) no longer applies to v1 — email→RSS/KTN dropped per Editorial Principle observation that fitting newsletters all publish public RSS (see INGEST-V2-05).
 
@@ -140,7 +157,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation + First Digest | 5/5 | Complete | 2026-05-21 |
-| 2. Expand Ingestion | 0/TBD | Not started | - |
+| 2. Expand Ingestion | 0/4 | Not started | - |
 | 3. AI Quality | 0/TBD | Not started | - |
 | 4. Dashboard + Archive | 0/TBD | Not started | - |
 | 5. Ops & Automation | 0/TBD | Not started | - |
