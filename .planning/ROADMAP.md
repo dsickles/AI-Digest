@@ -108,7 +108,7 @@ Plans:
   4. A structured `pipeline_report.json` accompanies each run (items ingested, deduped, LLM calls, cost USD, errors) and LLM spend stays within the $2/week target with a configurable hard stop
   5. The human reader can skim the full digest in ~15 minutes and get a coherent sense of "what happened in AI this week" — the Core Value hypothesis is testable
 
-**Plans:** 3/5 plans executed
+**Plans:** 4/5 plans executed
 
 Plans:
 **Wave 1**
@@ -125,7 +125,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 03-04-PLAN.md — Hierarchical rollup: 4 minis + weekly synthesis, editor's note + section openers (PIPELINE-04)
+- [x] 03-04-PLAN.md — Hierarchical rollup: 4 minis + weekly synthesis, editor's note + section openers (PIPELINE-04)
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
@@ -179,7 +179,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation + First Digest | 5/5 | Complete | 2026-05-21 |
 | 2. Expand Ingestion | 4/4 | Complete | 2026-05-22 |
-| 3. AI Quality | 2/5 | In Progress|  |
+| 3. AI Quality | 4/5 | In Progress|  |
 | 4. Dashboard + Archive | 0/TBD | Not started | - |
 | 5. Ops & Automation | 0/TBD | Not started | - |
 
