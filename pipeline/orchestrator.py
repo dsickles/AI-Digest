@@ -25,9 +25,12 @@ import structlog
 from pipeline.models import NormalizedItem
 from pipeline.render.html import AlsoCoveredMember, DigestCard, render_digest
 from pipeline.reporting.last_run import RunSummary, write_last_run_md
+from pipeline.reporting.pipeline_report import write_pipeline_report
 from pipeline.week import week_bounds
 from store.db import (
     connect,
+    delete_clusters_for_week,
+    delete_rollups_for_week,
     finalize_pipeline_run,
     get_canonical_item_ids_for_week,
     get_cluster_categories_for_week,
@@ -60,6 +63,7 @@ def _utc_iso_now() -> str:
     return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 if TYPE_CHECKING:
+    from pipeline.budget import WeekBudget
     from pipeline.llm.summarize import SummaryResult
 
 logger = structlog.get_logger(__name__)
@@ -297,9 +301,17 @@ def _dedup_week(
 
 
 def _summarize_week_items(
-    *, week_id: str, week_start: datetime, week_end: datetime, conn, log, stats: RunStats
+    *,
+    week_id: str,
+    week_start: datetime,
+    week_end: datetime,
+    conn,
+    log,
+    stats: RunStats,
+    budget: WeekBudget | None = None,
 ) -> dict[str, SummaryResult]:
     """Summarize items in [week_start, week_end] missing a current summary."""
+    from pipeline.budget import META_STAGE_ESTIMATE_USD
     from pipeline.llm.summarize import GeminiKeyMissing, SummaryResult, summarize_item
 
     rows = get_items_for_week(
@@ -311,6 +323,10 @@ def _summarize_week_items(
     canonical_ids = get_canonical_item_ids_for_week(conn, week_id)
     if not canonical_ids:
         canonical_ids = {row["item_id"] for row in rows}
+
+    estimate_per_item = (
+        budget.baseline_per_item_usd if budget is not None else 0.001
+    )
 
     summaries: dict[str, SummaryResult] = {}
     for row in rows:
@@ -334,6 +350,17 @@ def _summarize_week_items(
                 ),
             )
             continue
+
+        if budget is not None and not budget.can_afford(
+            estimate_per_item, stage="summarize"
+        ):
+            budget.halt_if_over_cap(stage="summarize")
+            log.warning(
+                "budget.summarize_halted",
+                spent_usd=budget.spent_usd,
+                cap_usd=budget.cap_usd,
+            )
+            break
 
         try:
             log.info(
@@ -394,6 +421,8 @@ def _summarize_week_items(
             stats.summaries_written += 1
         if result.cost_usd_estimate is not None:
             stats.cost_usd_estimate += result.cost_usd_estimate
+            if budget is not None:
+                budget.record_spend(result.cost_usd_estimate, stage="summarize")
 
     conn.commit()
     return summaries
@@ -414,11 +443,16 @@ def _source_tags_by_id(conn) -> dict[str, str | None]:
 
 
 def _categorize_week_clusters(
-    *, week_id: str, conn, log, stats: RunStats
+    *, week_id: str, conn, log, stats: RunStats, budget: WeekBudget | None = None
 ) -> None:
     """Item-level categorize checkpoint — skip rows already persisted (D-67)."""
+    from pipeline.budget import META_STAGE_ESTIMATE_USD
     from pipeline.llm.categorize import PROMPT_VERSION, categorize_cluster
     from pipeline.llm.summarize import GeminiKeyMissing
+
+    if budget is not None and not budget.meta_stages_allowed():
+        log.info("categorize.skipped_budget")
+        return
 
     clusters = get_clusters_for_week(conn, week_id)
     if not clusters:
@@ -456,6 +490,13 @@ def _categorize_week_clusters(
             conn, cluster_id, exclude_prompt_version=PROMPT_VERSION
         )
 
+        if budget is not None and not budget.can_afford(
+            META_STAGE_ESTIMATE_USD, stage="categorize"
+        ):
+            log.warning("budget.categorize_halted")
+            budget.halt_if_over_cap(stage="categorize")
+            return
+
         try:
             log.info("categorize_start", cluster_id=cluster_id)
             result = categorize_cluster(
@@ -491,6 +532,8 @@ def _categorize_week_clusters(
         )
         if result.cost_usd_estimate is not None:
             stats.cost_usd_estimate += result.cost_usd_estimate
+            if budget is not None:
+                budget.record_spend(result.cost_usd_estimate, stage="categorize")
 
         conn.commit()
 
@@ -538,10 +581,17 @@ def _load_cluster_rank_inputs(conn, week_id: str) -> list:
     return inputs
 
 
-def _rank_week(*, week_id: str, conn, log, stats: RunStats) -> None:
+def _rank_week(
+    *, week_id: str, conn, log, stats: RunStats, budget: WeekBudget | None = None
+) -> None:
     """Stage-level rank checkpoint — single LLM call per week (D-67)."""
+    from pipeline.budget import META_STAGE_ESTIMATE_USD
     from pipeline.llm.rank import PROMPT_VERSION, rank_week_clusters
     from pipeline.llm.summarize import GeminiKeyMissing
+
+    if budget is not None and not budget.meta_stages_allowed():
+        log.info("rank.skipped_budget")
+        return
 
     existing = get_ranks_for_week(conn, week_id, PROMPT_VERSION)
     if existing:
@@ -551,6 +601,13 @@ def _rank_week(*, week_id: str, conn, log, stats: RunStats) -> None:
     cluster_inputs = _load_cluster_rank_inputs(conn, week_id)
     if not cluster_inputs:
         log.info("rank.no_clusters")
+        return
+
+    if budget is not None and not budget.can_afford(
+        META_STAGE_ESTIMATE_USD, stage="rank"
+    ):
+        log.warning("budget.rank_halted")
+        budget.halt_if_over_cap(stage="rank")
         return
 
     try:
@@ -589,6 +646,8 @@ def _rank_week(*, week_id: str, conn, log, stats: RunStats) -> None:
     for row in results:
         if row.cost_usd_estimate is not None:
             stats.cost_usd_estimate += row.cost_usd_estimate
+            if budget is not None:
+                budget.record_spend(row.cost_usd_estimate, stage="rank")
 
     conn.commit()
 
@@ -661,6 +720,7 @@ def _record_rollup_result(
     scope: str,
     result,
     stats: RunStats,
+    budget: WeekBudget | None = None,
 ) -> None:
     """Persist one rollup row and update RunStats counters."""
     if result.input_tokens is not None or result.output_tokens is not None:
@@ -681,10 +741,15 @@ def _record_rollup_result(
     if result.cost_usd_estimate is not None:
         stats.cost_usd_estimate += result.cost_usd_estimate
         stats.rollup_cost_usd += result.cost_usd_estimate
+        if budget is not None:
+            budget.record_spend(result.cost_usd_estimate, stage="rollup")
 
 
-def _rollup_week(*, week_id: str, conn, log, stats: RunStats) -> None:
+def _rollup_week(
+    *, week_id: str, conn, log, stats: RunStats, budget: WeekBudget | None = None
+) -> None:
     """Stage-level rollup checkpoint — up to five LLM calls per week (D-67)."""
+    from pipeline.budget import META_STAGE_ESTIMATE_USD
     from pipeline.llm.rollup import (
         CATEGORY_ORDER,
         CATEGORY_PROMPT_VERSION,
@@ -694,6 +759,10 @@ def _rollup_week(*, week_id: str, conn, log, stats: RunStats) -> None:
         scope_for_category,
     )
     from pipeline.llm.summarize import GeminiKeyMissing
+
+    if budget is not None and not budget.meta_stages_allowed():
+        log.info("rollup.skipped_budget")
+        return
 
     by_category = _load_cluster_rollup_inputs_by_category(conn, week_id)
     mini_paragraphs: dict[str, str] = {}
@@ -711,6 +780,13 @@ def _rollup_week(*, week_id: str, conn, log, stats: RunStats) -> None:
         if not clusters:
             log.info("rollup_category.no_clusters", category=category)
             continue
+
+        if budget is not None and not budget.can_afford(
+            META_STAGE_ESTIMATE_USD, stage="rollup"
+        ):
+            log.warning("budget.rollup_halted", scope=scope)
+            budget.halt_if_over_cap(stage="rollup")
+            return
 
         try:
             log.info(
@@ -739,6 +815,7 @@ def _rollup_week(*, week_id: str, conn, log, stats: RunStats) -> None:
             scope=scope,
             result=result,
             stats=stats,
+            budget=budget,
         )
         if result.rollup_status == "ok" and result.narrative_md:
             mini_paragraphs[category] = result.narrative_md
@@ -747,6 +824,12 @@ def _rollup_week(*, week_id: str, conn, log, stats: RunStats) -> None:
     if existing_weekly:
         log.info("rollup_weekly.skip_existing")
     else:
+        if budget is not None and not budget.can_afford(
+            META_STAGE_ESTIMATE_USD, stage="rollup"
+        ):
+            log.warning("budget.rollup_weekly_halted")
+            budget.halt_if_over_cap(stage="rollup")
+            return
         try:
             log.info("rollup_weekly_start")
             weekly_result = rollup_weekly(
@@ -769,6 +852,7 @@ def _rollup_week(*, week_id: str, conn, log, stats: RunStats) -> None:
             scope="weekly",
             result=weekly_result,
             stats=stats,
+            budget=budget,
         )
 
     conn.commit()
@@ -969,7 +1053,88 @@ def _pipeline_notice_counts(
     return pending, failed_sources
 
 
-def _write_last_run(stats: RunStats, *, status: str) -> None:
+def _count_pending_summarize(
+    conn,
+    *,
+    week_id: str,
+    week_start: datetime,
+    week_end: datetime,
+) -> int:
+    """Items in the week window that still need a summarize_v1 row."""
+    rows = get_items_for_week(
+        conn,
+        week_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    )
+    canonical_ids = get_canonical_item_ids_for_week(conn, week_id)
+    if not canonical_ids:
+        canonical_ids = {row["item_id"] for row in rows}
+    pending = 0
+    for row in rows:
+        if row["item_id"] not in canonical_ids:
+            continue
+        if get_existing_summary(conn, row["item_id"], week_id, "summarize_v1") is None:
+            pending += 1
+    return pending
+
+
+def _apply_cascade_for_item(
+    conn,
+    *,
+    week_id: str,
+    item_id: str,
+    old_hash: str | None,
+    new_hash: str,
+    log,
+    force_rebuild_clusters: bool = False,
+    force_rebuild_rollup: bool = False,
+) -> set[str]:
+    """Invalidate downstream artifacts when ``content_hash`` changes (D-68)."""
+    from pipeline.cascade import (
+        STAGE_DEDUP,
+        STAGE_RANK,
+        STAGE_ROLLUP,
+        STAGE_SUMMARIZE,
+        plan_invalidation,
+    )
+
+    cluster_row = conn.execute(
+        """
+        SELECT cluster_id FROM story_clusters
+         WHERE week_id = ? AND canonical_item_id = ?
+        """,
+        (week_id, item_id),
+    ).fetchone()
+    is_canonical = cluster_row is not None
+
+    stages = plan_invalidation(
+        item_id=item_id,
+        old_hash=old_hash,
+        new_hash=new_hash,
+        is_canonical=is_canonical,
+        title_changed=False,
+        force_rebuild_clusters=force_rebuild_clusters,
+        force_rebuild_rollup=force_rebuild_rollup,
+    )
+    if STAGE_SUMMARIZE in stages:
+        conn.execute(
+            "DELETE FROM item_summaries WHERE item_id = ? AND week_id = ?",
+            (item_id, week_id),
+        )
+    if STAGE_DEDUP in stages:
+        delete_clusters_for_week(conn, week_id)
+    if STAGE_RANK in stages:
+        conn.execute("DELETE FROM cluster_ranks WHERE week_id = ?", (week_id,))
+    if STAGE_ROLLUP in stages:
+        delete_rollups_for_week(conn, week_id)
+    if stages:
+        log.info("cascade.planned", item_id=item_id, stages=sorted(stages))
+    return stages
+
+
+def _write_last_run(
+    stats: RunStats, *, status: str, budget: WeekBudget | None = None
+) -> None:
     """Persist out/last_run.md for debugging (D-08)."""
     per_source = [
         (sid, s.items_fetched, s.errors)
@@ -989,6 +1154,11 @@ def _write_last_run(stats: RunStats, *, status: str) -> None:
             cost_usd_estimate=stats.cost_usd_estimate,
             clusters_created=stats.clusters_created,
             items_clustered=stats.items_clustered,
+            categorize_llm_calls=stats.categorize_llm_calls,
+            rank_llm_calls=stats.rank_llm_calls,
+            rollup_llm_calls=stats.rollup_llm_calls,
+            budget_spent_usd=budget.spent_usd if budget else stats.cost_usd_estimate,
+            budget_halted=budget.halted if budget else False,
             per_source=per_source,
             errors=stats.errors,
             out_path=stats.out_path,
@@ -1002,8 +1172,12 @@ def _finalize(
     stats: RunStats,
     *,
     phase: str,
+    budget: WeekBudget | None = None,
+    out_dir: Path | None = None,
 ) -> None:
     status = "success" if not stats.errors else "partial"
+    if budget is not None and budget.halted:
+        status = "partial"
     finalize_pipeline_run(
         conn,
         run_id,
@@ -1015,7 +1189,15 @@ def _finalize(
         errors_json=json.dumps(stats.errors),
     )
     conn.commit()
-    _write_last_run(stats, status=status)
+    write_pipeline_report(
+        conn,
+        stats,
+        run_id=run_id,
+        status=status,
+        budget=budget,
+        out_dir=out_dir,
+    )
+    _write_last_run(stats, status=status, budget=budget)
     logger.info(
         "orchestrator.complete",
         phase=phase,
@@ -1029,7 +1211,15 @@ def _finalize(
     )
 
 
-def _ingest_pending_transcripts(conn, log, stats: RunStats) -> int:
+def _ingest_pending_transcripts(
+    conn,
+    log,
+    stats: RunStats,
+    *,
+    week_id: str | None = None,
+    force_rebuild_clusters: bool = False,
+    force_rebuild_rollup: bool = False,
+) -> int:
     """D-23 local catch-up: re-fetch transcripts for ``pending_local`` items.
 
     Returns the count of items whose ``transcript_status`` flipped (ok or
@@ -1071,7 +1261,9 @@ def _ingest_pending_transcripts(conn, log, stats: RunStats) -> int:
         from pipeline.models import hash_content
 
         raw_content = text if (text is not None and new_status == "ok") else None
+        old_hash = row["content_hash"] if "content_hash" in row.keys() else None
         if raw_content is not None:
+            new_hash = hash_content(raw_content)
             update_item_transcript(
                 conn,
                 row["item_id"],
@@ -1080,8 +1272,19 @@ def _ingest_pending_transcripts(conn, log, stats: RunStats) -> int:
             )
             conn.execute(
                 "UPDATE items SET content_hash = ? WHERE item_id = ?",
-                (hash_content(raw_content), row["item_id"]),
+                (new_hash, row["item_id"]),
             )
+            if week_id is not None and old_hash != new_hash:
+                _apply_cascade_for_item(
+                    conn,
+                    week_id=week_id,
+                    item_id=row["item_id"],
+                    old_hash=old_hash,
+                    new_hash=new_hash,
+                    log=log,
+                    force_rebuild_clusters=force_rebuild_clusters,
+                    force_rebuild_rollup=force_rebuild_rollup,
+                )
         else:
             update_item_transcript(
                 conn,
@@ -1132,7 +1335,7 @@ def run_ingest(
         try:
             log.info("orchestrator.start", phase="ingest")
             if only_pending_transcripts:
-                _ingest_pending_transcripts(conn, log, stats)
+                _ingest_pending_transcripts(conn, log, stats, week_id=week_id)
                 _finalize(conn, run_id, stats, phase="ingest")
                 return stats
             sources = enabled_sources()
@@ -1167,6 +1370,8 @@ def run_dedup(
     week_id: str,
     *,
     db_path: Path | str | None = None,
+    out_dir: Path | None = None,
+    force_rebuild_clusters: bool = False,
 ) -> RunStats:
     """Cluster same-story items for ``week_id`` (deterministic, no LLM)."""
     init_db(db_path)
@@ -1179,6 +1384,9 @@ def run_dedup(
         conn.commit()
         try:
             log.info("orchestrator.start", phase="dedup")
+            if force_rebuild_clusters:
+                delete_clusters_for_week(conn, week_id)
+                conn.commit()
             _dedup_week(
                 week_id=week_id,
                 week_start=week_start,
@@ -1187,7 +1395,7 @@ def run_dedup(
                 log=log,
                 stats=stats,
             )
-            _finalize(conn, run_id, stats, phase="dedup")
+            _finalize(conn, run_id, stats, phase="dedup", out_dir=out_dir)
             return stats
         except Exception as exc:
             log.error(
@@ -1214,8 +1422,12 @@ def run_summarize(
     week_id: str,
     *,
     db_path: Path | str | None = None,
+    out_dir: Path | None = None,
+    max_cost_usd: float | None = None,
 ) -> RunStats:
     """Summarize items in the week window that lack a current summary."""
+    from pipeline.budget import WeekBudget
+
     init_db(db_path)
     week_start, week_end = week_bounds(week_id)
     log = logger.bind(week_id=week_id)
@@ -1224,6 +1436,13 @@ def run_summarize(
     with connect(db_path) as conn:
         run_id = insert_pipeline_run(conn, week_id=week_id, phase="summarize")
         conn.commit()
+        budget = WeekBudget.from_config(
+            cap_override=max_cost_usd, conn=conn, week_id=week_id
+        )
+        pending = _count_pending_summarize(
+            conn, week_id=week_id, week_start=week_start, week_end=week_end
+        )
+        budget.set_pre_flight(pending_summarize=pending)
         try:
             log.info("orchestrator.start", phase="summarize")
             _summarize_week_items(
@@ -1233,8 +1452,11 @@ def run_summarize(
                 conn=conn,
                 log=log,
                 stats=stats,
+                budget=budget,
             )
-            _finalize(conn, run_id, stats, phase="summarize")
+            _finalize(
+                conn, run_id, stats, phase="summarize", budget=budget, out_dir=out_dir
+            )
             return stats
         except Exception as exc:
             log.error(
@@ -1264,8 +1486,12 @@ def run_categorize(
     week_id: str,
     *,
     db_path: Path | str | None = None,
+    out_dir: Path | None = None,
+    max_cost_usd: float | None = None,
 ) -> RunStats:
     """Classify story clusters into edtech|business|technical|design."""
+    from pipeline.budget import WeekBudget
+
     init_db(db_path)
     log = logger.bind(week_id=week_id)
     stats = RunStats(week_id=week_id, phase="categorize")
@@ -1273,6 +1499,9 @@ def run_categorize(
     with connect(db_path) as conn:
         run_id = insert_pipeline_run(conn, week_id=week_id, phase="categorize")
         conn.commit()
+        budget = WeekBudget.from_config(
+            cap_override=max_cost_usd, conn=conn, week_id=week_id
+        )
         try:
             log.info("orchestrator.start", phase="categorize")
             _categorize_week_clusters(
@@ -1280,8 +1509,16 @@ def run_categorize(
                 conn=conn,
                 log=log,
                 stats=stats,
+                budget=budget,
             )
-            _finalize(conn, run_id, stats, phase="categorize")
+            _finalize(
+                conn,
+                run_id,
+                stats,
+                phase="categorize",
+                budget=budget,
+                out_dir=out_dir,
+            )
             return stats
         except Exception as exc:
             log.error(
@@ -1309,8 +1546,12 @@ def run_rank(
     week_id: str,
     *,
     db_path: Path | str | None = None,
+    out_dir: Path | None = None,
+    max_cost_usd: float | None = None,
 ) -> RunStats:
     """Rank story clusters for the week (single LLM call)."""
+    from pipeline.budget import WeekBudget
+
     init_db(db_path)
     log = logger.bind(week_id=week_id)
     stats = RunStats(week_id=week_id, phase="rank")
@@ -1318,10 +1559,17 @@ def run_rank(
     with connect(db_path) as conn:
         run_id = insert_pipeline_run(conn, week_id=week_id, phase="rank")
         conn.commit()
+        budget = WeekBudget.from_config(
+            cap_override=max_cost_usd, conn=conn, week_id=week_id
+        )
         try:
             log.info("orchestrator.start", phase="rank")
-            _rank_week(week_id=week_id, conn=conn, log=log, stats=stats)
-            _finalize(conn, run_id, stats, phase="rank")
+            _rank_week(
+                week_id=week_id, conn=conn, log=log, stats=stats, budget=budget
+            )
+            _finalize(
+                conn, run_id, stats, phase="rank", budget=budget, out_dir=out_dir
+            )
             return stats
         except Exception as exc:
             log.error(
@@ -1349,8 +1597,13 @@ def run_rollup(
     week_id: str,
     *,
     db_path: Path | str | None = None,
+    out_dir: Path | None = None,
+    max_cost_usd: float | None = None,
+    force_rebuild_rollup: bool = False,
 ) -> RunStats:
     """Run hierarchical weekly rollups (up to five LLM calls)."""
+    from pipeline.budget import WeekBudget
+
     init_db(db_path)
     log = logger.bind(week_id=week_id)
     stats = RunStats(week_id=week_id, phase="rollup")
@@ -1358,10 +1611,20 @@ def run_rollup(
     with connect(db_path) as conn:
         run_id = insert_pipeline_run(conn, week_id=week_id, phase="rollup")
         conn.commit()
+        budget = WeekBudget.from_config(
+            cap_override=max_cost_usd, conn=conn, week_id=week_id
+        )
         try:
             log.info("orchestrator.start", phase="rollup")
-            _rollup_week(week_id=week_id, conn=conn, log=log, stats=stats)
-            _finalize(conn, run_id, stats, phase="rollup")
+            if force_rebuild_rollup:
+                delete_rollups_for_week(conn, week_id)
+                conn.commit()
+            _rollup_week(
+                week_id=week_id, conn=conn, log=log, stats=stats, budget=budget
+            )
+            _finalize(
+                conn, run_id, stats, phase="rollup", budget=budget, out_dir=out_dir
+            )
             return stats
         except Exception as exc:
             log.error(
@@ -1395,6 +1658,7 @@ def run_render(
     *,
     db_path: Path | str | None = None,
     out_dir: Path | None = None,
+    top_n_briefing: int | None = None,
 ) -> RunStats:
     """Render HTML from existing SQLite data — no network, no LLM (D-20)."""
     init_db(db_path)
@@ -1424,8 +1688,11 @@ def run_render(
                 pipeline_notice_pending_count=pending,
                 pipeline_notice_failed_source_count=failed,
                 rollups_by_scope=_rollups_for_render(conn, week_id),
+                top_n_briefing=top_n_briefing,
             )
-            _finalize(conn, run_id, stats, phase="render")
+            _finalize(
+                conn, run_id, stats, phase="render", out_dir=out_dir
+            )
             return stats
         except Exception as exc:
             log.error(
@@ -1454,8 +1721,13 @@ def run_all(
     db_path: Path | str | None = None,
     out_dir: Path | None = None,
     only_pending_transcripts: bool = False,
+    max_cost_usd: float | None = None,
+    top_n_briefing: int | None = None,
+    force_rebuild_clusters: bool = False,
+    force_rebuild_rollup: bool = False,
 ) -> RunStats:
-    """Execute ingest → dedup → summarize → categorize → rank → render for ``week_id``."""
+    """Execute ingest → dedup → summarize → categorize → rank → rollup → render."""
+    from pipeline.budget import WeekBudget
     from pipeline.config import enabled_sources
 
     init_db(db_path)
@@ -1467,14 +1739,30 @@ def run_all(
         run_id = insert_pipeline_run(conn, week_id=week_id, phase="all")
         conn.commit()
 
+        budget = WeekBudget.from_config(
+            cap_override=max_cost_usd, conn=conn, week_id=week_id
+        )
+        pending_summarize = _count_pending_summarize(
+            conn, week_id=week_id, week_start=week_start, week_end=week_end
+        )
+        budget.set_pre_flight(pending_summarize=pending_summarize)
+
         try:
             log.info(
                 "orchestrator.start",
                 phase="all",
                 only_pending_transcripts=only_pending_transcripts,
+                cap_usd=budget.cap_usd,
             )
             if only_pending_transcripts:
-                _ingest_pending_transcripts(conn, log, stats)
+                _ingest_pending_transcripts(
+                    conn,
+                    log,
+                    stats,
+                    week_id=week_id,
+                    force_rebuild_clusters=force_rebuild_clusters,
+                    force_rebuild_rollup=force_rebuild_rollup,
+                )
             else:
                 sources = enabled_sources()
                 if not sources:
@@ -1485,6 +1773,14 @@ def run_all(
                     week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 )
                 _ingest(sources, conn, log, stats, week_bounds_iso=week_iso)
+
+            if force_rebuild_clusters:
+                delete_clusters_for_week(conn, week_id)
+                conn.commit()
+            if force_rebuild_rollup:
+                delete_rollups_for_week(conn, week_id)
+                conn.commit()
+
             _dedup_week(
                 week_id=week_id,
                 week_start=week_start,
@@ -1500,24 +1796,28 @@ def run_all(
                 conn=conn,
                 log=log,
                 stats=stats,
+                budget=budget,
             )
             _categorize_week_clusters(
                 week_id=week_id,
                 conn=conn,
                 log=log,
                 stats=stats,
+                budget=budget,
             )
             _rank_week(
                 week_id=week_id,
                 conn=conn,
                 log=log,
                 stats=stats,
+                budget=budget,
             )
             _rollup_week(
                 week_id=week_id,
                 conn=conn,
                 log=log,
                 stats=stats,
+                budget=budget,
             )
 
             week_rows = get_items_for_week(
@@ -1542,9 +1842,18 @@ def run_all(
                 pipeline_notice_pending_count=pending,
                 pipeline_notice_failed_source_count=failed,
                 rollups_by_scope=_rollups_for_render(conn, week_id),
+                partial_publish=budget.halted,
+                top_n_briefing=top_n_briefing,
             )
 
-            _finalize(conn, run_id, stats, phase="all")
+            _finalize(
+                conn,
+                run_id,
+                stats,
+                phase="all",
+                budget=budget,
+                out_dir=out_dir,
+            )
             return stats
 
         except Exception as exc:

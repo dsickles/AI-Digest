@@ -135,6 +135,15 @@ header .pipeline-notice {
   font-size: 0.88rem;
   border-radius: 3px;
 }
+header .partial-publish-notice {
+  margin: 0.6rem 0 0;
+  padding: 0.55rem 0.8rem;
+  border-left: 3px solid #8b6914;
+  background: #1a1610;
+  color: #c8b896;
+  font-size: 0.88rem;
+  border-radius: 3px;
+}
 main {
   max-width: 720px;
   margin: 0 auto;
@@ -430,6 +439,12 @@ def _render_pipeline_notice(*, pending: int, failed_sources: int) -> str:
     return f'<p class="pipeline-notice">{body}</p>'
 
 
+def _render_partial_publish_notice() -> str:
+    """D-60 partial-publish header when budget halted mid-run (D-24 plain English)."""
+    copy = html.escape(PARTIAL_PUBLISH_COPY, quote=False)
+    return f'<p class="partial-publish-notice">{copy}</p>'
+
+
 def _effective_category(card: DigestCard) -> str:
     """Resolve section bucket; uncategorized cards fall back to technical."""
     if card.category in CATEGORY_LABELS:
@@ -571,6 +586,8 @@ def render_digest(
     pipeline_notice_pending_count: int = 0,
     pipeline_notice_failed_source_count: int = 0,
     rollups_by_scope: dict[str, object] | None = None,
+    partial_publish: bool = False,
+    top_n_briefing: int | None = None,
 ) -> Path:
     """Write the weekly digest HTML and return the output path.
 
@@ -586,13 +603,18 @@ def render_digest(
 
     from pipeline.config import load_digest_config
 
-    top_n_briefing = load_digest_config().top_n_briefing
+    top_n = top_n_briefing
+    if top_n is None:
+        top_n = load_digest_config().top_n_briefing
     rollups = rollups_by_scope or {}
 
     main_feed, also_seen = _partition_cards(cards)
 
     week_header = _format_week_header(week_start, week_end)
     updated_line = _format_updated(datetime.now(UTC))
+    partial_notice_html = (
+        _render_partial_publish_notice() if partial_publish else ""
+    )
     notice_html = _render_pipeline_notice(
         pending=pipeline_notice_pending_count,
         failed_sources=pipeline_notice_failed_source_count,
@@ -603,9 +625,9 @@ def render_digest(
 
     if main_feed:
         synthesis_html = _render_weekly_synthesis_section(
-            rollups, top_n=top_n_briefing
+            rollups, top_n=top_n
         )
-        briefing_html = _render_briefing_section(main_feed, top_n=top_n_briefing)
+        briefing_html = _render_briefing_section(main_feed, top_n=top_n)
         category_html = _render_category_sections(
             main_feed, rollups_by_scope=rollups
         )
@@ -646,6 +668,7 @@ def render_digest(
   <h1>AI Digest</h1>
   <p class="week-range">{week_header_safe} · {header_count_line}</p>
   <p class="updated">{updated_safe}</p>
+{partial_notice_html}
 {notice_html}
 </header>
 <main>
