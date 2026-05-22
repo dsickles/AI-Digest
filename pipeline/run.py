@@ -94,9 +94,15 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_week_arg(render_cmd)
 
+    dedup_cmd = sub.add_parser(
+        "dedup",
+        help="Cluster same-story items for the week (deterministic).",
+    )
+    _add_week_arg(dedup_cmd)
+
     all_cmd = sub.add_parser(
         "all",
-        help="Run ingest → summarize → render in one pass (default).",
+        help="Run ingest → dedup → summarize → render in one pass (default).",
     )
     _add_week_arg(all_cmd)
     _add_only_pending_transcripts_arg(all_cmd)
@@ -152,6 +158,10 @@ def main(argv: list[str] | None = None) -> int:
             from pipeline.orchestrator import run_render
 
             stats = run_render(week_id)
+        elif command == "dedup":
+            from pipeline.orchestrator import run_dedup
+
+            stats = run_dedup(week_id)
         elif command == "all":
             from pipeline.orchestrator import run_all
 

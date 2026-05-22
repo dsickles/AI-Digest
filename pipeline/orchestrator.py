@@ -29,6 +29,7 @@ from pipeline.week import week_bounds
 from store.db import (
     connect,
     finalize_pipeline_run,
+    get_canonical_item_ids_for_week,
     get_existing_summary,
     get_items_for_week,
     get_pending_transcript_items,
@@ -71,6 +72,8 @@ class RunStats:
     items_degraded: int = 0
     cost_usd_estimate: float = 0.0
     llm_calls: int = 0
+    clusters_created: int = 0
+    items_clustered: int = 0
     errors: list[dict[str, str]] = field(default_factory=list)
     out_path: Path | None = None
     source_stats: dict[str, SourceRunStats] = field(default_factory=dict)
@@ -261,6 +264,22 @@ def _ingest(
     return all_items
 
 
+def _dedup_week(
+    *, week_id: str, week_start: datetime, week_end: datetime, conn, log, stats: RunStats
+) -> int:
+    """Deterministic dedup stage — rebuild clusters for the ISO week (D-67)."""
+    from pipeline.dedup.cluster import run_dedup_for_week
+
+    del week_start, week_end  # week bounds resolved inside cluster engine
+    return run_dedup_for_week(
+        week_id=week_id,
+        conn=conn,
+        log=log,
+        stats=stats,
+        fetch_redirects=False,
+    )
+
+
 def _summarize_week_items(
     *, week_id: str, week_start: datetime, week_end: datetime, conn, log, stats: RunStats
 ) -> dict[str, SummaryResult]:
@@ -273,9 +292,15 @@ def _summarize_week_items(
         week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
     )
 
+    canonical_ids = get_canonical_item_ids_for_week(conn, week_id)
+    if not canonical_ids:
+        canonical_ids = {row["item_id"] for row in rows}
+
     summaries: dict[str, SummaryResult] = {}
     for row in rows:
         item_id = row["item_id"]
+        if item_id not in canonical_ids:
+            continue
         existing = get_existing_summary(conn, item_id, week_id, "summarize_v1")
         if existing is not None:
             summaries[item_id] = SummaryResult(
@@ -432,6 +457,19 @@ def _build_card_from_row(
         transcript_status=transcript_status,
         summary_status=effective_status,
     )
+
+
+def _canonical_rows_for_render(
+    conn,
+    rows,
+    *,
+    week_id: str,
+) -> list:
+    """Keep only canonical cluster representatives (one card per story)."""
+    canonical_ids = get_canonical_item_ids_for_week(conn, week_id)
+    if not canonical_ids:
+        return list(rows)
+    return [row for row in rows if row["item_id"] in canonical_ids]
 
 
 def _build_cards(
@@ -687,6 +725,53 @@ def run_ingest(
             raise
 
 
+def run_dedup(
+    week_id: str,
+    *,
+    db_path: Path | str | None = None,
+) -> RunStats:
+    """Cluster same-story items for ``week_id`` (deterministic, no LLM)."""
+    init_db(db_path)
+    week_start, week_end = week_bounds(week_id)
+    log = logger.bind(week_id=week_id)
+    stats = RunStats(week_id=week_id, phase="dedup")
+
+    with connect(db_path) as conn:
+        run_id = insert_pipeline_run(conn, week_id=week_id, phase="dedup")
+        conn.commit()
+        try:
+            log.info("orchestrator.start", phase="dedup")
+            _dedup_week(
+                week_id=week_id,
+                week_start=week_start,
+                week_end=week_end,
+                conn=conn,
+                log=log,
+                stats=stats,
+            )
+            _finalize(conn, run_id, stats, phase="dedup")
+            return stats
+        except Exception as exc:
+            log.error(
+                "orchestrator.failed",
+                phase="dedup",
+                error=type(exc).__name__,
+                message=str(exc),
+            )
+            stats.errors.append(
+                {"phase": "dedup", "error": f"{type(exc).__name__}: {exc}"}
+            )
+            finalize_pipeline_run(
+                conn,
+                run_id,
+                status="failed",
+                errors_json=json.dumps(stats.errors),
+            )
+            conn.commit()
+            _write_last_run(stats, status="failed")
+            raise
+
+
 def run_summarize(
     week_id: str,
     *,
@@ -759,6 +844,7 @@ def run_render(
                 week_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
             )
+            week_rows = _canonical_rows_for_render(conn, week_rows, week_id=week_id)
             cards = _build_cards_from_db(conn, week_rows, week_id)
             pending, failed = _pipeline_notice_counts(cards=cards, stats=stats)
             stats.out_path = render_digest(
@@ -800,7 +886,7 @@ def run_all(
     out_dir: Path | None = None,
     only_pending_transcripts: bool = False,
 ) -> RunStats:
-    """Execute ingest → summarize → render for ``week_id``."""
+    """Execute ingest → dedup → summarize → render for ``week_id``."""
     from pipeline.config import enabled_sources
 
     init_db(db_path)
@@ -830,6 +916,14 @@ def run_all(
                     week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 )
                 _ingest(sources, conn, log, stats, week_bounds_iso=week_iso)
+            _dedup_week(
+                week_id=week_id,
+                week_start=week_start,
+                week_end=week_end,
+                conn=conn,
+                log=log,
+                stats=stats,
+            )
             summaries = _summarize_week_items(
                 week_id=week_id,
                 week_start=week_start,
@@ -844,6 +938,7 @@ def run_all(
                 week_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
             )
+            week_rows = _canonical_rows_for_render(conn, week_rows, week_id=week_id)
             cards = _build_cards(week_rows, summaries)
             pending, failed = _pipeline_notice_counts(cards=cards, stats=stats)
             stats.out_path = render_digest(
@@ -887,6 +982,7 @@ def run_all(
 __all__ = [
     "RunStats",
     "run_all",
+    "run_dedup",
     "run_ingest",
     "run_render",
     "run_summarize",
