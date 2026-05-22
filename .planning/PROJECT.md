@@ -8,6 +8,10 @@ A personal, fully-automated weekly AI news and information digest delivered as a
 
 **A coherent narrative of "what happened in AI this week" across all my sources — read in 15 minutes instead of 5+ hours of skimming feeds.** If everything else fails, this single weekly experience must work.
 
+## Editorial Principle
+
+**The digest is a collection of known entities and their takes — not anonymous community signal.** Every source in v1 is a named author or publication I chose to follow (a blog, Substack, newsletter, YouTube creator). Community-curated aggregators (Reddit, Hacker News) and anonymous discussion are deliberately *not* part of v1 because they convey crowd signal rather than an author's perspective, and they violate the "voices I trust" framing that makes the weekly read coherent. The "what is the community buzzing about" question is a genuinely different product surface — captured for v2 as a "community pulse" view, distinct from the per-author digest.
+
 ## Requirements
 
 ### Validated
@@ -23,7 +27,6 @@ A personal, fully-automated weekly AI news and information digest delivered as a
 #### Ingestion
 - [ ] Ingest items from a configured list of RSS-friendly blogs / Substacks
 - [ ] Ingest items from configured YouTube channels (transcripts included)
-- [ ] Ingest items from configured Reddit subreddits / Hacker News
 - [ ] Ingest email newsletters via an email→RSS bridge (e.g., Kill the Newsletter or similar)
 - [ ] Sources are hard-coded in config for v1 (a single file I edit by hand)
 
@@ -50,6 +53,7 @@ A personal, fully-automated weekly AI news and information digest delivered as a
 <!-- Explicit boundaries with reasoning to prevent re-adding. -->
 
 - **Multi-user / accounts / auth** — v1 is just for me; hard-coded source list. Future evolution may turn this into a framework where others bring their own sources, but not in v1.
+- **Reddit / Hacker News ingestion (v1)** — Violates the Editorial Principle (known entities and their takes, not anonymous community signal). The value HN/Reddit *would* add is "what's the crowd buzzing about," which is a different product surface — captured as a v2 community-pulse enhancement, not retrofitted into the per-author digest.
 - **Twitter/X ingestion** — Official API is paid (~$100/mo for usable tiers), unofficial scrapers are brittle and TOS-risky. Cost/complexity not justified for v1.
 - **Podcast audio transcription** — RSS gives episode metadata, but summarizing means running Whisper over hours of audio weekly. Significant cost and latency; deferred to v2.
 - **LinkedIn creator ingestion** — No clean ingestion path; not worth the scraping fragility for v1.
@@ -85,6 +89,7 @@ A personal, fully-automated weekly AI news and information digest delivered as a
 | Defer Twitter/X and podcast transcription to v2 | Twitter API cost + scraper fragility; podcast audio transcription is expensive and slow. Both add risk without proportional value to v1 | — Pending |
 | Full archive of past weekly digests (vs. current-only or rolling window) | Cheap to keep, valuable for "remind me what happened in March," reinforces "weekly newspaper" mental model | — Pending |
 | Tech stack TBD by research | I'm a developer but don't want to bias the architecture before seeing what's actually best in 2026 | — Pending |
+| Drop Reddit/HN from v1 ingestion; defer to v2 as "community pulse" | Sources violate the Editorial Principle ("known entities and their takes, not anonymous community signal"); the crowd-aggregation question is a genuinely different product surface that deserves its own treatment, not a forced fit into the per-author digest | Adopted 2026-05-22 during Phase 2 discuss |
 
 ## Evolution
 
@@ -104,4 +109,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-21 after initialization*
+*Last updated: 2026-05-22 — Phase 2 discuss: added Editorial Principle; dropped Reddit/HN from v1 (deferred to v2 community-pulse)*
