@@ -1,0 +1,14 @@
+# Runtime knobs for Phase 3 pipeline (D-43, D-51, D-59, D-60).
+top_n_briefing: 5
+
+dedup:
+  title_fuzzy_threshold: 0.85
+
+pipeline:
+  hard_stop_usd: 2.0
+  meta_reservation_usd: 0.10
+
+models:
+  categorize: gemini-2.5-flash-lite
+  rank: gemini-2.5-flash
+  rollup: gemini-2.5-flash

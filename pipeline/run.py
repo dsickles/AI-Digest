@@ -100,9 +100,15 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_week_arg(dedup_cmd)
 
+    categorize_cmd = sub.add_parser(
+        "categorize",
+        help="Classify story clusters into edtech|business|technical|design.",
+    )
+    _add_week_arg(categorize_cmd)
+
     all_cmd = sub.add_parser(
         "all",
-        help="Run ingest → dedup → summarize → render in one pass (default).",
+        help="Run ingest → dedup → summarize → categorize → render (default).",
     )
     _add_week_arg(all_cmd)
     _add_only_pending_transcripts_arg(all_cmd)
@@ -162,6 +168,10 @@ def main(argv: list[str] | None = None) -> int:
             from pipeline.orchestrator import run_dedup
 
             stats = run_dedup(week_id)
+        elif command == "categorize":
+            from pipeline.orchestrator import run_categorize
+
+            stats = run_categorize(week_id)
         elif command == "all":
             from pipeline.orchestrator import run_all
 

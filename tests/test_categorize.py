@@ -98,13 +98,6 @@ def test_classify_llm_exception_quota() -> None:
     assert classify_llm_exception(RuntimeError("connection reset")) == "api_error"
 
 
-def test_cluster_summaries_table_after_init(apply_schema) -> None:
-    with connect(apply_schema) as conn:
-        conn.execute(
-            "SELECT 1 FROM cluster_summaries LIMIT 0"
-        )
-
-
 def test_get_existing_cluster_summary_skip(apply_schema) -> None:
     week_id = "2026-W21"
     cluster_id = "cluster-1"
@@ -150,3 +143,78 @@ def test_get_existing_cluster_summary_skip(apply_schema) -> None:
         )
     assert existing is not None
     assert existing["category"] == "technical"
+
+
+def test_load_digest_config_top_n() -> None:
+    from pipeline.config import load_digest_config
+
+    cfg = load_digest_config()
+    assert cfg.top_n_briefing == 5
+
+
+def test_categorize_checkpoint_skips_llm_on_second_run(
+    apply_schema, monkeypatch
+) -> None:
+    """Second categorize run performs zero new LLM calls when rows exist."""
+    from pipeline.llm.categorize import CategorizeResult, PROMPT_VERSION
+    from pipeline.orchestrator import RunStats, _categorize_week_clusters
+
+    week_id = "2026-W21"
+    cluster_id = "cluster-1"
+    call_count = {"n": 0}
+
+    def _fake_categorize(**kwargs):
+        call_count["n"] += 1
+        return CategorizeResult(
+            category="technical",
+            category_confidence="0.9",
+            category_status="ok",
+            prompt_version=PROMPT_VERSION,
+            model_id="gemini-2.5-flash-lite",
+            input_tokens=10,
+            output_tokens=5,
+        )
+
+    monkeypatch.setattr(
+        "pipeline.llm.categorize.categorize_cluster",
+        _fake_categorize,
+    )
+
+    with connect(apply_schema) as conn:
+        conn.execute(
+            """
+            INSERT INTO sources (source_id, type, url, display_name, tag)
+            VALUES ('src-1', 'rss', 'https://example.com/feed', 'Test', 'technical')
+            """
+        )
+        conn.execute(
+            """
+            INSERT INTO items (
+                item_id, source_id, external_id, canonical_url, title,
+                publisher, published_at, raw_content, content_hash
+            ) VALUES (
+                'item-1', 'src-1', 'ext-1', 'https://example.com/a',
+                'Title', 'Test', '2026-05-20T12:00:00Z', 'body', 'hash'
+            )
+            """
+        )
+        insert_story_cluster(
+            conn,
+            cluster_id=cluster_id,
+            week_id=week_id,
+            canonical_item_id="item-1",
+            canonical_url="https://example.com/a",
+            title_normalized="title",
+        )
+        conn.commit()
+
+        import structlog
+
+        log = structlog.get_logger()
+        stats = RunStats(week_id=week_id, phase="categorize")
+        _categorize_week_clusters(week_id=week_id, conn=conn, log=log, stats=stats)
+        assert call_count["n"] == 1
+
+        stats2 = RunStats(week_id=week_id, phase="categorize")
+        _categorize_week_clusters(week_id=week_id, conn=conn, log=log, stats=stats2)
+        assert call_count["n"] == 1

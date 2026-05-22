@@ -30,11 +30,16 @@ from store.db import (
     connect,
     finalize_pipeline_run,
     get_canonical_item_ids_for_week,
+    get_cluster_categories_for_week,
     get_cluster_members,
+    get_clusters_for_week,
+    get_existing_cluster_summary,
     get_existing_summary,
     get_items_for_week,
+    get_last_known_cluster_category,
     get_pending_transcript_items,
     init_db,
+    insert_cluster_summary,
     insert_item_summary,
     insert_pipeline_run,
     update_item_transcript,
@@ -75,6 +80,7 @@ class RunStats:
     llm_calls: int = 0
     clusters_created: int = 0
     items_clustered: int = 0
+    categorize_llm_calls: int = 0
     errors: list[dict[str, str]] = field(default_factory=list)
     out_path: Path | None = None
     source_stats: dict[str, SourceRunStats] = field(default_factory=dict)
@@ -384,6 +390,102 @@ def _summarize_week_items(
     return summaries
 
 
+def _source_tags_by_id(conn) -> dict[str, str | None]:
+    """Map source_id → YAML tag for categorize fallback (D-48, D-49)."""
+    from pipeline.config import load_sources
+
+    tags: dict[str, str | None] = {}
+    for source in load_sources():
+        tags[source.id] = source.tag
+    rows = conn.execute("SELECT source_id, tag FROM sources").fetchall()
+    for row in rows:
+        if row["source_id"] not in tags:
+            tags[row["source_id"]] = row["tag"]
+    return tags
+
+
+def _categorize_week_clusters(
+    *, week_id: str, conn, log, stats: RunStats
+) -> None:
+    """Item-level categorize checkpoint — skip rows already persisted (D-67)."""
+    from pipeline.llm.categorize import PROMPT_VERSION, categorize_cluster
+    from pipeline.llm.summarize import GeminiKeyMissing
+
+    clusters = get_clusters_for_week(conn, week_id)
+    if not clusters:
+        log.info("categorize.no_clusters")
+        return
+
+    source_tags = _source_tags_by_id(conn)
+
+    for cluster in clusters:
+        cluster_id = cluster["cluster_id"]
+        existing = get_existing_cluster_summary(
+            conn, cluster_id, week_id, PROMPT_VERSION
+        )
+        if existing is not None:
+            continue
+
+        item_row = conn.execute(
+            "SELECT * FROM items WHERE item_id = ?",
+            (cluster["canonical_item_id"],),
+        ).fetchone()
+        if item_row is None:
+            log.warning(
+                "categorize.missing_canonical_item",
+                cluster_id=cluster_id,
+                item_id=cluster["canonical_item_id"],
+            )
+            continue
+
+        summary_row = get_existing_summary(
+            conn, item_row["item_id"], week_id, "summarize_v1"
+        )
+        summary_text = (summary_row["tldr"] if summary_row else None) or ""
+        source_tag = source_tags.get(item_row["source_id"])
+        last_known = get_last_known_cluster_category(
+            conn, cluster_id, exclude_prompt_version=PROMPT_VERSION
+        )
+
+        try:
+            log.info("categorize_start", cluster_id=cluster_id)
+            result = categorize_cluster(
+                title=item_row["title"],
+                summary_text=summary_text,
+                source_tag=source_tag,
+                cluster_id=cluster_id,
+                last_known_category=last_known,  # type: ignore[arg-type]
+            )
+        except GeminiKeyMissing as exc:
+            log.error("categorize.key_missing", error=str(exc))
+            stats.errors.append(
+                {
+                    "phase": "categorize",
+                    "error": "GEMINI_API_KEY not set",
+                }
+            )
+            return
+
+        if result.input_tokens is not None or result.output_tokens is not None:
+            stats.categorize_llm_calls += 1
+            stats.llm_calls += 1
+
+        insert_cluster_summary(
+            conn,
+            cluster_id=cluster_id,
+            week_id=week_id,
+            category=result.category,
+            category_confidence=result.category_confidence,
+            category_status=result.category_status,
+            prompt_version=result.prompt_version,
+            model_id=result.model_id,
+        )
+        if result.cost_usd_estimate is not None:
+            stats.cost_usd_estimate += result.cost_usd_estimate
+
+        conn.commit()
+
+
 def _row_get(row, column: str, default=None):
     """Sqlite3.Row.get-style helper — Row has no .get() in Python's sqlite3."""
     try:
@@ -461,6 +563,7 @@ def _build_card_from_row(
     summary_status: str | None,
     source_type: str | None = None,
     also_covered: tuple[AlsoCoveredMember, ...] = (),
+    category: str | None = None,
 ) -> DigestCard:
     """Shared card factory used by both LLM and DB-only render paths."""
     resolved_source_type = source_type or _source_type_for(row)
@@ -482,6 +585,7 @@ def _build_card_from_row(
         transcript_status=transcript_status,
         summary_status=effective_status,
         also_covered=also_covered,
+        category=category,
     )
 
 
@@ -506,6 +610,7 @@ def _build_cards(
     summaries: dict[str, SummaryResult],
 ) -> list[DigestCard]:
     """Turn item rows + summaries into render-ready cards (newest first)."""
+    category_map = get_cluster_categories_for_week(conn, week_id)
     cards: list[DigestCard] = []
     for row in rows:
         result = summaries.get(row["item_id"])
@@ -517,6 +622,7 @@ def _build_cards(
                 summary_confidence=result.summary_confidence if result else "unavailable",
                 summary_status=result.summary_status if result else None,
                 also_covered=also_covered,
+                category=category_map.get(row["item_id"]),
             )
         )
     cards.sort(key=lambda c: c.published_at, reverse=True)
@@ -525,6 +631,7 @@ def _build_cards(
 
 def _build_cards_from_db(conn, rows, week_id: str) -> list[DigestCard]:
     """Build render cards from SQLite only — no LLM (D-20 render path)."""
+    category_map = get_cluster_categories_for_week(conn, week_id)
     cards: list[DigestCard] = []
     for row in rows:
         existing = get_existing_summary(
@@ -542,6 +649,7 @@ def _build_cards_from_db(conn, rows, week_id: str) -> list[DigestCard]:
                     _row_get(existing, "summary_status") if existing else None
                 ),
                 also_covered=also_covered,
+                category=category_map.get(row["item_id"]),
             )
         )
     cards.sort(key=lambda c: c.published_at, reverse=True)
@@ -858,6 +966,51 @@ def run_summarize(
             raise
 
 
+def run_categorize(
+    week_id: str,
+    *,
+    db_path: Path | str | None = None,
+) -> RunStats:
+    """Classify story clusters into edtech|business|technical|design."""
+    init_db(db_path)
+    log = logger.bind(week_id=week_id)
+    stats = RunStats(week_id=week_id, phase="categorize")
+
+    with connect(db_path) as conn:
+        run_id = insert_pipeline_run(conn, week_id=week_id, phase="categorize")
+        conn.commit()
+        try:
+            log.info("orchestrator.start", phase="categorize")
+            _categorize_week_clusters(
+                week_id=week_id,
+                conn=conn,
+                log=log,
+                stats=stats,
+            )
+            _finalize(conn, run_id, stats, phase="categorize")
+            return stats
+        except Exception as exc:
+            log.error(
+                "orchestrator.failed",
+                phase="categorize",
+                error=type(exc).__name__,
+                message=str(exc),
+            )
+            stats.errors.append(
+                {"phase": "categorize", "error": f"{type(exc).__name__}: {exc}"}
+            )
+            finalize_pipeline_run(
+                conn,
+                run_id,
+                status="failed",
+                cost_usd_estimate=stats.cost_usd_estimate,
+                errors_json=json.dumps(stats.errors),
+            )
+            conn.commit()
+            _write_last_run(stats, status="failed")
+            raise
+
+
 def run_render(
     week_id: str,
     *,
@@ -922,7 +1075,7 @@ def run_all(
     out_dir: Path | None = None,
     only_pending_transcripts: bool = False,
 ) -> RunStats:
-    """Execute ingest → dedup → summarize → render for ``week_id``."""
+    """Execute ingest → dedup → summarize → categorize → render for ``week_id``."""
     from pipeline.config import enabled_sources
 
     init_db(db_path)
@@ -964,6 +1117,12 @@ def run_all(
                 week_id=week_id,
                 week_start=week_start,
                 week_end=week_end,
+                conn=conn,
+                log=log,
+                stats=stats,
+            )
+            _categorize_week_clusters(
+                week_id=week_id,
                 conn=conn,
                 log=log,
                 stats=stats,
@@ -1023,6 +1182,7 @@ def run_all(
 __all__ = [
     "RunStats",
     "run_all",
+    "run_categorize",
     "run_dedup",
     "run_ingest",
     "run_render",

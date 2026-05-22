@@ -19,6 +19,7 @@ import yaml
 from pydantic import BaseModel, Field, field_validator
 
 DEFAULT_SOURCES_PATH = Path("config") / "sources.yaml"
+DEFAULT_DIGEST_PATH = Path("config") / "digest.yaml"
 
 _KEBAB_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
 _CHANNEL_ID_RE = re.compile(r"^UC[A-Za-z0-9_-]{22}$")
@@ -111,6 +112,30 @@ class SourcesFile(BaseModel):
     sources: list[SourceConfig]
 
 
+class DedupConfig(BaseModel):
+    title_fuzzy_threshold: float = 0.85
+
+
+class PipelineBudgetConfig(BaseModel):
+    hard_stop_usd: float = 2.0
+    meta_reservation_usd: float = 0.10
+
+
+class ModelsConfig(BaseModel):
+    categorize: str = "gemini-2.5-flash-lite"
+    rank: str = "gemini-2.5-flash"
+    rollup: str = "gemini-2.5-flash"
+
+
+class DigestConfig(BaseModel):
+    """Typed loader for ``config/digest.yaml`` runtime knobs."""
+
+    top_n_briefing: int = 5
+    dedup: DedupConfig = Field(default_factory=DedupConfig)
+    pipeline: PipelineBudgetConfig = Field(default_factory=PipelineBudgetConfig)
+    models: ModelsConfig = Field(default_factory=ModelsConfig)
+
+
 def load_sources(path: Path | str | None = None) -> list[SourceConfig]:
     """Parse and validate ``config/sources.yaml``.
 
@@ -127,15 +152,30 @@ def load_sources(path: Path | str | None = None) -> list[SourceConfig]:
     return parsed.sources
 
 
+def load_digest_config(path: Path | str | None = None) -> DigestConfig:
+    """Parse and validate ``config/digest.yaml``."""
+    cfg_path = Path(path) if path is not None else DEFAULT_DIGEST_PATH
+    if not cfg_path.exists():
+        raise FileNotFoundError(f"digest config not found: {cfg_path}")
+    raw = yaml.safe_load(cfg_path.read_text(encoding="utf-8"))
+    if raw is None:
+        raise ValueError(f"{cfg_path} must contain YAML configuration")
+    return DigestConfig.model_validate(raw)
+
+
 def enabled_sources(path: Path | str | None = None) -> list[SourceConfig]:
     """Return only sources flagged ``enabled: true`` (preserving file order)."""
     return [s for s in load_sources(path) if s.enabled]
 
 
 __all__ = [
+    "DedupConfig",
+    "DigestConfig",
+    "PipelineBudgetConfig",
     "RssSource",
     "SourceConfig",
     "YoutubeSource",
     "enabled_sources",
+    "load_digest_config",
     "load_sources",
 ]
