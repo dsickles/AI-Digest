@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: phase_complete
-stopped_at: Phase 2 complete (4/4 plans executed, verified, 68/68 pytest); ready for Phase 3 discuss
-last_updated: "2026-05-22T11:55:00.000Z"
-last_activity: 2026-05-22 -- Phase 2 execute-phase complete inline (no subagents); VERIFICATION.md committed
+status: context_gathered
+stopped_at: Phase 3 context gathered (8 areas discussed; 29 decisions D-43..D-71); ready for /gsd-plan-phase 3
+last_updated: "2026-05-22T18:00:00.000Z"
+last_activity: 2026-05-22 -- Phase 3 discuss-phase complete; 03-CONTEXT.md + 03-DISCUSSION-LOG.md written
 progress:
   total_phases: 5
   completed_phases: 2
@@ -97,8 +97,7 @@ Recent decisions affecting current work:
 
 | Todo | Surfaces in | Captured | Note |
 |------|-------------|----------|------|
-| **Decide Top N + max-cards-per-category knobs for Phase 3 ranking** | `/gsd-discuss-phase 3` | 2026-05-21 (Plan 01-01 review) | Without explicit limits, the ranker has no concrete target. User raised during Plan 01-01 review when discussing digest length scaling. Concrete proposals to evaluate: `top_n_briefing: 10`, `max_cards_per_category: 15`, configurable via `config/digest.yaml`. |
-| **Gemini billing decision — DEFERRED until scale data exists** | Phase 4 readiness review OR earlier if a single weekly run exceeds ~30 quota-blocked items | 2026-05-22 (post Phase 2 visual UAT) | User explicit: "I'm not able to estimate actually the scale of items quite yet. we're gonna grow into that because that is the vertical approach. we don't know the long-term plan for how many items, and so we really can't make adequate billing decisions at this time." Acceptable to proceed on free tier (20 req/day) because LOCKED-01 quota-exhausted carve-out keeps the UX coherent (in-place "couldn't be generated this week" card). Re-evaluate when the source catalog stabilizes AND Phase 3 dedup is shipped — both should reduce per-run LLM volume. Decision inputs needed: actual items/week post-dedup, % items hitting 429 in a typical run, perceived reader impact. |
+| **Gemini billing decision — DEFERRED, trigger updated 2026-05-22 by Phase 3 discuss D-62** | Post-Phase-3 (after 1–2 live weeks of observed post-dedup volume) | 2026-05-22 (post Phase 2 visual UAT); updated 2026-05-22 (Phase 3 discuss D-62) | Original deferral stands. Updated trigger: re-evaluate after 1–2 live Phase 3 weeks of post-dedup observation. Stay on free tier (20 req/day) through Phase 3 build + first 1–2 live runs. LOCKED-01 quota_exhausted carve-out keeps the UX coherent in the interim. Decision inputs needed: actual items/week post-dedup, % items hitting 429 in a typical post-dedup run, perceived reader impact from quota-exhausted footer items. |
 | **Live three-feed E2E re-run** | Manual / Plan 01-02 verification | 2026-05-21 (Plan 01-02) | Run `python -m pipeline.run all` twice outside sandbox; confirm item count stable across re-ingest for all three D-01 feeds. |
 | **Live backfill UAT** | Manual / Plan 01-04 verification | 2026-05-21 (Plan 01-04) | Run `python -m pipeline.run render --week 2026-W19` outside sandbox; confirm `out/digest-2026-W19.html` produced. |
 | **Browser digest UAT** | Manual / Plan 01-05 | 2026-05-21 (Plan 01-05) | Open `out/digest-*.html`; confirm dark theme, Week of header, badges, rel=noopener links. |
@@ -108,7 +107,7 @@ Recent decisions affecting current work:
 
 - YouTube transcript reliability from GHA cloud IPs — **shipped in Phase 2 via D-23** (cloud→residential catch-up via `--only-pending-transcripts`; only path that may set `missing`); residual risk is operational and tracked in `02-UAT.md` manual UAT test 5
 - Heartbeat provider (Healthchecks.io vs email) — decide during Phase 5 planning
-- `gsd-sdk` / Claude-Agent-SDK incompatibility with Cursor — Phase 2 executed inline (no subagents); revisit before Phase 3 to decide whether to switch CLIs or continue inline
+- `gsd-sdk` / Claude-Agent-SDK incompatibility with Cursor — **resolved 2026-05-22 by Phase 3 discuss D-71**: Phase 3 continues inline execution (Phase 2 was 30% faster per plan than Phase 1 subagent mode); pipeline deliverable stays Cursor-independent; Cursor `Task` available for parallel read-only work (research, audits) if needed
 
 ## Deferred Items
 
@@ -120,7 +119,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-22T13:30:00.000Z
-Stopped at: Phase 2 close-out complete — 4/4 plans executed; 71/71 pytest after post-UAT corrections; W21 live UAT run (6 passed / 2 pending fault-injection); LOCKED-DIRECTIVES.md hard-gate established; VERIFICATION.md amended with Post-UAT Corrections section. Ready for Phase 3.
-Resume file: .planning/phases/02-expand-ingestion/02-VERIFICATION.md (phase exit, post-UAT amended) → next start point is `/gsd-discuss-phase 3`
-Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection); Gemini billing decision (after Phase 3 dedup ships).
+Last session: 2026-05-22T18:00:00.000Z
+Stopped at: Phase 3 discuss-phase complete — 8 areas discussed end-to-end; 29 decisions captured (D-43..D-71); 03-CONTEXT.md (`dedup-before-LLM`, hierarchical rollup, $2 cap with reservation, tiered Flash for meta, hybrid checkpointing, extended pipeline_report.json) + 03-DISCUSSION-LOG.md written. Ready for Phase 3 planning.
+Resume file: .planning/phases/03-ai-quality/03-CONTEXT.md → next start point is `/gsd-plan-phase 3`
+Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Gemini billing decision (trigger updated to "after 1–2 live Phase 3 weeks"); Future UAT Watch list (categorization accuracy, Top N ranking, rollup voice/length, partial-publish at $2 cap — see 03-CONTEXT.md `<deferred>`).
