@@ -1,15 +1,17 @@
 # AI Digest source registry — checked into git per INGEST-01.
 #
-# Phase 1 ships all three D-01 seed sources (CONTEXT.md). Phase 2 adds
-# YouTube, Reddit/HN, and email→RSS adapters.
+# Phase 1 shipped the three D-01 RSS seeds. Phase 2 adds two YouTube channels
+# (D-29) here in plan 02-01; three additional RSS publishers (D-33) land in
+# plan 02-02 so this catalog reaches the eight-source target.
 #
-# Schema (per pipeline.config.SourceConfig):
-#   id           Stable kebab-case identifier (used as items.source_id)
-#   type         Adapter type — only "rss" exists in Phase 1
-#   url          Feed URL (Atom or RSS 2.0)
-#   display_name Human-readable publisher name shown in the digest
-#   tag          Topic hint for later categorization (Phase 3) — not stored on items (D-02)
-#   enabled      true → fetched on every run; false → skipped silently
+# Schema (per pipeline.config.SourceConfig — D-36 discriminated union):
+#   id            Stable kebab-case identifier (used as items.source_id)
+#   type          Adapter type — "rss" (Phase 1) or "youtube" (Phase 2 D-27)
+#   url           Feed URL (RSS rows only)
+#   channel_id    YouTube UC… channel handle (YouTube rows only — feed URL derived)
+#   display_name  Human-readable publisher name shown in the digest
+#   tag           Topic hint for later categorization (Phase 3) — not stored on items (D-02)
+#   enabled       true → fetched on every run; false → skipped silently
 sources:
   - id: simon-willison
     type: rss
@@ -27,5 +29,17 @@ sources:
     type: rss
     url: https://importai.substack.com/feed
     display_name: Import AI
+    tag: business
+    enabled: true
+  - id: how-i-ai
+    type: youtube
+    channel_id: UCRYY7IEbkHLH_ScJCu9eWDQ
+    display_name: How I AI
+    tag: technical
+    enabled: true
+  - id: nate-b-jones
+    type: youtube
+    channel_id: UC0C-17n9iuUQPylguM1d-lQ
+    display_name: AI News & Strategy Daily | Nate B Jones
     tag: business
     enabled: true

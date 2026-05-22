@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 import httpx
 import pytest
 
-from pipeline.config import SourceConfig
+from pipeline.config import RssSource
 from pipeline.content_enrich import EnrichableItem, prepare_input_text
 from pipeline.llm.summarize import (
     PROMPT_VERSION,
@@ -176,7 +176,7 @@ def test_prepare_input_text_uses_trafilatura_extract(
 
 def test_thin_content_persisted_with_unavailable_confidence(apply_schema) -> None:
     """DB row stores summary_confidence unavailable for thin_content sentinel."""
-    source = SourceConfig(
+    source = RssSource(
         id="test-source",
         type="rss",
         url="https://example.com/feed",

@@ -5,13 +5,13 @@ import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
 
-from pipeline.config import SourceConfig
+from pipeline.config import RssSource
 from pipeline.models import NormalizedItem
 from store.db import connect, upsert_item, upsert_source
 
 
-def _make_source() -> SourceConfig:
-    return SourceConfig(
+def _make_source() -> RssSource:
+    return RssSource(
         id="test-source",
         type="rss",
         url="https://example.com/feed",

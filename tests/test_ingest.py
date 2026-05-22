@@ -11,7 +11,7 @@ import pytest
 
 from pipeline.adapters.base import FetchError
 from pipeline.adapters.rss import RssAdapter, _derive_external_id
-from pipeline.config import SourceConfig
+from pipeline.config import RssSource, SourceConfig
 from pipeline.models import NormalizedItem
 from pipeline.orchestrator import RunStats, _ingest
 from store.db import connect, init_db, upsert_source
@@ -19,8 +19,8 @@ from store.db import connect, init_db, upsert_source
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "feeds"
 
 
-def _source(source_id: str, *, url: str = "https://example.com/feed") -> SourceConfig:
-    return SourceConfig(
+def _source(source_id: str, *, url: str = "https://example.com/feed") -> RssSource:
+    return RssSource(
         id=source_id,
         type="rss",
         url=url,

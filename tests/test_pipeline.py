@@ -7,15 +7,15 @@ from pathlib import Path
 import pytest
 import structlog
 
-from pipeline.config import SourceConfig
+from pipeline.config import RssSource
 from pipeline.llm.summarize import SummaryResult
 from pipeline.models import NormalizedItem
 from pipeline.orchestrator import RunStats, _ingest, run_all
 from store.db import connect, fetchone, upsert_source
 
 
-def _source(source_id: str) -> SourceConfig:
-    return SourceConfig(
+def _source(source_id: str) -> RssSource:
+    return RssSource(
         id=source_id,
         type="rss",
         url="https://example.com/feed",
