@@ -91,7 +91,7 @@ Recent decisions affecting current work:
 - **02-04:** Only the catch-up path (`catch_up=True`) may flip `TranscriptsDisabled` to `missing` — cloud ingest never sets `missing`
 - **02-04:** `YoutubeAdapter.__init__` resolves default `transcript_fetcher` at call time via module lookup so tests can monkeypatch `_transcript_text` globally
 - **02-post-UAT (2026-05-22):** **LOCKED** in PROJECT.md: thin / unsummarizable items go to `<aside id="also-seen">` footer with outbound links only; quota-exhausted / 429 / RESOURCE_EXHAUSTED is the ONLY carve-out that earns an in-place "summary couldn't be generated this week" card. Supersedes Phase 1 D-05 and Phase 2 D-25 (both were renderer-design mistakes I introduced in plans; the locked rule overrides any future phase plan). Backed by `item_summaries.summary_status` column (migration 003), `_classify_llm_exception` in summarize.py, and `_partition_cards` in render/html.py.
-- **02-post-UAT:** `get_items_for_week` was missing the JOIN on `sources.type`, which silently hid the D-30 video indicator from every render. Fixed by adding `sources.type AS source_type` to the SELECT and adding `tests/test_render_e2e.py` to exercise the orchestrator → store → renderer path end-to-end (the gap that let the bug ship).
+- **03-02:** Shared `classify_llm_exception` in `pipeline/llm/exceptions.py`; categorize uses Flash-Lite + source-tag D-49 fallback; digest HTML grouped by CATEGORY_LABELS sections; `config/digest.yaml` loader for runtime knobs
 
 ### Pending Todos
 
@@ -119,7 +119,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-22T18:54:51.172Z
-Stopped at: Phase 3 UI-SPEC approved
+Last session: 2026-05-22T19:35:00Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
 Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Gemini billing decision (trigger updated to "after 1–2 live Phase 3 weeks"); Future UAT Watch list (categorization accuracy, Top N ranking, rollup voice/length, partial-publish at $2 cap — see 03-CONTEXT.md `<deferred>`).
