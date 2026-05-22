@@ -53,3 +53,20 @@ CREATE TABLE IF NOT EXISTS cluster_ranks (
 );
 
 CREATE INDEX IF NOT EXISTS idx_cluster_ranks_week ON cluster_ranks(week_id);
+
+CREATE TABLE IF NOT EXISTS weekly_rollups (
+    rollup_id             TEXT PRIMARY KEY,
+    week_id               TEXT NOT NULL,
+    scope                 TEXT NOT NULL,
+    narrative_md          TEXT,
+    rollup_status         TEXT,
+    prompt_version        TEXT NOT NULL,
+    model_id              TEXT NOT NULL,
+    input_token_count     INTEGER,
+    output_token_count    INTEGER,
+    cost_usd_estimate     REAL,
+    created_at            TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    UNIQUE (week_id, scope, prompt_version)
+);
+
+CREATE INDEX IF NOT EXISTS idx_weekly_rollups_week ON weekly_rollups(week_id);

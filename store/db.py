@@ -668,6 +668,100 @@ def get_rank_positions_for_week(
     return {row["canonical_item_id"]: row["rank_position"] for row in db_rows}
 
 
+def get_rollup(
+    conn: sqlite3.Connection,
+    week_id: str,
+    scope: str,
+    prompt_version: str,
+) -> sqlite3.Row | None:
+    """Look up one ``weekly_rollups`` row for checkpoint skip (PIPELINE-05)."""
+    return conn.execute(
+        """
+        SELECT *
+          FROM weekly_rollups
+         WHERE week_id = ? AND scope = ? AND prompt_version = ?
+        """,
+        (week_id, scope, prompt_version),
+    ).fetchone()
+
+
+def get_rollups_for_week(
+    conn: sqlite3.Connection,
+    week_id: str,
+) -> list[sqlite3.Row]:
+    """Return all rollup rows for a week (render reads ``narrative_md`` only)."""
+    return conn.execute(
+        """
+        SELECT *
+          FROM weekly_rollups
+         WHERE week_id = ?
+         ORDER BY scope ASC
+        """,
+        (week_id,),
+    ).fetchall()
+
+
+def insert_weekly_rollup(
+    conn: sqlite3.Connection,
+    *,
+    week_id: str,
+    scope: str,
+    narrative_md: str | None,
+    rollup_status: str | None,
+    prompt_version: str,
+    model_id: str,
+    input_token_count: int | None = None,
+    output_token_count: int | None = None,
+    cost_usd_estimate: float | None = None,
+) -> str:
+    """Insert a ``weekly_rollups`` row and return ``rollup_id``."""
+    rollup_id = uuid.uuid4().hex
+    conn.execute(
+        """
+        INSERT INTO weekly_rollups (
+            rollup_id, week_id, scope, narrative_md, rollup_status,
+            prompt_version, model_id, input_token_count, output_token_count,
+            cost_usd_estimate
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            rollup_id,
+            week_id,
+            scope,
+            narrative_md,
+            rollup_status,
+            prompt_version,
+            model_id,
+            input_token_count,
+            output_token_count,
+            cost_usd_estimate,
+        ),
+    )
+    return rollup_id
+
+
+def delete_rollups_for_week(
+    conn: sqlite3.Connection,
+    week_id: str,
+    *,
+    prompt_version: str | None = None,
+) -> None:
+    """Remove rollup rows for a week (stage-level rebuild)."""
+    if prompt_version:
+        conn.execute(
+            """
+            DELETE FROM weekly_rollups
+             WHERE week_id = ? AND prompt_version = ?
+            """,
+            (week_id, prompt_version),
+        )
+    else:
+        conn.execute(
+            "DELETE FROM weekly_rollups WHERE week_id = ?",
+            (week_id,),
+        )
+
+
 def get_last_known_cluster_category(
     conn: sqlite3.Connection,
     cluster_id: str,
