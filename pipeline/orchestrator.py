@@ -40,11 +40,14 @@ from store.db import (
     get_pending_transcript_items,
     get_rank_positions_for_week,
     get_ranks_for_week,
+    get_rollup,
+    get_rollups_for_week,
     init_db,
     insert_cluster_ranks_batch,
     insert_cluster_summary,
     insert_item_summary,
     insert_pipeline_run,
+    insert_weekly_rollup,
     update_item_transcript,
     update_source_health,
     upsert_item,
@@ -85,6 +88,8 @@ class RunStats:
     items_clustered: int = 0
     categorize_llm_calls: int = 0
     rank_llm_calls: int = 0
+    rollup_llm_calls: int = 0
+    rollup_cost_usd: float = 0.0
     errors: list[dict[str, str]] = field(default_factory=list)
     out_path: Path | None = None
     source_stats: dict[str, SourceRunStats] = field(default_factory=dict)
@@ -584,6 +589,187 @@ def _rank_week(*, week_id: str, conn, log, stats: RunStats) -> None:
     for row in results:
         if row.cost_usd_estimate is not None:
             stats.cost_usd_estimate += row.cost_usd_estimate
+
+    conn.commit()
+
+
+def _load_cluster_rollup_inputs_by_category(
+    conn, week_id: str
+) -> dict[str, list]:
+    """Build per-category ranked cluster inputs for mini rollups."""
+    from pipeline.llm.categorize import PROMPT_VERSION as CATEGORIZE_VERSION
+    from pipeline.llm.rank import PROMPT_VERSION as RANK_VERSION
+    from pipeline.llm.rollup import ClusterRollupInput
+
+    clusters = get_clusters_for_week(conn, week_id)
+    if not clusters:
+        return {}
+
+    rank_rows = {
+        row["cluster_id"]: row
+        for row in get_ranks_for_week(conn, week_id, RANK_VERSION)
+    }
+    by_category: dict[str, list[ClusterRollupInput]] = {
+        "edtech": [],
+        "business": [],
+        "technical": [],
+        "design": [],
+    }
+
+    for cluster in clusters:
+        cluster_id = cluster["cluster_id"]
+        rank_row = rank_rows.get(cluster_id)
+        if rank_row is None:
+            continue
+
+        summary_row = get_existing_cluster_summary(
+            conn, cluster_id, week_id, CATEGORIZE_VERSION
+        )
+        if summary_row is None:
+            continue
+        category = summary_row["category"]
+        if category not in by_category:
+            continue
+
+        item_row = conn.execute(
+            "SELECT * FROM items WHERE item_id = ?",
+            (cluster["canonical_item_id"],),
+        ).fetchone()
+        if item_row is None:
+            continue
+
+        tldr_row = get_existing_summary(
+            conn, item_row["item_id"], week_id, "summarize_v1"
+        )
+        summary_text = (tldr_row["tldr"] if tldr_row else None) or ""
+        by_category[category].append(
+            ClusterRollupInput(
+                cluster_id=cluster_id,
+                title=item_row["title"],
+                summary_text=summary_text,
+                rank_position=int(rank_row["rank_position"]),
+            )
+        )
+
+    return by_category
+
+
+def _record_rollup_result(
+    conn,
+    *,
+    week_id: str,
+    scope: str,
+    result,
+    stats: RunStats,
+) -> None:
+    """Persist one rollup row and update RunStats counters."""
+    if result.input_tokens is not None or result.output_tokens is not None:
+        stats.rollup_llm_calls += 1
+        stats.llm_calls += 1
+    insert_weekly_rollup(
+        conn,
+        week_id=week_id,
+        scope=scope,
+        narrative_md=result.narrative_md,
+        rollup_status=result.rollup_status,
+        prompt_version=result.prompt_version,
+        model_id=result.model_id,
+        input_token_count=result.input_tokens,
+        output_token_count=result.output_tokens,
+        cost_usd_estimate=result.cost_usd_estimate,
+    )
+    if result.cost_usd_estimate is not None:
+        stats.cost_usd_estimate += result.cost_usd_estimate
+        stats.rollup_cost_usd += result.cost_usd_estimate
+
+
+def _rollup_week(*, week_id: str, conn, log, stats: RunStats) -> None:
+    """Stage-level rollup checkpoint — up to five LLM calls per week (D-67)."""
+    from pipeline.llm.rollup import (
+        CATEGORY_ORDER,
+        CATEGORY_PROMPT_VERSION,
+        WEEKLY_PROMPT_VERSION,
+        rollup_category,
+        rollup_weekly,
+        scope_for_category,
+    )
+    from pipeline.llm.summarize import GeminiKeyMissing
+
+    by_category = _load_cluster_rollup_inputs_by_category(conn, week_id)
+    mini_paragraphs: dict[str, str] = {}
+
+    for category in CATEGORY_ORDER:
+        scope = scope_for_category(category)
+        existing = get_rollup(conn, week_id, scope, CATEGORY_PROMPT_VERSION)
+        if existing:
+            if existing["rollup_status"] == "ok" and existing["narrative_md"]:
+                mini_paragraphs[category] = existing["narrative_md"]
+            log.info("rollup_category.skip_existing", scope=scope)
+            continue
+
+        clusters = by_category.get(category, [])
+        if not clusters:
+            log.info("rollup_category.no_clusters", category=category)
+            continue
+
+        try:
+            log.info(
+                "rollup_category_start",
+                category=category,
+                cluster_count=len(clusters),
+            )
+            result = rollup_category(
+                week_id=week_id,
+                category=category,
+                clusters=clusters,
+            )
+        except GeminiKeyMissing as exc:
+            log.error("rollup.key_missing", error=str(exc))
+            stats.errors.append(
+                {
+                    "phase": "rollup",
+                    "error": "GEMINI_API_KEY not set",
+                }
+            )
+            return
+
+        _record_rollup_result(
+            conn,
+            week_id=week_id,
+            scope=scope,
+            result=result,
+            stats=stats,
+        )
+        if result.rollup_status == "ok" and result.narrative_md:
+            mini_paragraphs[category] = result.narrative_md
+
+    existing_weekly = get_rollup(conn, week_id, "weekly", WEEKLY_PROMPT_VERSION)
+    if existing_weekly:
+        log.info("rollup_weekly.skip_existing")
+    else:
+        try:
+            log.info("rollup_weekly_start")
+            weekly_result = rollup_weekly(
+                week_id=week_id,
+                mini_paragraphs=mini_paragraphs,  # type: ignore[arg-type]
+            )
+        except GeminiKeyMissing as exc:
+            log.error("rollup.key_missing", error=str(exc))
+            stats.errors.append(
+                {
+                    "phase": "rollup",
+                    "error": "GEMINI_API_KEY not set",
+                }
+            )
+            return
+
+        _record_rollup_result(
+            conn,
+            week_id=week_id,
+            scope="weekly",
+            result=weekly_result,
+            stats=stats,
+        )
 
     conn.commit()
 
@@ -1159,6 +1345,51 @@ def run_rank(
             raise
 
 
+def run_rollup(
+    week_id: str,
+    *,
+    db_path: Path | str | None = None,
+) -> RunStats:
+    """Run hierarchical weekly rollups (up to five LLM calls)."""
+    init_db(db_path)
+    log = logger.bind(week_id=week_id)
+    stats = RunStats(week_id=week_id, phase="rollup")
+
+    with connect(db_path) as conn:
+        run_id = insert_pipeline_run(conn, week_id=week_id, phase="rollup")
+        conn.commit()
+        try:
+            log.info("orchestrator.start", phase="rollup")
+            _rollup_week(week_id=week_id, conn=conn, log=log, stats=stats)
+            _finalize(conn, run_id, stats, phase="rollup")
+            return stats
+        except Exception as exc:
+            log.error(
+                "orchestrator.failed",
+                phase="rollup",
+                error=type(exc).__name__,
+                message=str(exc),
+            )
+            stats.errors.append(
+                {"phase": "rollup", "error": f"{type(exc).__name__}: {exc}"}
+            )
+            finalize_pipeline_run(
+                conn,
+                run_id,
+                status="failed",
+                cost_usd_estimate=stats.cost_usd_estimate,
+                errors_json=json.dumps(stats.errors),
+            )
+            conn.commit()
+            _write_last_run(stats, status="failed")
+            raise
+
+
+def _rollups_for_render(conn, week_id: str) -> dict[str, object]:
+    """Load weekly_rollups rows keyed by scope for the renderer (PIPELINE-05)."""
+    return {row["scope"]: row for row in get_rollups_for_week(conn, week_id)}
+
+
 def run_render(
     week_id: str,
     *,
@@ -1192,6 +1423,7 @@ def run_render(
                 out_dir=out_dir,
                 pipeline_notice_pending_count=pending,
                 pipeline_notice_failed_source_count=failed,
+                rollups_by_scope=_rollups_for_render(conn, week_id),
             )
             _finalize(conn, run_id, stats, phase="render")
             return stats
@@ -1281,6 +1513,12 @@ def run_all(
                 log=log,
                 stats=stats,
             )
+            _rollup_week(
+                week_id=week_id,
+                conn=conn,
+                log=log,
+                stats=stats,
+            )
 
             week_rows = get_items_for_week(
                 conn,
@@ -1303,6 +1541,7 @@ def run_all(
                 out_dir=out_dir,
                 pipeline_notice_pending_count=pending,
                 pipeline_notice_failed_source_count=failed,
+                rollups_by_scope=_rollups_for_render(conn, week_id),
             )
 
             _finalize(conn, run_id, stats, phase="all")
@@ -1341,5 +1580,6 @@ __all__ = [
     "run_ingest",
     "run_rank",
     "run_render",
+    "run_rollup",
     "run_summarize",
 ]

@@ -112,9 +112,15 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_week_arg(rank_cmd)
 
+    rollup_cmd = sub.add_parser(
+        "rollup",
+        help="Generate category mini rollups and weekly synthesis (LLM).",
+    )
+    _add_week_arg(rollup_cmd)
+
     all_cmd = sub.add_parser(
         "all",
-        help="Run ingest → dedup → summarize → categorize → rank → render (default).",
+        help="Run ingest → dedup → summarize → categorize → rank → rollup → render (default).",
     )
     _add_week_arg(all_cmd)
     _add_only_pending_transcripts_arg(all_cmd)
@@ -182,6 +188,10 @@ def main(argv: list[str] | None = None) -> int:
             from pipeline.orchestrator import run_rank
 
             stats = run_rank(week_id)
+        elif command == "rollup":
+            from pipeline.orchestrator import run_rollup
+
+            stats = run_rollup(week_id)
         elif command == "all":
             from pipeline.orchestrator import run_all
 
