@@ -108,7 +108,28 @@ Plans:
   4. A structured `pipeline_report.json` accompanies each run (items ingested, deduped, LLM calls, cost USD, errors) and LLM spend stays within the $2/week target with a configurable hard stop
   5. The human reader can skim the full digest in ~15 minutes and get a coherent sense of "what happened in AI this week" — the Core Value hypothesis is testable
 
-**Plans:** TBD
+**Plans:** 5 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 03-01-PLAN.md — Dedup foundation: migration 004, Tier 0/1 dedup, canonical-only summarize, "Also covered by" attribution (DEDUP-01..04)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 03-02-PLAN.md — Categorize: shared exceptions, cluster_summaries, digest.yaml, per-category sections (PIPELINE-02)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 03-03-PLAN.md — Rank + Briefing Top N: cluster_ranks, numbered Briefing section (PIPELINE-03)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 03-04-PLAN.md — Hierarchical rollup: 4 minis + weekly synthesis, editor's note + section openers (PIPELINE-04)
+
+**Wave 5** *(blocked on Wave 4 completion)*
+
+- [ ] 03-05-PLAN.md — Cost governance + pipeline_report.json + cascade + CLI flags (OBS-02, PIPELINE-05/06)
 
 **Notes:** Primary mitigation phase for Risk Top-5 items #1 (under-dedup), #2 (runaway LLM costs — pre-flight budget, dedup-before-summarize, tiered models, $5/week hard cap), #4 (hallucinated summaries — grounding prompts, confidence flags, hierarchical roll-up per PITFALLS #14). Prompts versioned in files with `prompt_version` in digest metadata (PITFALLS #13).
 
@@ -158,7 +179,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation + First Digest | 5/5 | Complete | 2026-05-21 |
 | 2. Expand Ingestion | 4/4 | Complete | 2026-05-22 |
-| 3. AI Quality | 0/TBD | Not started | - |
+| 3. AI Quality | 0/5 | Not started | - |
 | 4. Dashboard + Archive | 0/TBD | Not started | - |
 | 5. Ops & Automation | 0/TBD | Not started | - |
 

@@ -755,10 +755,10 @@ for cluster in clusters_for_week:
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Redirect fetch on every ingest vs dedup-only** — CONTEXT allows planner discretion; recommend dedup-stage only with failure fallback to pre-redirect URL.
-2. **`pipeline_runs.phase` CHECK migration** — extend via new migration vs recreate CHECK; use additive SQL that SQLite accepts.
+1. **Redirect fetch on every ingest vs dedup-only** — CONTEXT allows planner discretion; recommend dedup-stage only with failure fallback to pre-redirect URL. **RESOLVED:** dedup-stage only with failure fallback to pre-redirect URL — Plan 03-01 Task 1 (`pipeline/dedup/url.py::resolve_final_url`).
+2. **`pipeline_runs.phase` CHECK migration** — extend via new migration vs recreate CHECK; use additive SQL that SQLite accepts. **RESOLVED:** additive SQL extends the CHECK constraint in `store/migrations/004_dedup_categorize_rank_rollup.sql` — Plan 03-01 Task 2.
 
 ---
 
