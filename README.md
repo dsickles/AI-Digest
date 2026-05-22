@@ -58,6 +58,36 @@ This will:
 3. Generate a TL;DR for each item via Gemini
 4. Write `out/digest-YYYY-Www.html` (gitignored)
 
+### Manual run / backfill
+
+All subcommands accept `--week YYYY-Www` to target a specific **ISO week in UTC**
+(for backfill or replay). When omitted, the current UTC ISO week is used.
+
+| Subcommand | Description |
+|------------|-------------|
+| `ingest` | Fetch enabled RSS sources and upsert into SQLite (network only) |
+| `summarize` | Generate TL;DRs for items in the week window missing a summary (LLM) |
+| `render` | Build HTML from existing SQLite data (no network, no LLM) |
+| `all` | Run `ingest` → `summarize` → `render` in one pass (default) |
+
+Backfill a past week end-to-end:
+
+```bash
+uv run python -m pipeline.run all --week 2026-W19
+```
+
+Re-render HTML for a week without re-spending tokens:
+
+```bash
+uv run python -m pipeline.run render --week 2026-W19
+```
+
+Bare invocation (no subcommand) is an alias for `all`:
+
+```bash
+uv run python -m pipeline.run --week 2026-W19
+```
+
 Open the digest in your browser:
 
 ```bash
