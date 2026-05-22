@@ -38,3 +38,18 @@ CREATE TABLE IF NOT EXISTS cluster_summaries (
 );
 
 CREATE INDEX IF NOT EXISTS idx_cluster_summaries_week ON cluster_summaries(week_id);
+
+CREATE TABLE IF NOT EXISTS cluster_ranks (
+    cluster_rank_id    TEXT PRIMARY KEY,
+    cluster_id         TEXT NOT NULL REFERENCES story_clusters(cluster_id),
+    week_id            TEXT NOT NULL,
+    rank_score         REAL NOT NULL,
+    rank_position      INTEGER NOT NULL,
+    rank_status        TEXT,
+    prompt_version     TEXT NOT NULL,
+    model_id           TEXT NOT NULL,
+    created_at         TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    UNIQUE (cluster_id, week_id, prompt_version)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cluster_ranks_week ON cluster_ranks(week_id);

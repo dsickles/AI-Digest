@@ -589,6 +589,85 @@ def get_cluster_categories_for_week(
     return {row["canonical_item_id"]: row["category"] for row in rows}
 
 
+def delete_ranks_for_week(
+    conn: sqlite3.Connection,
+    week_id: str,
+    prompt_version: str = "rank_v1",
+) -> None:
+    """Remove rank rows for a week (stage-level rebuild before re-rank)."""
+    conn.execute(
+        """
+        DELETE FROM cluster_ranks
+         WHERE week_id = ? AND prompt_version = ?
+        """,
+        (week_id, prompt_version),
+    )
+
+
+def get_ranks_for_week(
+    conn: sqlite3.Connection,
+    week_id: str,
+    prompt_version: str = "rank_v1",
+) -> list[sqlite3.Row]:
+    """Return persisted rank rows ordered by ``rank_position`` ascending."""
+    return conn.execute(
+        """
+        SELECT *
+          FROM cluster_ranks
+         WHERE week_id = ? AND prompt_version = ?
+         ORDER BY rank_position ASC
+        """,
+        (week_id, prompt_version),
+    ).fetchall()
+
+
+def insert_cluster_ranks_batch(
+    conn: sqlite3.Connection,
+    *,
+    week_id: str,
+    rows: list[dict[str, object]],
+) -> None:
+    """Insert many ``cluster_ranks`` rows in one transaction."""
+    for row in rows:
+        rank_id = uuid.uuid4().hex
+        conn.execute(
+            """
+            INSERT INTO cluster_ranks (
+                cluster_rank_id, cluster_id, week_id, rank_score, rank_position,
+                rank_status, prompt_version, model_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                rank_id,
+                row["cluster_id"],
+                week_id,
+                row["rank_score"],
+                row["rank_position"],
+                row.get("rank_status"),
+                row["prompt_version"],
+                row["model_id"],
+            ),
+        )
+
+
+def get_rank_positions_for_week(
+    conn: sqlite3.Connection,
+    week_id: str,
+    prompt_version: str = "rank_v1",
+) -> dict[str, int]:
+    """Map canonical ``item_id`` → global ``rank_position`` for render sort."""
+    db_rows = conn.execute(
+        """
+        SELECT sc.canonical_item_id, cr.rank_position
+          FROM cluster_ranks cr
+          JOIN story_clusters sc ON sc.cluster_id = cr.cluster_id
+         WHERE cr.week_id = ? AND cr.prompt_version = ?
+        """,
+        (week_id, prompt_version),
+    ).fetchall()
+    return {row["canonical_item_id"]: row["rank_position"] for row in db_rows}
+
+
 def get_last_known_cluster_category(
     conn: sqlite3.Connection,
     cluster_id: str,
