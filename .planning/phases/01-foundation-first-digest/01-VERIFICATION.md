@@ -1,14 +1,17 @@
 ---
-status: human_needed
+status: passed
 phase: 01-foundation-first-digest
 verified_at: 2026-05-22T00:10:09Z
+human_uat_approved_at: 2026-05-22T01:02:00Z
 must_haves_total: 29
-must_haves_verified: 27
-must_haves_human: 2
+must_haves_verified: 29
+must_haves_human: 0
 must_haves_gap: 0
 requirements_covered: [INGEST-01, INGEST-02, INGEST-07, INGEST-08, PIPELINE-01]
-test_count: 41
+test_count: 43
 test_status: passed
+post_execution_fixes:
+  - "fix(01-03) 5f8e9f0: restored 'Also seen this week' footer for thin items (reverted 01-03 inline-card regression); D-05 locked to footer form"
 ---
 
 # Phase 1: Foundation + First Digest Verification Report
