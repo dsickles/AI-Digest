@@ -28,6 +28,11 @@ class RunSummary:
     cost_usd_estimate: float = 0.0
     clusters_created: int = 0
     items_clustered: int = 0
+    categorize_llm_calls: int = 0
+    rank_llm_calls: int = 0
+    rollup_llm_calls: int = 0
+    budget_spent_usd: float = 0.0
+    budget_halted: bool = False
     per_source: list[tuple[str, int, list[str]]] = field(default_factory=list)
     errors: list[dict[str, str]] = field(default_factory=list)
     out_path: Path | None = None
@@ -103,6 +108,18 @@ def write_last_run_md(
             f"- **items_degraded:** {run_summary.items_degraded}",
             f"- **clusters_created:** {run_summary.clusters_created}",
             f"- **items_clustered:** {run_summary.items_clustered}",
+            "",
+            "## Stages",
+            "",
+            f"- **dedup clusters_created:** {run_summary.clusters_created}",
+            f"- **categorize llm_calls:** {run_summary.categorize_llm_calls}",
+            f"- **rank llm_calls:** {run_summary.rank_llm_calls}",
+            f"- **rollup llm_calls:** {run_summary.rollup_llm_calls}",
+            "",
+            "## Budget",
+            "",
+            f"- **spent_usd:** ${run_summary.budget_spent_usd:.6f}",
+            f"- **halted:** {run_summary.budget_halted}",
             "",
             "## LLM",
             "",

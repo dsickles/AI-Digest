@@ -62,6 +62,39 @@ def _add_only_pending_transcripts_arg(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _add_phase3_flags(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--top-n",
+        dest="top_n_briefing",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Override config/digest.yaml top_n_briefing for Briefing section size.",
+    )
+    parser.add_argument(
+        "--max-cost-usd",
+        dest="max_cost_usd",
+        type=float,
+        default=None,
+        metavar="USD",
+        help="Override pipeline.hard_stop_usd weekly LLM spend cap (default 2.0).",
+    )
+    parser.add_argument(
+        "--rebuild-clusters",
+        dest="force_rebuild_clusters",
+        action="store_true",
+        default=False,
+        help="Force dedup and downstream cascade for the target week.",
+    )
+    parser.add_argument(
+        "--rebuild-rollup",
+        dest="force_rebuild_rollup",
+        action="store_true",
+        default=False,
+        help="Force rollup stages to re-run (category minis + weekly synthesis).",
+    )
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="python -m pipeline.run",
@@ -72,6 +105,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_week_arg(parser)
     _add_only_pending_transcripts_arg(parser)
+    _add_phase3_flags(parser)
 
     sub = parser.add_subparsers(dest="command")
 
@@ -82,41 +116,33 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_week_arg(ingest_cmd)
     _add_only_pending_transcripts_arg(ingest_cmd)
 
-    summarize_cmd = sub.add_parser(
-        "summarize",
-        help="Summarize items in the week window missing a TL;DR (LLM).",
-    )
-    _add_week_arg(summarize_cmd)
-
-    render_cmd = sub.add_parser(
-        "render",
-        help="Render HTML digest from SQLite (no network, no LLM).",
-    )
-    _add_week_arg(render_cmd)
-
     dedup_cmd = sub.add_parser(
         "dedup",
         help="Cluster same-story items for the week (deterministic).",
     )
     _add_week_arg(dedup_cmd)
+    _add_phase3_flags(dedup_cmd)
 
     categorize_cmd = sub.add_parser(
         "categorize",
         help="Classify story clusters into edtech|business|technical|design.",
     )
     _add_week_arg(categorize_cmd)
+    _add_phase3_flags(categorize_cmd)
 
     rank_cmd = sub.add_parser(
         "rank",
         help="Rank story clusters for the week Briefing Top N (LLM).",
     )
     _add_week_arg(rank_cmd)
+    _add_phase3_flags(rank_cmd)
 
     rollup_cmd = sub.add_parser(
         "rollup",
         help="Generate category mini rollups and weekly synthesis (LLM).",
     )
     _add_week_arg(rollup_cmd)
+    _add_phase3_flags(rollup_cmd)
 
     all_cmd = sub.add_parser(
         "all",
@@ -124,6 +150,21 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_week_arg(all_cmd)
     _add_only_pending_transcripts_arg(all_cmd)
+    _add_phase3_flags(all_cmd)
+
+    summarize_cmd = sub.add_parser(
+        "summarize",
+        help="Summarize items in the week window missing a TL;DR (LLM).",
+    )
+    _add_week_arg(summarize_cmd)
+    _add_phase3_flags(summarize_cmd)
+
+    render_cmd = sub.add_parser(
+        "render",
+        help="Render HTML digest from SQLite (no network, no LLM).",
+    )
+    _add_week_arg(render_cmd)
+    _add_phase3_flags(render_cmd)
 
     return parser
 
@@ -148,6 +189,16 @@ def _print_stats(stats, *, command: str) -> None:
         sys.stdout.write(f"  digest:            {stats.out_path}\n")
 
 
+def _phase3_kwargs(args: argparse.Namespace) -> dict:
+    """Extract optional Phase 3 CLI overrides for orchestrator entry points."""
+    return {
+        "top_n_briefing": getattr(args, "top_n_briefing", None),
+        "max_cost_usd": getattr(args, "max_cost_usd", None),
+        "force_rebuild_clusters": getattr(args, "force_rebuild_clusters", False),
+        "force_rebuild_rollup": getattr(args, "force_rebuild_rollup", False),
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     load_dotenv()
     configure_structlog()
@@ -163,6 +214,8 @@ def main(argv: list[str] | None = None) -> int:
             "--only-pending-transcripts is only valid with `ingest` or `all`"
         )
 
+    p3 = _phase3_kwargs(args)
+
     try:
         if command == "ingest":
             from pipeline.orchestrator import run_ingest
@@ -171,31 +224,42 @@ def main(argv: list[str] | None = None) -> int:
         elif command == "summarize":
             from pipeline.orchestrator import run_summarize
 
-            stats = run_summarize(week_id)
+            stats = run_summarize(week_id, max_cost_usd=p3["max_cost_usd"])
         elif command == "render":
             from pipeline.orchestrator import run_render
 
-            stats = run_render(week_id)
+            stats = run_render(week_id, top_n_briefing=p3["top_n_briefing"])
         elif command == "dedup":
             from pipeline.orchestrator import run_dedup
 
-            stats = run_dedup(week_id)
+            stats = run_dedup(
+                week_id,
+                force_rebuild_clusters=p3["force_rebuild_clusters"],
+            )
         elif command == "categorize":
             from pipeline.orchestrator import run_categorize
 
-            stats = run_categorize(week_id)
+            stats = run_categorize(week_id, max_cost_usd=p3["max_cost_usd"])
         elif command == "rank":
             from pipeline.orchestrator import run_rank
 
-            stats = run_rank(week_id)
+            stats = run_rank(week_id, max_cost_usd=p3["max_cost_usd"])
         elif command == "rollup":
             from pipeline.orchestrator import run_rollup
 
-            stats = run_rollup(week_id)
+            stats = run_rollup(
+                week_id,
+                max_cost_usd=p3["max_cost_usd"],
+                force_rebuild_rollup=p3["force_rebuild_rollup"],
+            )
         elif command == "all":
             from pipeline.orchestrator import run_all
 
-            stats = run_all(week_id, only_pending_transcripts=only_pending)
+            stats = run_all(
+                week_id,
+                only_pending_transcripts=only_pending,
+                **p3,
+            )
         else:
             parser.error(f"unknown command: {command}")
             return 2

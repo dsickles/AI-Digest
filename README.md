@@ -12,7 +12,9 @@ plain HTML digest you can open in a browser.
 > (`--only-pending-transcripts`), in-place degradation cards, typed
 > per-source failure isolation, and a header pipeline-status notice.
 >
-> Dedup, ranking, and the Astro dashboard land in later phases.
+> **Phase 3 complete:** Dedup-before-LLM, categorization, Briefing Top N,
+> hierarchical weekly rollups, `$2/week` cost governance with partial publish,
+> structured `out/pipeline_report.json`, and checkpointed resume.
 
 ## Prerequisites
 
@@ -103,15 +105,34 @@ All subcommands accept `--week YYYY-Www` to target a specific **ISO week in UTC*
 | Subcommand | Description |
 |------------|-------------|
 | `ingest` | Fetch enabled RSS sources and upsert into SQLite (network only) |
+| `dedup` | Cluster same-story items for the week (deterministic, no LLM) |
 | `summarize` | Generate TL;DRs for items in the week window missing a summary (LLM) |
+| `categorize` | Classify story clusters into edtech \| business \| technical \| design |
+| `rank` | Rank clusters for the Briefing Top N (LLM) |
+| `rollup` | Generate category mini rollups and weekly synthesis (LLM) |
 | `render` | Build HTML from existing SQLite data (no network, no LLM) |
-| `all` | Run `ingest` → `summarize` → `render` in one pass (**default**) |
+| `all` | Full pipeline: ingest → dedup → summarize → categorize → rank → rollup → render (**default**) |
+
+Phase 3 flags (also on `python -m pipeline.run --help`):
+
+| Flag | Description |
+|------|-------------|
+| `--top-n N` | Override `config/digest.yaml` `top_n_briefing` (default 5) |
+| `--max-cost-usd USD` | Override weekly LLM hard stop (default `2.0` in `digest.yaml`) |
+| `--rebuild-clusters` | Force dedup and downstream cascade for the target week |
+| `--rebuild-rollup` | Force rollup stages to re-run |
 
 Examples:
 
 ```bash
 # Full weekly run (current UTC week)
 uv run python -m pipeline.run all
+
+# Dedup only for a week
+uv run python -m pipeline.run dedup --week 2026-W19
+
+# Tight Briefing with custom Top N
+uv run python -m pipeline.run render --week 2026-W19 --top-n 8
 
 # Backfill a past week end-to-end
 uv run python -m pipeline.run all --week 2026-W19
