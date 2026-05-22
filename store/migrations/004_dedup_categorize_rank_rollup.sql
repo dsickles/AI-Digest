@@ -21,3 +21,20 @@ CREATE TABLE IF NOT EXISTS cluster_members (
 );
 
 CREATE INDEX IF NOT EXISTS idx_cluster_members_item ON cluster_members(item_id);
+
+CREATE TABLE IF NOT EXISTS cluster_summaries (
+    cluster_summary_id   TEXT PRIMARY KEY,
+    cluster_id           TEXT NOT NULL REFERENCES story_clusters(cluster_id),
+    week_id              TEXT NOT NULL,
+    category             TEXT NOT NULL CHECK (category IN (
+        'edtech', 'business', 'technical', 'design'
+    )),
+    category_confidence  TEXT,
+    category_status      TEXT,
+    prompt_version       TEXT NOT NULL,
+    model_id             TEXT NOT NULL,
+    created_at           TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    UNIQUE (cluster_id, week_id, prompt_version)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cluster_summaries_week ON cluster_summaries(week_id);

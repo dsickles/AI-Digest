@@ -27,6 +27,9 @@ _YOUTUBE_FEED_TEMPLATE = (
 )
 
 
+_VALID_CATEGORY_TAGS = frozenset({"edtech", "business", "technical", "design"})
+
+
 class _SourceBase(BaseModel):
     """Fields shared by every adapter subtype (the registry surface)."""
 
@@ -40,6 +43,16 @@ class _SourceBase(BaseModel):
     def _id_is_kebab(cls, value: str) -> str:
         if not _KEBAB_RE.match(value):
             raise ValueError(f"source id must be kebab/snake-case ascii: {value!r}")
+        return value
+
+    @field_validator("tag")
+    @classmethod
+    def _tag_is_category_enum(cls, value: str | None) -> str | None:
+        """D-49: when present, tag must be a valid categorize fallback enum."""
+        if value is not None and value not in _VALID_CATEGORY_TAGS:
+            raise ValueError(
+                f"tag must be one of {sorted(_VALID_CATEGORY_TAGS)}: {value!r}"
+            )
         return value
 
 

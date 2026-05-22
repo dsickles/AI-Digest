@@ -520,6 +520,103 @@ def is_cluster_canonical_member(
     return row is not None
 
 
+def get_existing_cluster_summary(
+    conn: sqlite3.Connection,
+    cluster_id: str,
+    week_id: str,
+    prompt_version: str,
+) -> sqlite3.Row | None:
+    """Look up a prior categorize row for checkpoint skip (D-67)."""
+    return conn.execute(
+        """
+        SELECT *
+          FROM cluster_summaries
+         WHERE cluster_id = ? AND week_id = ? AND prompt_version = ?
+        """,
+        (cluster_id, week_id, prompt_version),
+    ).fetchone()
+
+
+def insert_cluster_summary(
+    conn: sqlite3.Connection,
+    *,
+    cluster_id: str,
+    week_id: str,
+    category: str,
+    category_confidence: str | None,
+    category_status: str | None,
+    prompt_version: str,
+    model_id: str,
+) -> str:
+    """Insert a fresh ``cluster_summaries`` row."""
+    summary_id = uuid.uuid4().hex
+    conn.execute(
+        """
+        INSERT INTO cluster_summaries (
+            cluster_summary_id, cluster_id, week_id, category,
+            category_confidence, category_status, prompt_version, model_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            summary_id,
+            cluster_id,
+            week_id,
+            category,
+            category_confidence,
+            category_status,
+            prompt_version,
+            model_id,
+        ),
+    )
+    return summary_id
+
+
+def get_cluster_categories_for_week(
+    conn: sqlite3.Connection,
+    week_id: str,
+    prompt_version: str = "categorize_v1",
+) -> dict[str, str]:
+    """Map canonical ``item_id`` → category for render grouping."""
+    rows = conn.execute(
+        """
+        SELECT sc.canonical_item_id, cs.category
+          FROM cluster_summaries cs
+          JOIN story_clusters sc ON sc.cluster_id = cs.cluster_id
+         WHERE cs.week_id = ? AND cs.prompt_version = ?
+        """,
+        (week_id, prompt_version),
+    ).fetchall()
+    return {row["canonical_item_id"]: row["category"] for row in rows}
+
+
+def get_last_known_cluster_category(
+    conn: sqlite3.Connection,
+    cluster_id: str,
+    *,
+    exclude_prompt_version: str | None = None,
+) -> str | None:
+    """Most recent stored category for quota fallback (D-49)."""
+    if exclude_prompt_version:
+        row = conn.execute(
+            """
+            SELECT category FROM cluster_summaries
+             WHERE cluster_id = ? AND prompt_version != ?
+             ORDER BY created_at DESC LIMIT 1
+            """,
+            (cluster_id, exclude_prompt_version),
+        ).fetchone()
+    else:
+        row = conn.execute(
+            """
+            SELECT category FROM cluster_summaries
+             WHERE cluster_id = ?
+             ORDER BY created_at DESC LIMIT 1
+            """,
+            (cluster_id,),
+        ).fetchone()
+    return row["category"] if row else None
+
+
 def insert_pipeline_run(
     conn: sqlite3.Connection,
     *,
