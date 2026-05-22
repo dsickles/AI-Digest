@@ -58,6 +58,7 @@ CATEGORY_LABELS = {
     "design": "Design",
 }
 DEFAULT_CATEGORY = "technical"
+BRIEFING_HEADER_TEMPLATE = "Briefing — Top {n} this week"
 
 # Summary-status values that warrant an in-place "couldn't be generated" card
 # instead of the footer aside. ``parse_error`` and ``api_error`` are bundled
@@ -212,6 +213,26 @@ main {
   border-bottom: 1px solid #2a3140;
   padding-bottom: 0.35rem;
 }
+.briefing {
+  margin-bottom: 2rem;
+}
+.briefing-header {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #e6e6e6;
+}
+.briefing-list {
+  margin: 0;
+  padding-left: 1.5rem;
+  list-style: decimal;
+}
+.briefing-item {
+  margin-bottom: 1rem;
+}
+.briefing-item:last-child {
+  margin-bottom: 0;
+}
 """.strip()
 
 
@@ -299,7 +320,7 @@ def _render_also_covered(card: DigestCard) -> str:
     return f'<p class="also-covered-by">{body}</p>'
 
 
-def _render_card(card: DigestCard) -> str:
+def _render_card(card: DigestCard, *, briefing: bool = False) -> str:
     title_safe = html.escape(card.title)
     badge_safe = html.escape(f"[{card.publisher}]")
     url_safe = html.escape(card.canonical_url, quote=True)
@@ -310,8 +331,10 @@ def _render_card(card: DigestCard) -> str:
     else:
         video_suffix = ""
 
+    card_class = "card briefing-card" if briefing else "card"
+
     return (
-        '<article class="card">'
+        f'<article class="{card_class}">'
         '<div class="card-meta">'
         f'<span class="source-badge">{badge_safe}</span>{video_suffix}'
         f"<span>{date_safe}</span>"
@@ -423,6 +446,31 @@ def _render_category_sections(main_feed: list[DigestCard]) -> str:
     return "\n".join(sections)
 
 
+def _render_briefing_section(main_feed: list[DigestCard], *, top_n: int) -> str:
+    """Numbered Briefing — Top N at top of main (D-63, DISPLAY-03)."""
+    ranked = [card for card in main_feed if card.rank_position is not None]
+    if not ranked:
+        return ""
+
+    ranked.sort(key=lambda c: c.rank_position)  # type: ignore[arg-type, return-value]
+    top_cards = ranked[:top_n]
+    if not top_cards:
+        return ""
+
+    header = BRIEFING_HEADER_TEMPLATE.format(n=top_n)
+    header_safe = html.escape(header)
+    items = "".join(
+        f'<li class="briefing-item">{_render_card(card, briefing=True)}</li>'
+        for card in top_cards
+    )
+    return (
+        f'<section class="briefing">'
+        f'<h2 class="briefing-header">{header_safe}</h2>'
+        f'<ol class="briefing-list">{items}</ol>'
+        "</section>"
+    )
+
+
 def render_digest(
     *,
     week_id: str,
@@ -445,6 +493,10 @@ def render_digest(
     out_root.mkdir(parents=True, exist_ok=True)
     out_path = out_root / f"digest-{week_id}.html"
 
+    from pipeline.config import load_digest_config
+
+    top_n_briefing = load_digest_config().top_n_briefing
+
     main_feed, also_seen = _partition_cards(cards)
 
     week_header = _format_week_header(week_start, week_end)
@@ -458,7 +510,9 @@ def render_digest(
     updated_safe = html.escape(updated_line)
 
     if main_feed:
-        cards_html = _render_category_sections(main_feed)
+        briefing_html = _render_briefing_section(main_feed, top_n=top_n_briefing)
+        category_html = _render_category_sections(main_feed)
+        cards_html = "\n".join(part for part in (briefing_html, category_html) if part)
     else:
         cards_html = (
             '<p class="card-degraded">'
@@ -516,6 +570,7 @@ def render_digest(
 
 __all__ = [
     "ALSO_COVERED_PREFIX",
+    "BRIEFING_HEADER_TEMPLATE",
     "CATEGORY_LABELS",
     "CATEGORY_ORDER",
     "DigestCard",
