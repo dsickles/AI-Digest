@@ -103,28 +103,26 @@ def _transcript_text(
     return " ".join(p for p in parts if p)
 
 
-def _classify_transcript_error(exc: BaseException) -> str:
+_TRANSCRIPT_DISABLED_NAMES = frozenset(
+    {"TranscriptsDisabled", "NoTranscriptFound", "TranscriptsNotFound"}
+)
+
+
+def _classify_transcript_error(exc: BaseException, *, catch_up: bool = False) -> str:
     """Map youtube-transcript-api exceptions to D-23 transcript_status values.
 
-    Cloud-ingest path: ``IpBlocked`` / ``RequestBlocked`` / ``TranscriptsDisabled``
-    all map to ``pending_local`` — the local catch-up flow (plan 02-04) is the
-    only path that may flip to ``missing``.
+    Standard cloud-ingest path (``catch_up=False``): every recognised failure
+    maps to ``pending_local`` so the residential catch-up flow can retry.
+
+    Catch-up path (``catch_up=True``, plan 02-04): ``TranscriptsDisabled`` and
+    related "no captions exist" signals confirmed from a residential IP
+    advance to ``missing`` — those videos will never produce a transcript and
+    should not be retried. Network/proxy errors stay ``pending_local`` so the
+    next catch-up attempt sees them again.
     """
     name = type(exc).__name__
-    if name in {
-        "IpBlocked",
-        "RequestBlocked",
-        "TranscriptsDisabled",
-        "NoTranscriptFound",
-        "TranscriptsNotFound",
-        "VideoUnavailable",
-        "TooManyRequests",
-        "TranslationLanguageNotAvailable",
-    }:
-        return "pending_local"
-    # Conservative: anything we don't recognise still ships as pending_local
-    # so the catch-up path can retry. ``missing`` is reserved for the
-    # residential-IP confirmation in plan 02-04.
+    if catch_up and name in _TRANSCRIPT_DISABLED_NAMES:
+        return "missing"
     return "pending_local"
 
 
@@ -136,13 +134,38 @@ class YoutubeAdapter(IngestAdapter):
     def __init__(
         self,
         *,
-        transcript_fetcher=_transcript_text,
+        transcript_fetcher=None,
         max_entries: int = MAX_FEED_ENTRIES,
     ) -> None:
         # Injectable transcript fetcher so tests can monkeypatch without touching
-        # youtube_transcript_api's classes. Default is the real network call.
+        # youtube_transcript_api's classes. Defaults to the module-level
+        # ``_transcript_text`` resolved at call time (so monkeypatching
+        # ``pipeline.adapters.youtube._transcript_text`` works for callers that
+        # instantiate the adapter without an explicit fetcher).
+        if transcript_fetcher is None:
+            import pipeline.adapters.youtube as _self_mod
+
+            transcript_fetcher = _self_mod._transcript_text
         self._transcript_fetcher = transcript_fetcher
         self._max_entries = max_entries
+
+    def fetch_transcript(
+        self, video_id: str, *, catch_up: bool = False
+    ) -> tuple[str | None, str]:
+        """Catch-up entry point: returns ``(text_or_None, transcript_status)``.
+
+        ``text`` is the joined transcript (non-empty string) when status is
+        ``ok``; ``None`` otherwise. ``catch_up=True`` enables the D-23
+        residential-IP retry semantics where ``TranscriptsDisabled`` advances
+        to ``missing`` instead of being treated as a recoverable failure.
+        """
+        try:
+            text = self._transcript_fetcher(video_id)
+        except Exception as exc:
+            return None, _classify_transcript_error(exc, catch_up=catch_up)
+        if text and text.strip():
+            return text, "ok"
+        return None, "pending_local"
 
     def fetch(self, source: YoutubeSource) -> list[NormalizedItem]:
         log = logger.bind(source_id=source.id, channel_id=source.channel_id)

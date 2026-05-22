@@ -34,6 +34,14 @@ _WEEK_HELP = (
 )
 
 
+_PENDING_TRANSCRIPTS_HELP = (
+    "Re-fetch YouTube transcripts for items left in 'pending_local' from a "
+    "previous run (typical case: cloud weekly run was blocked by YouTube). "
+    "Skips RSS sources entirely. Intended to be run from a residential "
+    "network where the YouTube transcript API works without a proxy."
+)
+
+
 def _add_week_arg(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--week",
@@ -41,6 +49,16 @@ def _add_week_arg(parser: argparse.ArgumentParser) -> None:
         default=None,
         metavar="YYYY-Www",
         help=_WEEK_HELP,
+    )
+
+
+def _add_only_pending_transcripts_arg(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--only-pending-transcripts",
+        dest="only_pending_transcripts",
+        action="store_true",
+        default=False,
+        help=_PENDING_TRANSCRIPTS_HELP,
     )
 
 
@@ -53,6 +71,7 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     _add_week_arg(parser)
+    _add_only_pending_transcripts_arg(parser)
 
     sub = parser.add_subparsers(dest="command")
 
@@ -61,6 +80,7 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Fetch enabled sources and upsert into SQLite (network only).",
     )
     _add_week_arg(ingest_cmd)
+    _add_only_pending_transcripts_arg(ingest_cmd)
 
     summarize_cmd = sub.add_parser(
         "summarize",
@@ -79,6 +99,7 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Run ingest → summarize → render in one pass (default).",
     )
     _add_week_arg(all_cmd)
+    _add_only_pending_transcripts_arg(all_cmd)
 
     return parser
 
@@ -112,11 +133,17 @@ def main(argv: list[str] | None = None) -> int:
     command = args.command or "all"
     week_id = _resolve_week_id(args)
 
+    only_pending = getattr(args, "only_pending_transcripts", False)
+    if only_pending and command not in {"ingest", "all"}:
+        parser.error(
+            "--only-pending-transcripts is only valid with `ingest` or `all`"
+        )
+
     try:
         if command == "ingest":
             from pipeline.orchestrator import run_ingest
 
-            stats = run_ingest(week_id)
+            stats = run_ingest(week_id, only_pending_transcripts=only_pending)
         elif command == "summarize":
             from pipeline.orchestrator import run_summarize
 
@@ -128,7 +155,7 @@ def main(argv: list[str] | None = None) -> int:
         elif command == "all":
             from pipeline.orchestrator import run_all
 
-            stats = run_all(week_id)
+            stats = run_all(week_id, only_pending_transcripts=only_pending)
         else:
             parser.error(f"unknown command: {command}")
             return 2

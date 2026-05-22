@@ -31,9 +31,11 @@ from store.db import (
     finalize_pipeline_run,
     get_existing_summary,
     get_items_for_week,
+    get_pending_transcript_items,
     init_db,
     insert_item_summary,
     insert_pipeline_run,
+    update_item_transcript,
     update_source_health,
     upsert_item,
     upsert_source,
@@ -557,12 +559,92 @@ def _finalize(
     )
 
 
+def _ingest_pending_transcripts(conn, log, stats: RunStats) -> int:
+    """D-23 local catch-up: re-fetch transcripts for ``pending_local`` items.
+
+    Returns the count of items whose ``transcript_status`` flipped (ok or
+    missing). Network/proxy errors leave items at ``pending_local`` so the
+    next catch-up attempt can pick them up. Per-item failures never abort the
+    loop — one bad video should not block the rest.
+    """
+    from pipeline.adapters.youtube import YoutubeAdapter
+
+    rows = get_pending_transcript_items(conn)
+    if not rows:
+        log.info("catch_up.no_pending_items")
+        return 0
+
+    adapter = YoutubeAdapter()
+    flipped = 0
+    for row in rows:
+        external_id = row["external_id"]
+        # external_id format: yt:video:{video_id} (plan 02-01 D-00c)
+        if not external_id.startswith("yt:video:"):
+            log.warning(
+                "catch_up.skipped_non_youtube",
+                item_id=row["item_id"],
+                external_id=external_id,
+            )
+            continue
+        video_id = external_id.split(":", 2)[-1]
+        text, new_status = adapter.fetch_transcript(video_id, catch_up=True)
+        if new_status == "pending_local":
+            log.info(
+                "catch_up.still_pending",
+                item_id=row["item_id"],
+                video_id=video_id,
+            )
+            continue
+
+        # Recompute content_hash on successful flip — raw_content is the
+        # source of truth for downstream summarize/dedup.
+        from pipeline.models import hash_content
+
+        raw_content = text if (text is not None and new_status == "ok") else None
+        if raw_content is not None:
+            update_item_transcript(
+                conn,
+                row["item_id"],
+                transcript_status=new_status,
+                raw_content=raw_content,
+            )
+            conn.execute(
+                "UPDATE items SET content_hash = ? WHERE item_id = ?",
+                (hash_content(raw_content), row["item_id"]),
+            )
+        else:
+            update_item_transcript(
+                conn,
+                row["item_id"],
+                transcript_status=new_status,
+            )
+        flipped += 1
+        log.info(
+            "catch_up.flipped",
+            item_id=row["item_id"],
+            video_id=video_id,
+            transcript_status=new_status,
+        )
+
+    conn.commit()
+    stats.items_fetched = flipped
+    return flipped
+
+
 def run_ingest(
     week_id: str,
     *,
     db_path: Path | str | None = None,
+    only_pending_transcripts: bool = False,
 ) -> RunStats:
-    """Fetch all enabled sources and upsert into SQLite (no week filter on fetch)."""
+    """Fetch all enabled sources and upsert into SQLite (no week filter on fetch).
+
+    D-23: ``only_pending_transcripts=True`` skips the standard adapter loop
+    entirely and only retries transcript fetches for items previously left in
+    ``transcript_status='pending_local'``. The catch-up path is the only one
+    that may flip an item to ``missing`` (after a residential-IP confirmation
+    that captions truly don't exist).
+    """
     from pipeline.config import enabled_sources
 
     init_db(db_path)
@@ -571,7 +653,7 @@ def run_ingest(
         week_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
         week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
     )
-    log = logger.bind(week_id=week_id)
+    log = logger.bind(week_id=week_id, only_pending_transcripts=only_pending_transcripts)
     stats = RunStats(week_id=week_id, phase="ingest")
 
     with connect(db_path) as conn:
@@ -579,6 +661,10 @@ def run_ingest(
         conn.commit()
         try:
             log.info("orchestrator.start", phase="ingest")
+            if only_pending_transcripts:
+                _ingest_pending_transcripts(conn, log, stats)
+                _finalize(conn, run_id, stats, phase="ingest")
+                return stats
             sources = enabled_sources()
             if not sources:
                 log.warning("orchestrator.no_sources")
@@ -718,6 +804,7 @@ def run_all(
     *,
     db_path: Path | str | None = None,
     out_dir: Path | None = None,
+    only_pending_transcripts: bool = False,
 ) -> RunStats:
     """Execute ingest → summarize → render for ``week_id``."""
     from pipeline.config import enabled_sources
@@ -732,16 +819,23 @@ def run_all(
         conn.commit()
 
         try:
-            log.info("orchestrator.start", phase="all")
-            sources = enabled_sources()
-            if not sources:
-                log.warning("orchestrator.no_sources")
-
-            week_iso = (
-                week_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            log.info(
+                "orchestrator.start",
+                phase="all",
+                only_pending_transcripts=only_pending_transcripts,
             )
-            _ingest(sources, conn, log, stats, week_bounds_iso=week_iso)
+            if only_pending_transcripts:
+                _ingest_pending_transcripts(conn, log, stats)
+            else:
+                sources = enabled_sources()
+                if not sources:
+                    log.warning("orchestrator.no_sources")
+
+                week_iso = (
+                    week_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                )
+                _ingest(sources, conn, log, stats, week_bounds_iso=week_iso)
             summaries = _summarize_week_items(
                 week_id=week_id,
                 week_start=week_start,

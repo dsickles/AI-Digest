@@ -218,6 +218,54 @@ def upsert_item(
     return row["item_id"]
 
 
+def get_pending_transcript_items(
+    conn: sqlite3.Connection,
+    *,
+    source_id: str | None = None,
+) -> list[sqlite3.Row]:
+    """Return items whose ``transcript_status == 'pending_local'`` (D-23 catch-up).
+
+    Joined with ``sources.type`` so the orchestrator can keep the YouTube-only
+    filter without re-querying the sources table per item.
+    """
+    sql = (
+        "SELECT items.*, sources.type AS source_type "
+        "FROM items JOIN sources ON sources.source_id = items.source_id "
+        "WHERE items.transcript_status = 'pending_local'"
+    )
+    params: tuple[object, ...] = ()
+    if source_id is not None:
+        sql += " AND items.source_id = ?"
+        params = (source_id,)
+    sql += " ORDER BY items.published_at DESC"
+    return conn.execute(sql, params).fetchall()
+
+
+def update_item_transcript(
+    conn: sqlite3.Connection,
+    item_id: str,
+    *,
+    transcript_status: str,
+    raw_content: str | None = None,
+) -> None:
+    """Flip ``transcript_status`` and optionally rewrite ``raw_content`` (D-23).
+
+    The catch-up path passes the freshly fetched transcript when status flips
+    to ``ok``; ``missing`` writes leave ``raw_content`` untouched so the
+    description fallback (from the original ingest) survives.
+    """
+    if raw_content is not None:
+        conn.execute(
+            "UPDATE items SET transcript_status = ?, raw_content = ? WHERE item_id = ?",
+            (transcript_status, raw_content, item_id),
+        )
+    else:
+        conn.execute(
+            "UPDATE items SET transcript_status = ? WHERE item_id = ?",
+            (transcript_status, item_id),
+        )
+
+
 def get_items_for_week(
     conn: sqlite3.Connection,
     week_start_iso: str,
