@@ -85,6 +85,34 @@ def _pick_adapter(source_type: str):
     raise ValueError(f"no adapter registered for source type {source_type!r}")
 
 
+def _append_ingest_error(
+    stats: RunStats,
+    src_stats: SourceRunStats,
+    *,
+    source_id: str,
+    category: str,
+    message: str,
+    http_status: int | None = None,
+) -> None:
+    """Append a D-39 categorized error to both RunStats and per-source stats.
+
+    The legacy ``error`` key is preserved alongside the typed ``category`` so
+    Phase 1 callers and tests that grep messages still work; future surfaces
+    (Phase 3+) should read ``category``.
+    """
+    src_stats.errors.append(message)
+    entry: dict[str, str] = {
+        "phase": "ingest",
+        "source_id": source_id,
+        "category": category,
+        "message": message,
+        "error": message,
+    }
+    if http_status is not None:
+        entry["http_status"] = str(http_status)
+    stats.errors.append(entry)
+
+
 def _ingest(
     sources, conn, log, stats: RunStats
 ) -> list[NormalizedItem]:
@@ -109,19 +137,19 @@ def _ingest(
                 "ingest_fetch_complete",
                 source_id=source.id,
                 duration_ms=duration_ms,
-                http_status=None,
+                http_status=exc.http_status,
                 items_count=0,
                 error=type(exc).__name__,
+                category=exc.category,
                 message=str(exc),
             )
-            err_msg = f"{type(exc).__name__}: {exc}"
-            src_stats.errors.append(err_msg)
-            stats.errors.append(
-                {
-                    "phase": "ingest",
-                    "source_id": source.id,
-                    "error": err_msg,
-                }
+            _append_ingest_error(
+                stats,
+                src_stats,
+                source_id=source.id,
+                category=exc.category,
+                message=f"{type(exc).__name__}: {exc}",
+                http_status=exc.http_status,
             )
             continue
         except Exception as exc:
@@ -133,16 +161,15 @@ def _ingest(
                 http_status=None,
                 items_count=0,
                 error=type(exc).__name__,
+                category="adapter_internal",
                 message=str(exc),
             )
-            err_msg = f"{type(exc).__name__}: {exc}"
-            src_stats.errors.append(err_msg)
-            stats.errors.append(
-                {
-                    "phase": "ingest",
-                    "source_id": source.id,
-                    "error": err_msg,
-                }
+            _append_ingest_error(
+                stats,
+                src_stats,
+                source_id=source.id,
+                category="adapter_internal",
+                message=f"{type(exc).__name__}: {exc}",
             )
             continue
 
@@ -166,12 +193,12 @@ def _ingest(
                     title=item.title,
                     error=str(exc),
                 )
-                stats.errors.append(
-                    {
-                        "phase": "ingest",
-                        "source_id": source.id,
-                        "error": f"upsert: {exc}",
-                    }
+                _append_ingest_error(
+                    stats,
+                    src_stats,
+                    source_id=source.id,
+                    category="adapter_internal",
+                    message=f"upsert: {exc}",
                 )
                 continue
         all_items.extend(fetched)

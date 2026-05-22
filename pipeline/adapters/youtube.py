@@ -158,7 +158,9 @@ class YoutubeAdapter(IngestAdapter):
         if feed.bozo and not feed.entries:
             raise FetchError(
                 f"feedparser failed to parse {source.feed_url}: "
-                f"{feed.get('bozo_exception')!r}"
+                f"{feed.get('bozo_exception')!r}",
+                category="parse_error",
+                http_status=status_code,
             )
 
         entries = list(feed.entries)[: self._max_entries]

@@ -38,12 +38,23 @@ def _fmt_ts(dt: datetime | None) -> str:
 
 
 def _error_line(err: dict[str, str]) -> str:
-    parts = [err.get("phase", "unknown")]
+    """Format a RunStats.errors entry for the technical surface (D-39).
+
+    Prefers the typed ``category`` when set, then ``source_id``, then any
+    ``http_status``, then the human ``message`` (falling back to the legacy
+    ``error`` key so Phase 1 callers that only set ``error`` still render).
+    """
+    parts: list[str] = []
+    if err.get("category"):
+        parts.append(err["category"])
+    parts.append(err.get("phase", "unknown"))
     if err.get("source_id"):
         parts.append(err["source_id"])
     if err.get("item_id"):
         parts.append(err["item_id"][:8])
-    parts.append(err.get("error", "unknown error"))
+    if err.get("http_status"):
+        parts.append(f"http {err['http_status']}")
+    parts.append(err.get("message") or err.get("error", "unknown error"))
     return " · ".join(parts)
 
 

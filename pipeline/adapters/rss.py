@@ -68,7 +68,11 @@ def _fetch_bytes(url: str) -> tuple[bytes, int]:
     """HTTP GET with explicit UA + redirect following.
 
     Returns ``(body, status_code)``. Status 304 yields an empty body — caller
-    treats not-modified as success with zero new items.
+    treats not-modified as success with zero new items. Failures raise
+    ``FetchError`` tagged with the D-39 taxonomy: timeouts as
+    ``fetch_timeout``, HTTP status failures as ``fetch_http_error`` (with the
+    upstream ``http_status`` when available), all other transport errors as
+    ``fetch_http_error``.
     """
     accept_header = (
         "application/atom+xml,application/rss+xml,application/xml,*/*"
@@ -84,8 +88,22 @@ def _fetch_bytes(url: str) -> tuple[bytes, int]:
                 return b"", 304
             response.raise_for_status()
             return response.content, response.status_code
+    except httpx.TimeoutException as exc:
+        raise FetchError(
+            f"timeout fetching {url}: {exc}",
+            category="fetch_timeout",
+        ) from exc
+    except httpx.HTTPStatusError as exc:
+        raise FetchError(
+            f"http error fetching {url}: {exc}",
+            category="fetch_http_error",
+            http_status=exc.response.status_code,
+        ) from exc
     except httpx.HTTPError as exc:
-        raise FetchError(f"http error fetching {url}: {exc}") from exc
+        raise FetchError(
+            f"http error fetching {url}: {exc}",
+            category="fetch_http_error",
+        ) from exc
 
 
 class RssAdapter(IngestAdapter):
@@ -107,7 +125,9 @@ class RssAdapter(IngestAdapter):
 
         if feed.bozo and not feed.entries:
             raise FetchError(
-                f"feedparser failed to parse {source.url}: {feed.get('bozo_exception')!r}"
+                f"feedparser failed to parse {source.url}: {feed.get('bozo_exception')!r}",
+                category="parse_error",
+                http_status=status_code,
             )
 
         feed_title = source.display_name
