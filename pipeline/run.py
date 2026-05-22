@@ -106,9 +106,15 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_week_arg(categorize_cmd)
 
+    rank_cmd = sub.add_parser(
+        "rank",
+        help="Rank story clusters for the week Briefing Top N (LLM).",
+    )
+    _add_week_arg(rank_cmd)
+
     all_cmd = sub.add_parser(
         "all",
-        help="Run ingest → dedup → summarize → categorize → render (default).",
+        help="Run ingest → dedup → summarize → categorize → rank → render (default).",
     )
     _add_week_arg(all_cmd)
     _add_only_pending_transcripts_arg(all_cmd)
@@ -172,6 +178,10 @@ def main(argv: list[str] | None = None) -> int:
             from pipeline.orchestrator import run_categorize
 
             stats = run_categorize(week_id)
+        elif command == "rank":
+            from pipeline.orchestrator import run_rank
+
+            stats = run_rank(week_id)
         elif command == "all":
             from pipeline.orchestrator import run_all
 

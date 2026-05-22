@@ -38,7 +38,10 @@ from store.db import (
     get_items_for_week,
     get_last_known_cluster_category,
     get_pending_transcript_items,
+    get_rank_positions_for_week,
+    get_ranks_for_week,
     init_db,
+    insert_cluster_ranks_batch,
     insert_cluster_summary,
     insert_item_summary,
     insert_pipeline_run,
@@ -81,6 +84,7 @@ class RunStats:
     clusters_created: int = 0
     items_clustered: int = 0
     categorize_llm_calls: int = 0
+    rank_llm_calls: int = 0
     errors: list[dict[str, str]] = field(default_factory=list)
     out_path: Path | None = None
     source_stats: dict[str, SourceRunStats] = field(default_factory=dict)
@@ -486,6 +490,104 @@ def _categorize_week_clusters(
         conn.commit()
 
 
+def _load_cluster_rank_inputs(conn, week_id: str) -> list:
+    """Build rank prompt inputs from categorized clusters with summaries."""
+    from pipeline.llm.categorize import PROMPT_VERSION as CATEGORIZE_VERSION
+    from pipeline.llm.rank import ClusterRankInput
+
+    clusters = get_clusters_for_week(conn, week_id)
+    if not clusters:
+        return []
+
+    inputs: list[ClusterRankInput] = []
+    for cluster in clusters:
+        cluster_id = cluster["cluster_id"]
+        summary_row = get_existing_cluster_summary(
+            conn, cluster_id, week_id, CATEGORIZE_VERSION
+        )
+        category = summary_row["category"] if summary_row else "technical"
+
+        item_row = conn.execute(
+            "SELECT * FROM items WHERE item_id = ?",
+            (cluster["canonical_item_id"],),
+        ).fetchone()
+        if item_row is None:
+            continue
+
+        tldr_row = get_existing_summary(
+            conn, item_row["item_id"], week_id, "summarize_v1"
+        )
+        summary_text = (tldr_row["tldr"] if tldr_row else None) or ""
+        published_at = datetime.fromisoformat(
+            item_row["published_at"].replace("Z", "+00:00")
+        )
+        inputs.append(
+            ClusterRankInput(
+                cluster_id=cluster_id,
+                category=category,
+                title=item_row["title"],
+                summary_text=summary_text,
+                published_at=published_at,
+            )
+        )
+    return inputs
+
+
+def _rank_week(*, week_id: str, conn, log, stats: RunStats) -> None:
+    """Stage-level rank checkpoint — single LLM call per week (D-67)."""
+    from pipeline.llm.rank import PROMPT_VERSION, rank_week_clusters
+    from pipeline.llm.summarize import GeminiKeyMissing
+
+    existing = get_ranks_for_week(conn, week_id, PROMPT_VERSION)
+    if existing:
+        log.info("rank.skip_existing", count=len(existing))
+        return
+
+    cluster_inputs = _load_cluster_rank_inputs(conn, week_id)
+    if not cluster_inputs:
+        log.info("rank.no_clusters")
+        return
+
+    try:
+        log.info("rank_start", cluster_count=len(cluster_inputs))
+        results = rank_week_clusters(week_id=week_id, clusters=cluster_inputs)
+    except GeminiKeyMissing as exc:
+        log.error("rank.key_missing", error=str(exc))
+        stats.errors.append(
+            {
+                "phase": "rank",
+                "error": "GEMINI_API_KEY not set",
+            }
+        )
+        return
+
+    if results and results[0].rank_status == "ok":
+        if results[0].input_tokens is not None or results[0].output_tokens is not None:
+            stats.rank_llm_calls += 1
+            stats.llm_calls += 1
+
+    insert_cluster_ranks_batch(
+        conn,
+        week_id=week_id,
+        rows=[
+            {
+                "cluster_id": row.cluster_id,
+                "rank_score": row.rank_score,
+                "rank_position": row.rank_position,
+                "rank_status": row.rank_status,
+                "prompt_version": row.prompt_version,
+                "model_id": row.model_id,
+            }
+            for row in results
+        ],
+    )
+    for row in results:
+        if row.cost_usd_estimate is not None:
+            stats.cost_usd_estimate += row.cost_usd_estimate
+
+    conn.commit()
+
+
 def _row_get(row, column: str, default=None):
     """Sqlite3.Row.get-style helper — Row has no .get() in Python's sqlite3."""
     try:
@@ -564,6 +666,7 @@ def _build_card_from_row(
     source_type: str | None = None,
     also_covered: tuple[AlsoCoveredMember, ...] = (),
     category: str | None = None,
+    rank_position: int | None = None,
 ) -> DigestCard:
     """Shared card factory used by both LLM and DB-only render paths."""
     resolved_source_type = source_type or _source_type_for(row)
@@ -586,6 +689,7 @@ def _build_card_from_row(
         summary_status=effective_status,
         also_covered=also_covered,
         category=category,
+        rank_position=rank_position,
     )
 
 
@@ -611,6 +715,7 @@ def _build_cards(
 ) -> list[DigestCard]:
     """Turn item rows + summaries into render-ready cards (newest first)."""
     category_map = get_cluster_categories_for_week(conn, week_id)
+    rank_map = get_rank_positions_for_week(conn, week_id)
     cards: list[DigestCard] = []
     for row in rows:
         result = summaries.get(row["item_id"])
@@ -623,6 +728,7 @@ def _build_cards(
                 summary_status=result.summary_status if result else None,
                 also_covered=also_covered,
                 category=category_map.get(row["item_id"]),
+                rank_position=rank_map.get(row["item_id"]),
             )
         )
     cards.sort(key=lambda c: c.published_at, reverse=True)
@@ -632,6 +738,7 @@ def _build_cards(
 def _build_cards_from_db(conn, rows, week_id: str) -> list[DigestCard]:
     """Build render cards from SQLite only — no LLM (D-20 render path)."""
     category_map = get_cluster_categories_for_week(conn, week_id)
+    rank_map = get_rank_positions_for_week(conn, week_id)
     cards: list[DigestCard] = []
     for row in rows:
         existing = get_existing_summary(
@@ -650,6 +757,7 @@ def _build_cards_from_db(conn, rows, week_id: str) -> list[DigestCard]:
                 ),
                 also_covered=also_covered,
                 category=category_map.get(row["item_id"]),
+                rank_position=rank_map.get(row["item_id"]),
             )
         )
     cards.sort(key=lambda c: c.published_at, reverse=True)
@@ -1011,6 +1119,46 @@ def run_categorize(
             raise
 
 
+def run_rank(
+    week_id: str,
+    *,
+    db_path: Path | str | None = None,
+) -> RunStats:
+    """Rank story clusters for the week (single LLM call)."""
+    init_db(db_path)
+    log = logger.bind(week_id=week_id)
+    stats = RunStats(week_id=week_id, phase="rank")
+
+    with connect(db_path) as conn:
+        run_id = insert_pipeline_run(conn, week_id=week_id, phase="rank")
+        conn.commit()
+        try:
+            log.info("orchestrator.start", phase="rank")
+            _rank_week(week_id=week_id, conn=conn, log=log, stats=stats)
+            _finalize(conn, run_id, stats, phase="rank")
+            return stats
+        except Exception as exc:
+            log.error(
+                "orchestrator.failed",
+                phase="rank",
+                error=type(exc).__name__,
+                message=str(exc),
+            )
+            stats.errors.append(
+                {"phase": "rank", "error": f"{type(exc).__name__}: {exc}"}
+            )
+            finalize_pipeline_run(
+                conn,
+                run_id,
+                status="failed",
+                cost_usd_estimate=stats.cost_usd_estimate,
+                errors_json=json.dumps(stats.errors),
+            )
+            conn.commit()
+            _write_last_run(stats, status="failed")
+            raise
+
+
 def run_render(
     week_id: str,
     *,
@@ -1075,7 +1223,7 @@ def run_all(
     out_dir: Path | None = None,
     only_pending_transcripts: bool = False,
 ) -> RunStats:
-    """Execute ingest → dedup → summarize → categorize → render for ``week_id``."""
+    """Execute ingest → dedup → summarize → categorize → rank → render for ``week_id``."""
     from pipeline.config import enabled_sources
 
     init_db(db_path)
@@ -1122,6 +1270,12 @@ def run_all(
                 stats=stats,
             )
             _categorize_week_clusters(
+                week_id=week_id,
+                conn=conn,
+                log=log,
+                stats=stats,
+            )
+            _rank_week(
                 week_id=week_id,
                 conn=conn,
                 log=log,
@@ -1185,6 +1339,7 @@ __all__ = [
     "run_categorize",
     "run_dedup",
     "run_ingest",
+    "run_rank",
     "run_render",
     "run_summarize",
 ]

@@ -97,6 +97,7 @@ class DigestCard:
     summary_status: str | None = None  # PROJECT.md LOCKED routing signal
     also_covered: tuple[AlsoCoveredMember, ...] = ()
     category: str | None = None  # cluster category enum for section grouping
+    rank_position: int | None = None  # global rank for Briefing + section sort
 
 
 _CSS = """
@@ -384,15 +385,22 @@ def _effective_category(card: DigestCard) -> str:
     return DEFAULT_CATEGORY
 
 
+def _card_section_sort_key(card: DigestCard) -> tuple[int, float, float]:
+    """Rank-ordered within category; unranked cards fall back to recency (D-52)."""
+    if card.rank_position is not None:
+        return (0, float(card.rank_position), 0.0)
+    return (1, 0.0, -card.published_at.timestamp())
+
+
 def _group_main_feed_by_category(
     main_feed: list[DigestCard],
 ) -> dict[str, list[DigestCard]]:
-    """Bucket main-feed cards by category enum (D-71 chronological within section)."""
+    """Bucket main-feed cards by category enum; sort by rank within section."""
     grouped: dict[str, list[DigestCard]] = {key: [] for key in CATEGORY_ORDER}
     for card in main_feed:
         grouped[_effective_category(card)].append(card)
     for key in grouped:
-        grouped[key].sort(key=lambda c: c.published_at, reverse=True)
+        grouped[key].sort(key=_card_section_sort_key)
     return grouped
 
 

@@ -122,6 +122,74 @@ def test_classify_llm_exception_import_present() -> None:
     assert "from pipeline.llm.exceptions import classify_llm_exception" in source
 
 
+def test_rank_skips_llm_when_rows_already_present(apply_schema, monkeypatch) -> None:
+    """Stage-level checkpoint skip when rank_v1 rows exist (PIPELINE-05)."""
+    from pipeline.llm.rank import PROMPT_VERSION
+    from pipeline.orchestrator import RunStats, _rank_week
+    from store.db import connect, get_ranks_for_week, insert_cluster_ranks_batch, insert_story_cluster
+
+    week_id = "2026-W21"
+    called = {"rank": False}
+
+    def _fake_rank(**kwargs):
+        called["rank"] = True
+        return []
+
+    monkeypatch.setattr("pipeline.llm.rank.rank_week_clusters", _fake_rank)
+
+    with connect(apply_schema) as conn:
+        conn.execute(
+            """
+            INSERT INTO sources (source_id, type, url, display_name)
+            VALUES ('src-1', 'rss', 'https://example.com/feed', 'Test')
+            """
+        )
+        conn.execute(
+            """
+            INSERT INTO items (
+                item_id, source_id, external_id, canonical_url, title,
+                publisher, published_at, raw_content, content_hash
+            ) VALUES (
+                'item-1', 'src-1', 'ext-1', 'https://example.com/a',
+                'Title', 'Test', '2026-05-20T12:00:00Z', 'body', 'hash'
+            )
+            """
+        )
+        insert_story_cluster(
+            conn,
+            cluster_id="cluster-1",
+            week_id=week_id,
+            canonical_item_id="item-1",
+            canonical_url="https://example.com/a",
+            title_normalized="title",
+        )
+        insert_cluster_ranks_batch(
+            conn,
+            week_id=week_id,
+            rows=[
+                {
+                    "cluster_id": "cluster-1",
+                    "rank_score": 50.0,
+                    "rank_position": 1,
+                    "rank_status": "ok",
+                    "prompt_version": PROMPT_VERSION,
+                    "model_id": "gemini-2.5-flash",
+                }
+            ],
+        )
+        conn.commit()
+
+        stats = RunStats(week_id=week_id)
+        import structlog
+
+        log = structlog.get_logger("test")
+        _rank_week(week_id=week_id, conn=conn, log=log, stats=stats)
+
+        assert called["rank"] is False
+        rows = get_ranks_for_week(conn, week_id, PROMPT_VERSION)
+        assert len(rows) == 1
+
+
 def test_insert_cluster_ranks_batch_persists_position_one(apply_schema) -> None:
     week_id = "2026-W21"
     with connect(apply_schema) as conn:
