@@ -26,6 +26,8 @@ class RunSummary:
     items_degraded: int = 0
     llm_calls: int = 0
     cost_usd_estimate: float = 0.0
+    clusters_created: int = 0
+    items_clustered: int = 0
     per_source: list[tuple[str, int, list[str]]] = field(default_factory=list)
     errors: list[dict[str, str]] = field(default_factory=list)
     out_path: Path | None = None
@@ -99,6 +101,8 @@ def write_last_run_md(
             f"- **items_fetched:** {run_summary.items_fetched}",
             f"- **summaries_written:** {run_summary.summaries_written}",
             f"- **items_degraded:** {run_summary.items_degraded}",
+            f"- **clusters_created:** {run_summary.clusters_created}",
+            f"- **items_clustered:** {run_summary.items_clustered}",
             "",
             "## LLM",
             "",

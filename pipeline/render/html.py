@@ -47,12 +47,22 @@ logger = structlog.get_logger(__name__)
 DEFAULT_OUT_DIR = Path("out")
 VIDEO_INDICATOR = "[video]"  # D-30: small, unambiguous, structurally minimal
 QUOTA_BODY_COPY = "The summary couldn't be generated this week."
+ALSO_COVERED_PREFIX = "Also covered by "
+ALSO_COVERED_SEPARATOR = ", "
 
 # Summary-status values that warrant an in-place "couldn't be generated" card
 # instead of the footer aside. ``parse_error`` and ``api_error`` are bundled
 # with ``quota_exhausted`` because they all share the same UX shape: the
 # content was summarizable but the LLM round-trip failed transiently.
 _IN_PLACE_TRANSIENT_STATUSES = frozenset({"quota_exhausted"})
+
+
+@dataclass(frozen=True)
+class AlsoCoveredMember:
+    """Non-canonical cluster member attribution (D-64)."""
+
+    display_name: str
+    url: str
 
 
 @dataclass(frozen=True)
@@ -76,6 +86,7 @@ class DigestCard:
     source_type: str = "rss"  # D-30 routes video indicator
     transcript_status: str | None = None  # D-23 lifecycle; informational only
     summary_status: str | None = None  # PROJECT.md LOCKED routing signal
+    also_covered: tuple[AlsoCoveredMember, ...] = ()
 
 
 _CSS = """
@@ -143,6 +154,13 @@ main {
 .card-title a:hover { color: #7eb6ff; text-decoration: underline; }
 .card-tldr { margin: 0; color: #c8cdd5; }
 .card-degraded { margin: 0; color: #9aa3b2; font-style: italic; }
+.also-covered-by {
+  margin: 0.55rem 0 0;
+  font-size: 0.82rem;
+  color: #9aa3b2;
+}
+.also-covered-by a { color: #c8cdd5; text-decoration: none; }
+.also-covered-by a:hover { color: #7eb6ff; text-decoration: underline; }
 #also-seen {
   max-width: 720px;
   margin: 0 auto 2rem;
@@ -241,6 +259,21 @@ def _render_body(card: DigestCard) -> str:
     return f'<p class="card-degraded">{html.escape(QUOTA_BODY_COPY, quote=False)}</p>'
 
 
+def _render_also_covered(card: DigestCard) -> str:
+    """Plain-English attribution for non-canonical cluster members (D-64)."""
+    if not card.also_covered:
+        return ""
+    links: list[str] = []
+    for member in card.also_covered:
+        name_safe = html.escape(member.display_name)
+        url_safe = html.escape(member.url, quote=True)
+        links.append(
+            f'<a href="{url_safe}" target="_blank" rel="noopener">{name_safe}</a>'
+        )
+    body = ALSO_COVERED_PREFIX + ALSO_COVERED_SEPARATOR.join(links)
+    return f'<p class="also-covered-by">{body}</p>'
+
+
 def _render_card(card: DigestCard) -> str:
     title_safe = html.escape(card.title)
     badge_safe = html.escape(f"[{card.publisher}]")
@@ -262,6 +295,7 @@ def _render_card(card: DigestCard) -> str:
         f'<a href="{url_safe}" target="_blank" rel="noopener">{title_safe}</a>'
         "</h2>"
         f"{_render_body(card)}"
+        f"{_render_also_covered(card)}"
         "</article>"
     )
 
@@ -411,4 +445,4 @@ def render_digest(
     return out_path
 
 
-__all__ = ["DigestCard", "render_digest"]
+__all__ = ["ALSO_COVERED_PREFIX", "DigestCard", "AlsoCoveredMember", "render_digest"]

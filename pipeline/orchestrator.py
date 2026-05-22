@@ -23,13 +23,14 @@ from typing import TYPE_CHECKING
 import structlog
 
 from pipeline.models import NormalizedItem
-from pipeline.render.html import DigestCard, render_digest
+from pipeline.render.html import AlsoCoveredMember, DigestCard, render_digest
 from pipeline.reporting.last_run import RunSummary, write_last_run_md
 from pipeline.week import week_bounds
 from store.db import (
     connect,
     finalize_pipeline_run,
     get_canonical_item_ids_for_week,
+    get_cluster_members,
     get_existing_summary,
     get_items_for_week,
     get_pending_transcript_items,
@@ -429,6 +430,29 @@ def _infer_summary_status(
     return "thin"
 
 
+def _also_covered_for_item(conn, *, week_id: str, item_id: str) -> tuple[AlsoCoveredMember, ...]:
+    """Load non-canonical member attributions for a canonical card (D-64)."""
+    cluster_row = conn.execute(
+        """
+        SELECT cluster_id FROM story_clusters
+         WHERE week_id = ? AND canonical_item_id = ?
+        """,
+        (week_id, item_id),
+    ).fetchone()
+    if cluster_row is None:
+        return ()
+    members = get_cluster_members(conn, cluster_row["cluster_id"])
+    if len(members) <= 1:
+        return ()
+    attributions = [
+        AlsoCoveredMember(display_name=member["display_name"], url=member["canonical_url"])
+        for member in members
+        if not member["is_canonical"]
+    ]
+    attributions.sort(key=lambda member: member.display_name.lower())
+    return tuple(attributions)
+
+
 def _build_card_from_row(
     row,
     *,
@@ -436,6 +460,7 @@ def _build_card_from_row(
     summary_confidence: str,
     summary_status: str | None,
     source_type: str | None = None,
+    also_covered: tuple[AlsoCoveredMember, ...] = (),
 ) -> DigestCard:
     """Shared card factory used by both LLM and DB-only render paths."""
     resolved_source_type = source_type or _source_type_for(row)
@@ -456,6 +481,7 @@ def _build_card_from_row(
         source_type=resolved_source_type,
         transcript_status=transcript_status,
         summary_status=effective_status,
+        also_covered=also_covered,
     )
 
 
@@ -473,18 +499,24 @@ def _canonical_rows_for_render(
 
 
 def _build_cards(
-    rows, summaries: dict[str, SummaryResult]
+    conn,
+    *,
+    week_id: str,
+    rows,
+    summaries: dict[str, SummaryResult],
 ) -> list[DigestCard]:
     """Turn item rows + summaries into render-ready cards (newest first)."""
     cards: list[DigestCard] = []
     for row in rows:
         result = summaries.get(row["item_id"])
+        also_covered = _also_covered_for_item(conn, week_id=week_id, item_id=row["item_id"])
         cards.append(
             _build_card_from_row(
                 row,
                 tldr=result.tldr if result else None,
                 summary_confidence=result.summary_confidence if result else "unavailable",
                 summary_status=result.summary_status if result else None,
+                also_covered=also_covered,
             )
         )
     cards.sort(key=lambda c: c.published_at, reverse=True)
@@ -498,6 +530,7 @@ def _build_cards_from_db(conn, rows, week_id: str) -> list[DigestCard]:
         existing = get_existing_summary(
             conn, row["item_id"], week_id, "summarize_v1"
         )
+        also_covered = _also_covered_for_item(conn, week_id=week_id, item_id=row["item_id"])
         cards.append(
             _build_card_from_row(
                 row,
@@ -508,6 +541,7 @@ def _build_cards_from_db(conn, rows, week_id: str) -> list[DigestCard]:
                 summary_status=(
                     _row_get(existing, "summary_status") if existing else None
                 ),
+                also_covered=also_covered,
             )
         )
     cards.sort(key=lambda c: c.published_at, reverse=True)
@@ -551,6 +585,8 @@ def _write_last_run(stats: RunStats, *, status: str) -> None:
             items_degraded=stats.items_degraded,
             llm_calls=stats.llm_calls,
             cost_usd_estimate=stats.cost_usd_estimate,
+            clusters_created=stats.clusters_created,
+            items_clustered=stats.items_clustered,
             per_source=per_source,
             errors=stats.errors,
             out_path=stats.out_path,
@@ -939,7 +975,12 @@ def run_all(
                 week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
             )
             week_rows = _canonical_rows_for_render(conn, week_rows, week_id=week_id)
-            cards = _build_cards(week_rows, summaries)
+            cards = _build_cards(
+                conn,
+                week_id=week_id,
+                rows=week_rows,
+                summaries=summaries,
+            )
             pending, failed = _pipeline_notice_counts(cards=cards, stats=stats)
             stats.out_path = render_digest(
                 week_id=week_id,
