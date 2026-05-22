@@ -1,5 +1,11 @@
 # AI Digest
 
+> **Planning gate:** Read `.planning/LOCKED-DIRECTIVES.md` before
+> drafting any CONTEXT.md, PLAN.md, ROADMAP.md, or PROJECT.md change.
+> Locked rules cannot be overridden by phase decisions; proposals to
+> change them must be surfaced as questions, not buried in plan
+> documents.
+
 ## What This Is
 
 A personal, fully-automated weekly AI news and information digest delivered as a dark-themed dashboard website. It ingests from a curated set of 15–40 sources (blogs, Substacks, YouTube channels, newsletters, Reddit/HN), uses LLMs to summarize, categorize, rank, and write a weekly narrative roll-up, and presents the result as a "Sunday morning read" with a Briefing landing page and topic tabs.

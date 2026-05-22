@@ -1,0 +1,56 @@
+---
+description: "Hard gate: read .planning/LOCKED-DIRECTIVES.md before drafting any phase plan, CONTEXT.md, ROADMAP.md edit, or PROJECT.md edit. Locked rules cannot be overridden by phase decisions; proposals must be surfaced to the user as questions, not buried in plan documents."
+globs: [".planning/**/*.md", ".cursor/skills/gsd-*/SKILL.md", "ROADMAP.md", "PROJECT.md", "CONTEXT.md", "PLAN.md"]
+alwaysApply: false
+---
+
+# Locked directives — mandatory read
+
+You are touching a file in the planning surface
+(`.planning/**/*.md`, ROADMAP, CONTEXT, PLAN, PROJECT, or a GSD
+skill adapter). Before continuing:
+
+1. **Read `.planning/LOCKED-DIRECTIVES.md` end-to-end now.** It is
+   short. There is no shortcut.
+2. **Identify whether your in-progress edit touches any LOCKED rule.**
+   "Touches" means: rewrites, contradicts, narrows, broadens,
+   reinterprets, or proposes-superseding any LOCKED entry.
+3. **If yes — STOP.** Do not write the plan / decision / artifact.
+   Surface the conflict to the user as a direct question:
+   - Name the LOCKED rule by ID (e.g., LOCKED-01)
+   - State what you want to do and why
+   - Wait for explicit approval
+   - Do NOT bury the proposed override inside a plan document
+4. **If no — continue, and cite the LOCKED rules your work complies
+   with** in the plan / CONTEXT comments. Future cross-checks become
+   cheap when compliance is explicit.
+
+## Why this rule exists
+
+The user issued the locked-directive contract on 2026-05-22 after a
+phase plan I wrote (Plan 02-03 D-25) overrode an earlier directive
+(Phase 1 D-05 footer-aside) and produced output the user rejected.
+This was the second time the same rule had been regressed by a plan
+I authored (the first was Plan 01-03, reverted in `5f8e9f0`).
+
+A locked directive is the user's veto of my future planning autonomy
+on that specific subject. Treating it as "a default to be re-examined
+each phase" defeats the whole point.
+
+## What is NOT a violation
+
+- Citing a LOCKED rule in your plan as a constraint you're honoring.
+- Refining HOW a locked rule is implemented (e.g., new visual
+  treatment for the footer aside under LOCKED-01).
+- Adding code anchors / tests that enforce a locked rule.
+- Proposing a change to the user as a standalone question.
+
+## What IS a violation
+
+- Writing a CONTEXT.md decision (D-XX) that overrides a LOCKED rule.
+- Writing a PLAN.md task that implements behavior contrary to a
+  LOCKED rule.
+- Rewriting a renderer / orchestrator / adapter contract that a
+  LOCKED rule pins, without first surfacing the conflict.
+- Editing `.planning/LOCKED-DIRECTIVES.md` itself without an
+  explicit user instruction to do so.
