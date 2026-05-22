@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 
 
 SCHEMA_PATH = Path(__file__).resolve().parent / "schema.sql"
+MIGRATIONS_DIR = Path(__file__).resolve().parent / "migrations"
 DEFAULT_DB_PATH = Path("data") / "aidigest.db"
 
 
@@ -45,15 +46,55 @@ def connect(db_path: Path | str | None = None) -> Iterable[sqlite3.Connection]:
         conn.close()
 
 
-def init_db(db_path: Path | str | None = None) -> Path:
-    """Apply ``store/schema.sql`` to the target DB, creating it if needed.
+def _strip_sql_line_comments(text: str) -> str:
+    """Drop ``--`` line comments before statement-splitting.
 
-    Idempotent — safe to call on every run.
+    SQLite tolerates comments inside ``executescript`` but the per-statement
+    runner below splits on ``;`` and then passes each chunk to ``conn.execute``,
+    which rejects bare comment text. Stripping line-comments up-front avoids
+    parsing the SQL by hand while keeping behavior obvious.
+    """
+    return "\n".join(
+        line for line in text.splitlines() if not line.lstrip().startswith("--")
+    )
+
+
+def _apply_migrations(conn: sqlite3.Connection) -> None:
+    """Apply numbered migrations from ``store/migrations/*.sql`` in lexicographic order.
+
+    Each migration is split on ``;`` and executed statement-by-statement so a single
+    ``ALTER TABLE ADD COLUMN`` re-run (SQLite lacks ``IF NOT EXISTS`` for columns)
+    can be swallowed as a no-op without aborting the rest of the file. Any
+    ``OperationalError`` that is NOT a duplicate-column re-run is re-raised.
+    """
+    if not MIGRATIONS_DIR.is_dir():
+        return
+    for migration in sorted(MIGRATIONS_DIR.glob("*.sql")):
+        text = _strip_sql_line_comments(migration.read_text(encoding="utf-8"))
+        for raw_stmt in text.split(";"):
+            stmt = raw_stmt.strip()
+            if not stmt:
+                continue
+            try:
+                conn.execute(stmt)
+            except sqlite3.OperationalError as exc:
+                if "duplicate column name" in str(exc).lower():
+                    continue
+                raise
+
+
+def init_db(db_path: Path | str | None = None) -> Path:
+    """Apply ``store/schema.sql`` plus numbered migrations to the target DB.
+
+    Idempotent — safe to call on every run. Fresh DBs receive the canonical
+    schema; existing DBs receive only the additive ALTER TABLE statements that
+    have not been applied yet.
     """
     path = Path(db_path) if db_path is not None else DEFAULT_DB_PATH
     schema_sql = SCHEMA_PATH.read_text(encoding="utf-8")
     with connect(path) as conn:
         conn.executescript(schema_sql)
+        _apply_migrations(conn)
         conn.commit()
     return path
 

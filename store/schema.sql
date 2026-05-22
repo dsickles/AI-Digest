@@ -1,29 +1,33 @@
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS sources (
-    source_id       TEXT PRIMARY KEY,
-    type            TEXT NOT NULL,
-    url             TEXT NOT NULL,
-    display_name    TEXT NOT NULL,
-    tag             TEXT,
-    enabled         INTEGER NOT NULL DEFAULT 1,
-    etag            TEXT,
-    last_modified   TEXT,
-    last_fetched_at TEXT,
-    last_error      TEXT
+    source_id           TEXT PRIMARY KEY,
+    type                TEXT NOT NULL,
+    url                 TEXT NOT NULL,
+    display_name        TEXT NOT NULL,
+    tag                 TEXT,
+    enabled             INTEGER NOT NULL DEFAULT 1,
+    etag                TEXT,
+    last_modified       TEXT,
+    last_fetched_at     TEXT,
+    last_error          TEXT,
+    last_success_at     TEXT,
+    last_item_at        TEXT,
+    last_error_category TEXT
 );
 
 CREATE TABLE IF NOT EXISTS items (
-    item_id         TEXT PRIMARY KEY,
-    source_id       TEXT NOT NULL REFERENCES sources(source_id),
-    external_id     TEXT NOT NULL,
-    canonical_url   TEXT NOT NULL,
-    title           TEXT NOT NULL,
-    publisher       TEXT NOT NULL,
-    published_at    TEXT NOT NULL,
-    raw_content     TEXT NOT NULL DEFAULT '',
-    content_hash    TEXT NOT NULL,
-    ingested_at     TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    item_id           TEXT PRIMARY KEY,
+    source_id         TEXT NOT NULL REFERENCES sources(source_id),
+    external_id       TEXT NOT NULL,
+    canonical_url     TEXT NOT NULL,
+    title             TEXT NOT NULL,
+    publisher         TEXT NOT NULL,
+    published_at      TEXT NOT NULL,
+    raw_content       TEXT NOT NULL DEFAULT '',
+    content_hash      TEXT NOT NULL,
+    ingested_at       TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    transcript_status TEXT,
     UNIQUE (source_id, external_id)
 );
 
@@ -31,17 +35,18 @@ CREATE INDEX IF NOT EXISTS idx_items_published_at ON items(published_at);
 CREATE INDEX IF NOT EXISTS idx_items_source_id ON items(source_id);
 
 CREATE TABLE IF NOT EXISTS item_summaries (
-    summary_id          TEXT PRIMARY KEY,
-    item_id             TEXT NOT NULL REFERENCES items(item_id),
-    week_id             TEXT NOT NULL,
-    tldr                TEXT,
-    summary_confidence  TEXT NOT NULL CHECK (summary_confidence IN ('high', 'low', 'unavailable')),
-    prompt_version      TEXT NOT NULL,
-    model_id            TEXT NOT NULL,
-    input_tokens        INTEGER,
-    output_tokens       INTEGER,
-    cost_usd_estimate   REAL,
-    created_at          TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    summary_id               TEXT PRIMARY KEY,
+    item_id                  TEXT NOT NULL REFERENCES items(item_id),
+    week_id                  TEXT NOT NULL,
+    tldr                     TEXT,
+    summary_confidence       TEXT NOT NULL CHECK (summary_confidence IN ('high', 'low', 'unavailable')),
+    prompt_version           TEXT NOT NULL,
+    model_id                 TEXT NOT NULL,
+    input_tokens             INTEGER,
+    output_tokens            INTEGER,
+    cost_usd_estimate        REAL,
+    created_at               TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    summary_input_truncated  INTEGER NOT NULL DEFAULT 0,
     UNIQUE (item_id, week_id, prompt_version)
 );
 

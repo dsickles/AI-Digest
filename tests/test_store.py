@@ -97,3 +97,26 @@ def test_upsert_item_updates_mutable_fields(apply_schema: Path) -> None:
 
     assert item_id_before == item_id_after
     assert row["title"] == "Edited Title"
+
+
+def _column_names(conn: sqlite3.Connection, table: str) -> set[str]:
+    return {row["name"] for row in conn.execute(f"PRAGMA table_info({table})")}
+
+
+def test_phase2_schema_migration(temp_sqlite_path: Path) -> None:
+    """Phase 2 additive columns land on fresh + re-applied init_db (D-23, D-28, D-40)."""
+    from store.db import init_db
+
+    init_db(temp_sqlite_path)
+    init_db(temp_sqlite_path)
+
+    with connect(temp_sqlite_path) as conn:
+        items_cols = _column_names(conn, "items")
+        sources_cols = _column_names(conn, "sources")
+        summaries_cols = _column_names(conn, "item_summaries")
+
+    assert "transcript_status" in items_cols, "D-23: items.transcript_status missing"
+    assert "summary_input_truncated" in summaries_cols, "D-28: item_summaries.summary_input_truncated missing"
+    assert "last_success_at" in sources_cols, "D-40: sources.last_success_at missing"
+    assert "last_item_at" in sources_cols, "D-40: sources.last_item_at missing"
+    assert "last_error_category" in sources_cols, "D-40: sources.last_error_category missing"
