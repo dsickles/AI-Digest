@@ -6,6 +6,12 @@ plain HTML digest you can open in a browser.
 
 > **Phase 1 complete:** 2–3 RSS sources, per-item TL;DR, plain dark HTML,
 > idempotent ingest, degraded-summary handling, `out/last_run.md` debugging.
+>
+> **Phase 2 complete:** 8-source catalog (5 RSS + 2 YouTube + 1 newsletter),
+> YouTube transcript ingestion with cloud → residential catch-up flow
+> (`--only-pending-transcripts`), in-place degradation cards, typed
+> per-source failure isolation, and a header pipeline-status notice.
+>
 > Dedup, ranking, and the Astro dashboard land in later phases.
 
 ## Prerequisites
@@ -69,8 +75,11 @@ RSS sources live in `config/sources.yaml`. Each entry needs:
 - `display_name` — shown as `[display_name]` badge in the digest
 - `enabled` — set `false` to skip a source without deleting it
 
-Phase 1 ships three D-01 feeds (Simon Willison, Import AI, One Useful Thing).
-Edit this file to add or disable sources before running ingest.
+YouTube channels use `type: youtube` and a `channel_id` (24 characters
+starting with `UC`); the adapter derives the feed URL from the channel ID
+and pulls per-video transcripts. Phase 2 ships eight sources by default
+(five RSS, two YouTube, one newsletter). Edit this file to add or disable
+sources before running ingest.
 
 ## Run
 
@@ -116,6 +125,38 @@ uv run python -m pipeline.run ingest
 # Bare invocation aliases `all`
 uv run python -m pipeline.run --week 2026-W19
 ```
+
+### YouTube transcript catch-up
+
+When the weekly run executes from a cloud network (GitHub Actions, a hosted
+VM) the YouTube transcript API is often blocked by an "IP blocked" or "too
+many requests" response. Those video items still ingest fine — they just
+land with `transcript_status='pending_local'`, and their cards in the digest
+fall back to the channel description plus a small "transcript wasn't
+reachable" note (D-25 in-place degradation).
+
+To recover those items, run the pipeline a second time **from a residential
+network** (your laptop on home Wi-Fi, a coffee-shop hotspot — anywhere the
+transcript API works without a paid proxy):
+
+```bash
+# Retry only the pending YouTube transcripts; skip RSS sources entirely
+uv run python -m pipeline.run ingest --only-pending-transcripts
+
+# Same, then re-summarize and re-render for the current week
+uv run python -m pipeline.run all --only-pending-transcripts
+
+# Catch-up for a specific past week
+uv run python -m pipeline.run all --only-pending-transcripts --week 2026-W19
+```
+
+The flag is a no-op when nothing is pending. On a successful transcript
+fetch the item's `transcript_status` flips to `ok` and its `raw_content` is
+replaced with the captions, so the next `summarize` pass produces a
+transcript-grounded TL;DR. If the YouTube API confirms a video has no
+captions (`TranscriptsDisabled`) the catch-up path advances the status to
+`missing` — that's the only path in the codebase that may set `missing`, so
+those items will not be retried by future catch-up runs.
 
 ### Manual browser check
 
@@ -203,5 +244,5 @@ out/             Generated digest HTML + last_run.md (gitignored)
 
 ## Project status
 
-**Phase 1 of 5 — complete.** See `.planning/ROADMAP.md` for Phase 2+ (YouTube,
-Reddit/HN, dedup, Astro dashboard, GHA automation).
+**Phases 1–2 of 5 — complete.** See `.planning/ROADMAP.md` for Phase 3+
+(Reddit/HN, dedup, Astro dashboard, GHA automation).
