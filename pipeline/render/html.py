@@ -50,6 +50,15 @@ QUOTA_BODY_COPY = "The summary couldn't be generated this week."
 ALSO_COVERED_PREFIX = "Also covered by "
 ALSO_COVERED_SEPARATOR = ", "
 
+CATEGORY_ORDER = ("edtech", "business", "technical", "design")
+CATEGORY_LABELS = {
+    "edtech": "Edtech",
+    "business": "Business",
+    "technical": "Technical",
+    "design": "Design",
+}
+DEFAULT_CATEGORY = "technical"
+
 # Summary-status values that warrant an in-place "couldn't be generated" card
 # instead of the footer aside. ``parse_error`` and ``api_error`` are bundled
 # with ``quota_exhausted`` because they all share the same UX shape: the
@@ -87,6 +96,7 @@ class DigestCard:
     transcript_status: str | None = None  # D-23 lifecycle; informational only
     summary_status: str | None = None  # PROJECT.md LOCKED routing signal
     also_covered: tuple[AlsoCoveredMember, ...] = ()
+    category: str | None = None  # cluster category enum for section grouping
 
 
 _CSS = """
@@ -186,6 +196,20 @@ main {
   margin-left: 0.4rem;
   font-size: 0.78rem;
   color: #6b7280;
+}
+.category-section {
+  margin-top: 2rem;
+}
+.category-section:first-child {
+  margin-top: 0;
+}
+.category-header {
+  margin: 0 0 1rem;
+  font-size: 1.35rem;
+  font-weight: 650;
+  color: #e6e6e6;
+  border-bottom: 1px solid #2a3140;
+  padding-bottom: 0.35rem;
 }
 """.strip()
 
@@ -353,6 +377,44 @@ def _render_pipeline_notice(*, pending: int, failed_sources: int) -> str:
     return f'<p class="pipeline-notice">{body}</p>'
 
 
+def _effective_category(card: DigestCard) -> str:
+    """Resolve section bucket; uncategorized cards fall back to technical."""
+    if card.category in CATEGORY_LABELS:
+        return card.category  # type: ignore[return-value]
+    return DEFAULT_CATEGORY
+
+
+def _group_main_feed_by_category(
+    main_feed: list[DigestCard],
+) -> dict[str, list[DigestCard]]:
+    """Bucket main-feed cards by category enum (D-71 chronological within section)."""
+    grouped: dict[str, list[DigestCard]] = {key: [] for key in CATEGORY_ORDER}
+    for card in main_feed:
+        grouped[_effective_category(card)].append(card)
+    for key in grouped:
+        grouped[key].sort(key=lambda c: c.published_at, reverse=True)
+    return grouped
+
+
+def _render_category_sections(main_feed: list[DigestCard]) -> str:
+    """Render per-category sections; omit empty categories (D-65, D-24)."""
+    grouped = _group_main_feed_by_category(main_feed)
+    sections: list[str] = []
+    for category in CATEGORY_ORDER:
+        cards = grouped[category]
+        if not cards:
+            continue
+        label = html.escape(CATEGORY_LABELS[category])
+        cards_html = "\n".join(_render_card(card) for card in cards)
+        sections.append(
+            f'<section class="category-section" data-category="{html.escape(category, quote=True)}">'
+            f'<h2 class="category-header">{label}</h2>'
+            f"{cards_html}"
+            "</section>"
+        )
+    return "\n".join(sections)
+
+
 def render_digest(
     *,
     week_id: str,
@@ -376,7 +438,6 @@ def render_digest(
     out_path = out_root / f"digest-{week_id}.html"
 
     main_feed, also_seen = _partition_cards(cards)
-    main_sorted = sorted(main_feed, key=lambda c: c.published_at, reverse=True)
 
     week_header = _format_week_header(week_start, week_end)
     updated_line = _format_updated(datetime.now(UTC))
@@ -388,8 +449,8 @@ def render_digest(
     week_header_safe = html.escape(week_header)
     updated_safe = html.escape(updated_line)
 
-    if main_sorted:
-        cards_html = "\n".join(_render_card(card) for card in main_sorted)
+    if main_feed:
+        cards_html = _render_category_sections(main_feed)
     else:
         cards_html = (
             '<p class="card-degraded">'
@@ -400,7 +461,7 @@ def render_digest(
 
     also_seen_html = _render_also_seen(also_seen)
 
-    total_main = len(main_sorted)
+    total_main = len(main_feed)
     item_word = "item" if total_main == 1 else "items"
     also_seen_suffix = (
         f" · {len(also_seen)} more in footer" if also_seen else ""
@@ -445,4 +506,11 @@ def render_digest(
     return out_path
 
 
-__all__ = ["ALSO_COVERED_PREFIX", "DigestCard", "AlsoCoveredMember", "render_digest"]
+__all__ = [
+    "ALSO_COVERED_PREFIX",
+    "CATEGORY_LABELS",
+    "CATEGORY_ORDER",
+    "DigestCard",
+    "AlsoCoveredMember",
+    "render_digest",
+]
