@@ -78,9 +78,56 @@ def _apply_migrations(conn: sqlite3.Connection) -> None:
             try:
                 conn.execute(stmt)
             except sqlite3.OperationalError as exc:
-                if "duplicate column name" in str(exc).lower():
+                message = str(exc).lower()
+                if "duplicate column name" in message:
+                    continue
+                if "already exists" in message:
                     continue
                 raise
+
+
+def _ensure_pipeline_runs_phases(conn: sqlite3.Connection) -> None:
+    """Rebuild ``pipeline_runs`` when the phase CHECK lacks Phase 3 stages.
+
+    SQLite cannot ALTER CHECK constraints; existing DBs from Phase 1–2 need a
+    one-time table rebuild. Idempotent — no-op when ``dedup`` is already allowed.
+    """
+    row = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table' AND name='pipeline_runs'"
+    ).fetchone()
+    if row is None:
+        return
+    ddl = row[0] or ""
+    if "dedup" in ddl:
+        return
+    conn.executescript(
+        """
+        CREATE TABLE pipeline_runs__v2 (
+            run_id              TEXT PRIMARY KEY,
+            started_at          TEXT NOT NULL,
+            finished_at         TEXT,
+            week_id             TEXT NOT NULL,
+            phase               TEXT NOT NULL CHECK (phase IN (
+                'ingest', 'summarize', 'render', 'all',
+                'dedup', 'categorize', 'rank', 'rollup'
+            )),
+            status              TEXT NOT NULL CHECK (status IN ('running', 'success', 'partial', 'failed')),
+            errors_json         TEXT NOT NULL DEFAULT '[]',
+            items_fetched       INTEGER NOT NULL DEFAULT 0,
+            summaries_written   INTEGER NOT NULL DEFAULT 0,
+            items_degraded      INTEGER NOT NULL DEFAULT 0,
+            cost_usd_estimate   REAL NOT NULL DEFAULT 0.0
+        );
+        INSERT INTO pipeline_runs__v2
+            SELECT run_id, started_at, finished_at, week_id, phase, status,
+                   errors_json, items_fetched, summaries_written, items_degraded,
+                   cost_usd_estimate
+              FROM pipeline_runs;
+        DROP TABLE pipeline_runs;
+        ALTER TABLE pipeline_runs__v2 RENAME TO pipeline_runs;
+        CREATE INDEX IF NOT EXISTS idx_pipeline_runs_week ON pipeline_runs(week_id);
+        """
+    )
 
 
 def init_db(db_path: Path | str | None = None) -> Path:
@@ -95,6 +142,7 @@ def init_db(db_path: Path | str | None = None) -> Path:
     with connect(path) as conn:
         conn.executescript(schema_sql)
         _apply_migrations(conn)
+        _ensure_pipeline_runs_phases(conn)
         conn.commit()
     return path
 
@@ -357,6 +405,119 @@ def insert_item_summary(
         ),
     )
     return summary_id
+
+
+def delete_clusters_for_week(conn: sqlite3.Connection, week_id: str) -> None:
+    """Remove all cluster rows for ``week_id`` before a deterministic rebuild."""
+    conn.execute(
+        """
+        DELETE FROM cluster_members
+         WHERE cluster_id IN (
+             SELECT cluster_id FROM story_clusters WHERE week_id = ?
+         )
+        """,
+        (week_id,),
+    )
+    conn.execute("DELETE FROM story_clusters WHERE week_id = ?", (week_id,))
+
+
+def insert_story_cluster(
+    conn: sqlite3.Connection,
+    *,
+    cluster_id: str,
+    week_id: str,
+    canonical_item_id: str,
+    canonical_url: str,
+    title_normalized: str,
+) -> str:
+    """Insert a cluster header row."""
+    conn.execute(
+        """
+        INSERT INTO story_clusters (
+            cluster_id, week_id, canonical_item_id, canonical_url, title_normalized
+        ) VALUES (?, ?, ?, ?, ?)
+        """,
+        (cluster_id, week_id, canonical_item_id, canonical_url, title_normalized),
+    )
+    return cluster_id
+
+
+def insert_cluster_member(
+    conn: sqlite3.Connection,
+    *,
+    cluster_id: str,
+    item_id: str,
+    is_canonical: bool,
+) -> None:
+    """Attach an item to a cluster."""
+    conn.execute(
+        """
+        INSERT INTO cluster_members (cluster_id, item_id, is_canonical)
+        VALUES (?, ?, ?)
+        """,
+        (cluster_id, item_id, 1 if is_canonical else 0),
+    )
+
+
+def get_clusters_for_week(
+    conn: sqlite3.Connection,
+    week_id: str,
+) -> list[sqlite3.Row]:
+    """Return cluster headers for ``week_id``."""
+    return conn.execute(
+        "SELECT * FROM story_clusters WHERE week_id = ? ORDER BY created_at",
+        (week_id,),
+    ).fetchall()
+
+
+def get_cluster_members(
+    conn: sqlite3.Connection,
+    cluster_id: str,
+) -> list[sqlite3.Row]:
+    """Return member rows for a cluster."""
+    return conn.execute(
+        """
+        SELECT cm.*, items.canonical_url, items.title, sources.display_name
+          FROM cluster_members cm
+          JOIN items ON items.item_id = cm.item_id
+          JOIN sources ON sources.source_id = items.source_id
+         WHERE cm.cluster_id = ?
+         ORDER BY cm.is_canonical DESC, sources.display_name, items.item_id
+        """,
+        (cluster_id,),
+    ).fetchall()
+
+
+def get_canonical_item_ids_for_week(
+    conn: sqlite3.Connection,
+    week_id: str,
+) -> set[str]:
+    """Item ids that should receive LLM summarize (canonical representatives)."""
+    rows = conn.execute(
+        """
+        SELECT canonical_item_id FROM story_clusters WHERE week_id = ?
+        """,
+        (week_id,),
+    ).fetchall()
+    return {row["canonical_item_id"] for row in rows}
+
+
+def is_cluster_canonical_member(
+    conn: sqlite3.Connection,
+    *,
+    week_id: str,
+    item_id: str,
+) -> bool:
+    """True when ``item_id`` is the canonical representative for its week cluster."""
+    row = conn.execute(
+        """
+        SELECT 1
+          FROM story_clusters
+         WHERE week_id = ? AND canonical_item_id = ?
+        """,
+        (week_id, item_id),
+    ).fetchone()
+    return row is not None
 
 
 def insert_pipeline_run(

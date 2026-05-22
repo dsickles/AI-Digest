@@ -53,12 +53,35 @@ CREATE TABLE IF NOT EXISTS item_summaries (
 
 CREATE INDEX IF NOT EXISTS idx_item_summaries_week ON item_summaries(week_id);
 
+CREATE TABLE IF NOT EXISTS story_clusters (
+    cluster_id          TEXT PRIMARY KEY,
+    week_id             TEXT NOT NULL,
+    canonical_item_id   TEXT NOT NULL REFERENCES items(item_id),
+    canonical_url       TEXT NOT NULL,
+    title_normalized    TEXT NOT NULL,
+    created_at          TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_story_clusters_week ON story_clusters(week_id);
+
+CREATE TABLE IF NOT EXISTS cluster_members (
+    cluster_id    TEXT NOT NULL REFERENCES story_clusters(cluster_id),
+    item_id       TEXT NOT NULL REFERENCES items(item_id),
+    is_canonical  INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (cluster_id, item_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cluster_members_item ON cluster_members(item_id);
+
 CREATE TABLE IF NOT EXISTS pipeline_runs (
     run_id              TEXT PRIMARY KEY,
     started_at          TEXT NOT NULL,
     finished_at         TEXT,
     week_id             TEXT NOT NULL,
-    phase               TEXT NOT NULL CHECK (phase IN ('ingest', 'summarize', 'render', 'all')),
+    phase               TEXT NOT NULL CHECK (phase IN (
+        'ingest', 'summarize', 'render', 'all',
+        'dedup', 'categorize', 'rank', 'rollup'
+    )),
     status              TEXT NOT NULL CHECK (status IN ('running', 'success', 'partial', 'failed')),
     errors_json         TEXT NOT NULL DEFAULT '[]',
     items_fetched       INTEGER NOT NULL DEFAULT 0,

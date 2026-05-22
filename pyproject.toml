@@ -17,6 +17,7 @@ dependencies = [
     "truststore>=0.10.4,<1",
     "trafilatura>=2.0.0,<3",
     "readability-lxml>=0.8.4.1,<0.9",
+    "rapidfuzz>=3.13.0,<4",
 ]
 
 [project.optional-dependencies]
