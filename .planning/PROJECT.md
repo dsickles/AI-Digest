@@ -25,9 +25,8 @@ A personal, fully-automated weekly AI news and information digest delivered as a
 <!-- Current scope. v1 hypotheses until shipped. -->
 
 #### Ingestion
-- [ ] Ingest items from a configured list of RSS-friendly blogs / Substacks
+- [ ] Ingest items from a configured list of RSS-friendly blogs, Substacks, and newsletters (the Editorial Principle naturally selects for sources that publish public RSS feeds)
 - [ ] Ingest items from configured YouTube channels (transcripts included)
-- [ ] Ingest email newsletters via an email→RSS bridge (e.g., Kill the Newsletter or similar)
 - [ ] Sources are hard-coded in config for v1 (a single file I edit by hand)
 
 #### AI Pipeline (runs weekly)
@@ -54,6 +53,7 @@ A personal, fully-automated weekly AI news and information digest delivered as a
 
 - **Multi-user / accounts / auth** — v1 is just for me; hard-coded source list. Future evolution may turn this into a framework where others bring their own sources, but not in v1.
 - **Reddit / Hacker News ingestion (v1)** — Violates the Editorial Principle (known entities and their takes, not anonymous community signal). The value HN/Reddit *would* add is "what's the crowd buzzing about," which is a different product surface — captured as a v2 community-pulse enhancement, not retrofitted into the per-author digest.
+- **Email→RSS bridge / Kill the Newsletter (v1)** — Empirically, every newsletter that fits the Editorial Principle so far publishes a public RSS feed (Substack, beehiiv, custom). The KTN bridge is only needed for the residual "email-only" slice (corporate forwards, paid-tier-only content, smaller authors who never moved to Substack). Deferred to v2 as an opt-in extension if a genuinely email-only source enters the picture; not worth the per-source setup tax (subscription confirmation flows, secret URL management) without a real source forcing the issue.
 - **Twitter/X ingestion** — Official API is paid (~$100/mo for usable tiers), unofficial scrapers are brittle and TOS-risky. Cost/complexity not justified for v1.
 - **Podcast audio transcription** — RSS gives episode metadata, but summarizing means running Whisper over hours of audio weekly. Significant cost and latency; deferred to v2.
 - **LinkedIn creator ingestion** — No clean ingestion path; not worth the scraping fragility for v1.
@@ -90,6 +90,7 @@ A personal, fully-automated weekly AI news and information digest delivered as a
 | Full archive of past weekly digests (vs. current-only or rolling window) | Cheap to keep, valuable for "remind me what happened in March," reinforces "weekly newspaper" mental model | — Pending |
 | Tech stack TBD by research | I'm a developer but don't want to bias the architecture before seeing what's actually best in 2026 | — Pending |
 | Drop Reddit/HN from v1 ingestion; defer to v2 as "community pulse" | Sources violate the Editorial Principle ("known entities and their takes, not anonymous community signal"); the crowd-aggregation question is a genuinely different product surface that deserves its own treatment, not a forced fit into the per-author digest | Adopted 2026-05-22 during Phase 2 discuss |
+| Drop email→RSS bridge (KTN) from v1; defer to v2 | The newsletters that fit the Editorial Principle (Ed Zitron, Ben's Bites, Last Week in AI, Import AI, One Useful Thing, etc.) all publish public RSS feeds. KTN's residual use case is email-only sources, which haven't surfaced as v1 needs. Avoids per-source subscription/confirmation tax and secret-URL management until a real email-only source forces it | Adopted 2026-05-22 during Phase 2 discuss |
 
 ## Evolution
 
@@ -109,4 +110,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-22 — Phase 2 discuss: added Editorial Principle; dropped Reddit/HN from v1 (deferred to v2 community-pulse)*
+*Last updated: 2026-05-22 — Phase 2 discuss: added Editorial Principle; dropped Reddit/HN from v1 (→ v2 community-pulse); dropped email→RSS/KTN from v1 (→ v2 if email-only source emerges)*

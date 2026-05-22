@@ -12,7 +12,6 @@ Requirements for initial release. Each maps to a roadmap phase (see Traceability
 - [ ] **INGEST-01**: Sources are defined in a single configuration file (YAML) checked into the repo, with one entry per source (type, URL/handle, display name, topic hint)
 - [ ] **INGEST-02**: System fetches new items from RSS-based blog and Substack sources
 - [ ] **INGEST-03**: System fetches new uploads from configured YouTube channels and retrieves transcripts where available
-- [ ] **INGEST-05**: System fetches email newsletters via an email→RSS bridge (e.g., Kill the Newsletter)
 - [ ] **INGEST-06**: A single failing source does not break the weekly run — other sources still complete and the failure is recorded
 - [ ] **INGEST-07**: Each ingested item is stored with: source ID, external ID, canonical URL, title, publisher attribution, published date, and raw content/excerpt
 - [ ] **INGEST-08**: Items are uniquely keyed by `(source_id, external_id)` so re-running ingestion does not create duplicates
@@ -75,6 +74,7 @@ Deferred to future release. Tracked but not in current roadmap.
 - **INGEST-V2-02**: Ingest podcast episodes with audio transcription (Whisper)
 - **INGEST-V2-03**: Ingest LinkedIn creator posts
 - **INGEST-V2-04**: Community pulse view — ingest Reddit subreddits and Hacker News as a distinct "what the crowd is buzzing about" surface, separate from the per-author weekly digest. Aggregate signal (vote counts, comment activity, cross-source overlap) is the product, not individual takes. Treatment, UI surface, and integration with the per-author digest are explicitly an open v2 design question.
+- **INGEST-V2-05**: Email→RSS bridge (Kill the Newsletter or equivalent) — ingest email-only newsletters via a forwarding-address bridge. Only needed when a real email-only source enters scope (Editorial Principle-fitting newsletters have so far all turned out to have public RSS). Includes secret URL management, subscription-confirmation workflow handling, and per-source setup tax that v1 sources do not require.
 
 ### Discovery & Interaction
 
@@ -102,6 +102,7 @@ Explicitly excluded. Documented to prevent scope creep.
 |---------|--------|
 | Twitter/X ingestion (v1) | Paid API (~$100/mo) and brittle scrapers; not worth v1 complexity |
 | Reddit / Hacker News ingestion (v1) | Violates PROJECT.md Editorial Principle ("known entities and their takes, not anonymous community signal"). The crowd-aggregation question is a different product surface — captured as INGEST-V2-04 (community pulse), not retrofitted into the per-author digest |
+| Email→RSS bridge / Kill the Newsletter (v1) | Every newsletter that fits the Editorial Principle so far publishes a public RSS feed (Substack, beehiiv, custom). KTN's residual use case is email-only sources, which have not surfaced as v1 needs. Captured as INGEST-V2-05; revisit if a genuinely email-only source enters scope |
 | Podcast audio transcription (v1) | Whisper transcription cost + latency for weekly batch; deferred to v2 |
 | LinkedIn creator ingestion | No clean ingestion path; scraping fragility not justified |
 | Daily / hourly / real-time cadence | Weekly is the design constraint; faster cadence is a different product |
@@ -124,7 +125,6 @@ Filled in by the roadmapper. Status updated as phases progress.
 | INGEST-08 | Phase 1 | Pending |
 | PIPELINE-01 | Phase 1 | Pending |
 | INGEST-03 | Phase 2 | Pending |
-| INGEST-05 | Phase 2 | Pending |
 | INGEST-06 | Phase 2 | Pending |
 | DEDUP-01 | Phase 3 | Pending |
 | DEDUP-02 | Phase 3 | Pending |
@@ -157,10 +157,10 @@ Filled in by the roadmapper. Status updated as phases progress.
 | OBS-03 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 37 total
-- Mapped to phases: 37 ✓
+- v1 requirements: 36 total
+- Mapped to phases: 36 ✓
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-21*
-*Last updated: 2026-05-22 — Phase 2 discuss: removed INGEST-04 (Reddit/HN) from v1; added INGEST-V2-04 (community pulse) to v2*
+*Last updated: 2026-05-22 — Phase 2 discuss: removed INGEST-04 (Reddit/HN) and INGEST-05 (email→RSS/KTN) from v1; added INGEST-V2-04 (community pulse) and INGEST-V2-05 (email→RSS) to v2*
