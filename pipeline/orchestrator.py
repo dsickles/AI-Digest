@@ -355,6 +355,93 @@ def _summarize_week_items(
     return summaries
 
 
+# D-25 plain-English degradation copy templates. Reader-facing text only; the
+# orchestrator picks based on transcript_status / summary_confidence / source_type.
+# All strings deliberately satisfy D-24 (no CLI flags, no class names, no paths).
+_DEGRADATION_COPY = {
+    "youtube_pending_local": (
+        "This video's transcript wasn't reachable during the weekly run. "
+        "The title and a brief description are above."
+    ),
+    "youtube_missing": (
+        "No captions are available for this video. Visit the link above to watch it directly."
+    ),
+    "rss_thin": (
+        "The source published only a short teaser this week. "
+        "Follow the link above for the full piece."
+    ),
+    "enrichment_failed": (
+        "The full article couldn't be retrieved this week. "
+        "Follow the link above for the original."
+    ),
+    "summary_failed": (
+        "The summary couldn't be generated this week. "
+        "Follow the link above for the original."
+    ),
+}
+
+
+def _row_get(row, column: str, default=None):
+    """Sqlite3.Row.get-style helper — Row has no .get() in Python's sqlite3."""
+    try:
+        return row[column]
+    except (IndexError, KeyError):
+        return default
+
+
+def _source_type_for(row) -> str:
+    """Best-effort source_type lookup; defaults to 'rss' so missing JOINs degrade safely."""
+    val = _row_get(row, "source_type") or _row_get(row, "type")
+    return str(val) if val else "rss"
+
+
+def _resolve_degradation_reason(
+    *,
+    source_type: str,
+    transcript_status: str | None,
+    summary_confidence: str,
+    has_tldr: bool,
+) -> str | None:
+    """Map item state to a D-25 plain-English degradation_reason or ``None`` for healthy."""
+    if source_type == "youtube" and transcript_status == "pending_local":
+        return _DEGRADATION_COPY["youtube_pending_local"]
+    if source_type == "youtube" and transcript_status == "missing":
+        return _DEGRADATION_COPY["youtube_missing"]
+    if summary_confidence == "unavailable" and not has_tldr:
+        # Distinguish thin-source vs LLM-failed when we can; default to summary_failed.
+        return _DEGRADATION_COPY["summary_failed"]
+    return None
+
+
+def _build_card_from_row(
+    row,
+    *,
+    tldr: str | None,
+    summary_confidence: str,
+    source_type: str | None = None,
+) -> DigestCard:
+    """Shared card factory used by both LLM and DB-only render paths."""
+    resolved_source_type = source_type or _source_type_for(row)
+    transcript_status = _row_get(row, "transcript_status")
+    degradation_reason = _resolve_degradation_reason(
+        source_type=resolved_source_type,
+        transcript_status=transcript_status,
+        summary_confidence=summary_confidence,
+        has_tldr=tldr is not None,
+    )
+    return DigestCard(
+        title=row["title"],
+        publisher=row["publisher"],
+        canonical_url=row["canonical_url"],
+        published_at=datetime.fromisoformat(row["published_at"].replace("Z", "+00:00")),
+        tldr=tldr,
+        summary_confidence=summary_confidence,
+        source_type=resolved_source_type,
+        transcript_status=transcript_status,
+        degradation_reason=degradation_reason,
+    )
+
+
 def _build_cards(
     rows, summaries: dict[str, SummaryResult]
 ) -> list[DigestCard]:
@@ -363,13 +450,8 @@ def _build_cards(
     for row in rows:
         result = summaries.get(row["item_id"])
         cards.append(
-            DigestCard(
-                title=row["title"],
-                publisher=row["publisher"],
-                canonical_url=row["canonical_url"],
-                published_at=datetime.fromisoformat(
-                    row["published_at"].replace("Z", "+00:00")
-                ),
+            _build_card_from_row(
+                row,
                 tldr=result.tldr if result else None,
                 summary_confidence=result.summary_confidence if result else "unavailable",
             )
@@ -386,13 +468,8 @@ def _build_cards_from_db(conn, rows, week_id: str) -> list[DigestCard]:
             conn, row["item_id"], week_id, "summarize_v1"
         )
         cards.append(
-            DigestCard(
-                title=row["title"],
-                publisher=row["publisher"],
-                canonical_url=row["canonical_url"],
-                published_at=datetime.fromisoformat(
-                    row["published_at"].replace("Z", "+00:00")
-                ),
+            _build_card_from_row(
+                row,
                 tldr=existing["tldr"] if existing else None,
                 summary_confidence=(
                     existing["summary_confidence"] if existing else "unavailable"
@@ -401,6 +478,25 @@ def _build_cards_from_db(conn, rows, week_id: str) -> list[DigestCard]:
         )
     cards.sort(key=lambda c: c.published_at, reverse=True)
     return cards
+
+
+def _pipeline_notice_counts(
+    *, cards: list[DigestCard], stats: RunStats
+) -> tuple[int, int]:
+    """D-26 inputs: pending-local card count + non-empty_feed fetch failure count.
+
+    D-41 explicitly excludes ``empty_feed`` from the failed-source clause —
+    a source that simply published nothing inside the week window is not
+    "failed" from the reader's perspective.
+    """
+    pending = sum(1 for c in cards if c.transcript_status == "pending_local")
+    failed_sources = sum(
+        1
+        for err in stats.errors
+        if err.get("phase") == "ingest"
+        and err.get("category") not in (None, "empty_feed")
+    )
+    return pending, failed_sources
 
 
 def _write_last_run(stats: RunStats, *, status: str) -> None:
@@ -584,12 +680,15 @@ def run_render(
                 week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
             )
             cards = _build_cards_from_db(conn, week_rows, week_id)
+            pending, failed = _pipeline_notice_counts(cards=cards, stats=stats)
             stats.out_path = render_digest(
                 week_id=week_id,
                 week_start=week_start,
                 week_end=week_end,
                 cards=cards,
                 out_dir=out_dir,
+                pipeline_notice_pending_count=pending,
+                pipeline_notice_failed_source_count=failed,
             )
             _finalize(conn, run_id, stats, phase="render")
             return stats
@@ -658,12 +757,15 @@ def run_all(
                 week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
             )
             cards = _build_cards(week_rows, summaries)
+            pending, failed = _pipeline_notice_counts(cards=cards, stats=stats)
             stats.out_path = render_digest(
                 week_id=week_id,
                 week_start=week_start,
                 week_end=week_end,
                 cards=cards,
                 out_dir=out_dir,
+                pipeline_notice_pending_count=pending,
+                pipeline_notice_failed_source_count=failed,
             )
 
             _finalize(conn, run_id, stats, phase="all")
