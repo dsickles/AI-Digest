@@ -205,3 +205,114 @@ def test_error_taxonomy_timeout_category(monkeypatch: pytest.MonkeyPatch, tmp_pa
     assert stats.errors[0]["category"] == "fetch_timeout"
     assert callable(_fetch_bytes)  # import survived
     assert httpx is not None  # silence unused-import lint
+
+
+def test_empty_feed_non_fatal(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """D-41: a successful fetch with zero in-window items is non-fatal + categorized.
+
+    Sources A and B both return items dated well outside the week window; we
+    expect both to ingest cleanly with empty_feed entries and last_success_at
+    populated on each row.
+    """
+    from store.db import fetchone
+
+    db_path = tmp_path / "aidigest-test.db"
+    init_db(db_path)
+
+    out_of_window = NormalizedItem.build(
+        source_id="src-a",
+        external_id="old-1",
+        canonical_url="https://example.com/a/old",
+        title="Old Item",
+        publisher="Source A",
+        published_at=datetime(2020, 1, 1, 12, 0, 0, tzinfo=UTC),
+        raw_content_html="<p>old</p>",
+    )
+
+    def _build_stub(source_id: str):
+        item = out_of_window.model_copy(update={"source_id": source_id})
+
+        class Stub:
+            last_http_status = 200
+
+            def fetch(self, _source: SourceConfig) -> list[NormalizedItem]:
+                return [item]
+
+        return Stub()
+
+    monkeypatch.setattr(
+        "pipeline.orchestrator._pick_adapter", lambda _t: _build_stub("src-a")
+    )
+
+    sources = [_source("src-a")]
+    stats = RunStats(week_id="2026-W21")
+    week_iso = ("2026-05-18T00:00:00Z", "2026-05-24T23:59:59Z")
+
+    with connect(db_path) as conn:
+        for s in sources:
+            upsert_source(conn, s)
+        conn.commit()
+        # Override adapter to return the stub for whichever source we hit
+        items = _ingest(sources, conn, MagicMock(), stats, week_bounds_iso=week_iso)
+        conn.commit()
+
+    assert len(items) == 1
+    assert any(e.get("category") == "empty_feed" for e in stats.errors)
+
+    with connect(db_path) as conn:
+        row = fetchone(
+            conn,
+            "SELECT last_success_at, last_error_category FROM sources WHERE source_id = ?",
+            ("src-a",),
+        )
+    assert row is not None
+    assert row["last_success_at"], "D-40: last_success_at must advance on successful fetch"
+    assert row["last_error_category"] is None, "D-41: empty_feed must NOT set last_error_category"
+
+
+def test_source_health_records_success(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """D-40: successful fetch populates last_success_at + last_item_at on the row."""
+    from store.db import fetchone
+
+    db_path = tmp_path / "aidigest-test.db"
+    init_db(db_path)
+
+    in_window_item = NormalizedItem.build(
+        source_id="src-healthy",
+        external_id="recent-1",
+        canonical_url="https://example.com/recent",
+        title="Recent",
+        publisher="Healthy",
+        published_at=datetime(2026, 5, 20, 12, 0, 0, tzinfo=UTC),
+        raw_content_html="<p>fresh</p>",
+    )
+
+    class Stub:
+        last_http_status = 200
+
+        def fetch(self, _source: SourceConfig) -> list[NormalizedItem]:
+            return [in_window_item]
+
+    monkeypatch.setattr("pipeline.orchestrator._pick_adapter", lambda _t: Stub())
+
+    source = _source("src-healthy")
+    stats = RunStats(week_id="2026-W21")
+    week_iso = ("2026-05-18T00:00:00Z", "2026-05-24T23:59:59Z")
+
+    with connect(db_path) as conn:
+        upsert_source(conn, source)
+        conn.commit()
+        _ingest([source], conn, MagicMock(), stats, week_bounds_iso=week_iso)
+        conn.commit()
+
+    with connect(db_path) as conn:
+        row = fetchone(
+            conn,
+            "SELECT last_success_at, last_item_at, last_error_category "
+            "FROM sources WHERE source_id = ?",
+            ("src-healthy",),
+        )
+    assert row is not None
+    assert row["last_success_at"]
+    assert row["last_item_at"]
+    assert row["last_error_category"] is None

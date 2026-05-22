@@ -34,9 +34,15 @@ from store.db import (
     init_db,
     insert_item_summary,
     insert_pipeline_run,
+    update_source_health,
     upsert_item,
     upsert_source,
 )
+
+
+def _utc_iso_now() -> str:
+    """Second-precision ISO 8601 UTC timestamp (matches items.published_at format)."""
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 if TYPE_CHECKING:
     from pipeline.llm.summarize import SummaryResult
@@ -114,10 +120,24 @@ def _append_ingest_error(
 
 
 def _ingest(
-    sources, conn, log, stats: RunStats
+    sources, conn, log, stats: RunStats, *, week_bounds_iso: tuple[str, str] | None = None
 ) -> list[NormalizedItem]:
-    """Fetch every enabled source; per-source try/except keeps the run alive."""
+    """Fetch every enabled source; per-source try/except keeps the run alive.
+
+    D-40: each iteration ends with a single ``update_source_health`` call that
+    writes ``last_success_at`` (on successful fetch), ``last_item_at`` (when
+    items entered the week window), and ``last_error_category`` (cleared to
+    NULL on success).
+
+    D-41: a successful fetch with zero items inside ``week_bounds_iso`` is
+    recorded as ``category=empty_feed`` in ``RunStats.errors`` but does **not**
+    abort the run or block downstream sources. ``last_success_at`` still
+    advances because the HTTP+parse path worked. Circuit-breaker retry/backoff
+    layered on top is D-42 → Phase 5.
+    """
     from pipeline.adapters.base import FetchError
+
+    week_start_iso, week_end_iso = week_bounds_iso or ("", "")
 
     all_items: list[NormalizedItem] = []
     for source in sources:
@@ -151,6 +171,7 @@ def _ingest(
                 message=f"{type(exc).__name__}: {exc}",
                 http_status=exc.http_status,
             )
+            update_source_health(conn, source.id, last_error_category=exc.category)
             continue
         except Exception as exc:
             duration_ms = int((time.perf_counter() - t0) * 1000)
@@ -171,6 +192,7 @@ def _ingest(
                 category="adapter_internal",
                 message=f"{type(exc).__name__}: {exc}",
             )
+            update_source_health(conn, source.id, last_error_category="adapter_internal")
             continue
 
         duration_ms = int((time.perf_counter() - t0) * 1000)
@@ -183,6 +205,7 @@ def _ingest(
         )
         src_stats.items_fetched = len(fetched)
 
+        in_window_count = 0
         for item in fetched:
             try:
                 upsert_item(conn, item)
@@ -201,6 +224,35 @@ def _ingest(
                     message=f"upsert: {exc}",
                 )
                 continue
+            if week_start_iso and week_end_iso:
+                item_iso = item.published_at_iso()
+                if week_start_iso <= item_iso <= week_end_iso:
+                    in_window_count += 1
+
+        # D-41: empty_feed only when the fetch succeeded but yielded zero items
+        # in the week window. The contract is non-fatal — we still record the
+        # success on last_success_at so source-health tracking continues.
+        if week_start_iso and week_end_iso and in_window_count == 0:
+            _append_ingest_error(
+                stats,
+                src_stats,
+                source_id=source.id,
+                category="empty_feed",
+                message=(
+                    f"source returned {len(fetched)} items but zero fell in "
+                    f"{week_start_iso}..{week_end_iso}"
+                ),
+            )
+
+        now_iso = _utc_iso_now()
+        update_source_health(
+            conn,
+            source.id,
+            last_success_at=now_iso,
+            last_item_at=now_iso if in_window_count > 0 else None,
+            last_error_category="",  # clear on successful fetch
+        )
+
         all_items.extend(fetched)
     conn.commit()
     stats.items_fetched = len(all_items)
@@ -418,6 +470,11 @@ def run_ingest(
     from pipeline.config import enabled_sources
 
     init_db(db_path)
+    week_start, week_end = week_bounds(week_id)
+    week_iso = (
+        week_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    )
     log = logger.bind(week_id=week_id)
     stats = RunStats(week_id=week_id, phase="ingest")
 
@@ -429,7 +486,7 @@ def run_ingest(
             sources = enabled_sources()
             if not sources:
                 log.warning("orchestrator.no_sources")
-            _ingest(sources, conn, log, stats)
+            _ingest(sources, conn, log, stats, week_bounds_iso=week_iso)
             _finalize(conn, run_id, stats, phase="ingest")
             return stats
         except Exception as exc:
@@ -581,7 +638,11 @@ def run_all(
             if not sources:
                 log.warning("orchestrator.no_sources")
 
-            _ingest(sources, conn, log, stats)
+            week_iso = (
+                week_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            )
+            _ingest(sources, conn, log, stats, week_bounds_iso=week_iso)
             summaries = _summarize_week_items(
                 week_id=week_id,
                 week_start=week_start,

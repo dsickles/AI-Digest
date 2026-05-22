@@ -99,6 +99,41 @@ def init_db(db_path: Path | str | None = None) -> Path:
     return path
 
 
+def update_source_health(
+    conn: sqlite3.Connection,
+    source_id: str,
+    *,
+    last_success_at: str | None = None,
+    last_item_at: str | None = None,
+    last_error_category: str | None = None,
+) -> None:
+    """Write the D-40 source-health columns for ``source_id``.
+
+    Only non-``None`` columns are updated — pass ``None`` to leave a column
+    untouched. Callers clear ``last_error_category`` on success by passing
+    the literal string ``""`` (mapped to SQL NULL via empty-string sentinel
+    handling here).
+    """
+    fields: list[str] = []
+    values: list[object] = []
+    if last_success_at is not None:
+        fields.append("last_success_at = ?")
+        values.append(last_success_at)
+    if last_item_at is not None:
+        fields.append("last_item_at = ?")
+        values.append(last_item_at)
+    if last_error_category is not None:
+        fields.append("last_error_category = ?")
+        values.append(last_error_category or None)
+    if not fields:
+        return
+    values.append(source_id)
+    conn.execute(
+        f"UPDATE sources SET {', '.join(fields)} WHERE source_id = ?",
+        values,
+    )
+
+
 def upsert_source(conn: sqlite3.Connection, source: SourceConfig) -> None:
     """Mirror a SourceConfig into the ``sources`` table (FK target for items).
 
