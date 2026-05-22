@@ -127,27 +127,40 @@ def upsert_source(conn: sqlite3.Connection, source: SourceConfig) -> None:
     )
 
 
-def upsert_item(conn: sqlite3.Connection, item: NormalizedItem) -> str:
+def upsert_item(
+    conn: sqlite3.Connection,
+    item: NormalizedItem,
+    *,
+    transcript_status: str | None = None,
+) -> str:
     """Insert an item or update mutable columns on (source_id, external_id) collision.
 
     Uses ``INSERT ... ON CONFLICT DO UPDATE`` so ``item_id`` stays stable and
-    ``ingested_at`` reflects the latest ingest (INGEST-08).
+    ``ingested_at`` reflects the latest ingest (INGEST-08). D-23: the YouTube
+    adapter passes ``transcript_status`` (ok / pending_local / missing); other
+    adapters leave it ``None``. ``item.transcript_status`` from the adapter
+    takes precedence; the explicit kwarg lets callers (e.g. the catch-up path
+    in plan 02-04) override without rebuilding the item.
     """
     item_id = uuid.uuid4().hex
+    effective_status = (
+        transcript_status if transcript_status is not None else item.transcript_status
+    )
     conn.execute(
         """
         INSERT INTO items (
             item_id, source_id, external_id, canonical_url, title,
-            publisher, published_at, raw_content, content_hash
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            publisher, published_at, raw_content, content_hash, transcript_status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(source_id, external_id) DO UPDATE SET
-            canonical_url = excluded.canonical_url,
-            title         = excluded.title,
-            publisher     = excluded.publisher,
-            published_at  = excluded.published_at,
-            raw_content   = excluded.raw_content,
-            content_hash  = excluded.content_hash,
-            ingested_at   = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+            canonical_url     = excluded.canonical_url,
+            title             = excluded.title,
+            publisher         = excluded.publisher,
+            published_at      = excluded.published_at,
+            raw_content       = excluded.raw_content,
+            content_hash      = excluded.content_hash,
+            transcript_status = COALESCE(excluded.transcript_status, items.transcript_status),
+            ingested_at       = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
         """,
         (
             item_id,
@@ -159,6 +172,7 @@ def upsert_item(conn: sqlite3.Connection, item: NormalizedItem) -> str:
             item.published_at_iso(),
             item.raw_content,
             item.content_hash,
+            effective_status,
         ),
     )
     row = conn.execute(
@@ -215,15 +229,21 @@ def insert_item_summary(
     input_tokens: int | None = None,
     output_tokens: int | None = None,
     cost_usd_estimate: float | None = None,
+    summary_input_truncated: bool = False,
 ) -> str:
-    """Insert a fresh ``item_summaries`` row. Caller is responsible for skip-if-exists."""
+    """Insert a fresh ``item_summaries`` row. Caller is responsible for skip-if-exists.
+
+    D-28: ``summary_input_truncated`` records whether the LLM input was elided
+    by ``pipeline.llm.summarize._maybe_truncate_transcript``.
+    """
     summary_id = uuid.uuid4().hex
     conn.execute(
         """
         INSERT INTO item_summaries (
             summary_id, item_id, week_id, tldr, summary_confidence,
-            prompt_version, model_id, input_tokens, output_tokens, cost_usd_estimate
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            prompt_version, model_id, input_tokens, output_tokens, cost_usd_estimate,
+            summary_input_truncated
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             summary_id,
@@ -236,6 +256,7 @@ def insert_item_summary(
             input_tokens,
             output_tokens,
             cost_usd_estimate,
+            1 if summary_input_truncated else 0,
         ),
     )
     return summary_id

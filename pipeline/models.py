@@ -44,6 +44,8 @@ class NormalizedItem(BaseModel):
     published_at: datetime
     raw_content: str = ""
     content_hash: str = Field(min_length=64, max_length=64)
+    # D-23: lifecycle ok | pending_local | missing (None for non-video sources)
+    transcript_status: str | None = None
 
     @field_validator("published_at")
     @classmethod
@@ -74,6 +76,7 @@ class NormalizedItem(BaseModel):
         publisher: str,
         published_at: datetime,
         raw_content_html: str,
+        transcript_status: str | None = None,
     ) -> NormalizedItem:
         """Convenience constructor that strips HTML and computes content_hash."""
         text = strip_html(raw_content_html)
@@ -86,4 +89,5 @@ class NormalizedItem(BaseModel):
             published_at=published_at,
             raw_content=text,
             content_hash=hash_content(text),
+            transcript_status=transcript_status,
         )

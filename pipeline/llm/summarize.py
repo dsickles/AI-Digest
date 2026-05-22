@@ -29,6 +29,14 @@ MODEL_ID = "gemini-2.5-flash-lite"
 MAX_OUTPUT_TOKENS = 256
 TEMPERATURE = 0.2
 
+# D-28: transcript truncation policy. ~6K tokens budget at ~4 chars/token
+# yields ~24K chars. When tripped we keep the first ~16K + last ~4K plus an
+# explicit elision sentinel so the model does not fabricate the middle.
+TRANSCRIPT_INPUT_CHAR_CAP = 24_000
+TRANSCRIPT_HEAD_CHARS = 16_000
+TRANSCRIPT_TAIL_CHARS = 4_000
+TRANSCRIPT_ELISION_SENTINEL = "\n\n[... middle content omitted for length ...]\n\n"
+
 # RESEARCH §2: paid Standard tier list price for cost_usd_estimate logging
 INPUT_COST_PER_M_TOKENS = 0.10
 OUTPUT_COST_PER_M_TOKENS = 0.40
@@ -53,6 +61,16 @@ class SummaryResult(BaseModel):
     input_tokens: int | None = None
     output_tokens: int | None = None
     cost_usd_estimate: float | None = None
+    summary_input_truncated: bool = False  # D-28
+
+
+def _maybe_truncate_transcript(text: str) -> tuple[str, bool]:
+    """Apply D-28 elision when raw_content exceeds the transcript cap."""
+    if len(text) <= TRANSCRIPT_INPUT_CHAR_CAP:
+        return text, False
+    head = text[:TRANSCRIPT_HEAD_CHARS].rstrip()
+    tail = text[-TRANSCRIPT_TAIL_CHARS:].lstrip()
+    return f"{head}{TRANSCRIPT_ELISION_SENTINEL}{tail}", True
 
 
 class GeminiKeyMissing(RuntimeError):
@@ -175,6 +193,11 @@ def summarize_item(
             if httpx_client is None:
                 active_http.close()
 
+    # D-28: transcript truncation policy fires only for content that exceeds
+    # the cap. Sets ``summary_input_truncated`` on every persisted result so
+    # downstream observability (Phase 4 pipeline notes) can flag elided items.
+    input_text, input_truncated = _maybe_truncate_transcript(input_text)
+
     if _is_thin(input_text):
         log.info(
             "summarize_complete",
@@ -190,6 +213,7 @@ def summarize_item(
             summary_confidence="unavailable",
             prompt_version=PROMPT_VERSION,
             model_id=MODEL_ID,
+            summary_input_truncated=input_truncated,
         )
 
     try:
@@ -203,6 +227,7 @@ def summarize_item(
             summary_confidence="unavailable",
             prompt_version=PROMPT_VERSION,
             model_id=MODEL_ID,
+            summary_input_truncated=input_truncated,
         )
 
     system_prompt = _load_prompt_body()
@@ -221,6 +246,7 @@ def summarize_item(
             summary_confidence="unavailable",
             prompt_version=PROMPT_VERSION,
             model_id=MODEL_ID,
+            summary_input_truncated=input_truncated,
         )
 
     parsed: SummaryResponse | None = getattr(response, "parsed", None)
@@ -235,6 +261,7 @@ def summarize_item(
                 summary_confidence="unavailable",
                 prompt_version=PROMPT_VERSION,
                 model_id=MODEL_ID,
+                summary_input_truncated=input_truncated,
             )
 
     usage = getattr(response, "usage_metadata", None)
@@ -265,6 +292,7 @@ def summarize_item(
             input_tokens=input_tokens,
             output_tokens=output_tokens,
             cost_usd_estimate=cost,
+            summary_input_truncated=input_truncated,
         )
 
     log.info(
@@ -284,6 +312,7 @@ def summarize_item(
         input_tokens=input_tokens,
         output_tokens=output_tokens,
         cost_usd_estimate=cost,
+        summary_input_truncated=input_truncated,
     )
 
 

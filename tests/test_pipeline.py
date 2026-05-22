@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 import structlog
 
-from pipeline.config import RssSource
+from pipeline.config import RssSource, SourceConfig
 from pipeline.llm.summarize import SummaryResult
 from pipeline.models import NormalizedItem
 from pipeline.orchestrator import RunStats, _ingest, run_all

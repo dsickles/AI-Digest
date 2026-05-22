@@ -116,7 +116,9 @@ def test_phase2_schema_migration(temp_sqlite_path: Path) -> None:
         summaries_cols = _column_names(conn, "item_summaries")
 
     assert "transcript_status" in items_cols, "D-23: items.transcript_status missing"
-    assert "summary_input_truncated" in summaries_cols, "D-28: item_summaries.summary_input_truncated missing"
+    assert "summary_input_truncated" in summaries_cols, (
+        "D-28: item_summaries.summary_input_truncated missing"
+    )
     assert "last_success_at" in sources_cols, "D-40: sources.last_success_at missing"
     assert "last_item_at" in sources_cols, "D-40: sources.last_item_at missing"
     assert "last_error_category" in sources_cols, "D-40: sources.last_error_category missing"

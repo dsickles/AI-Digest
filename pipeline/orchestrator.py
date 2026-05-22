@@ -73,11 +73,15 @@ class RunStats:
 
 
 def _pick_adapter(source_type: str):
-    """One-line registry. Phase 2 grows this dict."""
-    from pipeline.adapters.rss import RssAdapter
-
+    """Adapter registry — discriminated-union dispatch (D-00d, D-36)."""
     if source_type == "rss":
+        from pipeline.adapters.rss import RssAdapter
+
         return RssAdapter()
+    if source_type == "youtube":
+        from pipeline.adapters.youtube import YoutubeAdapter
+
+        return YoutubeAdapter()
     raise ValueError(f"no adapter registered for source type {source_type!r}")
 
 
@@ -201,6 +205,11 @@ def _summarize_week_items(
                 input_tokens=existing["input_tokens"],
                 output_tokens=existing["output_tokens"],
                 cost_usd_estimate=existing["cost_usd_estimate"],
+                summary_input_truncated=bool(
+                    existing["summary_input_truncated"]
+                    if "summary_input_truncated" in existing.keys()
+                    else 0
+                ),
             )
             continue
 
@@ -252,6 +261,7 @@ def _summarize_week_items(
             input_tokens=result.input_tokens,
             output_tokens=result.output_tokens,
             cost_usd_estimate=result.cost_usd_estimate,
+            summary_input_truncated=result.summary_input_truncated,
         )
         summaries[item_id] = result
 
