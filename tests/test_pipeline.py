@@ -3,15 +3,15 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from pathlib import Path
-from unittest.mock import MagicMock
 
 import pytest
+import structlog
 
 from pipeline.config import SourceConfig
 from pipeline.llm.summarize import SummaryResult
 from pipeline.models import NormalizedItem
-from pipeline.orchestrator import RunStats, run_all
-from store.db import connect, fetchone, init_db
+from pipeline.orchestrator import RunStats, _ingest, run_all
+from store.db import connect, fetchone, upsert_source
 
 
 def _source(source_id: str) -> SourceConfig:
@@ -120,10 +120,6 @@ def test_ingest_logs_include_source_id(
             return [item]
 
     monkeypatch.setattr("pipeline.orchestrator._pick_adapter", lambda _t: FakeAdapter())
-
-    from pipeline.orchestrator import RunStats, _ingest
-    from store.db import upsert_source
-    import structlog
 
     log = structlog.get_logger("test").bind(week_id="2026-W21")
     stats = RunStats(week_id="2026-W21", phase="ingest")
