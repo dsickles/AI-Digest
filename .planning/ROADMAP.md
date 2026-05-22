@@ -51,7 +51,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 01-04-PLAN.md — `--week` ISO override, CLI subcommands, README/UAT discoverability (D-22)
+- [x] 01-04-PLAN.md — `--week` ISO override, CLI subcommands, README/UAT discoverability (D-22) *(2026-05-21)*
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
@@ -138,7 +138,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + First Digest | 3/5 | In progress (Wave 3 done) | - |
+| 1. Foundation + First Digest | 4/5 | In progress (Wave 4 done) | - |
 | 2. Expand Ingestion | 0/TBD | Not started | - |
 | 3. AI Quality | 0/TBD | Not started | - |
 | 4. Dashboard + Archive | 0/TBD | Not started | - |

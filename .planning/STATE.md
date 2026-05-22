@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 1 Plan 01-03 trafilatura + grounding sentinel + degraded cards complete
-last_updated: "2026-05-22T00:00:00.000Z"
-last_activity: 2026-05-21 -- Plan 01-03 complete (trafilatura enrichment, thin_content sentinel, inline degraded cards)
+stopped_at: Phase 1 Plan 01-04 ISO week CLI + subcommands complete
+last_updated: "2026-05-22T00:15:00.000Z"
+last_activity: 2026-05-21 -- Plan 01-04 complete (--week backfill, CLI subcommands, README/UAT)
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 3
-  percent: 60
+  completed_plans: 4
+  percent: 80
 ---
 
 # Project State
@@ -26,30 +26,30 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 ## Current Position
 
 Phase: 1 of 5 (Foundation + First Digest)
-Plan: 01-03 of 01-05 complete (Trafilatura + Grounding Sentinel + Degraded Cards)
-Status: Wave 3 complete, ready for Wave 4 (Plan 01-04)
-Last activity: 2026-05-21 -- Plan 01-03 complete (trafilatura enrichment, thin_content sentinel, inline degraded cards)
+Plan: 01-04 of 01-05 complete (ISO Week CLI + Subcommands + Backfill)
+Status: Wave 4 complete, ready for Wave 5 (Plan 01-05)
+Last activity: 2026-05-21 -- Plan 01-04 complete (--week backfill, CLI subcommands, README/UAT)
 
-Progress: [██████░░░░] 60%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 3
-- Average duration: ~1h 15m
-- Total execution time: ~3h 55m
+- Total plans completed: 4
+- Average duration: ~1h 10m
+- Total execution time: ~4h 40m
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 | 3/5 | 3h 55m | 1h 15m |
+| 1 | 4/5 | 4h 40m | 1h 10m |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (2h 45m, success), 01-02 (~25m, success), 01-03 (~45m, success)
-- Trend: PIPELINE-01 grounding live; enrichment + degraded cards hermetically tested
+- Last 5 plans: 01-01 (2h 45m, success), 01-02 (~25m, success), 01-03 (~45m, success), 01-04 (~45m, success)
+- Trend: PIPELINE-01 operability live; --week backfill + render-without-LLM confirmed
 
 *Updated after each plan completion*
 
@@ -73,6 +73,9 @@ Recent decisions affecting current work:
 - **01-03:** Hybrid enrichment via trafilatura when RSS body < 500 chars; readability-lxml fallback; fetch failures log and continue with snippet
 - **01-03:** thin_content sentinel → summary_confidence unavailable; enrichment + short text → low; success → high
 - **01-03:** Degraded items render inline as cards with [summary unavailable — content too thin] (D-15), not footer-only
+- **01-04:** week_bounds inclusive Mon 00:00 UTC through Sun 23:59:59 UTC; parse_week_id validates ISO week existence
+- **01-04:** CLI subcommands ingest|summarize|render|all; bare invocation aliases all (D-19); render path lazy-imports LLM/adapters (D-20)
+- **01-04:** --week YYYY-Www threaded from run.py only; orchestrator stage functions accept week_id str with no datetime.now()
 
 ### Pending Todos
 
@@ -80,6 +83,7 @@ Recent decisions affecting current work:
 |------|-------------|----------|------|
 | **Decide Top N + max-cards-per-category knobs for Phase 3 ranking** | `/gsd-discuss-phase 3` | 2026-05-21 (Plan 01-01 review) | Without explicit limits, the ranker has no concrete target. User raised during Plan 01-01 review when discussing digest length scaling. Concrete proposals to evaluate: `top_n_briefing: 10`, `max_cards_per_category: 15`, configurable via `config/digest.yaml`. |
 | **Live three-feed E2E re-run** | Manual / Plan 01-02 verification | 2026-05-21 (Plan 01-02) | Run `python -m pipeline.run all` twice outside sandbox; confirm item count stable across re-ingest for all three D-01 feeds. |
+| **Live backfill UAT** | Manual / Plan 01-04 verification | 2026-05-21 (Plan 01-04) | Run `python -m pipeline.run render --week 2026-W19` outside sandbox; confirm `out/digest-2026-W19.html` produced. |
 
 ### Blockers/Concerns
 
@@ -96,6 +100,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-22T00:00:00.000Z
-Stopped at: Phase 1 Plan 01-03 complete; ready for Plan 01-04 (--week CLI + subcommands)
-Resume file: .planning/phases/01-foundation-first-digest/01-03-SUMMARY.md
+Last session: 2026-05-22T00:15:00.000Z
+Stopped at: Phase 1 Plan 01-04 complete; ready for Plan 01-05 (structlog, last_run.md, metrics, HTML polish)
+Resume file: .planning/phases/01-foundation-first-digest/01-04-SUMMARY.md
