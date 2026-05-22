@@ -146,6 +146,26 @@ None — no external service configuration required.
 - `tests/test_summarize.py` — FOUND
 - Commits `3c29311`, `bc0857a`, `cf7f80c` — FOUND
 
+## Post-execution correction (2026-05-22)
+
+The Task 3 "inline degraded cards" deliverable in commit `cf7f80c`
+**regressed** the user's post-Plan-01-01 decision (commit `8fcbd96`) to
+collapse thin items into a single `Also seen this week` footer aside.
+The plan was written to literal D-05 wording without flagging the
+conflict with the live-digest tweak the user had already made.
+
+Reverted in commit `5f8e9f0` (`fix(01-03): restore footer 'Also seen
+this week' for thin items`). D-05 in `01-CONTEXT.md` rewritten to lock
+the footer behavior as the final form so future renderer work can't
+re-regress without amending the decision first. Test suite expanded from
+41 → 43 covering: thin items go to footer not `<article>`, header item
+count reflects displayed count (not total), XSS escape on skipped-item
+titles in the footer.
+
+The grounding-prompt + `summary_confidence` enum + content-enrichment
+work from this plan (Tasks 1 and 2) is unaffected and remains in force.
+
 ---
 *Phase: 01-foundation-first-digest*
-*Completed: 2026-05-21*
+*Completed: 2026-05-21*  
+*Post-execution correction: 2026-05-22 — footer regression fix (`5f8e9f0`)*

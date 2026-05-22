@@ -5,7 +5,7 @@ milestone_name: milestone
 status: planning
 stopped_at: Phase 1 complete — ready for Phase 2 discuss/plan
 last_updated: "2026-05-21T13:00:00.000Z"
-last_activity: 2026-05-21 -- Plan 01-05 complete (structlog, last_run.md, metrics, HTML polish, pytest)
+last_activity: 2026-05-22 -- fix(01-03): restored 'Also seen this week' footer for thin items (reverted 01-03 inline-card regression); D-05 locked to footer form
 progress:
   total_phases: 5
   completed_phases: 1
