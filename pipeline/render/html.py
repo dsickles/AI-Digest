@@ -1,22 +1,24 @@
-"""Phase 1 plain-HTML digest renderer (D-17 dark-bg seed).
+"""Phase 2 in-place plain-HTML digest renderer (D-25 / D-26 / D-24 / D-30).
 
-Deliberately simple: no templating engine, no asset pipeline, no
-framework. Phase 4 replaces this with the Astro dashboard. All
-user-derived strings (title, publisher, summary) flow through
-``html.escape`` to mitigate T-01-02 (untrusted RSS content reaching
-the browser).
+D-25 supersedes Phase 1 D-05: every digest item renders as ``<article
+class="card">`` in natural sort position regardless of summary state.
+Degraded cards (transcript pending, captions missing, thin source body,
+enrichment or LLM failure) carry a plain-English ``degradation_reason``
+in place of the TL;DR. There is no footer aside, no "Also seen this week"
+heading, and no ``pipeline-notes`` block — those Phase 1 surfaces are gone.
+
+D-26 adds a top-of-digest ``<p class="pipeline-notice">`` element placed
+directly under the ``Updated …`` timestamp. It is rendered only when there
+is something to surface (pending-local transcripts or failed sources);
+otherwise the element is omitted entirely. Reader-facing copy follows
+D-24 plain-English language policy — no CLI flag syntax, no file paths,
+no error class names.
+
+D-30 adds a small ``[video]`` indicator to the publisher badge on YouTube
+cards. Phase 4 DISPLAY-06 owns the formal glyph polish.
 
 Import boundary: this module must NOT import adapters or LLM packages —
 it only consumes pre-built ``DigestCard`` records (D-20).
-
-Degraded-content layout (final D-05 contract, restored from
-commit 8fcbd96 after a brief regression in Plan 01-03):
-
-    Items with ``tldr is None`` or ``summary_confidence == 'unavailable'``
-    are NOT rendered as full article cards — they collapse into a single
-    "Also seen this week" footer aside with title-only clickable links.
-    The header item count reflects the *displayed* count, not the total,
-    so the reader's eye lands on real summaries first.
 """
 from __future__ import annotations
 
@@ -30,13 +32,17 @@ import structlog
 logger = structlog.get_logger(__name__)
 
 DEFAULT_OUT_DIR = Path("out")
-DEGRADED_SUMMARY_LINE = "[summary unavailable — content too thin]"
-OMITTED_SECTION_HEADING = "Also seen this week"
+VIDEO_INDICATOR = "[video]"  # D-30: small, unambiguous, structurally minimal
 
 
 @dataclass(frozen=True)
 class DigestCard:
-    """One card in the digest. Built by the orchestrator from items + summaries."""
+    """One card in the digest. Built by the orchestrator from items + summaries.
+
+    D-25 extension: ``source_type``, ``transcript_status``, and
+    ``degradation_reason`` make the card self-describing so the renderer
+    never has to reach back into the adapter or the items table.
+    """
 
     title: str
     publisher: str
@@ -44,6 +50,9 @@ class DigestCard:
     published_at: datetime
     tldr: str | None
     summary_confidence: str  # 'high' | 'low' | 'unavailable'
+    source_type: str = "rss"  # D-30 routes video indicator
+    transcript_status: str | None = None  # D-23 lifecycle; informational here
+    degradation_reason: str | None = None  # D-25 plain-English body for degraded cards
 
 
 _CSS = """
@@ -64,6 +73,15 @@ header {
 header h1 { margin: 0 0 0.35rem; font-size: 1.75rem; font-weight: 650; }
 header .week-range { margin: 0; color: #9aa3b2; font-size: 1rem; }
 header .updated { margin: 0.35rem 0 0; color: #6b7280; font-size: 0.85rem; }
+header .pipeline-notice {
+  margin: 0.6rem 0 0;
+  padding: 0.55rem 0.8rem;
+  border-left: 3px solid #4a5260;
+  background: #141820;
+  color: #9aa3b2;
+  font-size: 0.88rem;
+  border-radius: 3px;
+}
 main {
   max-width: 720px;
   margin: 0 auto;
@@ -91,36 +109,17 @@ main {
   border-radius: 4px;
   font-size: 0.78rem;
 }
+.video-indicator {
+  margin-left: 0.35rem;
+  color: #9aa3b2;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
 .card-title { margin: 0 0 0.55rem; font-size: 1.1rem; line-height: 1.35; }
 .card-title a { color: #e6e6e6; text-decoration: none; }
 .card-title a:hover { color: #7eb6ff; text-decoration: underline; }
 .card-tldr { margin: 0; color: #c8cdd5; }
-.degraded { font-style: italic; color: #9aa3b2; }
-.pipeline-notes {
-  margin-top: 2rem;
-  padding: 1.1rem 1.25rem;
-  border: 1px dashed #2a3140;
-  border-radius: 8px;
-  background: #0f1318;
-  font-size: 0.88rem;
-  color: #9aa3b2;
-}
-.pipeline-notes h3 {
-  margin: 0 0 0.45rem;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #c8cdd5;
-  font-weight: 600;
-}
-.pipeline-notes p { margin: 0; line-height: 1.6; }
-.pipeline-notes a {
-  color: #c8cdd5;
-  text-decoration: none;
-  border-bottom: 1px dotted #4a5260;
-}
-.pipeline-notes a:hover { color: #7eb6ff; border-bottom-color: #7eb6ff; }
-.pipeline-notes .sep { color: #4a5260; margin: 0 0.4rem; }
+.card-degraded { margin: 0; color: #9aa3b2; font-style: italic; }
 """.strip()
 
 
@@ -144,9 +143,26 @@ def _format_date(dt: datetime) -> str:
     return dt.astimezone(UTC).strftime("%Y-%m-%d")
 
 
-def _is_displayable(card: DigestCard) -> bool:
-    """A card is rendered as a full article only when it has a real summary."""
-    return card.tldr is not None and card.summary_confidence != "unavailable"
+def _is_degraded(card: DigestCard) -> bool:
+    """A card is degraded when there is no usable summary or a degradation reason is set."""
+    if card.degradation_reason is not None:
+        return True
+    if card.tldr is None:
+        return True
+    return card.summary_confidence == "unavailable"
+
+
+def _render_body(card: DigestCard) -> str:
+    """D-25 body copy: plain-English degradation_reason for degraded cards,
+    TL;DR paragraph for healthy ones. Empty body is rendered as an empty
+    paragraph so the card footprint stays uniform. ``quote=False`` keeps
+    apostrophes readable inside text content; ``<``, ``>``, ``&`` still
+    escape, mitigating T-02-01 (untrusted strings reaching the browser).
+    """
+    if _is_degraded(card):
+        reason = card.degradation_reason or "This item couldn't be summarized this week."
+        return f'<p class="card-degraded">{html.escape(reason, quote=False)}</p>'
+    return f'<p class="card-tldr">{html.escape(card.tldr or "", quote=False)}</p>'
 
 
 def _render_card(card: DigestCard) -> str:
@@ -154,48 +170,52 @@ def _render_card(card: DigestCard) -> str:
     badge_safe = html.escape(f"[{card.publisher}]")
     url_safe = html.escape(card.canonical_url, quote=True)
     date_safe = html.escape(_format_date(card.published_at))
-    tldr_html = f'<p class="card-tldr">{html.escape(card.tldr or "")}</p>'
+
+    if card.source_type == "youtube":
+        # D-30: keep the indicator structurally minimal — same span height, no glyph deps.
+        video_suffix = f'<span class="video-indicator">{html.escape(VIDEO_INDICATOR)}</span>'
+    else:
+        video_suffix = ""
 
     return (
         '<article class="card">'
         '<div class="card-meta">'
-        f'<span class="source-badge">{badge_safe}</span>'
+        f'<span class="source-badge">{badge_safe}</span>{video_suffix}'
         f"<span>{date_safe}</span>"
         "</div>"
         '<h2 class="card-title">'
         f'<a href="{url_safe}" target="_blank" rel="noopener">{title_safe}</a>'
         "</h2>"
-        f"{tldr_html}"
+        f"{_render_body(card)}"
         "</article>"
     )
 
 
-def _render_omitted_link(card: DigestCard) -> str:
-    """Render one omitted item as an inline title-only clickable link."""
-    title_safe = html.escape(card.title)
-    url_safe = html.escape(card.canonical_url, quote=True)
-    return f'<a href="{url_safe}" target="_blank" rel="noopener">{title_safe}</a>'
+def _render_pipeline_notice(*, pending: int, failed_sources: int) -> str:
+    """D-26 header pipeline-notice. Returns empty string at zero state.
 
-
-def _render_pipeline_notes(omitted: list[DigestCard]) -> str:
-    """'Also seen this week' footer section listing skipped items as links."""
-    if not omitted:
+    Copy is plain-English per D-24 — no CLI flag syntax, no error class names.
+    Two independent clauses; either may appear alone.
+    """
+    if pending <= 0 and failed_sources <= 0:
         return ""
 
-    count = len(omitted)
-    label = "item" if count == 1 else "items"
-    links = '<span class="sep">·</span>'.join(
-        _render_omitted_link(card) for card in omitted
-    )
-    return (
-        '<aside class="pipeline-notes" aria-label="Pipeline notes">'
-        f"<h3>{html.escape(OMITTED_SECTION_HEADING)}</h3>"
-        f"<p>{count} {label} omitted from the digest "
-        f"({html.escape(DEGRADED_SUMMARY_LINE)}): "
-        f"{links}"
-        "</p>"
-        "</aside>"
-    )
+    clauses: list[str] = []
+    if pending > 0:
+        verb = "summary" if pending == 1 else "summaries"
+        clauses.append(
+            f"{pending} video {verb} will fill in once captions can be reached "
+            "from a different network."
+        )
+    if failed_sources > 0:
+        noun = "source" if failed_sources == 1 else "sources"
+        clauses.append(
+            f"{failed_sources} {noun} couldn't be reached this week; "
+            "the missing items should reappear next run."
+        )
+
+    body = " ".join(html.escape(c) for c in clauses)
+    return f'<p class="pipeline-notice">{body}</p>'
 
 
 def render_digest(
@@ -205,52 +225,47 @@ def render_digest(
     week_end: datetime,
     cards: list[DigestCard],
     out_dir: Path | None = None,
+    pipeline_notice_pending_count: int = 0,
+    pipeline_notice_failed_source_count: int = 0,
 ) -> Path:
-    """Write the weekly digest HTML and return the output path.
+    """Write the weekly digest HTML and return the output path (D-25, D-26).
 
-    Cards are partitioned: items with a real summary become full
-    ``<article>`` cards, sorted newest-first; items where the summary is
-    missing or ``summary_confidence == 'unavailable'`` collapse into a
-    single ``Also seen this week`` aside with title-only links. The header
-    item count reflects the displayed count, not the total.
+    Every card renders as an ``<article class="card">`` in natural
+    published_at-descending order; degraded cards keep their slot and
+    display a plain-English ``degradation_reason``. The header pipeline
+    notice (D-26) appears only when ``pipeline_notice_pending_count`` or
+    ``pipeline_notice_failed_source_count`` is positive.
     """
     out_root = out_dir or DEFAULT_OUT_DIR
     out_root.mkdir(parents=True, exist_ok=True)
     out_path = out_root / f"digest-{week_id}.html"
 
     sorted_cards = sorted(cards, key=lambda c: c.published_at, reverse=True)
-    displayed = [c for c in sorted_cards if _is_displayable(c)]
-    omitted = [c for c in sorted_cards if not _is_displayable(c)]
 
     week_header = _format_week_header(week_start, week_end)
     updated_line = _format_updated(datetime.now(UTC))
+    notice_html = _render_pipeline_notice(
+        pending=pipeline_notice_pending_count,
+        failed_sources=pipeline_notice_failed_source_count,
+    )
 
     week_header_safe = html.escape(week_header)
     updated_safe = html.escape(updated_line)
 
-    if displayed:
-        cards_html = "\n".join(_render_card(card) for card in displayed)
-    elif omitted:
-        cards_html = (
-            '<p class="degraded">'
-            "Every item this week was a release-note or had no body content "
-            "to summarize. See the list below for source links."
-            "</p>"
-        )
+    if sorted_cards:
+        cards_html = "\n".join(_render_card(card) for card in sorted_cards)
     else:
         cards_html = (
-            '<p class="degraded">'
+            '<p class="card-degraded">'
             "No items found for this week. Either no enabled source published "
             "anything in the window, or all entries were skipped due to missing "
             "publication dates."
             "</p>"
         )
 
-    notes_html = _render_pipeline_notes(omitted)
-
-    displayed_count = len(displayed)
-    item_word = "item" if displayed_count == 1 else "items"
-    header_count_line = f"{displayed_count} {item_word}"
+    total_count = len(sorted_cards)
+    item_word = "item" if total_count == 1 else "items"
+    header_count_line = f"{total_count} {item_word}"
 
     document = f"""<!DOCTYPE html>
 <html lang="en">
@@ -267,22 +282,25 @@ def render_digest(
   <h1>AI Digest</h1>
   <p class="week-range">{week_header_safe} · {header_count_line}</p>
   <p class="updated">{updated_safe}</p>
+{notice_html}
 </header>
 <main>
 {cards_html}
-{notes_html}
 </main>
 </body>
 </html>
 """
 
     out_path.write_text(document, encoding="utf-8")
+    degraded_count = sum(1 for c in sorted_cards if _is_degraded(c))
     logger.info(
         "render_complete",
         week_id=week_id,
         path=str(out_path),
-        card_count=displayed_count,
-        omitted_count=len(omitted),
+        card_count=total_count,
+        degraded_count=degraded_count,
+        pipeline_notice_pending=pipeline_notice_pending_count,
+        pipeline_notice_failed=pipeline_notice_failed_source_count,
     )
     return out_path
 
