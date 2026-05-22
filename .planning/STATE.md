@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: ready_to_execute
-stopped_at: Phase 2 planned (4 plans across 4 waves); ready for execute-phase
-last_updated: "2026-05-22T11:45:00.000Z"
-last_activity: 2026-05-22 -- Phase 2 plan-phase complete (research + patterns + 4 plans verified, 2 iterations)
+status: phase_complete
+stopped_at: Phase 2 complete (4/4 plans executed, verified, 68/68 pytest); ready for Phase 3 discuss
+last_updated: "2026-05-22T11:55:00.000Z"
+last_activity: 2026-05-22 -- Phase 2 execute-phase complete inline (no subagents); VERIFICATION.md committed
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 9
-  completed_plans: 5
-  percent: 56
+  completed_plans: 9
+  percent: 100
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-21)
 
 **Core value:** A coherent narrative of "what happened in AI this week" across all my sources — read in 15 minutes instead of 5+ hours of skimming feeds.
-**Current focus:** Phase 2 — Expand Ingestion (ready to execute, 4 plans across 4 waves)
+**Current focus:** Phase 2 complete — Expand Ingestion (YouTube + 8-source catalog + in-place degradation + catch-up CLI); ready for Phase 3 discuss
 
 ## Current Position
 
-Phase: 2 of 5 (Expand Ingestion) — **Planned, ready to execute**
-Plan: 02-01 → 02-04 written and verified (Waves 1–4); execution not started
-Status: Phase 2 plans pass plan-checker (iteration 2), requirements + decision coverage complete
-Last activity: 2026-05-22 -- Phase 2 plan-phase complete (4 plans verified, ROADMAP annotated, VALIDATION.md per-task map locked)
+Phase: 2 of 5 (Expand Ingestion) — **Complete**
+Plan: 02-01 → 02-04 executed, verified, self-checks PASSED
+Status: All 4 plans shipped; 68/68 pytest green; ruff clean; manual UAT items captured in `02-UAT.md`
+Last activity: 2026-05-22 -- Phase 2 verification artifacts committed; ROADMAP.md + STATE.md updated
 
-Progress: [█████░░░░░] 56% (5/9 plans complete; 4 plans queued for Phase 2)
+Progress: [█████████░] 90% (9/9 planned plans complete; Phases 3–5 plans TBD)
 
 ## Performance Metrics
 
@@ -45,11 +45,12 @@ Progress: [█████░░░░░] 56% (5/9 plans complete; 4 plans queu
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 | 5/5 | 5h 25m | 1h 5m |
+| 2 | 4/4 | ~3h | ~45m |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (2h 45m), 01-02 (~25m), 01-03 (~45m), 01-04 (~45m), 01-05 (~55m)
-- Trend: Phase 1 vertical MVP complete — RSS → SQLite → Gemini → HTML + debuggability
+- Last 4 plans (Phase 2): 02-01 (~1h), 02-02 (~45m), 02-03 (~45m), 02-04 (~30m)
+- Trend: Phase 2 executed inline (no subagents) due to gsd-sdk/Claude-only incompatibility; sequential atomic commits per task; deviations documented in 02-VERIFICATION.md
 
 *Updated after each plan completion*
 
@@ -79,6 +80,16 @@ Recent decisions affecting current work:
 - **01-05:** configure_structlog() in logging_config.py; TTY ConsoleRenderer / pipe JSONRenderer
 - **01-05:** out/last_run.md overwritten per subcommand; never writes API keys or full article bodies
 - **01-05:** HTML header D-18 "Week of …" from week_bounds; [display_name] badges; cards sorted newest-first
+- **02-01:** Custom SQLite migration runner with `_strip_sql_line_comments`; idempotent on duplicate-column errors
+- **02-01:** `SourceConfig = Annotated[Union[RssSource, YoutubeSource], Field(discriminator="type")]` with `channel_id` regex validation
+- **02-01:** Transcript-input truncation cap (`TRANSCRIPT_INPUT_CHAR_CAP`) + `summary_input_truncated` column for downstream attribution
+- **02-02:** `IngestErrorCategory` literal (5 categories) drives both `out/last_run.md` rows and `sources.last_error_category` column
+- **02-02:** Empty-feed errors are non-fatal and excluded from the pipeline-notice failed-source count (D-41)
+- **02-03:** D-05 footer aside removed; `_DEGRADATION_COPY` catalog supplies 5 plain-English reader-surface strings (D-24)
+- **02-03:** Header `pipeline-notice` element renders only when pending or failed counts are positive (D-26 zero-state hide)
+- **02-03:** `html.escape(quote=False)` for body text preserves apostrophes; attribute context still uses `quote=True`
+- **02-04:** Only the catch-up path (`catch_up=True`) may flip `TranscriptsDisabled` to `missing` — cloud ingest never sets `missing`
+- **02-04:** `YoutubeAdapter.__init__` resolves default `transcript_fetcher` at call time via module lookup so tests can monkeypatch `_transcript_text` globally
 
 ### Pending Todos
 
@@ -91,8 +102,9 @@ Recent decisions affecting current work:
 
 ### Blockers/Concerns
 
-- YouTube transcript reliability from GHA cloud IPs — **resolved in Phase 2 design via D-23** (free-first transcript fetch, `pending_local` lifecycle state, local catch-up CLI in Plan 02-04); residual risk is operational and tracked in 02-VALIDATION.md manual UAT
+- YouTube transcript reliability from GHA cloud IPs — **shipped in Phase 2 via D-23** (cloud→residential catch-up via `--only-pending-transcripts`; only path that may set `missing`); residual risk is operational and tracked in `02-UAT.md` manual UAT test 5
 - Heartbeat provider (Healthchecks.io vs email) — decide during Phase 5 planning
+- `gsd-sdk` / Claude-Agent-SDK incompatibility with Cursor — Phase 2 executed inline (no subagents); revisit before Phase 3 to decide whether to switch CLIs or continue inline
 
 ## Deferred Items
 
@@ -104,6 +116,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-22T11:45:00.000Z
-Stopped at: Phase 2 planned (4 PLAN.md files committed); ready for execute-phase
-Resume file: .planning/phases/02-expand-ingestion/02-01-PLAN.md (Wave 1 entry point)
+Last session: 2026-05-22T11:55:00.000Z
+Stopped at: Phase 2 complete (4/4 plans executed; 68/68 pytest; VERIFICATION.md committed); ready for Phase 3 discuss-phase
+Resume file: .planning/phases/02-expand-ingestion/02-VERIFICATION.md (phase exit) → next start point is `/gsd-discuss-phase 3`
