@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Phase 1 Plan 01-04 ISO week CLI + subcommands complete
-last_updated: "2026-05-22T00:15:00.000Z"
-last_activity: 2026-05-21 -- Plan 01-04 complete (--week backfill, CLI subcommands, README/UAT)
+status: planning
+stopped_at: Phase 1 complete — ready for Phase 2 discuss/plan
+last_updated: "2026-05-21T13:00:00.000Z"
+last_activity: 2026-05-21 -- Plan 01-05 complete (structlog, last_run.md, metrics, HTML polish, pytest)
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 4
-  percent: 80
+  completed_plans: 5
+  percent: 100
 ---
 
 # Project State
@@ -21,35 +21,35 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-21)
 
 **Core value:** A coherent narrative of "what happened in AI this week" across all my sources — read in 15 minutes instead of 5+ hours of skimming feeds.
-**Current focus:** Phase 1 — Foundation + First Digest
+**Current focus:** Phase 2 — Expand Ingestion (planning next)
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation + First Digest)
-Plan: 01-04 of 01-05 complete (ISO Week CLI + Subcommands + Backfill)
-Status: Wave 4 complete, ready for Wave 5 (Plan 01-05)
-Last activity: 2026-05-21 -- Plan 01-04 complete (--week backfill, CLI subcommands, README/UAT)
+Phase: 1 of 5 (Foundation + First Digest) — **Complete**
+Plan: 01-05 of 01-05 complete (structlog, last_run.md, pipeline_runs metrics, HTML polish, pytest)
+Status: Phase 1 all waves complete; ready for Phase 2 discuss/plan
+Last activity: 2026-05-21 -- Plan 01-05 complete (observability + HTML polish + green test suite)
 
-Progress: [████████░░] 80%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 4
-- Average duration: ~1h 10m
-- Total execution time: ~4h 40m
+- Total plans completed: 5
+- Average duration: ~1h 5m
+- Total execution time: ~5h 25m
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 | 4/5 | 4h 40m | 1h 10m |
+| 1 | 5/5 | 5h 25m | 1h 5m |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (2h 45m, success), 01-02 (~25m, success), 01-03 (~45m, success), 01-04 (~45m, success)
-- Trend: PIPELINE-01 operability live; --week backfill + render-without-LLM confirmed
+- Last 5 plans: 01-01 (2h 45m), 01-02 (~25m), 01-03 (~45m), 01-04 (~45m), 01-05 (~55m)
+- Trend: Phase 1 vertical MVP complete — RSS → SQLite → Gemini → HTML + debuggability
 
 *Updated after each plan completion*
 
@@ -76,6 +76,9 @@ Recent decisions affecting current work:
 - **01-04:** week_bounds inclusive Mon 00:00 UTC through Sun 23:59:59 UTC; parse_week_id validates ISO week existence
 - **01-04:** CLI subcommands ingest|summarize|render|all; bare invocation aliases all (D-19); render path lazy-imports LLM/adapters (D-20)
 - **01-04:** --week YYYY-Www threaded from run.py only; orchestrator stage functions accept week_id str with no datetime.now()
+- **01-05:** configure_structlog() in logging_config.py; TTY ConsoleRenderer / pipe JSONRenderer
+- **01-05:** out/last_run.md overwritten per subcommand; never writes API keys or full article bodies
+- **01-05:** HTML header D-18 "Week of …" from week_bounds; [display_name] badges; cards sorted newest-first
 
 ### Pending Todos
 
@@ -84,6 +87,7 @@ Recent decisions affecting current work:
 | **Decide Top N + max-cards-per-category knobs for Phase 3 ranking** | `/gsd-discuss-phase 3` | 2026-05-21 (Plan 01-01 review) | Without explicit limits, the ranker has no concrete target. User raised during Plan 01-01 review when discussing digest length scaling. Concrete proposals to evaluate: `top_n_briefing: 10`, `max_cards_per_category: 15`, configurable via `config/digest.yaml`. |
 | **Live three-feed E2E re-run** | Manual / Plan 01-02 verification | 2026-05-21 (Plan 01-02) | Run `python -m pipeline.run all` twice outside sandbox; confirm item count stable across re-ingest for all three D-01 feeds. |
 | **Live backfill UAT** | Manual / Plan 01-04 verification | 2026-05-21 (Plan 01-04) | Run `python -m pipeline.run render --week 2026-W19` outside sandbox; confirm `out/digest-2026-W19.html` produced. |
+| **Browser digest UAT** | Manual / Plan 01-05 | 2026-05-21 (Plan 01-05) | Open `out/digest-*.html`; confirm dark theme, Week of header, badges, rel=noopener links. |
 
 ### Blockers/Concerns
 
@@ -100,6 +104,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-22T00:15:00.000Z
-Stopped at: Phase 1 Plan 01-04 complete; ready for Plan 01-05 (structlog, last_run.md, metrics, HTML polish)
-Resume file: .planning/phases/01-foundation-first-digest/01-04-SUMMARY.md
+Last session: 2026-05-21T13:00:00.000Z
+Stopped at: Phase 1 complete (5/5 plans); ready for Phase 2 discuss/plan
+Resume file: .planning/phases/01-foundation-first-digest/01-05-SUMMARY.md

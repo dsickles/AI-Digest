@@ -13,7 +13,7 @@ Ship a personal weekly AI digest in five vertical slices — each phase ends wit
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation + First Digest** - Minimal end-to-end weekly digest from 2–3 RSS sources, per-item TL;DR only, plain HTML
+- [x] **Phase 1: Foundation + First Digest** - Minimal end-to-end weekly digest from 2–3 RSS sources, per-item TL;DR only, plain HTML *(2026-05-21)*
 - [ ] **Phase 2: Expand Ingestion** - YouTube, Reddit/HN, and email→RSS adapters with per-source failure isolation
 - [ ] **Phase 3: AI Quality** - Dedup-before-LLM, categorization, ranking, weekly roll-up, checkpoints, and cost guardrails
 - [ ] **Phase 4: Dashboard + Archive** - Dark Astro dashboard with tabs, full week archive, and pipeline notes in the UI
@@ -55,7 +55,7 @@ Plans:
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
-- [ ] 01-05-PLAN.md — structlog, `last_run.md`, `pipeline_runs` metrics, HTML polish, pytest suite
+- [x] 01-05-PLAN.md — structlog, `last_run.md`, `pipeline_runs` metrics, HTML polish, pytest suite *(2026-05-21)*
 
 **Notes:** Deliberately constrained — no Astro, no archive, no dedup, no categorize/rank/rollup. Content-first gate per PITFALLS #25: two readable digests in ugly HTML before dashboard polish. Hallucination mitigation starts here (snippet-only mode, grounding prompt) even though full confidence flags land in Phase 3.
 
@@ -138,7 +138,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + First Digest | 4/5 | In progress (Wave 4 done) | - |
+| 1. Foundation + First Digest | 5/5 | Complete | 2026-05-21 |
 | 2. Expand Ingestion | 0/TBD | Not started | - |
 | 3. AI Quality | 0/TBD | Not started | - |
 | 4. Dashboard + Archive | 0/TBD | Not started | - |
