@@ -152,7 +152,10 @@ def summarize_item(
     - ``unavailable`` — pre-flight thin gate tripped, key missing, or
                         unrecoverable parse/API error
     """
-    log = logger.bind(component="summarize", title=title)
+    log = logger.bind(component="summarize", item_id=item_id, source_id=source_id, title=title)
+
+    if item_id and source_id:
+        log.info("summarize_start", item_id=item_id, source_id=source_id)
 
     enrichment_triggered = False
     input_text = raw_content
@@ -173,7 +176,15 @@ def summarize_item(
                 active_http.close()
 
     if _is_thin(input_text):
-        log.info("summarize.thin_pre_check", enrichment_triggered=enrichment_triggered)
+        log.info(
+            "summarize_complete",
+            item_id=item_id,
+            source_id=source_id,
+            input_tokens=None,
+            output_tokens=None,
+            cost_usd_estimate=None,
+            reason="thin_pre_check",
+        )
         return SummaryResult(
             tldr=None,
             summary_confidence="unavailable",
@@ -237,7 +248,9 @@ def summarize_item(
         else:
             confidence = "high"
         log.info(
-            "summarize.success",
+            "summarize_complete",
+            item_id=item_id,
+            source_id=source_id,
             input_tokens=input_tokens,
             output_tokens=output_tokens,
             cost_usd_estimate=cost,
@@ -254,7 +267,15 @@ def summarize_item(
             cost_usd_estimate=cost,
         )
 
-    log.info("summarize.thin_post_model", reason=parsed.reason)
+    log.info(
+        "summarize_complete",
+        item_id=item_id,
+        source_id=source_id,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        cost_usd_estimate=cost,
+        reason=parsed.reason,
+    )
     return SummaryResult(
         tldr=None,
         summary_confidence="unavailable",

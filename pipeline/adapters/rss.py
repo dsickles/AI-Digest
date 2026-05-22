@@ -91,11 +91,14 @@ def _fetch_bytes(url: str) -> tuple[bytes, int]:
 class RssAdapter(IngestAdapter):
     """Fetch + normalize an RSS or Atom feed into ``NormalizedItem``s."""
 
+    last_http_status: int | None = None
+
     def fetch(self, source: SourceConfig) -> list[NormalizedItem]:
         log = logger.bind(source_id=source.id, url=source.url)
         log.info("rss.fetch.start")
 
         body, status_code = _fetch_bytes(source.url)
+        self.last_http_status = status_code
         if status_code == 304:
             log.info("rss.fetch.not_modified", status=304)
             return []

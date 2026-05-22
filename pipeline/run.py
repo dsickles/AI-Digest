@@ -15,13 +15,12 @@ to keep tests fast and unit-testable.
 from __future__ import annotations
 
 import argparse
-import logging
-import os
 import sys
 
-import structlog
 import truststore
 from dotenv import load_dotenv
+
+from pipeline.logging_config import configure_structlog
 
 # Use the OS native trust store (macOS keychain, Windows certstore,
 # system OpenSSL on Linux) so corporate-MITM and per-user-installed
@@ -33,27 +32,6 @@ _WEEK_HELP = (
     "ISO week id YYYY-Www (e.g. 2026-W19) for backfill / replay; "
     "defaults to the current UTC ISO week."
 )
-
-
-def _configure_logging() -> None:
-    """structlog → stdout, info level by default; LOG_LEVEL env override.
-
-    Plan 01-05 hardens this with json + last_run.md mirror; skeleton
-    keeps it human-readable.
-    """
-    log_level_name = os.environ.get("LOG_LEVEL", "INFO").upper()
-    log_level = getattr(logging, log_level_name, logging.INFO)
-    logging.basicConfig(level=log_level, format="%(message)s", stream=sys.stdout)
-    structlog.configure(
-        wrapper_class=structlog.make_filtering_bound_logger(log_level),
-        processors=[
-            structlog.contextvars.merge_contextvars,
-            structlog.processors.add_log_level,
-            structlog.processors.TimeStamper(fmt="iso", utc=True),
-            structlog.dev.ConsoleRenderer(colors=False),
-        ],
-        cache_logger_on_first_use=True,
-    )
 
 
 def _add_week_arg(parser: argparse.ArgumentParser) -> None:
@@ -127,7 +105,7 @@ def _print_stats(stats, *, command: str) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     load_dotenv()
-    _configure_logging()
+    configure_structlog()
     parser = _build_parser()
     args = parser.parse_args(argv)
 

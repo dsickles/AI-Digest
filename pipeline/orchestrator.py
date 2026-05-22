@@ -14,8 +14,9 @@ dependencies (D-20).
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
-from datetime import datetime
+import time
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -43,18 +44,31 @@ logger = structlog.get_logger(__name__)
 
 
 @dataclass
+class SourceRunStats:
+    """Per-source ingest metrics for last_run.md."""
+
+    source_id: str
+    items_fetched: int = 0
+    errors: list[str] = field(default_factory=list)
+
+
+@dataclass
 class RunStats:
     week_id: str
+    phase: str = ""
+    started_at: datetime | None = None
     items_fetched: int = 0
     summaries_written: int = 0
     items_degraded: int = 0
     cost_usd_estimate: float = 0.0
-    errors: list[dict[str, str]] = None  # type: ignore[assignment]
+    llm_calls: int = 0
+    errors: list[dict[str, str]] = field(default_factory=list)
     out_path: Path | None = None
+    source_stats: dict[str, SourceRunStats] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        if self.errors is None:
-            self.errors = []
+        if self.started_at is None:
+            self.started_at = datetime.now(UTC)
 
 
 def _pick_adapter(source_type: str):
@@ -75,39 +89,67 @@ def _ingest(
     all_items: list[NormalizedItem] = []
     for source in sources:
         upsert_source(conn, source)
+        src_stats = stats.source_stats.setdefault(
+            source.id, SourceRunStats(source_id=source.id)
+        )
+        log.info("ingest_fetch_start", source_id=source.id)
+        t0 = time.perf_counter()
         try:
             adapter = _pick_adapter(source.type)
             fetched = adapter.fetch(source)
+            http_status = getattr(adapter, "last_http_status", None)
         except FetchError as exc:
+            duration_ms = int((time.perf_counter() - t0) * 1000)
             log.error(
-                "ingest.source.failed",
+                "ingest_fetch_complete",
                 source_id=source.id,
+                duration_ms=duration_ms,
+                http_status=None,
+                items_count=0,
                 error=type(exc).__name__,
                 message=str(exc),
             )
+            err_msg = f"{type(exc).__name__}: {exc}"
+            src_stats.errors.append(err_msg)
             stats.errors.append(
                 {
                     "phase": "ingest",
                     "source_id": source.id,
-                    "error": f"{type(exc).__name__}: {exc}",
+                    "error": err_msg,
                 }
             )
             continue
         except Exception as exc:
+            duration_ms = int((time.perf_counter() - t0) * 1000)
             log.error(
-                "ingest.source.failed",
+                "ingest_fetch_complete",
                 source_id=source.id,
+                duration_ms=duration_ms,
+                http_status=None,
+                items_count=0,
                 error=type(exc).__name__,
                 message=str(exc),
             )
+            err_msg = f"{type(exc).__name__}: {exc}"
+            src_stats.errors.append(err_msg)
             stats.errors.append(
                 {
                     "phase": "ingest",
                     "source_id": source.id,
-                    "error": f"{type(exc).__name__}: {exc}",
+                    "error": err_msg,
                 }
             )
             continue
+
+        duration_ms = int((time.perf_counter() - t0) * 1000)
+        log.info(
+            "ingest_fetch_complete",
+            source_id=source.id,
+            duration_ms=duration_ms,
+            http_status=http_status,
+            items_count=len(fetched),
+        )
+        src_stats.items_fetched = len(fetched)
 
         for item in fetched:
             try:
@@ -128,11 +170,6 @@ def _ingest(
                 )
                 continue
         all_items.extend(fetched)
-        log.info(
-            "ingest.source.complete",
-            source_id=source.id,
-            items=len(fetched),
-        )
     conn.commit()
     stats.items_fetched = len(all_items)
     return all_items
@@ -167,6 +204,11 @@ def _summarize_week_items(
             continue
 
         try:
+            log.info(
+                "summarize_start",
+                item_id=item_id,
+                source_id=row["source_id"],
+            )
             result = summarize_item(
                 title=row["title"],
                 publisher=row["publisher"],
@@ -185,6 +227,18 @@ def _summarize_week_items(
                 }
             )
             return summaries
+
+        log.info(
+            "summarize_complete",
+            item_id=item_id,
+            source_id=row["source_id"],
+            input_tokens=result.input_tokens,
+            output_tokens=result.output_tokens,
+            cost_usd_estimate=result.cost_usd_estimate,
+            summary_confidence=result.summary_confidence,
+        )
+        if result.input_tokens is not None or result.output_tokens is not None:
+            stats.llm_calls += 1
 
         insert_item_summary(
             conn,
@@ -230,6 +284,7 @@ def _build_cards(
                 summary_confidence=result.summary_confidence if result else "unavailable",
             )
         )
+    cards.sort(key=lambda c: c.published_at, reverse=True)
     return cards
 
 
@@ -254,6 +309,7 @@ def _build_cards_from_db(conn, rows, week_id: str) -> list[DigestCard]:
                 ),
             )
         )
+    cards.sort(key=lambda c: c.published_at, reverse=True)
     return cards
 
 
@@ -299,7 +355,7 @@ def run_ingest(
 
     init_db(db_path)
     log = logger.bind(week_id=week_id)
-    stats = RunStats(week_id=week_id)
+    stats = RunStats(week_id=week_id, phase="ingest")
 
     with connect(db_path) as conn:
         run_id = insert_pipeline_run(conn, week_id=week_id, phase="ingest")
@@ -342,7 +398,7 @@ def run_summarize(
     init_db(db_path)
     week_start, week_end = week_bounds(week_id)
     log = logger.bind(week_id=week_id)
-    stats = RunStats(week_id=week_id)
+    stats = RunStats(week_id=week_id, phase="summarize")
 
     with connect(db_path) as conn:
         run_id = insert_pipeline_run(conn, week_id=week_id, phase="summarize")
@@ -392,7 +448,7 @@ def run_render(
     init_db(db_path)
     week_start, week_end = week_bounds(week_id)
     log = logger.bind(week_id=week_id)
-    stats = RunStats(week_id=week_id)
+    stats = RunStats(week_id=week_id, phase="render")
 
     with connect(db_path) as conn:
         run_id = insert_pipeline_run(conn, week_id=week_id, phase="render")
@@ -446,7 +502,7 @@ def run_all(
     init_db(db_path)
     week_start, week_end = week_bounds(week_id)
     log = logger.bind(week_id=week_id)
-    stats = RunStats(week_id=week_id)
+    stats = RunStats(week_id=week_id, phase="all")
 
     with connect(db_path) as conn:
         run_id = insert_pipeline_run(conn, week_id=week_id, phase="all")
