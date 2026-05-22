@@ -90,6 +90,8 @@ Recent decisions affecting current work:
 - **02-03:** `html.escape(quote=False)` for body text preserves apostrophes; attribute context still uses `quote=True`
 - **02-04:** Only the catch-up path (`catch_up=True`) may flip `TranscriptsDisabled` to `missing` — cloud ingest never sets `missing`
 - **02-04:** `YoutubeAdapter.__init__` resolves default `transcript_fetcher` at call time via module lookup so tests can monkeypatch `_transcript_text` globally
+- **02-post-UAT (2026-05-22):** **LOCKED** in PROJECT.md: thin / unsummarizable items go to `<aside id="also-seen">` footer with outbound links only; quota-exhausted / 429 / RESOURCE_EXHAUSTED is the ONLY carve-out that earns an in-place "summary couldn't be generated this week" card. Supersedes Phase 1 D-05 and Phase 2 D-25 (both were renderer-design mistakes I introduced in plans; the locked rule overrides any future phase plan). Backed by `item_summaries.summary_status` column (migration 003), `_classify_llm_exception` in summarize.py, and `_partition_cards` in render/html.py.
+- **02-post-UAT:** `get_items_for_week` was missing the JOIN on `sources.type`, which silently hid the D-30 video indicator from every render. Fixed by adding `sources.type AS source_type` to the SELECT and adding `tests/test_render_e2e.py` to exercise the orchestrator → store → renderer path end-to-end (the gap that let the bug ship).
 
 ### Pending Todos
 

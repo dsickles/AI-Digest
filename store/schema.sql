@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS item_summaries (
     cost_usd_estimate        REAL,
     created_at               TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
     summary_input_truncated  INTEGER NOT NULL DEFAULT 0,
+    summary_status           TEXT,
     UNIQUE (item_id, week_id, prompt_version)
 );
 

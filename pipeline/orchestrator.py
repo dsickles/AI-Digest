@@ -343,6 +343,7 @@ def _summarize_week_items(
             output_tokens=result.output_tokens,
             cost_usd_estimate=result.cost_usd_estimate,
             summary_input_truncated=result.summary_input_truncated,
+            summary_status=result.summary_status,
         )
         summaries[item_id] = result
 
@@ -355,32 +356,6 @@ def _summarize_week_items(
 
     conn.commit()
     return summaries
-
-
-# D-25 plain-English degradation copy templates. Reader-facing text only; the
-# orchestrator picks based on transcript_status / summary_confidence / source_type.
-# All strings deliberately satisfy D-24 (no CLI flags, no class names, no paths).
-_DEGRADATION_COPY = {
-    "youtube_pending_local": (
-        "This video's transcript wasn't reachable during the weekly run. "
-        "The title and a brief description are above."
-    ),
-    "youtube_missing": (
-        "No captions are available for this video. Visit the link above to watch it directly."
-    ),
-    "rss_thin": (
-        "The source published only a short teaser this week. "
-        "Follow the link above for the full piece."
-    ),
-    "enrichment_failed": (
-        "The full article couldn't be retrieved this week. "
-        "Follow the link above for the original."
-    ),
-    "summary_failed": (
-        "The summary couldn't be generated this week. "
-        "Follow the link above for the original."
-    ),
-}
 
 
 def _row_get(row, column: str, default=None):
@@ -397,22 +372,36 @@ def _source_type_for(row) -> str:
     return str(val) if val else "rss"
 
 
-def _resolve_degradation_reason(
+def _infer_summary_status(
     *,
-    source_type: str,
-    transcript_status: str | None,
+    persisted_status: str | None,
+    tldr: str | None,
     summary_confidence: str,
-    has_tldr: bool,
-) -> str | None:
-    """Map item state to a D-25 plain-English degradation_reason or ``None`` for healthy."""
-    if source_type == "youtube" and transcript_status == "pending_local":
-        return _DEGRADATION_COPY["youtube_pending_local"]
-    if source_type == "youtube" and transcript_status == "missing":
-        return _DEGRADATION_COPY["youtube_missing"]
-    if summary_confidence == "unavailable" and not has_tldr:
-        # Distinguish thin-source vs LLM-failed when we can; default to summary_failed.
-        return _DEGRADATION_COPY["summary_failed"]
-    return None
+    transcript_status: str | None,
+) -> str:
+    """Derive ``summary_status`` for cards built from rows that don't carry one.
+
+    Modern rows from plan 02-04+ carry a real ``summary_status`` and we
+    return it as-is. Older rows have ``summary_status IS NULL``; we infer
+    a conservative status so the renderer can still route them correctly:
+
+    * tldr present                                  → ``ok``
+    * transcript_status in {pending_local, missing} → ``thin`` (footer)
+    * summary_confidence == 'unavailable'           → ``thin`` (footer)
+    * fallback                                      → ``thin``
+
+    Default to footer-bound when in doubt; the PROJECT.md LOCKED rule says
+    only the explicit ``quota_exhausted`` carve-out earns an in-place slot.
+    """
+    if persisted_status:
+        return persisted_status
+    if tldr and tldr.strip():
+        return "ok"
+    if transcript_status in {"pending_local", "missing"}:
+        return "thin"
+    if summary_confidence == "unavailable":
+        return "thin"
+    return "thin"
 
 
 def _build_card_from_row(
@@ -420,16 +409,17 @@ def _build_card_from_row(
     *,
     tldr: str | None,
     summary_confidence: str,
+    summary_status: str | None,
     source_type: str | None = None,
 ) -> DigestCard:
     """Shared card factory used by both LLM and DB-only render paths."""
     resolved_source_type = source_type or _source_type_for(row)
     transcript_status = _row_get(row, "transcript_status")
-    degradation_reason = _resolve_degradation_reason(
-        source_type=resolved_source_type,
-        transcript_status=transcript_status,
+    effective_status = _infer_summary_status(
+        persisted_status=summary_status,
+        tldr=tldr,
         summary_confidence=summary_confidence,
-        has_tldr=tldr is not None,
+        transcript_status=transcript_status,
     )
     return DigestCard(
         title=row["title"],
@@ -440,7 +430,7 @@ def _build_card_from_row(
         summary_confidence=summary_confidence,
         source_type=resolved_source_type,
         transcript_status=transcript_status,
-        degradation_reason=degradation_reason,
+        summary_status=effective_status,
     )
 
 
@@ -456,6 +446,7 @@ def _build_cards(
                 row,
                 tldr=result.tldr if result else None,
                 summary_confidence=result.summary_confidence if result else "unavailable",
+                summary_status=result.summary_status if result else None,
             )
         )
     cards.sort(key=lambda c: c.published_at, reverse=True)
@@ -475,6 +466,9 @@ def _build_cards_from_db(conn, rows, week_id: str) -> list[DigestCard]:
                 tldr=existing["tldr"] if existing else None,
                 summary_confidence=(
                     existing["summary_confidence"] if existing else "unavailable"
+                ),
+                summary_status=(
+                    _row_get(existing, "summary_status") if existing else None
                 ),
             )
         )

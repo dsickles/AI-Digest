@@ -62,6 +62,25 @@ class SummaryResult(BaseModel):
     output_tokens: int | None = None
     cost_usd_estimate: float | None = None
     summary_input_truncated: bool = False  # D-28
+    # PROJECT.md LOCKED 2026-05-22: drives renderer routing (footer vs in-place).
+    # 'ok' / 'thin' / 'quota_exhausted' / 'api_error' / 'parse_error' / 'client_init_error'
+    summary_status: str = "ok"
+
+
+def _classify_llm_exception(exc: BaseException) -> str:
+    """Map an LLM-call exception to a ``summary_status`` value.
+
+    Quota / rate-limit failures (Gemini ``RESOURCE_EXHAUSTED`` / HTTP 429) are
+    the only LLM-call category that the renderer treats as transient — they
+    appear in-place with "summary couldn't be generated this week" copy
+    because the content was summarizable and the next run is likely to
+    succeed. Every other LLM-call exception is treated as ``api_error`` and
+    routed to the footer.
+    """
+    text = f"{type(exc).__name__} {exc!s}".lower()
+    if "resource_exhausted" in text or "429" in text or "rate limit" in text or "quota" in text:
+        return "quota_exhausted"
+    return "api_error"
 
 
 def _maybe_truncate_transcript(text: str) -> tuple[str, bool]:
@@ -214,6 +233,7 @@ def summarize_item(
             prompt_version=PROMPT_VERSION,
             model_id=MODEL_ID,
             summary_input_truncated=input_truncated,
+            summary_status="thin",
         )
 
     try:
@@ -228,6 +248,7 @@ def summarize_item(
             prompt_version=PROMPT_VERSION,
             model_id=MODEL_ID,
             summary_input_truncated=input_truncated,
+            summary_status="client_init_error",
         )
 
     system_prompt = _load_prompt_body()
@@ -240,13 +261,20 @@ def summarize_item(
     try:
         response = _generate(active_client, [system_prompt, user_content])
     except Exception as exc:
-        log.warning("summarize.api_failed", error=type(exc).__name__, message=str(exc))
+        api_status = _classify_llm_exception(exc)
+        log.warning(
+            "summarize.api_failed",
+            error=type(exc).__name__,
+            message=str(exc),
+            summary_status=api_status,
+        )
         return SummaryResult(
             tldr=None,
             summary_confidence="unavailable",
             prompt_version=PROMPT_VERSION,
             model_id=MODEL_ID,
             summary_input_truncated=input_truncated,
+            summary_status=api_status,
         )
 
     parsed: SummaryResponse | None = getattr(response, "parsed", None)
@@ -262,6 +290,7 @@ def summarize_item(
                 prompt_version=PROMPT_VERSION,
                 model_id=MODEL_ID,
                 summary_input_truncated=input_truncated,
+                summary_status="parse_error",
             )
 
     usage = getattr(response, "usage_metadata", None)
@@ -293,6 +322,7 @@ def summarize_item(
             output_tokens=output_tokens,
             cost_usd_estimate=cost,
             summary_input_truncated=input_truncated,
+            summary_status="ok",
         )
 
     log.info(
@@ -313,6 +343,7 @@ def summarize_item(
         output_tokens=output_tokens,
         cost_usd_estimate=cost,
         summary_input_truncated=input_truncated,
+        summary_status="thin",
     )
 
 

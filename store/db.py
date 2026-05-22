@@ -271,13 +271,19 @@ def get_items_for_week(
     week_start_iso: str,
     week_end_iso: str,
 ) -> list[sqlite3.Row]:
-    """Return items whose ``published_at`` falls in [week_start, week_end], newest first."""
+    """Return items whose ``published_at`` falls in [week_start, week_end], newest first.
+
+    Joins ``sources.type`` as ``source_type`` so the renderer can apply D-30
+    (YouTube video indicator) and D-25 (degradation copy) without a second
+    per-row source lookup.
+    """
     return conn.execute(
         """
-        SELECT *
+        SELECT items.*, sources.type AS source_type
           FROM items
-         WHERE published_at >= ? AND published_at <= ?
-         ORDER BY published_at DESC
+          JOIN sources ON sources.source_id = items.source_id
+         WHERE items.published_at >= ? AND items.published_at <= ?
+         ORDER BY items.published_at DESC
         """,
         (week_start_iso, week_end_iso),
     ).fetchall()
@@ -313,11 +319,18 @@ def insert_item_summary(
     output_tokens: int | None = None,
     cost_usd_estimate: float | None = None,
     summary_input_truncated: bool = False,
+    summary_status: str | None = None,
 ) -> str:
     """Insert a fresh ``item_summaries`` row. Caller is responsible for skip-if-exists.
 
     D-28: ``summary_input_truncated`` records whether the LLM input was elided
     by ``pipeline.llm.summarize._maybe_truncate_transcript``.
+
+    ``summary_status`` (PROJECT.md LOCKED directive 2026-05-22): records why a
+    summary is unavailable so the renderer can route content-thin items to the
+    footer aside vs transient LLM-call failures (``quota_exhausted``) to an
+    in-place "summary couldn't be generated this week" card. ``None`` for
+    backwards compat with historical rows.
     """
     summary_id = uuid.uuid4().hex
     conn.execute(
@@ -325,8 +338,8 @@ def insert_item_summary(
         INSERT INTO item_summaries (
             summary_id, item_id, week_id, tldr, summary_confidence,
             prompt_version, model_id, input_tokens, output_tokens, cost_usd_estimate,
-            summary_input_truncated
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            summary_input_truncated, summary_status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             summary_id,
@@ -340,6 +353,7 @@ def insert_item_summary(
             output_tokens,
             cost_usd_estimate,
             1 if summary_input_truncated else 0,
+            summary_status,
         ),
     )
     return summary_id

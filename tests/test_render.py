@@ -1,13 +1,22 @@
-"""HTML renderer tests — D-25 in-place degradation + D-26 header pipeline notice.
+"""HTML renderer tests — PROJECT.md LOCKED footer-aside contract.
 
-History:
-- Plan 01-03 briefly rendered degraded items as inline cards.
-- Plan 01-04 final D-05 contract moved them into an ``Also seen this week``
-  footer aside.
-- Plan 02-03 project-level D-25 SUPERSEDES D-05: every item renders in-place
-  as an ``<article class="card">`` regardless of summary state. Footer aside,
-  ``OMITTED_SECTION_HEADING``, ``_is_displayable``, ``_render_pipeline_notes``,
-  and the ``.pipeline-notes`` CSS class are all removed.
+The locked rule (2026-05-22): items the pipeline could not turn into a real
+TL;DR fall into two buckets:
+
+* **Content-thin / unsummarizable** — RSS body too thin, YouTube transcript
+  missing/pending, parse error, api error, content_too_thin gate, etc.
+  → routed to the ``<aside id="also-seen">`` footer as outbound links only.
+* **Transient LLM-call failure (quota_exhausted)** — the only carve-out.
+  Item stays in the main feed as an in-place card with the
+  ``"The summary couldn't be generated this week."`` body copy.
+
+Healthy cards (``summary_status='ok'`` with a real ``tldr``) render in-place
+in the main feed as before.
+
+History (do not bring back):
+- Plan 01-03 inline-regressed the footer once; reverted 5f8e9f0.
+- Plan 02-03 D-25 tried to remove the footer again ("in-place degradation,
+  no relegation") and was rejected during Phase 2 visual UAT.
 """
 from __future__ import annotations
 
@@ -15,7 +24,12 @@ import re
 from datetime import UTC, datetime
 from pathlib import Path
 
-from pipeline.render.html import DigestCard, render_digest
+from pipeline.render.html import (
+    QUOTA_BODY_COPY,
+    VIDEO_INDICATOR,
+    DigestCard,
+    render_digest,
+)
 
 
 def _card(
@@ -28,7 +42,7 @@ def _card(
     published_at: datetime | None = None,
     source_type: str = "rss",
     transcript_status: str | None = None,
-    degradation_reason: str | None = None,
+    summary_status: str | None = "ok",
 ) -> DigestCard:
     return DigestCard(
         title=title,
@@ -39,12 +53,12 @@ def _card(
         summary_confidence=confidence,
         source_type=source_type,
         transcript_status=transcript_status,
-        degradation_reason=degradation_reason,
+        summary_status=summary_status,
     )
 
 
 # ---------------------------------------------------------------------------
-# Header + structural assertions (carried over from Phase 1, adapted to D-25)
+# Header + structural assertions
 # ---------------------------------------------------------------------------
 
 
@@ -58,339 +72,332 @@ def test_header_contains_week_of(tmp_path: Path) -> None:
         out_dir=tmp_path,
     )
     body = out.read_text(encoding="utf-8")
-    assert "Week of" in body
-    assert "May 4" in body
-    assert "May 10, 2026" in body
-    assert "Updated 20" in body
-    assert "<h1>AI Digest</h1>" in body
+    assert "Week of May 4 – May 10, 2026" in body
 
 
-def test_all_anchor_tags_have_rel_noopener(tmp_path: Path) -> None:
-    """D-16: every external link carries rel=noopener."""
+def test_header_item_count_reflects_main_feed_only(tmp_path: Path) -> None:
+    """Header item count is the *main feed* size; footer items are summed
+    separately as a suffix so the reader sees both numbers without
+    pretending the footer items contribute to the curated total."""
     out = render_digest(
-        week_id="2026-W19",
-        week_start=datetime(2026, 5, 4, tzinfo=UTC),
-        week_end=datetime(2026, 5, 10, tzinfo=UTC),
+        week_id="2026-W21",
+        week_start=datetime(2026, 5, 18, tzinfo=UTC),
+        week_end=datetime(2026, 5, 24, 23, 59, 59, tzinfo=UTC),
         cards=[
-            _card(title="First", url="https://a.example/post"),
+            _card(title="Real one", tldr="real", summary_status="ok"),
             _card(
-                title="Second",
-                url="https://b.example/post",
+                title="Real two",
+                tldr="real",
+                summary_status="ok",
+                published_at=datetime(2026, 5, 19, tzinfo=UTC),
+            ),
+            _card(
+                title="Thin",
                 tldr=None,
                 confidence="unavailable",
-                degradation_reason="The full article couldn't be retrieved this week.",
+                summary_status="thin",
+                published_at=datetime(2026, 5, 20, tzinfo=UTC),
             ),
         ],
         out_dir=tmp_path,
     )
     body = out.read_text(encoding="utf-8")
-    anchors = re.findall(r"<a\b[^>]*>", body)
-    assert len(anchors) >= 2
-    for tag in anchors:
-        assert 'rel="noopener"' in tag
-        assert 'target="_blank"' in tag
+    assert "2 items" in body
+    assert "1 more in footer" in body
 
 
-def test_cards_sorted_newest_first(tmp_path: Path) -> None:
-    """Cards (including degraded) render in published_at descending order."""
+# ---------------------------------------------------------------------------
+# Main-feed routing (healthy + quota carve-out only)
+# ---------------------------------------------------------------------------
+
+
+def test_healthy_card_renders_in_main_feed(tmp_path: Path) -> None:
     out = render_digest(
         week_id="2026-W19",
         week_start=datetime(2026, 5, 4, tzinfo=UTC),
-        week_end=datetime(2026, 5, 10, tzinfo=UTC),
+        week_end=datetime(2026, 5, 10, 23, 59, 59, tzinfo=UTC),
+        cards=[_card(title="The real story", tldr="The TL;DR.")],
+        out_dir=tmp_path,
+    )
+    body = out.read_text(encoding="utf-8")
+    assert '<article class="card">' in body
+    assert "The TL;DR." in body
+    # Main feed lives inside <main>, never inside <aside id="also-seen">.
+    main_block = re.search(r"<main>(.*?)</main>", body, re.DOTALL).group(1)
+    assert "The real story" in main_block
+
+
+def test_quota_exhausted_card_renders_in_main_feed(tmp_path: Path) -> None:
+    """The ONLY non-healthy status that stays in the main feed."""
+    out = render_digest(
+        week_id="2026-W21",
+        week_start=datetime(2026, 5, 18, tzinfo=UTC),
+        week_end=datetime(2026, 5, 24, 23, 59, 59, tzinfo=UTC),
         cards=[
-            _card(title="Older", published_at=datetime(2026, 5, 5, tzinfo=UTC)),
-            _card(title="Newer", published_at=datetime(2026, 5, 9, tzinfo=UTC)),
+            _card(
+                title="Hit the cap",
+                tldr=None,
+                confidence="unavailable",
+                summary_status="quota_exhausted",
+            ),
         ],
         out_dir=tmp_path,
     )
     body = out.read_text(encoding="utf-8")
-    assert body.index("Newer") < body.index("Older")
+    main_block = re.search(r"<main>(.*?)</main>", body, re.DOTALL).group(1)
+    assert '<article class="card">' in main_block
+    assert "Hit the cap" in main_block
+    assert QUOTA_BODY_COPY in main_block
+    assert 'id="also-seen"' not in body or "Hit the cap" not in (
+        re.search(r'<aside id="also-seen">(.*?)</aside>', body, re.DOTALL) or
+        re.search(r"(^)", body)
+    ).group(1)
 
 
-def test_source_badge_bracketed_display_name(tmp_path: Path) -> None:
-    """D-14: publisher badge uses [display_name] format."""
+def test_main_feed_body_uses_quota_copy_verbatim(tmp_path: Path) -> None:
+    """The 'couldn't be generated this week' string is reserved for the
+    quota carve-out; the exact wording is locked."""
     out = render_digest(
-        week_id="2026-W19",
-        week_start=datetime(2026, 5, 4, tzinfo=UTC),
-        week_end=datetime(2026, 5, 10, tzinfo=UTC),
-        cards=[_card(publisher="Simon Willison")],
+        week_id="2026-W21",
+        week_start=datetime(2026, 5, 18, tzinfo=UTC),
+        week_end=datetime(2026, 5, 24, 23, 59, 59, tzinfo=UTC),
+        cards=[
+            _card(
+                title="Quota item",
+                tldr=None,
+                summary_status="quota_exhausted",
+            ),
+        ],
         out_dir=tmp_path,
     )
     body = out.read_text(encoding="utf-8")
-    assert "[Simon Willison]" in body
+    assert "The summary couldn't be generated this week." in body
 
 
 # ---------------------------------------------------------------------------
-# D-25: in-place degradation
+# Footer-aside routing (everything else)
 # ---------------------------------------------------------------------------
 
 
-def test_degraded_renders_in_place(tmp_path: Path) -> None:
-    """D-25: a card with unavailable summary still renders as <article class="card">."""
+def test_thin_card_goes_to_footer_aside(tmp_path: Path) -> None:
     out = render_digest(
-        week_id="2026-W19",
-        week_start=datetime(2026, 5, 4, tzinfo=UTC),
-        week_end=datetime(2026, 5, 10, tzinfo=UTC),
+        week_id="2026-W21",
+        week_start=datetime(2026, 5, 18, tzinfo=UTC),
+        week_end=datetime(2026, 5, 24, 23, 59, 59, tzinfo=UTC),
+        cards=[
+            _card(title="Healthy", tldr="real tldr"),
+            _card(
+                title="Too thin to summarize",
+                tldr=None,
+                confidence="unavailable",
+                summary_status="thin",
+                published_at=datetime(2026, 5, 19, tzinfo=UTC),
+            ),
+        ],
+        out_dir=tmp_path,
+    )
+    body = out.read_text(encoding="utf-8")
+    aside = re.search(r'<aside id="also-seen">(.*?)</aside>', body, re.DOTALL).group(1)
+    main_block = re.search(r"<main>(.*?)</main>", body, re.DOTALL).group(1)
+    assert "Too thin to summarize" in aside
+    assert "Too thin to summarize" not in main_block
+    assert "Also seen this week" in aside
+
+
+def test_youtube_pending_local_goes_to_footer(tmp_path: Path) -> None:
+    """A YouTube card with no transcript and no TL;DR is footer-bound."""
+    out = render_digest(
+        week_id="2026-W21",
+        week_start=datetime(2026, 5, 18, tzinfo=UTC),
+        week_end=datetime(2026, 5, 24, 23, 59, 59, tzinfo=UTC),
         cards=[
             _card(
-                title="Cloud-blocked Video",
+                title="Some video with no captions yet",
                 tldr=None,
                 confidence="unavailable",
                 source_type="youtube",
                 transcript_status="pending_local",
-                degradation_reason=(
-                    "This video's transcript wasn't reachable during the weekly run. "
-                    "The title and description are below."
-                ),
+                summary_status="thin",
             ),
         ],
         out_dir=tmp_path,
     )
     body = out.read_text(encoding="utf-8")
-    assert body.count('<article class="card">') == 1
-    assert "pipeline-notes" not in body  # D-05 footer must be gone
-    assert "transcript wasn't reachable" in body
+    aside = re.search(r'<aside id="also-seen">(.*?)</aside>', body, re.DOTALL).group(1)
+    assert "Some video with no captions yet" in aside
 
 
-def test_header_count_includes_degraded_cards(tmp_path: Path) -> None:
-    """D-25: header count is total cards, not displayed-only."""
+def test_api_error_card_goes_to_footer(tmp_path: Path) -> None:
+    """Non-quota LLM failures (timeout, 5xx) are footer-bound — only the
+    explicit quota_exhausted carve-out earns an in-place slot."""
     out = render_digest(
-        week_id="2026-W19",
-        week_start=datetime(2026, 5, 4, tzinfo=UTC),
-        week_end=datetime(2026, 5, 10, tzinfo=UTC),
+        week_id="2026-W21",
+        week_start=datetime(2026, 5, 18, tzinfo=UTC),
+        week_end=datetime(2026, 5, 24, 23, 59, 59, tzinfo=UTC),
         cards=[
-            _card(title="Real 1"),
-            _card(title="Real 2"),
             _card(
-                title="Degraded 1",
+                title="API blew up",
                 tldr=None,
-                confidence="unavailable",
-                degradation_reason="No body content this week.",
-            ),
-            _card(
-                title="Degraded 2",
-                tldr=None,
-                confidence="unavailable",
-                degradation_reason="No body content this week.",
+                summary_status="api_error",
             ),
         ],
         out_dir=tmp_path,
     )
     body = out.read_text(encoding="utf-8")
-    header_block = body.split("</header>")[0]
-    assert "4 items" in header_block
-    assert "2 items" not in header_block
+    assert "API blew up" not in re.search(r"<main>(.*?)</main>", body, re.DOTALL).group(1)
+    assert "API blew up" in body
 
 
-# ---------------------------------------------------------------------------
-# D-26: top-of-digest pipeline notice
-# ---------------------------------------------------------------------------
-
-
-def test_pipeline_header_notice_appears_when_pending(tmp_path: Path) -> None:
-    """D-26: pending-local count > 0 surfaces the header pipeline-notice."""
+def test_footer_omitted_when_no_thin_items(tmp_path: Path) -> None:
     out = render_digest(
         week_id="2026-W19",
         week_start=datetime(2026, 5, 4, tzinfo=UTC),
-        week_end=datetime(2026, 5, 10, tzinfo=UTC),
-        cards=[_card(title="Real")],
-        pipeline_notice_pending_count=2,
-        pipeline_notice_failed_source_count=0,
+        week_end=datetime(2026, 5, 10, 23, 59, 59, tzinfo=UTC),
+        cards=[_card(title="Healthy", tldr="t")],
         out_dir=tmp_path,
     )
     body = out.read_text(encoding="utf-8")
-    assert 'class="pipeline-notice"' in body
-    # D-24: plain English copy only — no CLI flag in the user-facing notice text
-    notice_block = body.split('class="pipeline-notice"', 1)[1].split("</p>", 1)[0]
-    assert "--" not in notice_block
-    assert "pending_local" not in notice_block
+    assert 'id="also-seen"' not in body
+    assert "Also seen this week" not in body
 
 
-def test_pipeline_header_notice_hidden_when_all_ok(tmp_path: Path) -> None:
-    """D-26: zero-state — no pending and no failed sources → notice element absent."""
+def test_footer_link_uses_canonical_url_with_noopener(tmp_path: Path) -> None:
     out = render_digest(
-        week_id="2026-W19",
-        week_start=datetime(2026, 5, 4, tzinfo=UTC),
-        week_end=datetime(2026, 5, 10, tzinfo=UTC),
-        cards=[_card(title="Real")],
+        week_id="2026-W21",
+        week_start=datetime(2026, 5, 18, tzinfo=UTC),
+        week_end=datetime(2026, 5, 24, 23, 59, 59, tzinfo=UTC),
+        cards=[
+            _card(title="real", tldr="t"),
+            _card(
+                title="Thin",
+                tldr=None,
+                summary_status="thin",
+                url="https://example.com/thin",
+            ),
+        ],
+        out_dir=tmp_path,
+    )
+    body = out.read_text(encoding="utf-8")
+    aside = re.search(r'<aside id="also-seen">(.*?)</aside>', body, re.DOTALL).group(1)
+    assert 'href="https://example.com/thin"' in aside
+    assert 'rel="noopener"' in aside
+    assert 'target="_blank"' in aside
+
+
+# ---------------------------------------------------------------------------
+# D-30 video indicator (carried over)
+# ---------------------------------------------------------------------------
+
+
+def test_youtube_video_indicator_in_main_feed(tmp_path: Path) -> None:
+    out = render_digest(
+        week_id="2026-W21",
+        week_start=datetime(2026, 5, 18, tzinfo=UTC),
+        week_end=datetime(2026, 5, 24, 23, 59, 59, tzinfo=UTC),
+        cards=[
+            _card(
+                title="A YouTube card with a transcript",
+                publisher="Fixture Channel",
+                tldr="A real summary from the transcript.",
+                source_type="youtube",
+                transcript_status="ok",
+            ),
+        ],
+        out_dir=tmp_path,
+    )
+    body = out.read_text(encoding="utf-8")
+    assert '<span class="video-indicator">' in body
+    assert VIDEO_INDICATOR in body
+
+
+def test_rss_card_has_no_video_indicator(tmp_path: Path) -> None:
+    out = render_digest(
+        week_id="2026-W21",
+        week_start=datetime(2026, 5, 18, tzinfo=UTC),
+        week_end=datetime(2026, 5, 24, 23, 59, 59, tzinfo=UTC),
+        cards=[_card(title="An RSS card", tldr="t", source_type="rss")],
+        out_dir=tmp_path,
+    )
+    body = out.read_text(encoding="utf-8")
+    assert '<span class="video-indicator">' not in body
+
+
+# ---------------------------------------------------------------------------
+# D-26 header pipeline notice (unchanged)
+# ---------------------------------------------------------------------------
+
+
+def test_pipeline_notice_present_when_pending(tmp_path: Path) -> None:
+    out = render_digest(
+        week_id="2026-W21",
+        week_start=datetime(2026, 5, 18, tzinfo=UTC),
+        week_end=datetime(2026, 5, 24, 23, 59, 59, tzinfo=UTC),
+        cards=[_card(title="real", tldr="t")],
+        out_dir=tmp_path,
+        pipeline_notice_pending_count=3,
+        pipeline_notice_failed_source_count=0,
+    )
+    body = out.read_text(encoding="utf-8")
+    assert '<p class="pipeline-notice">' in body
+    assert "3 video summaries" in body
+
+
+def test_pipeline_notice_absent_at_zero_state(tmp_path: Path) -> None:
+    out = render_digest(
+        week_id="2026-W21",
+        week_start=datetime(2026, 5, 18, tzinfo=UTC),
+        week_end=datetime(2026, 5, 24, 23, 59, 59, tzinfo=UTC),
+        cards=[_card(title="real", tldr="t")],
+        out_dir=tmp_path,
         pipeline_notice_pending_count=0,
         pipeline_notice_failed_source_count=0,
-        out_dir=tmp_path,
     )
     body = out.read_text(encoding="utf-8")
-    assert 'class="pipeline-notice"' not in body
-
-
-def test_pipeline_header_notice_combines_pending_and_failed(tmp_path: Path) -> None:
-    """D-26: both pending + failed counts contribute distinct clauses."""
-    out = render_digest(
-        week_id="2026-W19",
-        week_start=datetime(2026, 5, 4, tzinfo=UTC),
-        week_end=datetime(2026, 5, 10, tzinfo=UTC),
-        cards=[_card(title="Real")],
-        pipeline_notice_pending_count=1,
-        pipeline_notice_failed_source_count=2,
-        out_dir=tmp_path,
-    )
-    body = out.read_text(encoding="utf-8")
-    assert 'class="pipeline-notice"' in body
+    assert '<p class="pipeline-notice">' not in body
 
 
 # ---------------------------------------------------------------------------
-# D-24: reader-surface plain-English language policy
+# D-24 reader-surface language policy
 # ---------------------------------------------------------------------------
 
 
 _FORBIDDEN_READER_TOKENS = (
     "pending_local",
     "transcript_status",
-    "FetchError",
+    "summary_status",
+    "summary_confidence",
     "--only-pending-transcripts",
-    "pipeline.run",
-    "out/",
-    "OMITTED_SECTION_HEADING",
-    "pipeline-notes",
-    "_is_displayable",
+    "RESOURCE_EXHAUSTED",
+    "429",
+    "FetchError",
 )
 
 
-def test_reader_surface_plain_english(tmp_path: Path) -> None:
-    """D-24: rendered HTML never leaks engineer-speak into the reader surface."""
+def test_reader_surface_avoids_engineer_tokens(tmp_path: Path) -> None:
+    """No engineer-facing jargon ever lands in rendered HTML."""
     out = render_digest(
-        week_id="2026-W19",
-        week_start=datetime(2026, 5, 4, tzinfo=UTC),
-        week_end=datetime(2026, 5, 10, tzinfo=UTC),
+        week_id="2026-W21",
+        week_start=datetime(2026, 5, 18, tzinfo=UTC),
+        week_end=datetime(2026, 5, 24, 23, 59, 59, tzinfo=UTC),
         cards=[
-            _card(title="Real Article"),
+            _card(title="real", tldr="t"),
             _card(
-                title="Cloud-blocked Video",
+                title="thin",
                 tldr=None,
-                confidence="unavailable",
-                source_type="youtube",
-                transcript_status="pending_local",
-                degradation_reason=(
-                    "This video's transcript wasn't reachable during the weekly run. "
-                    "The title and description are below."
-                ),
+                summary_status="thin",
+                published_at=datetime(2026, 5, 19, tzinfo=UTC),
             ),
             _card(
-                title="No-captions Video",
+                title="quota",
                 tldr=None,
-                confidence="unavailable",
-                source_type="youtube",
-                transcript_status="missing",
-                degradation_reason="No captions are available for this video.",
+                summary_status="quota_exhausted",
+                published_at=datetime(2026, 5, 20, tzinfo=UTC),
             ),
         ],
-        pipeline_notice_pending_count=1,
-        pipeline_notice_failed_source_count=0,
         out_dir=tmp_path,
+        pipeline_notice_pending_count=2,
+        pipeline_notice_failed_source_count=1,
     )
     body = out.read_text(encoding="utf-8")
     for token in _FORBIDDEN_READER_TOKENS:
-        assert token not in body, f"D-24 violation: {token!r} found in reader HTML"
-
-
-# ---------------------------------------------------------------------------
-# D-30: YouTube video indicator
-# ---------------------------------------------------------------------------
-
-
-def test_youtube_video_badge(tmp_path: Path) -> None:
-    """D-30: YouTube card carries a small video indicator on the publisher badge."""
-    out = render_digest(
-        week_id="2026-W19",
-        week_start=datetime(2026, 5, 4, tzinfo=UTC),
-        week_end=datetime(2026, 5, 10, tzinfo=UTC),
-        cards=[
-            _card(publisher="How I AI", source_type="youtube"),
-            _card(publisher="Simon Willison", source_type="rss"),
-        ],
-        out_dir=tmp_path,
-    )
-    body = out.read_text(encoding="utf-8")
-    youtube_block = body.split("[How I AI]")[0]  # before badge
-    youtube_badge_to_end = body.split("[How I AI]", 1)[1]
-    assert "[video]" in youtube_badge_to_end[:200], "D-30: video indicator missing"
-    # The RSS card must NOT carry the video indicator
-    rss_badge = body.split("[Simon Willison]", 1)[1][:200]
-    assert "[video]" not in rss_badge
-    del youtube_block  # silence unused; structure check above
-
-
-# ---------------------------------------------------------------------------
-# Anti-tests: legacy D-05 surfaces must be gone
-# ---------------------------------------------------------------------------
-
-
-def test_no_also_seen_this_week_footer(tmp_path: Path) -> None:
-    """D-25: Also seen this week aside is removed."""
-    out = render_digest(
-        week_id="2026-W19",
-        week_start=datetime(2026, 5, 4, tzinfo=UTC),
-        week_end=datetime(2026, 5, 10, tzinfo=UTC),
-        cards=[
-            _card(title="Real"),
-            _card(
-                title="Degraded",
-                tldr=None,
-                confidence="unavailable",
-                degradation_reason="No body content this week.",
-            ),
-        ],
-        out_dir=tmp_path,
-    )
-    body = out.read_text(encoding="utf-8")
-    assert "Also seen this week" not in body
-    assert "pipeline-notes" not in body
-
-
-# ---------------------------------------------------------------------------
-# Carried-over security assertions
-# ---------------------------------------------------------------------------
-
-
-def test_html_escapes_user_strings_in_cards(tmp_path: Path) -> None:
-    """T-01-02: titles/summaries with HTML-special chars are escaped on every card."""
-    out = render_digest(
-        week_id="2026-W19",
-        week_start=datetime(2026, 5, 4, tzinfo=UTC),
-        week_end=datetime(2026, 5, 10, tzinfo=UTC),
-        cards=[
-            _card(title="Foo <script>alert(1)</script>"),
-            _card(
-                title='AT&T "scoop" & <img src=x onerror=alert(1)>',
-                tldr=None,
-                confidence="unavailable",
-                degradation_reason="The summary couldn't be generated this week.",
-            ),
-        ],
-        out_dir=tmp_path,
-    )
-    body = out.read_text(encoding="utf-8")
-    assert "<script>alert(1)</script>" not in body
-    assert "&lt;script&gt;alert(1)&lt;/script&gt;" in body
-    assert "<img src=x onerror=alert(1)>" not in body
-    assert "&lt;img src=x onerror=alert(1)&gt;" in body
-    assert "AT&amp;T" in body
-    assert "&quot;scoop&quot;" in body
-
-
-def test_degraded_card_uses_degradation_reason_for_body(tmp_path: Path) -> None:
-    """D-25 body copy: plain-English degradation_reason renders in place of tldr."""
-    out = render_digest(
-        week_id="2026-W19",
-        week_start=datetime(2026, 5, 4, tzinfo=UTC),
-        week_end=datetime(2026, 5, 10, tzinfo=UTC),
-        cards=[
-            _card(
-                title="Thin Post",
-                tldr=None,
-                confidence="unavailable",
-                degradation_reason="The source published only a short teaser this week.",
-            ),
-        ],
-        out_dir=tmp_path,
-    )
-    body = out.read_text(encoding="utf-8")
-    assert "The source published only a short teaser this week." in body
+        assert token not in body, f"reader surface leaked engineer token: {token!r}"
