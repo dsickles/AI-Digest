@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation + First Digest** - Minimal end-to-end weekly digest from 2–3 RSS sources, per-item TL;DR only, plain HTML *(2026-05-21)*
 - [x] **Phase 2: Expand Ingestion** - YouTube adapter, 8-source catalog, typed failure isolation, in-place degradation renderer, and residential transcript catch-up *(2026-05-22)*
-- [ ] **Phase 3: AI Quality** - Dedup-before-LLM, categorization, ranking, weekly roll-up, checkpoints, and cost guardrails
+- [x] **Phase 3: AI Quality** - Dedup-before-LLM, categorization, ranking, weekly roll-up, checkpoints, and cost guardrails (completed 2026-05-22)
 - [ ] **Phase 4: Dashboard + Archive** - Dark Astro dashboard with tabs, full week archive, and pipeline notes in the UI
 - [ ] **Phase 5: Ops & Automation** - GHA weekly cron, auto-deploy, secrets, heartbeat, and hard LLM spend ceiling
 
@@ -108,7 +108,7 @@ Plans:
   4. A structured `pipeline_report.json` accompanies each run (items ingested, deduped, LLM calls, cost USD, errors) and LLM spend stays within the $2/week target with a configurable hard stop
   5. The human reader can skim the full digest in ~15 minutes and get a coherent sense of "what happened in AI this week" — the Core Value hypothesis is testable
 
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 **Wave 1**
@@ -129,7 +129,7 @@ Plans:
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
-- [ ] 03-05-PLAN.md — Cost governance + pipeline_report.json + cascade + CLI flags (OBS-02, PIPELINE-05/06)
+- [x] 03-05-PLAN.md — Cost governance + pipeline_report.json + cascade + CLI flags (OBS-02, PIPELINE-05/06)
 
 **Notes:** Primary mitigation phase for Risk Top-5 items #1 (under-dedup), #2 (runaway LLM costs — pre-flight budget, dedup-before-summarize, tiered models, $5/week hard cap), #4 (hallucinated summaries — grounding prompts, confidence flags, hierarchical roll-up per PITFALLS #14). Prompts versioned in files with `prompt_version` in digest metadata (PITFALLS #13).
 
@@ -179,7 +179,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation + First Digest | 5/5 | Complete | 2026-05-21 |
 | 2. Expand Ingestion | 4/4 | Complete | 2026-05-22 |
-| 3. AI Quality | 4/5 | In Progress|  |
+| 3. AI Quality | 5/5 | Complete   | 2026-05-22 |
 | 4. Dashboard + Archive | 0/TBD | Not started | - |
 | 5. Ops & Automation | 0/TBD | Not started | - |
 
