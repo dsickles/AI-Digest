@@ -22,6 +22,11 @@ venv/
 # uv
 # uv.lock IS committed for reproducibility — do not gitignore it.
 
+# Web / Astro build artifacts (committed archive lives under web/src/content/)
+web/node_modules/
+web/.astro/
+web/dist/
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db

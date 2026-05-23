@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from pipeline.orchestrator import RunStats
 
 DEFAULT_OUT_DIR = Path("out")
+DEFAULT_ARCHIVE_DIR = Path("web/src/content/reports")
 
 _SUMMARY_STATUS_KEYS = (
     "ok",
@@ -251,8 +252,13 @@ def write_pipeline_report(
     status: str,
     budget: WeekBudget | None = None,
     out_dir: Path | None = None,
+    archive_dir: Path | None = DEFAULT_ARCHIVE_DIR,
 ) -> tuple[Path, Path]:
-    """Write per-week and always-latest JSON artifacts (D-69)."""
+    """Write per-week and always-latest JSON artifacts (D-69).
+
+    When ``archive_dir`` is set, also writes ``{week_id}.json`` for the Astro
+    content collection at ``web/src/content/reports/`` (D-A2a).
+    """
     target_dir = out_dir or DEFAULT_OUT_DIR
     target_dir.mkdir(parents=True, exist_ok=True)
     payload = build_pipeline_report(
@@ -263,6 +269,10 @@ def write_pipeline_report(
     latest = target_dir / "pipeline_report.json"
     per_week.write_text(text, encoding="utf-8")
     latest.write_text(text, encoding="utf-8")
+    if archive_dir is not None:
+        archive_dir.mkdir(parents=True, exist_ok=True)
+        archive_path = archive_dir / f"{stats.week_id}.json"
+        archive_path.write_text(text, encoding="utf-8")
     return per_week, latest
 
 

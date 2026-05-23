@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from pathlib import Path
 
 import truststore
 from dotenv import load_dotenv
@@ -95,6 +96,27 @@ def _add_phase3_flags(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _add_render_flags(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--no-html-preview",
+        dest="no_html_preview",
+        action="store_true",
+        default=False,
+        help=(
+            "Skip deprecated out/digest-{week}.html dev preview; "
+            "emit digest JSON archive only."
+        ),
+    )
+    parser.add_argument(
+        "--web-out",
+        dest="web_out_dir",
+        type=Path,
+        default=None,
+        metavar="PATH",
+        help="Override web/src/content/digests output directory for digest JSON.",
+    )
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="python -m pipeline.run",
@@ -165,6 +187,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_week_arg(render_cmd)
     _add_phase3_flags(render_cmd)
+    _add_render_flags(render_cmd)
 
     return parser
 
@@ -187,6 +210,8 @@ def _print_stats(stats, *, command: str) -> None:
     sys.stdout.write(f"  errors:            {len(stats.errors)}\n")
     if stats.out_path is not None:
         sys.stdout.write(f"  digest:            {stats.out_path}\n")
+    if getattr(stats, "digest_json_path", None) is not None:
+        sys.stdout.write(f"  digest_json:       {stats.digest_json_path}\n")
 
 
 def _phase3_kwargs(args: argparse.Namespace) -> dict:
@@ -228,7 +253,12 @@ def main(argv: list[str] | None = None) -> int:
         elif command == "render":
             from pipeline.orchestrator import run_render
 
-            stats = run_render(week_id, top_n_briefing=p3["top_n_briefing"])
+            stats = run_render(
+                week_id,
+                top_n_briefing=p3["top_n_briefing"],
+                no_html_preview=getattr(args, "no_html_preview", False),
+                web_out_dir=getattr(args, "web_out_dir", None),
+            )
         elif command == "dedup":
             from pipeline.orchestrator import run_dedup
 

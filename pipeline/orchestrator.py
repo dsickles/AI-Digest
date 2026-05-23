@@ -23,9 +23,11 @@ from typing import TYPE_CHECKING
 import structlog
 
 from pipeline.models import NormalizedItem
-from pipeline.render.html import AlsoCoveredMember, DigestCard, render_digest
+from pipeline.render.digest_json import emit_digest_json
+from pipeline.render.html import render_digest
+from pipeline.render.partition import AlsoCoveredMember, DigestCard
 from pipeline.reporting.last_run import RunSummary, write_last_run_md
-from pipeline.reporting.pipeline_report import write_pipeline_report
+from pipeline.reporting.pipeline_report import build_pipeline_report, write_pipeline_report
 from pipeline.week import week_bounds
 from store.db import (
     connect,
@@ -102,6 +104,7 @@ class RunStats:
     rank_cost_usd: float = 0.0
     errors: list[dict[str, str]] = field(default_factory=list)
     out_path: Path | None = None
+    digest_json_path: Path | None = None
     source_stats: dict[str, SourceRunStats] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -1730,12 +1733,73 @@ def _rollups_for_render(conn, week_id: str) -> dict[str, object]:
     return {row["scope"]: row for row in get_rollups_for_week(conn, week_id)}
 
 
+def _render_status(stats: RunStats, *, budget: WeekBudget | None = None) -> str:
+    status = "success" if not stats.errors else "partial"
+    if budget is not None and budget.halted:
+        status = "partial"
+    return status
+
+
+def _publish_render_outputs(
+    conn,
+    *,
+    week_id: str,
+    week_start: datetime,
+    week_end: datetime,
+    cards: list[DigestCard],
+    stats: RunStats,
+    run_id: str,
+    pending: int,
+    failed: int,
+    top_n_briefing: int | None,
+    partial_publish: bool,
+    no_html_preview: bool,
+    web_out_dir: Path | None,
+    out_dir: Path | None,
+    budget: WeekBudget | None = None,
+) -> None:
+    """Write deprecated HTML preview (optional) and canonical digest JSON (D-A1)."""
+    rollups = _rollups_for_render(conn, week_id)
+    if not no_html_preview:
+        stats.out_path = render_digest(
+            week_id=week_id,
+            week_start=week_start,
+            week_end=week_end,
+            cards=cards,
+            out_dir=out_dir,
+            pipeline_notice_pending_count=pending,
+            pipeline_notice_failed_source_count=failed,
+            rollups_by_scope=rollups,
+            partial_publish=partial_publish,
+            top_n_briefing=top_n_briefing,
+        )
+
+    status = _render_status(stats, budget=budget)
+    pipeline_report = build_pipeline_report(
+        conn, stats, run_id=run_id, status=status, budget=budget
+    )
+    stats.digest_json_path = emit_digest_json(
+        week_id=week_id,
+        week_start=week_start,
+        week_end=week_end,
+        cards=cards,
+        out_dir=web_out_dir,
+        rollups_by_scope=rollups,
+        partial_publish=partial_publish,
+        top_n_briefing=top_n_briefing,
+        pipeline_report=pipeline_report,
+        conn=conn,
+    )
+
+
 def run_render(
     week_id: str,
     *,
     db_path: Path | str | None = None,
     out_dir: Path | None = None,
     top_n_briefing: int | None = None,
+    no_html_preview: bool = False,
+    web_out_dir: Path | None = None,
 ) -> RunStats:
     """Render HTML from existing SQLite data — no network, no LLM (D-20)."""
     init_db(db_path)
@@ -1756,16 +1820,21 @@ def run_render(
             week_rows = _canonical_rows_for_render(conn, week_rows, week_id=week_id)
             cards = _build_cards_from_db(conn, week_rows, week_id)
             pending, failed = _pipeline_notice_counts(cards=cards, stats=stats)
-            stats.out_path = render_digest(
+            _publish_render_outputs(
+                conn,
                 week_id=week_id,
                 week_start=week_start,
                 week_end=week_end,
                 cards=cards,
-                out_dir=out_dir,
-                pipeline_notice_pending_count=pending,
-                pipeline_notice_failed_source_count=failed,
-                rollups_by_scope=_rollups_for_render(conn, week_id),
+                stats=stats,
+                run_id=run_id,
+                pending=pending,
+                failed=failed,
                 top_n_briefing=top_n_briefing,
+                partial_publish=False,
+                no_html_preview=no_html_preview,
+                web_out_dir=web_out_dir,
+                out_dir=out_dir,
             )
             _finalize(
                 conn, run_id, stats, phase="render", out_dir=out_dir
@@ -1917,17 +1986,22 @@ def run_all(
                 summaries=summaries,
             )
             pending, failed = _pipeline_notice_counts(cards=cards, stats=stats)
-            stats.out_path = render_digest(
+            _publish_render_outputs(
+                conn,
                 week_id=week_id,
                 week_start=week_start,
                 week_end=week_end,
                 cards=cards,
-                out_dir=out_dir,
-                pipeline_notice_pending_count=pending,
-                pipeline_notice_failed_source_count=failed,
-                rollups_by_scope=_rollups_for_render(conn, week_id),
-                partial_publish=budget.halted,
+                stats=stats,
+                run_id=run_id,
+                pending=pending,
+                failed=failed,
                 top_n_briefing=top_n_briefing,
+                partial_publish=budget.halted,
+                no_html_preview=False,
+                web_out_dir=None,
+                out_dir=out_dir,
+                budget=budget,
             )
 
             _finalize(
