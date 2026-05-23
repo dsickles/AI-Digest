@@ -649,6 +649,54 @@ def get_ranks_for_week(
     ).fetchall()
 
 
+def ranks_cover_current_clusters(
+    conn: sqlite3.Connection,
+    week_id: str,
+    prompt_version: str = "rank_v1",
+) -> bool:
+    """True when rank rows exactly cover the live ``story_clusters`` set for ``week_id``.
+
+    Used before rank/rollup stage skip gates (CR-02): stale ``cluster_ranks`` rows
+    that reference deleted cluster ids or omit new clusters must force a re-run.
+    """
+    cluster_count = conn.execute(
+        "SELECT COUNT(*) AS n FROM story_clusters WHERE week_id = ?",
+        (week_id,),
+    ).fetchone()["n"]
+    rank_count = conn.execute(
+        """
+        SELECT COUNT(*) AS n FROM cluster_ranks
+         WHERE week_id = ? AND prompt_version = ?
+        """,
+        (week_id, prompt_version),
+    ).fetchone()["n"]
+    if rank_count != cluster_count:
+        return False
+    orphan = conn.execute(
+        """
+        SELECT 1
+          FROM cluster_ranks cr
+          LEFT JOIN story_clusters sc
+            ON sc.cluster_id = cr.cluster_id AND sc.week_id = cr.week_id
+         WHERE cr.week_id = ? AND cr.prompt_version = ?
+           AND sc.cluster_id IS NULL
+         LIMIT 1
+        """,
+        (week_id, prompt_version),
+    ).fetchone()
+    return orphan is None
+
+
+def rollup_checkpoint_valid(
+    conn: sqlite3.Connection,
+    week_id: str,
+    *,
+    rank_prompt_version: str = "rank_v1",
+) -> bool:
+    """True when rank coverage is valid — required before trusting rollup skip rows."""
+    return ranks_cover_current_clusters(conn, week_id, rank_prompt_version)
+
+
 def insert_cluster_ranks_batch(
     conn: sqlite3.Connection,
     *,
