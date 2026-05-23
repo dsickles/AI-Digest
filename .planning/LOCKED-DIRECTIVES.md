@@ -102,15 +102,18 @@ genuinely-thin RSS stubs ("New release: 0.1a4") get the link-only
 footer treatment, because they will never have a real summary to add.
 
 **Code anchors:**
-- `pipeline/render/html._partition_cards()` — single source of truth
-  for main-vs-footer routing.
-- `pipeline/render/html._IN_PLACE_TRANSIENT_STATUSES` — the locked set
+- `pipeline/render/partition._partition_cards()` — **primary** single source of
+  truth for main-vs-footer routing (Plan 04-01 extract). The JSON emitter
+  (`pipeline/render/digest_json.py`, Plan 04-02) calls this same function.
+- `pipeline/render/partition._IN_PLACE_TRANSIENT_STATUSES` — the locked set
   of statuses that route to the in-place degraded card.
+- `pipeline/render/html._partition_cards()` — **deprecated** dev-preview
+  re-export only; canonical routing lives in `partition.py`.
 - `pipeline/llm/summarize._classify_llm_exception()` — classifies
   Gemini errors into the `summary_status` taxonomy.
 - `pipeline/orchestrator._infer_summary_status()` — maps legacy rows
   with NULL `summary_status` to one of the locked values.
-- `pipeline/render/html.QUOTA_BODY_COPY` — the locked exact-string
+- `pipeline/render/partition.QUOTA_BODY_COPY` — the locked exact-string
   for the in-place degraded body. Despite its name, this copy is
   shared across all five in-place statuses.
 - `store/migrations/003_summary_status.sql` — schema column that

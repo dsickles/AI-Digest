@@ -34,10 +34,13 @@ Requirements for initial release. Each maps to a roadmap phase (see Traceability
 
 ### Presentation (Web Dashboard)
 
+> **Three-category v1 (2026-05-23):** The `design` topic tab was cut per
+> PROJECT.md Key Decisions; UX/product/design stories route to `technical`.
+
 - [ ] **DISPLAY-01**: Site is a dark-themed dashboard with a header showing project name, current week date range, and "Updated" timestamp
-- [ ] **DISPLAY-02**: Tabbed navigation with one Briefing landing tab and four topic tabs: `Edtech`, `Business`, `Technical`, `Design`
+- [ ] **DISPLAY-02**: Tabbed navigation with one Briefing landing tab and three topic tabs: `Edtech`, `Business`, `Technical`
 - [ ] **DISPLAY-03**: Briefing tab shows the weekly narrative roll-up at the top, followed by the numbered "Top N" stories with summaries
-- [ ] **DISPLAY-04**: Each topic tab shows that topic's stories for the current week, with summaries
+- [ ] **DISPLAY-04**: Each of the three topic tabs (`edtech`, `business`, `technical`) shows that topic's stories for the current week, with summaries
 - [ ] **DISPLAY-05**: Each story card displays: title, TL;DR summary, publisher attribution(s), source link(s), and per-item publication date
 - [ ] **DISPLAY-06**: YouTube items render with a visual hint (e.g., play icon or thumbnail) so the user knows it's video content before clicking
 - [ ] **DISPLAY-07**: Site is browseable from desktop and modern mobile browsers without layout breakage
