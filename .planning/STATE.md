@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-06-PLAN.md
-last_updated: "2026-05-23T23:38:04.442Z"
-last_activity: 2026-05-23 -- Phase 04 planning complete
+stopped_at: Completed 04-07-PLAN.md
+last_updated: "2026-05-24T00:00:00.000Z"
+last_activity: 2026-05-23 -- Phase 04 execution started
 progress:
   total_phases: 5
   completed_phases: 3
-  total_plans: 26
-  completed_plans: 25
-  percent: 60
+  total_plans: 27
+  completed_plans: 26
+  percent: 62
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 
 ## Current Position
 
-Phase: 04 (dashboard-archive) — VERIFYING
-Plan: 6 of 6 (complete)
-Status: Ready to execute
-Last activity: 2026-05-23 -- Phase 04 planning complete
+Phase: 04 (dashboard-archive) — EXECUTING
+Plan: 7 of 7
+Status: Phase 04 complete (gap closure)
+Last activity: 2026-05-23 -- Completed 04-07 WR-01 slug normalization
 
-Progress: [██████████] 100% (25/25 plans complete)
+Progress: [██████████] 100% (26/26 plans complete)
 
 ## Performance Metrics
 
@@ -62,6 +62,7 @@ Progress: [██████████] 100% (25/25 plans complete)
 | Phase 04 P04 | 04-04 | 20min | 2 | 18 |
 | Phase 04 P05 | 04-05 | 25min | 2 | 12 |
 | Phase 04 P06 | 04-06 | 20min | 2 | 8 |
+| Phase 04 P07 | 04-07 | 5min | 1 | 4 |
 
 ## Accumulated Context
 
@@ -116,6 +117,7 @@ Recent decisions affecting current work:
 - [Phase ?]: 04-04: Static routes /{topic} and /digest/{week}/… with TabBar weekPrefix; DigestBriefing shared layout
 - [Phase 04]: 04-05: PipelineNotes in Briefing main only; /archive index; OBS-01 tests; fetch failures without conn
 - [Phase 04]: 04-06: Phase 4 exit gate — W19/W21 backfill via render-only CLI; emit_digest_json anchor in LOCKED-DIRECTIVES
+- [Phase 04]: 04-07: WR-01 closed — permalink slugs from digest.id + canonicalDigestUrl.toLowerCase(); LOCKED-01 routing untouched
 
 ### Pending Todos
 
@@ -143,7 +145,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-23T23:11:59.867Z
-Stopped at: Completed 04-06-PLAN.md
+Last session: 2026-05-24T00:00:00.000Z
+Stopped at: Completed 04-07-PLAN.md
 Resume file: None
 Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Gemini billing decision (trigger updated to "after 1–2 live Phase 3 weeks"); Phase 3 learnings extraction skipped — institutional knowledge lives in 03-XX-SUMMARY.md, 03-VERIFICATION.md, 03-HUMAN-UAT.md, and PROJECT.md Key Decisions for now

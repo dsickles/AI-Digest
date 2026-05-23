@@ -166,7 +166,7 @@ Plans:
   4. Every past weekly digest is preserved as committed JSON, browseable via a "Past Weeks" archive index (newest first, one-line excerpt) with permalink pages that render the full digest as it appeared
   5. The site is readable on desktop and modern mobile without layout breakage — the Sunday-morning read experience matches the reference dashboard intent
 
-**Plans:** 6/6 plans complete
+**Plans:** 7/7 plans complete
 
 Plans:
 **Wave 1**
@@ -192,6 +192,10 @@ Plans:
 **Wave 6** *(blocked on Wave 5)*
 
 - [x] 04-06-PLAN.md — Backfill W19 + W21, full pytest + pnpm build gate, README/UAT (integration)
+
+**Wave 7** *(gap closure — WR-01 / ARCHIVE-03)*
+
+- [x] 04-07-PLAN.md — Normalize week permalink slugs to digest.id (canonicalUrl, ArchiveList, index, topic routes)
 
 **UI hint:** yes
 
