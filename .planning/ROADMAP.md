@@ -196,7 +196,7 @@ Plans:
 
 **Plans:** TBD (decomposed during `/gsd-plan-phase 5`)
 
-**Notes:** Primary mitigation for Risk Top-5 #3 (silent cron failure — post-conditions, heartbeat, failure-only notification) and #5 (secret leakage). The QNAP runtime decision came from Phase 3 visual UAT: a cloud-deployed digest would silently fail every YouTube transcript fetch (PITFALLS #7, structural). RAM verification on the TS-464 is a phase prerequisite (4 GB minimum acceptable; 8 GB+ ideal — verify before plan). Container restart policy `unless-stopped` survives QTS reboots. Container Station env vars provide secret encryption at rest.
+**Notes:** Primary mitigation for Risk Top-5 #3 (silent cron failure — post-conditions, heartbeat, failure-only notification) and #5 (secret leakage). The QNAP runtime decision came from Phase 3 visual UAT: a cloud-deployed digest would silently fail every YouTube transcript fetch (PITFALLS #7, structural). Hardware confirmed 2026-05-23: QNAP TS-464 with 8 GB RAM — comfortable headroom for the weekly batch (LLM I/O is the bottleneck, not memory) and room to coexist with the user's other NAS workloads. Container restart policy `unless-stopped` survives QTS reboots. Container Station env vars provide secret encryption at rest.
 
 ## Progress
 
