@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W21",
-  "generated_at": "2026-05-23T22:53:33Z",
+  "generated_at": "2026-05-23T23:09:33Z",
   "week_range": {
     "start": "2026-05-18T00:00:00Z",
     "end": "2026-05-24T23:59:59Z"
   },
-  "updated_at": "2026-05-23T22:53:33Z",
+  "updated_at": "2026-05-23T23:09:33Z",
   "weekly_synthesis": {
     "text": null,
     "status": "quota_exhausted"

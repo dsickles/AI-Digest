@@ -103,8 +103,11 @@ footer treatment, because they will never have a real summary to add.
 
 **Code anchors:**
 - `pipeline/render/partition._partition_cards()` — **primary** single source of
-  truth for main-vs-footer routing (Plan 04-01 extract). The JSON emitter
-  (`pipeline/render/digest_json.py`, Plan 04-02) calls this same function.
+  truth for main-vs-footer routing (Plan 04-01 extract).
+- `pipeline/render/digest_json.emit_digest_json()` — Astro-era structural
+  enforcement: calls `partition._partition_cards()` before serializing
+  `main_feed[]` and `footer_aside[]` to `web/src/content/digests/{week_id}.json`.
+  Astro never sees raw routing inputs — only pre-partitioned lists (Plan 04-02).
 - `pipeline/render/partition._IN_PLACE_TRANSIENT_STATUSES` — the locked set
   of statuses that route to the in-place degraded card.
 - `pipeline/render/html._partition_cards()` — **deprecated** dev-preview
