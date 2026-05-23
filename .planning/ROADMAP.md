@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation + First Digest** - Minimal end-to-end weekly digest from 2–3 RSS sources, per-item TL;DR only, plain HTML *(2026-05-21)*
 - [x] **Phase 2: Expand Ingestion** - YouTube adapter, 8-source catalog, typed failure isolation, in-place degradation renderer, and residential transcript catch-up *(2026-05-22)*
 - [x] **Phase 3: AI Quality** - Dedup-before-LLM, categorization, ranking, weekly roll-up, checkpoints, and cost guardrails (completed 2026-05-22)
-- [ ] **Phase 4: Dashboard + Archive** - Dark Astro dashboard with tabs, full week archive, and pipeline notes in the UI
+- [x] **Phase 4: Dashboard + Archive** - Dark Astro dashboard with tabs, full week archive, and pipeline notes in the UI (completed 2026-05-23)
 - [ ] **Phase 5: Ops & Automation** - Cloud-scheduled weekly pipeline + residential-IP transcript worker, auto-publish to free static host, secrets, heartbeat, failure-only notifications, and hard LLM spend ceiling
 
 ## Phase Details
@@ -166,7 +166,7 @@ Plans:
   4. Every past weekly digest is preserved as committed JSON, browseable via a "Past Weeks" archive index (newest first, one-line excerpt) with permalink pages that render the full digest as it appeared
   5. The site is readable on desktop and modern mobile without layout breakage — the Sunday-morning read experience matches the reference dashboard intent
 
-**Plans:** 5/6 plans executed
+**Plans:** 6/6 plans complete
 
 Plans:
 **Wave 1**
@@ -191,7 +191,7 @@ Plans:
 
 **Wave 6** *(blocked on Wave 5)*
 
-- [ ] 04-06-PLAN.md — Backfill W19 + W21, full pytest + pnpm build gate, README/UAT (integration)
+- [x] 04-06-PLAN.md — Backfill W19 + W21, full pytest + pnpm build gate, README/UAT (integration)
 
 **UI hint:** yes
 
@@ -236,7 +236,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Foundation + First Digest | 5/5 | Complete | 2026-05-21 |
 | 2. Expand Ingestion | 4/4 | Complete | 2026-05-22 |
 | 3. AI Quality | 5/10 | Gap closure | 2026-05-22 |
-| 4. Dashboard + Archive | 5/6 | In Progress|  |
+| 4. Dashboard + Archive | 6/6 | Complete   | 2026-05-23 |
 | 5. Ops & Automation | 0/TBD | Not started | - |
 
 ---

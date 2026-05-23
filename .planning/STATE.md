@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 04-05-PLAN.md
-last_updated: "2026-05-23T23:10:00.000Z"
+status: verifying
+stopped_at: Completed 04-06-PLAN.md
+last_updated: "2026-05-23T23:11:59.938Z"
 last_activity: 2026-05-23
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 25
-  completed_plans: 24
-  percent: 96
+  completed_plans: 25
+  percent: 80
 ---
 
 # Project State
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 
 Phase: 04 (dashboard-archive) — EXECUTING
 Plan: 6 of 6
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-05-23
 
 Progress: [██████████] 96% (24/25 plans complete)
@@ -62,6 +62,7 @@ Progress: [██████████] 96% (24/25 plans complete)
 | Phase 04 P04 | 04-04 | 20min | 2 | 18 |
 | Phase 04 P05 | 04-05 | 25min | 2 | 12 |
 | Phase 04 P05 | 25min | 2 tasks | 12 files |
+| Phase Phase 04 P04-06 | 20min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -115,6 +116,7 @@ Recent decisions affecting current work:
 - [Phase 04]: 04-03: Briefing index reads briefing_top_n and weekly_synthesis from collection only (LOCKED-01)
 - [Phase ?]: 04-04: Static routes /{topic} and /digest/{week}/… with TabBar weekPrefix; DigestBriefing shared layout
 - [Phase 04]: 04-05: PipelineNotes in Briefing main only; /archive index; OBS-01 tests; fetch failures without conn
+- [Phase ?]: 04-06: Phase 4 exit gate — W19/W21 backfill via render-only CLI; emit_digest_json anchor in LOCKED-DIRECTIVES
 
 ### Pending Todos
 
@@ -142,7 +144,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-23T23:10:00.000Z
-Stopped at: Completed 04-05-PLAN.md
+Last session: 2026-05-23T23:11:59.867Z
+Stopped at: Completed 04-06-PLAN.md
 Resume file: None
 Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Gemini billing decision (trigger updated to "after 1–2 live Phase 3 weeks"); Phase 3 learnings extraction skipped — institutional knowledge lives in 03-XX-SUMMARY.md, 03-VERIFICATION.md, 03-HUMAN-UAT.md, and PROJECT.md Key Decisions for now
