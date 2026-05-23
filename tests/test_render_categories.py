@@ -83,8 +83,8 @@ def test_cards_not_outside_category_sections(tmp_path: Path) -> None:
             published_at=datetime(2026, 5, 22, tzinfo=UTC),
         ),
         _card(
-            title="Design B",
-            category="design",
+            title="Edtech B",
+            category="edtech",
             published_at=datetime(2026, 5, 21, tzinfo=UTC),
         ),
     ]

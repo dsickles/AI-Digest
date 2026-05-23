@@ -125,7 +125,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
     categorize_cmd = sub.add_parser(
         "categorize",
-        help="Classify story clusters into edtech|business|technical|design.",
+        help="Classify story clusters into edtech|business|technical.",
     )
     _add_week_arg(categorize_cmd)
     _add_phase3_flags(categorize_cmd)

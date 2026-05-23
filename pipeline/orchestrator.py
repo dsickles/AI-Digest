@@ -710,7 +710,6 @@ def _load_cluster_rollup_inputs_by_category(
         "edtech": [],
         "business": [],
         "technical": [],
-        "design": [],
     }
 
     for cluster in clusters:
@@ -1567,7 +1566,7 @@ def run_categorize(
     out_dir: Path | None = None,
     max_cost_usd: float | None = None,
 ) -> RunStats:
-    """Classify story clusters into edtech|business|technical|design."""
+    """Classify story clusters into edtech|business|technical."""
     from pipeline.budget import WeekBudget
 
     init_db(db_path)

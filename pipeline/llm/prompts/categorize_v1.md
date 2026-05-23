@@ -13,8 +13,8 @@ in exactly one category based on its content.
 
 - **edtech** — education, learning, schools, students, teaching with AI
 - **business** — companies, markets, strategy, policy, industry moves
-- **technical** — engineering, models, tools, research, developer practice
-- **design** — UX, product design, creative tools, visual/interaction craft
+- **technical** — engineering, models, tools, research, developer practice,
+  UX/product/design tooling, creative tools
 
 ## Output schema
 
@@ -22,7 +22,7 @@ Return JSON matching this shape exactly:
 
 ```json
 {
-  "category": "edtech | business | technical | design",
+  "category": "edtech | business | technical",
   "confidence": 0.0
 }
 ```

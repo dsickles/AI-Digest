@@ -85,10 +85,10 @@ def test_quota_exhausted_uses_quota_fallback_confidence() -> None:
     result = categorize_cluster(
         title="Story",
         summary_text="Summary text.",
-        source_tag="design",
+        source_tag="edtech",
         client=client,
     )
-    assert result.category == "design"
+    assert result.category == "edtech"
     assert result.category_confidence == "quota_exhausted_fallback"
     assert result.category_status == "quota_exhausted"
 

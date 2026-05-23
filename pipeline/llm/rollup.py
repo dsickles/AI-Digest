@@ -24,8 +24,8 @@ from pipeline.llm.summarize import GeminiKeyMissing, _estimate_cost
 
 logger = structlog.get_logger(__name__)
 
-Category = Literal["edtech", "business", "technical", "design"]
-CATEGORY_ORDER: tuple[Category, ...] = ("edtech", "business", "technical", "design")
+Category = Literal["edtech", "business", "technical"]
+CATEGORY_ORDER: tuple[Category, ...] = ("edtech", "business", "technical")
 
 CATEGORY_PROMPT_VERSION = "rollup_category_v1"
 WEEKLY_PROMPT_VERSION = "rollup_weekly_v1"
@@ -46,7 +46,6 @@ _CLUSTERS_RE = re.compile(r"\{\{ranked_clusters\}\}")
 _MINI_EDTECH_RE = re.compile(r"\{\{mini_edtech\}\}")
 _MINI_BUSINESS_RE = re.compile(r"\{\{mini_business\}\}")
 _MINI_TECHNICAL_RE = re.compile(r"\{\{mini_technical\}\}")
-_MINI_DESIGN_RE = re.compile(r"\{\{mini_design\}\}")
 
 
 @dataclass(frozen=True)
@@ -145,7 +144,6 @@ def _render_weekly_content(mini_paragraphs: dict[Category, str]) -> str:
     rendered = _MINI_EDTECH_RE.sub(_mini("edtech"), template)
     rendered = _MINI_BUSINESS_RE.sub(_mini("business"), rendered)
     rendered = _MINI_TECHNICAL_RE.sub(_mini("technical"), rendered)
-    rendered = _MINI_DESIGN_RE.sub(_mini("design"), rendered)
     return rendered.strip()
 
 

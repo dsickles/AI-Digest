@@ -100,7 +100,6 @@ def test_weekly_rollup_narrative_excludes_ban_list() -> None:
             "edtech": "Districts piloted classroom copilots.",
             "business": "Enterprise spend shifted to inference.",
             "technical": CLEAN_CATEGORY_NARRATIVE,
-            "design": "Design tools added agent panels.",
         },
         client=client,
     )

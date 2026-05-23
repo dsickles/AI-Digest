@@ -60,7 +60,6 @@ def _categorize_distribution(
         "edtech": 0,
         "business": 0,
         "technical": 0,
-        "design": 0,
         "fallback_source_tag": 0,
     }
     rows = conn.execute(

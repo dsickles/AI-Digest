@@ -1,7 +1,13 @@
 """Per-cluster Gemini categorizer (PIPELINE-02).
 
-Classifies each story cluster into exactly one of edtech | business | technical
-| design using structured JSON output at temperature 0 (D-50).
+Classifies each story cluster into exactly one of edtech | business |
+technical using structured JSON output at temperature 0 (D-50).
+
+The original v1 design included a fourth ``design`` category. It was cut
+from v1 scope on 2026-05-23 during Phase 3 visual UAT — the user's actual
+RSS sources weren't producing enough genuine design-category stories to
+warrant a section. If a future milestone re-introduces design, restore
+the literal + VALID_CATEGORIES + render CATEGORY_ORDER together.
 """
 from __future__ import annotations
 
@@ -24,8 +30,8 @@ from pipeline.llm.summarize import GeminiKeyMissing, _estimate_cost
 
 logger = structlog.get_logger(__name__)
 
-Category = Literal["edtech", "business", "technical", "design"]
-VALID_CATEGORIES = frozenset({"edtech", "business", "technical", "design"})
+Category = Literal["edtech", "business", "technical"]
+VALID_CATEGORIES = frozenset({"edtech", "business", "technical"})
 DEFAULT_CATEGORY: Category = "technical"
 
 PROMPT_VERSION = "categorize_v1"

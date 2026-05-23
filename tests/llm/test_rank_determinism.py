@@ -32,7 +32,7 @@ def _fixed_clusters() -> list[ClusterRankInput]:
         ),
         ClusterRankInput(
             cluster_id="cluster-gamma",
-            category="design",
+            category="technical",
             title="Gamma design system",
             summary_text="A product team published an updated design system for AI apps.",
             published_at=datetime(2026, 5, 20, 15, 0, tzinfo=UTC),

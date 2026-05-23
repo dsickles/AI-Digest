@@ -28,7 +28,7 @@ _YOUTUBE_FEED_TEMPLATE = (
 )
 
 
-_VALID_CATEGORY_TAGS = frozenset({"edtech", "business", "technical", "design"})
+_VALID_CATEGORY_TAGS = frozenset({"edtech", "business", "technical"})
 
 
 class _SourceBase(BaseModel):

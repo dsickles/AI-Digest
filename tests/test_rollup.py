@@ -73,11 +73,10 @@ def test_rollup_weekly_uses_mini_paragraphs_only() -> None:
         "edtech": "School districts piloted classroom copilots.",
         "business": "Enterprise AI spend shifted to inference.",
         "technical": "New open weights models dropped mid-week.",
-        "design": "Design tools added native agent panels.",
     }
     narrative = (
         "The week centered on inference economics and classroom pilots.\n\n"
-        "Open weights and design tooling kept pace without stealing the headline."
+        "Open weights and developer tooling kept pace without stealing the headline."
     )
     client = _mock_client(_mock_prose_response(narrative))
     result = rollup_weekly(
@@ -145,10 +144,9 @@ def test_five_rows_written_per_successful_week(apply_schema) -> None:
         )
         conn.commit()
         rows = get_rollups_for_week(conn, week_id)
-    assert len(rows) == 5
+    assert len(rows) == 4
     scopes = {row["scope"] for row in rows}
     assert scopes == {
-        "category:design",
         "category:edtech",
         "category:business",
         "category:technical",
@@ -192,7 +190,7 @@ def test_rollup_orchestrator_writes_five_rows(apply_schema, monkeypatch) -> None
     monkeypatch.setattr("pipeline.llm.rollup.rollup_category", _fake_category)
     monkeypatch.setattr("pipeline.llm.rollup.rollup_weekly", _fake_weekly)
 
-    categories = ("edtech", "business", "technical", "design")
+    categories = ("edtech", "business", "technical")
     with connect(apply_schema) as conn:
         conn.execute(
             """
@@ -269,9 +267,9 @@ def test_rollup_orchestrator_writes_five_rows(apply_schema, monkeypatch) -> None
         _rollup_week(week_id=week_id, conn=conn, log=MagicMock(), stats=stats)
         rows = get_rollups_for_week(conn, week_id)
 
-    assert len(rows) == 5
-    assert call_count["n"] == 5
-    assert stats.rollup_llm_calls == 5
+    assert len(rows) == 4
+    assert call_count["n"] == 4
+    assert stats.rollup_llm_calls == 4
 
 
 def test_rollup_skips_llm_when_rows_exist(apply_schema, monkeypatch) -> None:

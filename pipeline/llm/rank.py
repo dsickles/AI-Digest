@@ -34,7 +34,7 @@ TEMPERATURE = 0
 PROMPT_PATH = Path(__file__).resolve().parent / "prompts" / "rank_v1.md"
 _CLUSTERS_RE = re.compile(r"\{\{clusters_by_category\}\}")
 
-CATEGORY_ORDER = ("edtech", "business", "technical", "design")
+CATEGORY_ORDER = ("edtech", "business", "technical")
 
 
 class RankScoreEntry(BaseModel):

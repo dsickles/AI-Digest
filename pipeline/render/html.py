@@ -62,12 +62,11 @@ QUOTA_BODY_COPY = "The summary couldn't be generated this week."
 ALSO_COVERED_PREFIX = "Also covered by "
 ALSO_COVERED_SEPARATOR = ", "
 
-CATEGORY_ORDER = ("edtech", "business", "technical", "design")
+CATEGORY_ORDER = ("edtech", "business", "technical")
 CATEGORY_LABELS = {
     "edtech": "Edtech",
     "business": "Business",
     "technical": "Technical",
-    "design": "Design",
 }
 DEFAULT_CATEGORY = "technical"
 BRIEFING_HEADER_TEMPLATE = "Briefing — Top {n} this week"

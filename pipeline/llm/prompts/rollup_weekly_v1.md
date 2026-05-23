@@ -53,6 +53,3 @@ markdown headings, no bullet lists, no JSON.
 
 ### Technical
 {{mini_technical}}
-
-### Design
-{{mini_design}}

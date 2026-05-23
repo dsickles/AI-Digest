@@ -56,7 +56,7 @@ def test_category_section_orders_by_rank_position_not_recency(tmp_path: Path) ->
 
 def test_briefing_section_top_five_from_ten_ranked_clusters(tmp_path: Path) -> None:
     """DISPLAY-03: numbered Briefing with exactly top_n_briefing items (default 5)."""
-    categories = ("edtech", "business", "technical", "design")
+    categories = ("edtech", "business", "technical")
     cards = [
         DigestCard(
             title=f"Story {index}",
@@ -66,7 +66,7 @@ def test_briefing_section_top_five_from_ten_ranked_clusters(tmp_path: Path) -> N
             tldr=f"Summary for story {index}.",
             summary_confidence="high",
             summary_status="ok",
-            category=categories[index % 4],
+            category=categories[index % 3],
             rank_position=index,
         )
         for index in range(1, 11)

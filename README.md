@@ -107,7 +107,7 @@ All subcommands accept `--week YYYY-Www` to target a specific **ISO week in UTC*
 | `ingest` | Fetch enabled RSS sources and upsert into SQLite (network only) |
 | `dedup` | Cluster same-story items for the week (deterministic, no LLM) |
 | `summarize` | Generate TL;DRs for items in the week window missing a summary (LLM) |
-| `categorize` | Classify story clusters into edtech \| business \| technical \| design |
+| `categorize` | Classify story clusters into edtech \| business \| technical |
 | `rank` | Rank clusters for the Briefing Top N (LLM) |
 | `rollup` | Generate category mini rollups and weekly synthesis (LLM) |
 | `render` | Build HTML from existing SQLite data (no network, no LLM) |
