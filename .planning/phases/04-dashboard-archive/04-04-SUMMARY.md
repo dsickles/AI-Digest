@@ -85,7 +85,7 @@ Each task was committed atomically:
 1. **Task 1: Static routes for topics and archived weeks** - `2c24a0e` (feat)
 2. **Task 2: BriefingTopN, CategorySection, FooterAside, PlayIcon, WeeklySynthesis** - `959e118` (feat)
 
-**Plan metadata:** `pending` → docs commit below
+**Plan metadata:** `9fbbae1` (docs: complete plan)
 
 ## Files Created/Modified
 
