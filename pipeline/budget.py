@@ -9,6 +9,7 @@ import sqlite3
 from dataclasses import dataclass, field
 
 from pipeline.config import load_digest_config
+from pipeline.week import prior_week_id
 
 DEFAULT_BASELINE_PER_ITEM_USD = 0.001
 DEFAULT_META_PREFLIGHT_USD = 0.01
@@ -107,7 +108,12 @@ class WeekBudget:
 
 
 def baseline_per_item_from_runs(conn: sqlite3.Connection, week_id: str) -> float:
-    """Prior-week per-item cost from ``pipeline_runs`` or conservative fallback."""
+    """Prior-week per-item cost from completed ``pipeline_runs`` or conservative fallback.
+
+    Looks up the ISO week before ``week_id`` so first-run-of-week pre-flight estimates
+    use last week's actual spend-per-item ratio (D-59 / WR-02).
+    """
+    lookup_week = prior_week_id(week_id)
     row = conn.execute(
         """
         SELECT cost_usd_estimate, summaries_written
@@ -119,7 +125,7 @@ def baseline_per_item_from_runs(conn: sqlite3.Connection, week_id: str) -> float
          ORDER BY finished_at DESC
          LIMIT 1
         """,
-        (week_id,),
+        (lookup_week,),
     ).fetchone()
     if row is None:
         return DEFAULT_BASELINE_PER_ITEM_USD

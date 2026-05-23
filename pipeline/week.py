@@ -8,7 +8,7 @@ resolved week_id from the orchestrator.
 from __future__ import annotations
 
 import re
-from datetime import UTC, date, datetime, time
+from datetime import UTC, date, datetime, time, timedelta
 
 WEEK_ID_RE = re.compile(r"^(\d{4})-W(\d{2})$")
 
@@ -34,6 +34,15 @@ def parse_week_id(week_id: str) -> tuple[int, int]:
     except ValueError as exc:
         raise ValueError(f"invalid ISO week id {week_id!r}") from exc
     return year, week
+
+
+def prior_week_id(week_id: str) -> str:
+    """Return the ISO week immediately before ``week_id`` (handles year boundaries)."""
+    year, week = parse_week_id(week_id)
+    monday = date.fromisocalendar(year, week, 1)
+    prior_monday = monday - timedelta(days=7)
+    iso_year, iso_week, _ = prior_monday.isocalendar()
+    return f"{iso_year:04d}-W{iso_week:02d}"
 
 
 def week_bounds(week_id: str) -> tuple[datetime, datetime]:
