@@ -1,0 +1,86 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatPublishedDate } from '../lib/formatWeekRange';
+
+type DigestCard = CollectionEntry<'digests'>['data']['briefing_top_n'][number];
+
+interface Props {
+  card: DigestCard;
+  briefing?: boolean;
+}
+
+const { card, briefing = false } = Astro.props;
+
+const bodyText =
+  card.tldr && card.tldr.trim()
+    ? card.tldr
+    : (card.degraded_body ?? "The summary couldn't be generated this week.");
+
+const isYoutube = card.source_type === 'youtube';
+const dateLabel = formatPublishedDate(card.published_at);
+---
+
+<article
+  class:list={[
+    'mb-4 rounded-lg border border-border bg-card p-4 hover:bg-[#1c2230]',
+    briefing && 'briefing-card',
+  ]}
+>
+  <div class="mb-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+    <span
+      class="rounded bg-[hsl(216_22%_15%)] px-2 py-0.5 text-[hsl(216_12%_81%)]"
+    >
+      {card.publisher}
+    </span>
+    {
+      isYoutube && (
+        <svg
+          class="ml-1 inline-block h-4 w-4 text-muted-foreground"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M6 4.5v7l6-3.5-6-3.5z" />
+        </svg>
+      )
+    }
+    <span>{dateLabel}</span>
+  </div>
+  <h2 class="m-0 mb-2 text-base font-semibold leading-snug">
+    <a
+      href={card.canonical_url}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-foreground no-underline hover:text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    >
+      {card.title}
+    </a>
+  </h2>
+  {
+    card.tldr && card.tldr.trim() ? (
+      <p class="m-0 text-base text-[hsl(216_12%_81%)]">{bodyText}</p>
+    ) : (
+      <p class="m-0 text-base italic text-muted-foreground">{bodyText}</p>
+    )
+  }
+  {
+    card.also_covered.length > 0 && (
+      <p class="mb-0 mt-2 text-sm text-muted-foreground">
+        Also covered by{' '}
+        {card.also_covered.map((member, index) => (
+          <>
+            {index > 0 && ', '}
+            <a
+              href={member.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-[hsl(216_12%_81%)] no-underline hover:text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              {member.display_name}
+            </a>
+          </>
+        ))}
+      </p>
+    )
+  }
+</article>

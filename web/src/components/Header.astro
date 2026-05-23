@@ -1,0 +1,25 @@
+---
+import TabBar from './TabBar.astro';
+import { formatUpdated, formatWeekRange } from '../lib/formatWeekRange';
+
+interface Props {
+  weekRangeStart: string;
+  weekRangeEnd: string;
+  updatedAt: string;
+}
+
+const { weekRangeStart, weekRangeEnd, updatedAt } = Astro.props;
+const weekLabel = formatWeekRange(weekRangeStart, weekRangeEnd);
+const updatedLabel = formatUpdated(updatedAt);
+---
+
+<header class="border-b border-border px-4 pb-6 pt-8 md:px-5">
+  <div class="mx-auto flex max-w-[720px] flex-col gap-2">
+    <h1 class="m-0 text-[1.75rem] font-semibold leading-tight text-foreground">
+      AI Digest
+    </h1>
+    <p class="m-0 text-sm text-muted-foreground">{weekLabel}</p>
+    <p class="m-0 text-sm text-[hsl(220_9%_46%)]">{updatedLabel}</p>
+    <TabBar />
+  </div>
+</header>

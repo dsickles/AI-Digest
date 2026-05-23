@@ -1,0 +1,23 @@
+---
+import '../styles/globals.css';
+
+interface Props {
+  title?: string;
+  canonicalHref?: string;
+}
+
+const { title = 'AI Digest', canonicalHref } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {canonicalHref && <link rel="canonical" href={canonicalHref} />}
+  </head>
+  <body class="min-h-screen bg-background text-foreground antialiased">
+    <slot />
+  </body>
+</html>

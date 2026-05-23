@@ -1,12 +1,46 @@
 ---
-// Placeholder — Briefing slice lands in plan 04-03 task 2.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Card from '../components/Card.astro';
+import { getLatestDigest } from '../lib/latestWeek';
+
+const digest = await getLatestDigest();
+const { data } = digest;
+const topN = data.briefing_top_n.length;
+const briefingHeader = `Briefing — Top ${topN} this week`;
+const canonicalHref = `/digest/${data.week_id}`;
 ---
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>AI Digest</title>
-  </head>
-  <body>
-    <p>AI Digest</p>
-  </body>
-</html>
+
+<BaseLayout title="AI Digest" canonicalHref={canonicalHref}>
+  <Header
+    weekRangeStart={data.week_range.start}
+    weekRangeEnd={data.week_range.end}
+    updatedAt={data.updated_at}
+  />
+  <main class="mx-auto max-w-[720px] px-4 py-6 md:px-5">
+    {
+      data.weekly_synthesis.text && (
+        <section class="mb-6">
+          <p class="m-0 text-base leading-normal text-[hsl(216_12%_81%)]">
+            {data.weekly_synthesis.text}
+          </p>
+        </section>
+      )
+    }
+
+    <section class="mb-8">
+      <h2 class="mb-4 mt-0 text-[1.375rem] font-semibold leading-tight text-foreground">
+        {briefingHeader}
+      </h2>
+      <ol class="m-0 list-decimal pl-6 marker:font-semibold">
+        {
+          data.briefing_top_n.map((card) => (
+            <li class="mb-4 pl-1">
+              <Card card={card} briefing />
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+  </main>
+</BaseLayout>
