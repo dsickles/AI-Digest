@@ -23,7 +23,7 @@ const { digests } = Astro.props;
   ) : (
     <ul class="m-0 list-none space-y-8 p-0">
       {digests.map((digest) => {
-        const { week_range, week_id } = digest.data;
+        const { week_range } = digest.data;
         const weekLabel = formatWeekRange(week_range.start, week_range.end);
         const excerpt = archiveExcerpt(digest);
         return (
@@ -35,7 +35,7 @@ const { digests } = Astro.props;
               <p class="mt-3 text-base leading-normal text-[hsl(216_12%_81%)]">{excerpt}</p>
             )}
             <a
-              href={`/digest/${week_id}`}
+              href={`/digest/${digest.id}`}
               class="mt-4 inline-flex min-h-11 items-center text-base text-foreground no-underline hover:text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               Read this week

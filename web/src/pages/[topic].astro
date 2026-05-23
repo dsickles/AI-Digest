@@ -20,7 +20,7 @@ if (!isTopic(topicParam)) {
 const digest = await getLatestDigest();
 const { data } = digest;
 const section = data.category_sections[topicParam];
-const canonicalHref = canonicalDigestUrl(data.week_id, topicParam);
+const canonicalHref = canonicalDigestUrl(digest.id, topicParam);
 ---
 
 <BaseLayout title={`${topicParam} — AI Digest`} canonicalHref={canonicalHref}>

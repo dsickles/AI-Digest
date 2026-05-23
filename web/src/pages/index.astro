@@ -9,7 +9,7 @@ import { canonicalDigestUrl } from '../lib/canonicalUrl';
 
 const digest = await getLatestDigest();
 const { data } = digest;
-const canonicalHref = canonicalDigestUrl(data.week_id);
+const canonicalHref = canonicalDigestUrl(digest.id);
 ---
 
 <BaseLayout title="AI Digest" canonicalHref={canonicalHref}>
