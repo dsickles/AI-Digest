@@ -66,7 +66,7 @@ Each task was committed atomically:
 1. **Task 1: ranks_cover_current_clusters helper in store/db.py** - `9b06430` (feat)
 2. **Task 2: Wire _rank_week and _rollup_week skip guards + behavioral tests** - `d2d2936` (feat)
 
-**Plan metadata:** pending (docs: complete plan)
+**Plan metadata:** `02ecb42` (docs: complete plan)
 
 ## Files Created/Modified
 
