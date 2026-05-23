@@ -144,7 +144,7 @@ Plans:
 
 **Wave 3** *(blocked on 03-08)*
 
-- [ ] 03-10-PLAN.md — Per-stage cost attribution in pipeline_report.json (OBS-02 → WR-03)
+- [x] 03-10-PLAN.md — Per-stage cost attribution in pipeline_report.json (OBS-02 → WR-03) *(2026-05-23)*
 
 **Wave 4** *(blocked on 03-06, 03-08, 03-10)*
 

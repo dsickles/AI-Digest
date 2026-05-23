@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-08-PLAN.md
-last_updated: "2026-05-23T12:15:26Z"
-last_activity: 2026-05-23 -- Completed 03-08 gap closure (WR-01)
+stopped_at: Completed 03-10-PLAN.md
+last_updated: "2026-05-23T12:16:25Z"
+last_activity: 2026-05-23 -- Completed 03-10 gap closure (WR-03)
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 19
-  completed_plans: 17
+  completed_plans: 18
   percent: 47
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 ## Current Position
 
 Phase: 03 (ai-quality) — EXECUTING
-Plan: 8 of 10 (gap closure)
+Plan: 10 of 10 (gap closure)
 Status: Executing Phase 03 gap closure
-Last activity: 2026-05-23 -- Completed 03-08 gap closure (WR-01)
+Last activity: 2026-05-23 -- Completed 03-10 gap closure (WR-03)
 
-Progress: [████████████░] 89% (17/19 plans complete)
+Progress: [█████████████░] 95% (18/19 plans complete)
 
 ## Performance Metrics
 
@@ -95,6 +95,7 @@ Recent decisions affecting current work:
 - **03-09:** WR-02 closed — `baseline_per_item_from_runs` queries prior ISO week via `prior_week_id()`; first-run pre-flight uses last week's cost/summaries ratio; renderer untouched (LOCKED-01)
 - **03-06:** CR-01/IN-01 closed — `delete_cluster_artifacts_for_week` clears ranks/summaries/rollups before cluster delete; `test_run_all_twice_same_week` proves same-week `run_all` idempotency; renderer untouched (LOCKED-01)
 - **03-08:** WR-01 closed — `normalize_title` comparison in `_apply_cascade_for_item`; ingest pre-upsert lookup + in-window cascade hook; title-only edits invalidate `item_summaries` and trigger dedup; renderer untouched (LOCKED-01)
+- **03-10:** WR-03 closed — `RunStats` per-stage cost fields; `pipeline_report.json` projects `summarize_cost_usd`/`categorize_cost_usd`/`rank_cost_usd` authoritatively; renderer untouched (LOCKED-01)
 
 ### Pending Todos
 
@@ -122,7 +123,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-23T12:15:26Z
-Stopped at: Completed 03-08-PLAN.md
+Last session: 2026-05-23T12:16:25Z
+Stopped at: Completed 03-10-PLAN.md
 Resume file: None
-Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Gemini billing decision (trigger updated to "after 1–2 live Phase 3 weeks"); Phase 3 gap closure remaining (03-07, 03-10)
+Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Gemini billing decision (trigger updated to "after 1–2 live Phase 3 weeks"); Phase 3 gap closure remaining (03-07)
