@@ -43,15 +43,15 @@ Requirements for initial release. Each maps to a roadmap phase (see Traceability
 - [x] **DISPLAY-04**: Each of the three topic tabs (`edtech`, `business`, `technical`) shows that topic's stories for the current week, with summaries
 - [x] **DISPLAY-05**: Each story card displays: title, TL;DR summary, publisher attribution(s), source link(s), and per-item publication date
 - [x] **DISPLAY-06**: YouTube items render with a visual hint (e.g., play icon or thumbnail) so the user knows it's video content before clicking
-- [ ] **DISPLAY-07**: Site is browseable from desktop and modern mobile browsers without layout breakage
+- [x] **DISPLAY-07**: Site is browseable from desktop and modern mobile browsers without layout breakage
 - [x] **DISPLAY-08**: Source links open in a new tab (don't lose the digest position)
 
 ### Archive
 
 - [x] **ARCHIVE-01**: Every past weekly digest is preserved as the system's source of record (digest JSON committed to repo)
-- [ ] **ARCHIVE-02**: Archive index page lists every past week, newest first, with date range and a one-line excerpt (or the rollup's first sentence)
+- [x] **ARCHIVE-02**: Archive index page lists every past week, newest first, with date range and a one-line excerpt (or the rollup's first sentence)
 - [x] **ARCHIVE-03**: Each past week has a permalink that renders the full digest as it appeared
-- [ ] **ARCHIVE-04**: Past weeks are reachable from the live site nav (e.g., "Past Weeks" link)
+- [x] **ARCHIVE-04**: Past weeks are reachable from the live site nav (e.g., "Past Weeks" link)
 
 ### Observability
 
@@ -145,12 +145,12 @@ Filled in by the roadmapper. Status updated as phases progress.
 | DISPLAY-04 | Phase 4 | Complete |
 | DISPLAY-05 | Phase 4 | Complete |
 | DISPLAY-06 | Phase 4 | Complete |
-| DISPLAY-07 | Phase 4 | Pending |
+| DISPLAY-07 | Phase 4 | Complete |
 | DISPLAY-08 | Phase 4 | Complete |
 | ARCHIVE-01 | Phase 4 | Complete |
-| ARCHIVE-02 | Phase 4 | Pending |
+| ARCHIVE-02 | Phase 4 | Complete |
 | ARCHIVE-03 | Phase 4 | Complete |
-| ARCHIVE-04 | Phase 4 | Pending |
+| ARCHIVE-04 | Phase 4 | Complete |
 | OBS-01 | Phase 4 | Complete |
 | OPS-01 | Phase 5 | Pending |
 | OPS-02 | Phase 5 | Pending |
