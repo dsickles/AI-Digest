@@ -30,6 +30,7 @@ from pipeline.week import week_bounds
 from store.db import (
     connect,
     delete_clusters_for_week,
+    delete_ranks_for_week,
     delete_rollups_for_week,
     finalize_pipeline_run,
     get_canonical_item_ids_for_week,
@@ -52,6 +53,7 @@ from store.db import (
     insert_item_summary,
     insert_pipeline_run,
     insert_weekly_rollup,
+    ranks_cover_current_clusters,
     update_item_transcript,
     update_source_health,
     upsert_item,
@@ -621,8 +623,11 @@ def _rank_week(
 
     existing = get_ranks_for_week(conn, week_id, PROMPT_VERSION)
     if existing:
-        log.info("rank.skip_existing", count=len(existing))
-        return
+        if ranks_cover_current_clusters(conn, week_id, PROMPT_VERSION):
+            log.info("rank.skip_existing", count=len(existing))
+            return
+        log.info("rank.stale_checkpoint", count=len(existing))
+        delete_ranks_for_week(conn, week_id, PROMPT_VERSION)
 
     cluster_inputs = _load_cluster_rank_inputs(conn, week_id)
     if not cluster_inputs:
@@ -777,6 +782,7 @@ def _rollup_week(
 ) -> None:
     """Stage-level rollup checkpoint — up to five LLM calls per week (D-67)."""
     from pipeline.budget import META_STAGE_ESTIMATE_USD
+    from pipeline.llm.rank import PROMPT_VERSION as RANK_VERSION
     from pipeline.llm.rollup import (
         CATEGORY_ORDER,
         CATEGORY_PROMPT_VERSION,
@@ -798,10 +804,19 @@ def _rollup_week(
         scope = scope_for_category(category)
         existing = get_rollup(conn, week_id, scope, CATEGORY_PROMPT_VERSION)
         if existing:
-            if existing["rollup_status"] == "ok" and existing["narrative_md"]:
-                mini_paragraphs[category] = existing["narrative_md"]
-            log.info("rollup_category.skip_existing", scope=scope)
-            continue
+            if ranks_cover_current_clusters(conn, week_id, RANK_VERSION):
+                if existing["rollup_status"] == "ok" and existing["narrative_md"]:
+                    mini_paragraphs[category] = existing["narrative_md"]
+                log.info("rollup_category.skip_existing", scope=scope)
+                continue
+            log.info("rollup.stale_checkpoint", scope=scope)
+            conn.execute(
+                """
+                DELETE FROM weekly_rollups
+                 WHERE week_id = ? AND scope = ? AND prompt_version = ?
+                """,
+                (week_id, scope, CATEGORY_PROMPT_VERSION),
+            )
 
         clusters = by_category.get(category, [])
         if not clusters:
@@ -848,9 +863,18 @@ def _rollup_week(
             mini_paragraphs[category] = result.narrative_md
 
     existing_weekly = get_rollup(conn, week_id, "weekly", WEEKLY_PROMPT_VERSION)
-    if existing_weekly:
+    if existing_weekly and ranks_cover_current_clusters(conn, week_id, RANK_VERSION):
         log.info("rollup_weekly.skip_existing")
     else:
+        if existing_weekly:
+            log.info("rollup.stale_checkpoint", scope="weekly")
+            conn.execute(
+                """
+                DELETE FROM weekly_rollups
+                 WHERE week_id = ? AND scope = 'weekly' AND prompt_version = ?
+                """,
+                (week_id, WEEKLY_PROMPT_VERSION),
+            )
         if budget is not None and not budget.can_afford(
             META_STAGE_ESTIMATE_USD, stage="rollup"
         ):
