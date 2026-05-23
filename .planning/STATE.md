@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 
 ## Current Position
 
-Phase: 04 (dashboard-archive) — EXECUTING
-Plan: 6 of 6
+Phase: 04 (dashboard-archive) — VERIFYING
+Plan: 6 of 6 (complete)
 Status: Phase complete — ready for verification
 Last activity: 2026-05-23
 
-Progress: [██████████] 96% (24/25 plans complete)
+Progress: [██████████] 100% (25/25 plans complete)
 
 ## Performance Metrics
 
@@ -61,8 +61,7 @@ Progress: [██████████] 96% (24/25 plans complete)
 | Phase 04 P03 | 04-03 | 25min | 2 | 19 |
 | Phase 04 P04 | 04-04 | 20min | 2 | 18 |
 | Phase 04 P05 | 04-05 | 25min | 2 | 12 |
-| Phase 04 P05 | 25min | 2 tasks | 12 files |
-| Phase Phase 04 P04-06 | 20min | 2 tasks | 8 files |
+| Phase 04 P06 | 04-06 | 20min | 2 | 8 |
 
 ## Accumulated Context
 
@@ -116,7 +115,7 @@ Recent decisions affecting current work:
 - [Phase 04]: 04-03: Briefing index reads briefing_top_n and weekly_synthesis from collection only (LOCKED-01)
 - [Phase ?]: 04-04: Static routes /{topic} and /digest/{week}/… with TabBar weekPrefix; DigestBriefing shared layout
 - [Phase 04]: 04-05: PipelineNotes in Briefing main only; /archive index; OBS-01 tests; fetch failures without conn
-- [Phase ?]: 04-06: Phase 4 exit gate — W19/W21 backfill via render-only CLI; emit_digest_json anchor in LOCKED-DIRECTIVES
+- [Phase 04]: 04-06: Phase 4 exit gate — W19/W21 backfill via render-only CLI; emit_digest_json anchor in LOCKED-DIRECTIVES
 
 ### Pending Todos
 
