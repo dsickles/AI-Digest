@@ -16,7 +16,7 @@ import feedparser
 import httpx
 import structlog
 
-from pipeline.adapters.base import FetchError, IngestAdapter
+from pipeline.adapters.base import FetchError, IngestAdapter, is_youtube_short
 from pipeline.config import SourceConfig
 from pipeline.models import NormalizedItem
 
@@ -136,6 +136,7 @@ class RssAdapter(IngestAdapter):
 
         items: list[NormalizedItem] = []
         skipped_no_date = 0
+        skipped_youtube_short = 0
         for entry in feed.entries:
             published_at = _extract_published(entry)
             if published_at is None:
@@ -146,6 +147,15 @@ class RssAdapter(IngestAdapter):
             canonical_url = entry.get("link") or ""
             if not canonical_url:
                 log.warning("rss.entry.skipped_no_link", title=entry.get("title", "<no title>"))
+                continue
+
+            if is_youtube_short(canonical_url):
+                skipped_youtube_short += 1
+                log.info(
+                    "rss.entry.skipped_youtube_short",
+                    url=canonical_url,
+                    title=entry.get("title", "<no title>"),
+                )
                 continue
 
             title = entry.get("title") or "(untitled)"
@@ -174,6 +184,7 @@ class RssAdapter(IngestAdapter):
             entries_total=len(feed.entries),
             entries_kept=len(items),
             entries_skipped_no_date=skipped_no_date,
+            entries_skipped_youtube_short=skipped_youtube_short,
             bozo=bool(feed.bozo),
             status=feed.get("status"),
         )

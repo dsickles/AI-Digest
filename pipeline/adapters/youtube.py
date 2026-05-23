@@ -26,7 +26,7 @@ from typing import TYPE_CHECKING
 import feedparser
 import structlog
 
-from pipeline.adapters.base import FetchError, IngestAdapter
+from pipeline.adapters.base import FetchError, IngestAdapter, is_youtube_short
 from pipeline.adapters.rss import _extract_published, _fetch_bytes
 from pipeline.models import NormalizedItem
 
@@ -190,6 +190,7 @@ class YoutubeAdapter(IngestAdapter):
         items: list[NormalizedItem] = []
         skipped_no_video_id = 0
         skipped_no_date = 0
+        skipped_youtube_short = 0
         transcript_outcomes: dict[str, int] = {"ok": 0, "pending_local": 0}
 
         for entry in entries:
@@ -216,6 +217,16 @@ class YoutubeAdapter(IngestAdapter):
             canonical_url = entry.get("link") or f"https://www.youtube.com/watch?v={video_id}"
             title = entry.get("title") or "(untitled)"
             description = _description(entry)
+
+            if is_youtube_short(canonical_url):
+                skipped_youtube_short += 1
+                log.info(
+                    "youtube.entry.skipped_youtube_short",
+                    video_id=video_id,
+                    url=canonical_url,
+                    title=title,
+                )
+                continue
 
             transcript_status: str
             raw_content_html: str
@@ -279,6 +290,7 @@ class YoutubeAdapter(IngestAdapter):
             entries_kept=len(items),
             entries_skipped_no_video_id=skipped_no_video_id,
             entries_skipped_no_date=skipped_no_date,
+            entries_skipped_youtube_short=skipped_youtube_short,
             transcript_ok=transcript_outcomes.get("ok", 0),
             transcript_pending_local=transcript_outcomes.get("pending_local", 0),
         )

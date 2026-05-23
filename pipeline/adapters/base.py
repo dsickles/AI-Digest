@@ -6,10 +6,33 @@ plugs in non-RSS adapters without touching ``store/`` or ``orchestrator``.
 """
 from __future__ import annotations
 
+import re
 from typing import Literal, Protocol, runtime_checkable
+from urllib.parse import urlparse
 
 from pipeline.config import SourceConfig
 from pipeline.models import NormalizedItem
+
+# UAT-FOLLOWUP-01 (Phase 3 gap-closure): YouTube Shorts must be skipped at
+# ingest. They never reach summarize/categorize/rank/rollup and never appear
+# in the digest footer. Match `youtube.com/shorts/<id>` and `youtu.be/shorts/`
+# variants on the host+path so a stray substring elsewhere can't false-trip.
+_YOUTUBE_HOSTS = frozenset({"www.youtube.com", "youtube.com", "m.youtube.com", "youtu.be"})
+_SHORTS_PATH_RE = re.compile(r"^/shorts(?:/|$)", re.IGNORECASE)
+
+
+def is_youtube_short(url: str | None) -> bool:
+    """Return True when ``url`` points at a YouTube Shorts video."""
+    if not url:
+        return False
+    try:
+        parsed = urlparse(url.strip())
+    except (ValueError, AttributeError):
+        return False
+    host = (parsed.netloc or "").lower()
+    if host not in _YOUTUBE_HOSTS:
+        return False
+    return bool(_SHORTS_PATH_RE.match(parsed.path or ""))
 
 # D-39: typed error taxonomy for RunStats.errors and last_run.md.
 # Categories are deliberately closed so Phase 3 pipeline_report.json (OBS-02),
