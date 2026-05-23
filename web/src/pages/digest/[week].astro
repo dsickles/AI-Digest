@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import DigestBriefing from '../../components/DigestBriefing.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const weeks = await getCollection('digests');
+  return weeks.map((digest) => ({
+    params: { week: digest.id },
+    props: { digest },
+  }));
+}
+
+const { digest } = Astro.props;
+const { data } = digest;
+const weekPrefix = `/digest/${digest.id}`;
+---
+
+<BaseLayout title={`AI Digest — ${data.week_id}`}>
+  <Header
+    weekRangeStart={data.week_range.start}
+    weekRangeEnd={data.week_range.end}
+    updatedAt={data.updated_at}
+    weekPrefix={weekPrefix}
+    showBackLink
+  />
+  <main class="mx-auto max-w-[720px] px-4 py-6 md:px-5">
+    <DigestBriefing digest={digest} />
+  </main>
+</BaseLayout>

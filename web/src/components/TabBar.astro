@@ -1,19 +1,39 @@
 ---
-const TOPICS = [
-  { slug: '', label: 'Briefing', href: '/' },
-  { slug: 'edtech', label: 'Edtech', href: '/edtech' },
-  { slug: 'business', label: 'Business', href: '/business' },
-  { slug: 'technical', label: 'Technical', href: '/technical' },
-] as const;
+import { TOPICS, TOPIC_LABELS } from '../lib/topics';
 
-const pathname = Astro.url.pathname;
-
-function isActive(href: string): boolean {
-  if (href === '/') {
-    return pathname === '/';
-  }
-  return pathname === href || pathname.startsWith(`${href}/`);
+interface Props {
+  /** When set, tab links point at `/digest/{week}` permalinks instead of latest-week bare URLs. */
+  weekPrefix?: string;
 }
+
+const { weekPrefix } = Astro.props;
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+function tabHref(segment: '' | (typeof TOPICS)[number]): string {
+  if (!weekPrefix) {
+    return segment ? `/${segment}` : '/';
+  }
+  return segment ? `${weekPrefix}/${segment}` : weekPrefix;
+}
+
+function isActive(segment: '' | (typeof TOPICS)[number]): boolean {
+  const href = tabHref(segment);
+  if (segment === '') {
+    if (!weekPrefix) {
+      return pathname === '/';
+    }
+    return pathname === weekPrefix;
+  }
+  return pathname === href;
+}
+
+const TOPIC_TABS = [
+  { segment: '' as const, label: 'Briefing' },
+  ...TOPICS.map((topic) => ({
+    segment: topic,
+    label: TOPIC_LABELS[topic],
+  })),
+];
 ---
 
 <nav
@@ -21,15 +41,15 @@ function isActive(href: string): boolean {
   aria-label="Digest sections"
 >
   {
-    TOPICS.map((tab) => (
+    TOPIC_TABS.map((tab) => (
       <a
-        href={tab.href}
+        href={tabHref(tab.segment)}
         class:list={[
           'inline-flex min-h-11 min-w-11 items-center justify-center rounded px-3 py-2 text-sm font-normal text-foreground no-underline hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
-          isActive(tab.href) &&
+          isActive(tab.segment) &&
             'border-b-2 border-accent font-semibold text-accent',
         ]}
-        aria-current={isActive(tab.href) ? 'page' : undefined}
+        aria-current={isActive(tab.segment) ? 'page' : undefined}
       >
         {tab.label}
       </a>
@@ -39,9 +59,9 @@ function isActive(href: string): boolean {
     href="/archive"
     class:list={[
       'inline-flex min-h-11 min-w-11 items-center justify-center rounded px-3 py-2 text-sm font-normal text-foreground no-underline hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
-      isActive('/archive') && 'border-b-2 border-accent font-semibold text-accent',
+      pathname === '/archive' && 'border-b-2 border-accent font-semibold text-accent',
     ]}
-    aria-current={isActive('/archive') ? 'page' : undefined}
+    aria-current={pathname === '/archive' ? 'page' : undefined}
   >
     Archive
   </a>

@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Header from '../../../components/Header.astro';
+import CategorySection from '../../../components/CategorySection.astro';
+import { getCollection } from 'astro:content';
+import { TOPICS, isTopic, type Topic } from '../../../lib/topics';
+
+export async function getStaticPaths() {
+  const weeks = await getCollection('digests');
+  return weeks.flatMap((digest) =>
+    TOPICS.map((topic: Topic) => ({
+      params: { week: digest.id, topic },
+      props: { digest, topic },
+    })),
+  );
+}
+
+const { digest, topic } = Astro.props;
+const { data } = digest;
+
+if (!isTopic(topic)) {
+  return Astro.redirect('/404');
+}
+
+const weekPrefix = `/digest/${digest.id}`;
+const section = data.category_sections[topic];
+---
+
+<BaseLayout title={`${topic} — AI Digest — ${data.week_id}`}>
+  <Header
+    weekRangeStart={data.week_range.start}
+    weekRangeEnd={data.week_range.end}
+    updatedAt={data.updated_at}
+    weekPrefix={weekPrefix}
+    showBackLink
+  />
+  <main class="mx-auto max-w-[720px] px-4 py-6 md:px-5">
+    <CategorySection topic={topic} section={section} />
+  </main>
+</BaseLayout>

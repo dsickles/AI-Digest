@@ -1,14 +1,18 @@
 ---
 import TabBar from './TabBar.astro';
+import BackToLatest from './BackToLatest.astro';
 import { formatUpdated, formatWeekRange } from '../lib/formatWeekRange';
 
 interface Props {
   weekRangeStart: string;
   weekRangeEnd: string;
   updatedAt: string;
+  weekPrefix?: string;
+  showBackLink?: boolean;
 }
 
-const { weekRangeStart, weekRangeEnd, updatedAt } = Astro.props;
+const { weekRangeStart, weekRangeEnd, updatedAt, weekPrefix, showBackLink = false } =
+  Astro.props;
 const weekLabel = formatWeekRange(weekRangeStart, weekRangeEnd);
 const updatedLabel = formatUpdated(updatedAt);
 ---
@@ -20,6 +24,7 @@ const updatedLabel = formatUpdated(updatedAt);
     </h1>
     <p class="m-0 text-sm text-muted-foreground">{weekLabel}</p>
     <p class="m-0 text-sm text-[hsl(220_9%_46%)]">{updatedLabel}</p>
-    <TabBar />
+    {showBackLink && <BackToLatest />}
+    <TabBar weekPrefix={weekPrefix} />
   </div>
 </header>

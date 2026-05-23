@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import CategorySection from '../components/CategorySection.astro';
+import { getLatestDigest } from '../lib/latestWeek';
+import { canonicalDigestUrl } from '../lib/canonicalUrl';
+import { TOPICS, isTopic } from '../lib/topics';
+
+export function getStaticPaths() {
+  return TOPICS.map((topic) => ({
+    params: { topic },
+  }));
+}
+
+const topicParam = Astro.params.topic ?? '';
+if (!isTopic(topicParam)) {
+  return Astro.redirect('/404');
+}
+
+const digest = await getLatestDigest();
+const { data } = digest;
+const section = data.category_sections[topicParam];
+const canonicalHref = canonicalDigestUrl(data.week_id, topicParam);
+---
+
+<BaseLayout title={`${topicParam} — AI Digest`} canonicalHref={canonicalHref}>
+  <Header
+    weekRangeStart={data.week_range.start}
+    weekRangeEnd={data.week_range.end}
+    updatedAt={data.updated_at}
+  />
+  <main class="mx-auto max-w-[720px] px-4 py-6 md:px-5">
+    <CategorySection topic={topicParam} section={section} />
+  </main>
+</BaseLayout>
