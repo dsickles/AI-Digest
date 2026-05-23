@@ -148,7 +148,7 @@ Plans:
 
 **Wave 4** *(blocked on 03-06, 03-08, 03-10)*
 
-- [ ] 03-07-PLAN.md — Rank/rollup checkpoint integrity guards (PIPELINE-05/06 → CR-02)
+- [x] 03-07-PLAN.md — Rank/rollup checkpoint integrity guards (PIPELINE-05/06 → CR-02) *(2026-05-23)*
 
 **Notes:** Primary mitigation phase for Risk Top-5 items #1 (under-dedup), #2 (runaway LLM costs — pre-flight budget, dedup-before-summarize, tiered models, $5/week hard cap), #4 (hallucinated summaries — grounding prompts, confidence flags, hierarchical roll-up per PITFALLS #14). Prompts versioned in files with `prompt_version` in digest metadata (PITFALLS #13).
 
