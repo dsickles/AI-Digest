@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-05-23T22:49:56.556Z"
+last_updated: "2026-05-23T22:52:36.379Z"
 last_activity: 2026-05-23
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 25
-  completed_plans: 20
+  completed_plans: 21
   percent: 60
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 ## Current Position
 
 Phase: 04 (dashboard-archive) — EXECUTING
-Plan: 2 of 6
+Plan: 3 of 6
 Status: Ready to execute
 Last activity: 2026-05-23
 
-Progress: [████████░░] 80% (20/25 plans complete)
+Progress: [████████░░] 84% (21/25 plans complete)
 
 ## Performance Metrics
 
@@ -57,6 +57,7 @@ Progress: [████████░░] 80% (20/25 plans complete)
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
 | Phase 04 P01 | 04-01 | 15min | 2 | 4 |
+| Phase 04 P02 | 04-02 | 20min | 2 | 10 |
 
 ## Accumulated Context
 
@@ -103,6 +104,8 @@ Recent decisions affecting current work:
 - **03-07:** CR-02 closed — `ranks_cover_current_clusters` gates rank/rollup skip; stale orphan `cluster_ranks` or weekly rollup force LLM re-run; renderer untouched (LOCKED-01)
 - **04-01:** partition.py is canonical LOCKED-01 router; html.py deprecated dev-preview re-export only
 - **04-01:** PARTIAL_PUBLISH_COPY reconciled to UI-SPEC long form in partition.py
+- **04-02:** digest_json.py emits pre-partitioned JSON with schema_version 1; HTML preview optional via --no-html-preview
+- **04-02:** write_pipeline_report archives to web/src/content/reports/{week_id}.json by default
 
 ### Pending Todos
 
@@ -130,7 +133,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-23T22:49:56.488Z
+Last session: 2026-05-23T22:52:32.010Z
 Stopped at: Completed 04-01-PLAN.md
 Resume file: None
 Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Gemini billing decision (trigger updated to "after 1–2 live Phase 3 weeks"); Phase 3 learnings extraction skipped — institutional knowledge lives in 03-XX-SUMMARY.md, 03-VERIFICATION.md, 03-HUMAN-UAT.md, and PROJECT.md Key Decisions for now

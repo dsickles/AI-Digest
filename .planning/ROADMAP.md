@@ -166,7 +166,7 @@ Plans:
   4. Every past weekly digest is preserved as committed JSON, browseable via a "Past Weeks" archive index (newest first, one-line excerpt) with permalink pages that render the full digest as it appeared
   5. The site is readable on desktop and modern mobile without layout breakage — the Sunday-morning read experience matches the reference dashboard intent
 
-**Plans:** 1/6 plans executed
+**Plans:** 2/6 plans executed
 
 Plans:
 **Wave 1**
@@ -175,7 +175,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1)*
 
-- [ ] 04-02-PLAN.md — digest_json emitter, orchestrator/report wiring, CLI flags, contract tests (ARCHIVE-01, OBS-01)
+- [x] 04-02-PLAN.md — digest_json emitter, orchestrator/report wiring, CLI flags, contract tests (ARCHIVE-01, OBS-01)
 
 **Wave 3** *(blocked on Wave 2)*
 
@@ -236,7 +236,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Foundation + First Digest | 5/5 | Complete | 2026-05-21 |
 | 2. Expand Ingestion | 4/4 | Complete | 2026-05-22 |
 | 3. AI Quality | 5/10 | Gap closure | 2026-05-22 |
-| 4. Dashboard + Archive | 1/6 | In Progress|  |
+| 4. Dashboard + Archive | 2/6 | In Progress|  |
 | 5. Ops & Automation | 0/TBD | Not started | - |
 
 ---

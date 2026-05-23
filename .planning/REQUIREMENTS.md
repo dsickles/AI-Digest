@@ -55,7 +55,7 @@ Requirements for initial release. Each maps to a roadmap phase (see Traceability
 
 ### Observability
 
-- [ ] **OBS-01**: Briefing tab displays a "Pipeline notes" section listing any sources that failed or were skipped this week, with a one-line reason each
+- [x] **OBS-01**: Briefing tab displays a "Pipeline notes" section listing any sources that failed or were skipped this week, with a one-line reason each
 - [x] **OBS-02**: Each pipeline run produces a structured report (errors, items ingested, items deduped, LLM calls, cost) saved with the digest artifact
 - [ ] **OBS-03**: A heartbeat / "last successful run" timestamp is visible somewhere on the site so a missed week is obvious
 
@@ -151,7 +151,7 @@ Filled in by the roadmapper. Status updated as phases progress.
 | ARCHIVE-02 | Phase 4 | Pending |
 | ARCHIVE-03 | Phase 4 | Pending |
 | ARCHIVE-04 | Phase 4 | Pending |
-| OBS-01 | Phase 4 | Pending |
+| OBS-01 | Phase 4 | Complete |
 | OPS-01 | Phase 5 | Pending |
 | OPS-02 | Phase 5 | Pending |
 | OPS-03 | Phase 5 | Pending |
