@@ -79,7 +79,7 @@ Each task was committed atomically:
 1. **Task 1: Scaffold web/ with Astro 6, Tailwind 4, content collections** - `69dd420` (feat)
 2. **Task 2: BaseLayout, Header, TabBar, Card, index Briefing slice** - `fc72c23` (feat)
 
-**Plan metadata:** pending (docs commit next)
+**Plan metadata:** `0d16c74` (docs: complete plan)
 
 ## Files Created/Modified
 
