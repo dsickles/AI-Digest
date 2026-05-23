@@ -140,7 +140,7 @@ Plans:
 
 **Wave 2** *(blocked on 03-06)*
 
-- [ ] 03-08-PLAN.md — Wire cascade title_changed on ingest (PIPELINE-06 → WR-01)
+- [x] 03-08-PLAN.md — Wire cascade title_changed on ingest (PIPELINE-06 → WR-01) *(2026-05-23)*
 
 **Wave 3** *(blocked on 03-08)*
 
