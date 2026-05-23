@@ -407,8 +407,20 @@ def insert_item_summary(
     return summary_id
 
 
+def delete_cluster_artifacts_for_week(conn: sqlite3.Connection, week_id: str) -> None:
+    """Remove rank/summary/rollup rows for ``week_id`` before cluster delete.
+
+    FK order per migration 004: ``cluster_ranks`` and ``cluster_summaries`` reference
+    ``story_clusters``; clear them (and week-scoped rollups) before parent rows.
+    """
+    conn.execute("DELETE FROM cluster_ranks WHERE week_id = ?", (week_id,))
+    conn.execute("DELETE FROM cluster_summaries WHERE week_id = ?", (week_id,))
+    conn.execute("DELETE FROM weekly_rollups WHERE week_id = ?", (week_id,))
+
+
 def delete_clusters_for_week(conn: sqlite3.Connection, week_id: str) -> None:
     """Remove all cluster rows for ``week_id`` before a deterministic rebuild."""
+    delete_cluster_artifacts_for_week(conn, week_id)
     conn.execute(
         """
         DELETE FROM cluster_members

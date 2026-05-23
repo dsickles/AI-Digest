@@ -9,7 +9,19 @@ from pipeline.config import RssSource
 from pipeline.dedup.cluster import run_dedup_for_week
 from pipeline.models import NormalizedItem
 from pipeline.orchestrator import RunStats
-from store.db import connect, get_cluster_members, get_clusters_for_week, upsert_item, upsert_source
+from store.db import (
+    connect,
+    delete_clusters_for_week,
+    get_cluster_members,
+    get_clusters_for_week,
+    insert_cluster_member,
+    insert_cluster_ranks_batch,
+    insert_cluster_summary,
+    insert_story_cluster,
+    insert_weekly_rollup,
+    upsert_item,
+    upsert_source,
+)
 
 
 def _seed_source(conn, source_id: str = "src-a") -> None:
@@ -137,3 +149,87 @@ def test_fuzzy_title_merge(apply_schema) -> None:
         assert clusters[0]["canonical_item_id"] == conn.execute(
             "SELECT item_id FROM items WHERE external_id = 'f1'"
         ).fetchone()[0]
+
+
+def test_delete_clusters_for_week_clears_artifact_tables(apply_schema) -> None:
+    """FK-safe rebuild: ranks/summaries/rollups removed before story_clusters (CR-01)."""
+    week_id = "2026-W21"
+    cluster_id = "cluster-artifact-test"
+
+    with connect(apply_schema) as conn:
+        _seed_source(conn)
+        item_id = _insert_item(
+            conn,
+            external_id="del-1",
+            url="https://example.com/del",
+            title="Delete artifact test",
+            raw_content=" ".join(["content"] * 20),
+        )
+        insert_story_cluster(
+            conn,
+            cluster_id=cluster_id,
+            week_id=week_id,
+            canonical_item_id=item_id,
+            canonical_url="https://example.com/del",
+            title_normalized="delete artifact test",
+        )
+        insert_cluster_member(
+            conn,
+            cluster_id=cluster_id,
+            item_id=item_id,
+            is_canonical=True,
+        )
+        insert_cluster_summary(
+            conn,
+            cluster_id=cluster_id,
+            week_id=week_id,
+            category="technical",
+            category_confidence="high",
+            category_status="ok",
+            prompt_version="categorize_v1",
+            model_id="gemini-2.5-flash-lite",
+        )
+        insert_cluster_ranks_batch(
+            conn,
+            week_id=week_id,
+            rows=[
+                {
+                    "cluster_id": cluster_id,
+                    "rank_score": 90.0,
+                    "rank_position": 1,
+                    "rank_status": "ok",
+                    "prompt_version": "rank_v1",
+                    "model_id": "gemini-2.5-flash-lite",
+                }
+            ],
+        )
+        insert_weekly_rollup(
+            conn,
+            week_id=week_id,
+            scope="weekly",
+            narrative_md="Weekly narrative",
+            rollup_status="ok",
+            prompt_version="rollup_weekly_v1",
+            model_id="gemini-2.5-flash",
+        )
+        conn.commit()
+
+        delete_clusters_for_week(conn, week_id)
+        conn.commit()
+
+        for table in ("cluster_ranks", "cluster_summaries", "weekly_rollups", "story_clusters"):
+            count = conn.execute(
+                f"SELECT COUNT(*) AS n FROM {table} WHERE week_id = ?",
+                (week_id,),
+            ).fetchone()["n"]
+            assert count == 0, f"{table} still has rows for {week_id}"
+
+        member_count = conn.execute(
+            """
+            SELECT COUNT(*) AS n
+              FROM cluster_members
+             WHERE cluster_id = ?
+            """,
+            (cluster_id,),
+        ).fetchone()["n"]
+        assert member_count == 0
