@@ -57,12 +57,12 @@ Four sizes, two weights (card titles use 16px semibold — no separate 18px tier
 |------|------|--------|-------------|-------|
 | Label / meta | 14px (`0.875rem`) | 400 | 1.5 | Card meta row, video indicator, also-covered-by, partial-publish text, archive excerpt date, pipeline-notice summary, updated timestamp uses 14px at muted color |
 | Body | 16px (`1rem`) | 400 | 1.5 | TL;DR, briefing list body, weekly synthesis, mini-rollups, archive excerpt body, card titles (semibold below) |
-| Section heading | 22px (`1.375rem`) | 600 | 1.2 | Briefing header, category header, archive row week heading |
+| Section heading | 22px (`1.375rem`) | 650 | 1.2 | Briefing header, category header, archive row week heading |
 | Display | 28px (`1.75rem`) | 650 | 1.2 | Project name H1 in header |
 
 | Special | Size | Weight | Line Height | Usage |
 |---------|------|--------|-------------|-------|
-| Card title | 16px (`1rem`) | 600 | 1.35 | Story title link — bumped weight instead of larger size (replaces html.py `1.1rem`) |
+| Card title | 16px (`1rem`) | 650 | 1.35 | Story title link — bumped weight instead of larger size (replaces html.py `1.1rem`) |
 | Briefing ordinal | 16px (inherits list) | 650 | 1.5 | `<ol>` marker styling — ordinals must feel distinct from body copy (D-A5b) |
 
 **Body line-height:** `1.5` (tighter than html.py `1.6`; ui-brand default).
@@ -70,6 +70,18 @@ Four sizes, two weights (card titles use 16px semibold — no separate 18px tier
 **Heading line-height:** `1.2`.
 
 **Font:** System stack only — see Design System table.
+
+**Weights (exactly two):** `400` regular for body, label/meta, links at rest; `650` semibold-heavy for all bold roles (display H1, section heading, card title, briefing ordinals, category header).
+
+---
+
+## Visual Hierarchy
+
+**Primary focal point — Briefing tab:** the numbered Top N list is the primary visual anchor (carries the week's reading priorities); the weekly synthesis paragraph above it acts as the lead-in. Secondary hierarchy: category mini-rollup headings → per-category cards → footer aside.
+
+**Topic tabs:** primary focal point is the category mini-rollup paragraph; secondary is the ranked card list below it.
+
+**Archive index:** primary focal point is the topmost (newest) row; the list is intentionally flat with no other emphasis.
 
 ---
 
@@ -266,4 +278,4 @@ Degraded body string comes from JSON field populated with locked `QUOTA_BODY_COP
 | `pipeline/render/html.py` | Palette, spacing rhythm, typography baseline |
 | `02-CONTEXT.md` | D-24, D-25, D-26, D-30 |
 | `03-CONTEXT.md` | D-58, D-66 rollup/partial copy |
-| Researcher discretion | Inline SVG icons, line-height 1.5, card hover `#1c2230`, 16px semibold card titles |
+| Researcher discretion | Inline SVG icons, line-height 1.5, card hover `#1c2230`, 16px weight-650 card titles |
