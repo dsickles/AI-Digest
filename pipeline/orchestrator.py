@@ -361,6 +361,11 @@ def _summarize_week_items(
             continue
         existing = get_existing_summary(conn, item_id, week_id, "summarize_v1")
         if existing is not None:
+            existing_status = (
+                existing["summary_status"]
+                if "summary_status" in existing.keys() and existing["summary_status"]
+                else "ok"
+            )
             summaries[item_id] = SummaryResult(
                 tldr=existing["tldr"],
                 summary_confidence=existing["summary_confidence"],
@@ -374,6 +379,7 @@ def _summarize_week_items(
                     if "summary_input_truncated" in existing.keys()
                     else 0
                 ),
+                summary_status=existing_status,
             )
             continue
 
