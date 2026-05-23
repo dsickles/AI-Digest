@@ -185,7 +185,8 @@ Plans:
   3. API keys (`GEMINI_API_KEY`, any publish-target token) live only in Container Station env vars on the QNAP — never in the repo, never in the static site output (pre-commit or container-build secret scan passes)
   4. A heartbeat / "last successful run" timestamp is visible on the published site; failure-only notifications fire to the user (ntfy.sh / QuLog Center) when a Sunday window misses; a missed week is obvious within 24 hours
   5. If LLM spend hits the hard cap ($5/week), the pipeline halts remaining LLM work and still publishes whatever digest content is complete — partial success beats silence
-  6. Container auto-update story (Watchtower or scheduled image pull) means code changes ship to the QNAP without manual SSH — the "as passive as possible" requirement is mechanically enforced, not policy
+  6. Container auto-update story (Watchtower or scheduled image pull) means code changes ship to the operator's host without manual SSH — the "as passive as possible" requirement is mechanically enforced, not policy
+  7. All Phase 5 deliverables (Dockerfile, deployment docs, code comments, commit messages) use generic infrastructure terminology — no vendor/model names, no first-person operator identifiers, no home-network specifics — per PROJECT.md "Pre-public-release Privacy Sweep". Deviation in this phase becomes scrub work later; honoring the constraint up front keeps the eventual public-release gate small.
 
 **Phase 5 discuss decisions (open):**
 

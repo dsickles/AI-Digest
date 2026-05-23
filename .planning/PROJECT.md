@@ -83,6 +83,7 @@ A personal, fully-automated weekly AI news and information digest delivered as a
 - **Cadence**: Weekly. Pipeline must finish in a window that lets the digest be "ready Sunday morning."
 - **Reliability**: One flaky source must not break the entire digest run.
 - **Privacy**: Personal-only, no auth for v1, but the site shouldn't accidentally leak anything sensitive (e.g., raw API keys, private newsletter forwarding addresses).
+- **Public-release opsec**: The repo is intended to be made public when v1 ships. Anything that identifies the user's specific home infrastructure (NAS vendor/model, OS/orchestrator product names that imply hardware, home-network specifics, RAM/disk specifics) must be scrubbed before flipping the repo visibility — see the dedicated "Pre-public-release Privacy Sweep" section below for categories, files, and commit-history strategy. New content (docs, code, Dockerfiles, deployment scripts) should use generic terminology from the start so the eventual scrub stays bounded.
 
 ## Blocking Dependencies & Active Risks
 
@@ -112,6 +113,42 @@ touch a listed dependency.
 | Drop email→RSS bridge (KTN) from v1; defer to v2 | The newsletters that fit the Editorial Principle (Ed Zitron, Ben's Bites, Last Week in AI, Import AI, One Useful Thing, etc.) all publish public RSS feeds. KTN's residual use case is email-only sources, which haven't surfaced as v1 needs. Avoids per-source subscription/confirmation tax and secret-URL management until a real email-only source forces it | Adopted 2026-05-22 during Phase 2 discuss |
 | Cut `design` category from v1; collapse design-tooling stories into `technical` | Phase 3 visual UAT showed the active source list wasn't producing a coherent design lane — the real design-coverage publishers were already covered by `technical` (UX/product/design tooling, creative tools). A near-empty fourth section diluted the briefing without adding signal. Code anchors updated together: `pipeline/llm/categorize.Category`, `VALID_CATEGORIES`, `pipeline/llm/rollup.CATEGORY_ORDER`, `pipeline/llm/rank.CATEGORY_ORDER`, `pipeline/render/html.CATEGORY_ORDER`/`CATEGORY_LABELS`, `pipeline/config._VALID_CATEGORY_TAGS`, `pipeline/llm/prompts/categorize_v1.md`, `pipeline/llm/prompts/rollup_weekly_v1.md`, `pipeline/orchestrator._rollup_week` by_category dict. Restoration is a coordinated change across this same set if a future milestone re-introduces the lane | Adopted 2026-05-23 during Phase 3 visual UAT |
 | **LOCKED — Footer-aside is RSS-thin-only** (PROJECT-level directive, NOT overridable by phase plans) | The Sunday-morning read experience requires the main feed to be curated TL;DRs only — but the footer is reserved for RSS items that are genuinely too short to summarize (`summary_status='thin'`), nothing else. Every other "no summary this week" reason — LLM quota exhausted, API error, parse error, client init error, YouTube transcript not yet fetched — renders in-place in the main feed as a degraded card with the locked body `"The summary couldn't be generated this week."` so the reader keeps the publisher, video badge, date, and category context. The 2026-05-22 lock had grouped all "couldn't summarize" causes into the footer; that produced a Phase 3 visual UAT regression where long-form videos with successful transcripts but quota-exhausted summarize calls landed next to genuinely-thin RSS stubs in the footer, which is the wrong reader signal. The 2026-05-23 refinement narrows the footer to `thin` only. **This rule supersedes any phase-level decision (D-05, D-25, the 2026-05-22 lock).** Code anchor: `pipeline/render/html._IN_PLACE_TRANSIENT_STATUSES` is the locked set of statuses that earn the in-place degraded card; only `thin` falls through to the footer aside. | Locked 2026-05-22; refined 2026-05-23 after Phase 3 visual UAT |
+
+## Pre-public-release Privacy Sweep
+
+The repo is private today and is intended to be made public when v1 ships. Before flipping visibility, scrub any user-identifying infrastructure detail. Two motivations:
+
+1. **Personal opsec** — the user doesn't want "this person runs a [specific vendor/model] at home" surfaceable to anyone with the repo URL.
+2. **Project portability** — a generically-described self-hosted runtime is more reusable for other readers who land on the repo and want to adapt it.
+
+### Categories to scrub
+
+- **Hardware vendor and model names** — replace with neutral terms ("home server", "self-hosted machine", "always-on Linux box", "operator's NAS").
+- **OS / orchestrator product names that imply specific hardware** — replace with generic equivalents ("Docker host", "container runtime", "system cron"). Avoid product names whose presence is a fingerprint.
+- **First-person references that identify the operator** — "the user's NAS" → "the operator's home server"; "my laptop" → "a development machine".
+- **Home-network details** — internal IPs, VPN/tunnel names, ISP details, geographic hints.
+- **RAM/disk specifics tied to a specific model** — keep capability statements ("≥4 GB RAM recommended") but drop framing that points at a particular SKU.
+
+### Files to audit (non-exhaustive — start here, expand as the project grows)
+
+- `.planning/PROJECT.md`, `.planning/ROADMAP.md`, `.planning/LOCKED-DIRECTIVES.md`, `.planning/phases/**/*.md`
+- `README.md` and any deployment / ops doc that lands during Phase 5
+- Any `Dockerfile`, `docker-compose.yml`, deployment script, or systemd / cron unit
+- Code comments and module docstrings
+- **Commit history** — see below
+
+### Commit-history strategy
+
+Pre-public-release commits already reference identifying detail (e.g. the Phase 5 architecture commit `a003925` and the RAM-confirm commit `d2143fc`). Two acceptable approaches:
+
+1. **Squash before push to public remote** — reset to a clean single commit (or small handful of phase-grouped commits) on a fresh branch with generic messages; push that as the public history. Cleanest; loses development granularity. Usually right for v1 personal projects.
+2. **`git filter-repo` rewrite** — rewrite specific phrases across history, force-push the rewritten branch. Preserves granularity; carries rewrite risk and requires extra care if the repo has been pushed to multiple remotes.
+
+Pick during the public-release plan. Either way, do this *before* flipping visibility — once a public push happens with identifying detail, only history-rewrite is recoverable, and the original commits live in any clone someone made in the meantime.
+
+### Gate
+
+The repo's `public` flag is the only thing that matters. No `gh repo edit --visibility public`, no fork-and-rename, no transfer to a public org until this section is satisfied with a written checklist completion in the public-release plan.
 
 ## Evolution
 
