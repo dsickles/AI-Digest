@@ -33,6 +33,20 @@ def test_title_change_triggers_dedup() -> None:
     assert STAGE_DEDUP in stages
 
 
+def test_title_change_invalidates_summarize() -> None:
+    """WR-01: title-only edits must re-run summarize even when hash is stable."""
+    stages = plan_invalidation(
+        item_id="item-1",
+        old_hash="same",
+        new_hash="same",
+        is_canonical=False,
+        title_changed=True,
+        force_rebuild_clusters=False,
+        force_rebuild_rollup=False,
+    )
+    assert STAGE_SUMMARIZE in stages
+
+
 def test_membership_change_may_trigger_rank() -> None:
     stages = plan_invalidation(
         item_id="item-1",
