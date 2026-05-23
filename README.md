@@ -218,6 +218,49 @@ Structured logs go to stdout (key=value on TTY, JSON when piped). Ingest and
 summarize events include `source_id`; summarize events include token counts
 and `cost_usd_estimate`.
 
+## Phase 4 dashboard (Astro archive)
+
+Phase 4 adds a static Astro dashboard under `web/`. The Python pipeline emits
+pre-partitioned digest JSON (LOCKED-01 routing applied in Python); Astro builds
+the public site from committed content — no LLM at build time.
+
+### Emit digest JSON from SQLite
+
+```bash
+# Render-only backfill (no network, no LLM — safe for historic weeks)
+uv run python -m pipeline.run render --week 2026-W21
+
+# Skip deprecated out/digest-*.html dev preview; JSON archive only
+uv run python -m pipeline.run render --week 2026-W21 --no-html-preview
+
+# Override digest JSON output directory (default: web/src/content/digests)
+uv run python -m pipeline.run render --week 2026-W21 --web-out web/src/content/digests
+```
+
+Each render writes:
+
+- `web/src/content/digests/{week_id}.json` — pre-partitioned digest (committed)
+- `web/src/content/reports/{week_id}.json` — archived `pipeline_report` (committed)
+
+The deprecated HTML preview (`out/digest-*.html`) still renders unless you pass
+`--no-html-preview`. `pipeline/render/html.py` is dev-preview only; the canonical
+publish surface is JSON + Astro.
+
+### Build and preview the dashboard
+
+```bash
+cd web
+pnpm install   # first time only
+pnpm dev       # local preview at http://localhost:4321
+pnpm build     # static output in web/dist/
+```
+
+Content collections live at `web/src/content/digests/` and
+`web/src/content/reports/`. After adding or updating JSON, run `pnpm build` to
+validate against the Zod schema and regenerate static routes.
+
+Manual UAT checklist: `.planning/phases/04-dashboard-archive/04-UAT.md`
+
 ## Test
 
 ```bash
@@ -265,5 +308,6 @@ out/             Generated digest HTML + last_run.md (gitignored)
 
 ## Project status
 
-**Phases 1–2 of 5 — complete.** See `.planning/ROADMAP.md` for Phase 3+
-(Reddit/HN, dedup, Astro dashboard, GHA automation).
+**Phases 1–4 of 5 — complete.** Phase 4 ships the Astro dashboard and git
+archive at `web/src/content/`. See `.planning/ROADMAP.md` for Phase 5
+(GHA automation).

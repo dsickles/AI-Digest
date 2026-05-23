@@ -13,7 +13,7 @@ from pipeline.llm.categorize import CategorizeResult
 from pipeline.llm.summarize import SummaryResult
 from pipeline.models import NormalizedItem
 from pipeline.orchestrator import run_all
-from pipeline.render.html import PARTIAL_PUBLISH_COPY
+from pipeline.render.partition import PARTIAL_PUBLISH_COPY
 from store.db import connect, fetchone, upsert_item, upsert_source
 
 
@@ -138,8 +138,8 @@ def test_budget_halt_partial_publish_and_meta_stages(
     assert stats.out_path is not None
     html = stats.out_path.read_text(encoding="utf-8")
     assert "partial-publish-notice" in html
-    assert "exceeded the weekly budget" in html
-    assert PARTIAL_PUBLISH_COPY.split(";")[0] in html
+    assert "weekly cost cap" in html
+    assert PARTIAL_PUBLISH_COPY in html
 
     report_path = out_dir / "pipeline_report.json"
     assert report_path.exists()
