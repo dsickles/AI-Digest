@@ -1,0 +1,35 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatWeeklyRollupFailure } from '../lib/copy';
+
+type DigestData = CollectionEntry<'digests'>['data'];
+
+interface Props {
+  weeklySynthesis: DigestData['weekly_synthesis'];
+  topN: number;
+}
+
+const { weeklySynthesis, topN } = Astro.props;
+
+const synthesisText = weeklySynthesis.text?.trim();
+const showSynthesis = Boolean(synthesisText);
+const showRollupFailure = !showSynthesis && weeklySynthesis.status !== 'ok';
+---
+
+{
+  showSynthesis && (
+    <section class="weekly-synthesis mb-6">
+      <p class="weekly-synthesis-body m-0 text-base leading-normal text-[hsl(216_12%_81%)]">
+        {synthesisText}
+      </p>
+    </section>
+  )
+}
+
+{
+  showRollupFailure && (
+    <p class="rollup-failure-notice m-0 mb-6 text-base leading-normal text-[hsl(216_12%_81%)]">
+      {formatWeeklyRollupFailure(topN)}
+    </p>
+  )
+}

@@ -1,0 +1,41 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatPublishedDate } from '../lib/formatWeekRange';
+
+type FooterCard = CollectionEntry<'digests'>['data']['footer_aside'][number];
+
+interface Props {
+  items: FooterCard[];
+}
+
+const { items } = Astro.props;
+
+if (items.length === 0) {
+  return null;
+}
+---
+
+<aside id="also-seen" class="footer-aside mt-16 border-t border-border pt-8">
+  <h2 class="m-0 mb-4 text-[1.375rem] font-semibold leading-tight text-foreground">
+    Also seen this week
+  </h2>
+  <ul class="m-0 list-none p-0">
+    {
+      items.map((item) => (
+        <li class="mb-3">
+          <a
+            href={item.canonical_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-base text-foreground no-underline hover:text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            {item.title}
+          </a>
+          <span class="also-meta ml-1 text-sm text-[hsl(220_9%_46%)]">
+            [{item.publisher}] · {formatPublishedDate(item.published_at)}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+</aside>

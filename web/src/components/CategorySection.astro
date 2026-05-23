@@ -9,19 +9,31 @@ type CategorySectionData =
 interface Props {
   topic: Topic;
   section: CategorySectionData;
+  /** Topic tab pages omit the category header — tab context conveys category. */
+  variant?: 'briefing' | 'topic';
 }
 
-const { topic, section } = Astro.props;
+const { topic, section, variant = 'briefing' } = Astro.props;
 
 if (section.cards.length === 0) {
   return null;
 }
 ---
 
-<section class="category-section mb-12 mt-12 border-t border-border pt-8">
-  <h2 class="category-header m-0 mb-4 border-b border-border pb-2 text-[1.375rem] font-semibold leading-tight text-foreground">
-    {TOPIC_LABELS[topic]}
-  </h2>
+<section
+  class:list={[
+    'category-section',
+    variant === 'briefing' && 'mb-12 mt-12 border-t border-border pt-8',
+    variant === 'topic' && 'mb-8',
+  ]}
+>
+  {
+    variant === 'briefing' && (
+      <h2 class="category-header m-0 mb-4 border-b border-border pb-2 text-[1.375rem] font-semibold leading-tight text-foreground">
+        {TOPIC_LABELS[topic]}
+      </h2>
+    )
+  }
   {
     section.mini_rollup && (
       <p class="category-mini-rollup m-0 mb-4 text-base leading-normal text-[hsl(216_12%_81%)]">

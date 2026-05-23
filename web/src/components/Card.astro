@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { formatPublishedDate } from '../lib/formatWeekRange';
+import PlayIcon from './PlayIcon.astro';
 
 type DigestCard = CollectionEntry<'digests'>['data']['briefing_top_n'][number];
 
@@ -33,16 +34,7 @@ const dateLabel = formatPublishedDate(card.published_at);
       {card.publisher}
     </span>
     {
-      isYoutube && (
-        <svg
-          class="ml-1 inline-block h-4 w-4 text-muted-foreground"
-          viewBox="0 0 16 16"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path d="M6 4.5v7l6-3.5-6-3.5z" />
-        </svg>
-      )
+      isYoutube && <PlayIcon />
     }
     <span>{dateLabel}</span>
   </div>

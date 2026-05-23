@@ -1,7 +1,9 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import Card from './Card.astro';
+import BriefingTopN from './BriefingTopN.astro';
 import CategorySection from './CategorySection.astro';
+import FooterAside from './FooterAside.astro';
+import WeeklySynthesis from './WeeklySynthesis.astro';
 import { TOPICS } from '../lib/topics';
 
 interface Props {
@@ -11,36 +13,23 @@ interface Props {
 const { digest } = Astro.props;
 const { data } = digest;
 const topN = data.briefing_top_n.length;
-const briefingHeader = `Briefing — Top ${topN} this week`;
 ---
 
 {
-  data.weekly_synthesis.text && (
-    <section class="weekly-synthesis mb-6">
-      <p class="m-0 text-base leading-normal text-[hsl(216_12%_81%)]">
-        {data.weekly_synthesis.text}
-      </p>
-    </section>
+  data.failure_notice && (
+    <p class="partial-publish-notice mb-6 rounded border border-[#8b6914] border-l-4 bg-[#1a1610] p-4 text-base leading-normal text-[#c8b896]">
+      {data.failure_notice.body}
+    </p>
   )
 }
 
-<section class="briefing mb-8">
-  <h2 class="briefing-header mb-4 mt-0 text-[1.375rem] font-semibold leading-tight text-foreground">
-    {briefingHeader}
-  </h2>
-  <ol class="briefing-list m-0 list-decimal pl-6 marker:font-semibold">
-    {
-      data.briefing_top_n.map((card) => (
-        <li class="briefing-item mb-4 pl-1">
-          <Card card={card} briefing />
-        </li>
-      ))
-    }
-  </ol>
-</section>
+<WeeklySynthesis weeklySynthesis={data.weekly_synthesis} topN={topN} />
+<BriefingTopN cards={data.briefing_top_n} />
 
 {
   TOPICS.map((topic) => (
     <CategorySection topic={topic} section={data.category_sections[topic]} />
   ))
 }
+
+<FooterAside items={data.footer_aside} />
