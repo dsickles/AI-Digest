@@ -282,21 +282,21 @@ def _build_pipeline_notes(
             f"{n} {noun} couldn't be generated this run due to a processing error."
         )
 
-    if conn is not None:
-        for source_id, health in source_health.items():
-            err = health.get("last_error_category")
-            if err in _FETCH_FAILURE_CATEGORIES:
-                publisher = _publisher_display_name(source_id)
-                details.append(
-                    f"{publisher} couldn't be reached this Sunday morning. "
-                    "The next run will retry."
-                )
-            elif err == "empty_feed" or (
-                health.get("items_this_week", 0) == 0 and not err
-            ):
-                silent = _silent_source_detail(conn, source_id, week_id)
-                if silent:
-                    details.append(silent)
+    for source_id, health in source_health.items():
+        err = health.get("last_error_category")
+        if err in _FETCH_FAILURE_CATEGORIES:
+            publisher = _publisher_display_name(source_id)
+            details.append(
+                f"{publisher} couldn't be reached this Sunday morning. "
+                "The next run will retry."
+            )
+        elif conn is not None and (
+            err == "empty_feed"
+            or (health.get("items_this_week", 0) == 0 and not err)
+        ):
+            silent = _silent_source_detail(conn, source_id, week_id)
+            if silent:
+                details.append(silent)
 
     if pending_local > 0:
         noun = "transcript" if pending_local == 1 else "transcripts"
