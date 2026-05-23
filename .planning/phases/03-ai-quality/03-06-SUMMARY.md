@@ -63,7 +63,7 @@ Each task was committed atomically:
 1. **Task 1: delete_cluster_artifacts_for_week + fold into delete_clusters_for_week** - `948820f` (fix)
 2. **Task 2: Integration test — run_all twice same week (IN-01)** - `4b8e8a3` (test)
 
-**Plan metadata:** pending (docs commit)
+**Plan metadata:** `51b715b` (docs: complete plan)
 
 ## Files Created/Modified
 
