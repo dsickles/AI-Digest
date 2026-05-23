@@ -136,7 +136,7 @@ Plans:
 **Wave 1** *(parallel — no file overlap)*
 
 - [ ] 03-06-PLAN.md — FK-safe cluster artifact delete + run_all twice integration test (PIPELINE-05/06 → CR-01, IN-01)
-- [ ] 03-09-PLAN.md — Prior-week pre-flight baseline (PIPELINE-05 → WR-02)
+- [x] 03-09-PLAN.md — Prior-week pre-flight baseline (PIPELINE-05 → WR-02) *(2026-05-23)*
 
 **Wave 2** *(blocked on 03-06)*
 
