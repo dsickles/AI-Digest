@@ -4,17 +4,25 @@ import BackToLatest from './BackToLatest.astro';
 import { formatUpdated, formatWeekRange } from '../lib/formatWeekRange';
 
 interface Props {
-  weekRangeStart: string;
-  weekRangeEnd: string;
-  updatedAt: string;
+  weekRangeStart?: string;
+  weekRangeEnd?: string;
+  updatedAt?: string;
   weekPrefix?: string;
   showBackLink?: boolean;
 }
 
-const { weekRangeStart, weekRangeEnd, updatedAt, weekPrefix, showBackLink = false } =
-  Astro.props;
-const weekLabel = formatWeekRange(weekRangeStart, weekRangeEnd);
-const updatedLabel = formatUpdated(updatedAt);
+const {
+  weekRangeStart,
+  weekRangeEnd,
+  updatedAt,
+  weekPrefix,
+  showBackLink = false,
+} = Astro.props;
+const weekLabel =
+  weekRangeStart && weekRangeEnd
+    ? formatWeekRange(weekRangeStart, weekRangeEnd)
+    : null;
+const updatedLabel = updatedAt ? formatUpdated(updatedAt) : null;
 ---
 
 <header class="border-b border-border px-4 pb-6 pt-8 md:px-5">
@@ -22,8 +30,10 @@ const updatedLabel = formatUpdated(updatedAt);
     <h1 class="m-0 text-[1.75rem] font-semibold leading-tight text-foreground">
       AI Digest
     </h1>
-    <p class="m-0 text-sm text-muted-foreground">{weekLabel}</p>
-    <p class="m-0 text-sm text-[hsl(220_9%_46%)]">{updatedLabel}</p>
+    {weekLabel && <p class="m-0 text-sm text-muted-foreground">{weekLabel}</p>}
+    {updatedLabel && (
+      <p class="m-0 text-sm text-[hsl(220_9%_46%)]">{updatedLabel}</p>
+    )}
     {showBackLink && <BackToLatest />}
     <TabBar weekPrefix={weekPrefix} />
   </div>

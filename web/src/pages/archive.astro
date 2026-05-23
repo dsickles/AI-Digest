@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import ArchiveList from '../components/ArchiveList.astro';
+import BackToLatest from '../components/BackToLatest.astro';
+import { getCollection } from 'astro:content';
+
+const digests = (await getCollection('digests')).sort((a, b) =>
+  b.data.week_id.localeCompare(a.data.week_id),
+);
+
+let headerProps: {
+  weekRangeStart?: string;
+  weekRangeEnd?: string;
+  updatedAt?: string;
+} = {};
+
+if (digests.length > 0) {
+  const latest = digests[0]!;
+  headerProps = {
+    weekRangeStart: latest.data.week_range.start,
+    weekRangeEnd: latest.data.week_range.end,
+    updatedAt: latest.data.updated_at,
+  };
+}
+---
+
+<BaseLayout title="AI Digest — Archive">
+  <Header {...headerProps} />
+  <main class="mx-auto w-full max-w-[720px] px-4 py-6 md:px-5">
+    <BackToLatest />
+    <ArchiveList digests={digests} />
+  </main>
+</BaseLayout>

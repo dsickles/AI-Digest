@@ -15,14 +15,6 @@ const { data } = digest;
 const topN = data.briefing_top_n.length;
 ---
 
-{
-  data.failure_notice && (
-    <p class="partial-publish-notice mb-6 rounded border border-[#8b6914] border-l-4 bg-[#1a1610] p-4 text-base leading-normal text-[#c8b896]">
-      {data.failure_notice.body}
-    </p>
-  )
-}
-
 <WeeklySynthesis weeklySynthesis={data.weekly_synthesis} topN={topN} />
 <BriefingTopN cards={data.briefing_top_n} />
 

@@ -2,6 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import DigestBriefing from '../../components/DigestBriefing.astro';
+import PipelineNotes from '../../components/PipelineNotes.astro';
+import PartialPublishNotice from '../../components/PartialPublishNotice.astro';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -25,7 +27,9 @@ const weekPrefix = `/digest/${digest.id}`;
     weekPrefix={weekPrefix}
     showBackLink
   />
-  <main class="mx-auto max-w-[720px] px-4 py-6 md:px-5">
+  <main class="mx-auto w-full max-w-[720px] px-4 py-6 md:px-5">
+    <PipelineNotes pipelineNotes={data.pipeline_notes} />
+    <PartialPublishNotice failureNotice={data.failure_notice} />
     <DigestBriefing digest={digest} />
   </main>
 </BaseLayout>
