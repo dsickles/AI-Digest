@@ -95,6 +95,9 @@ class RunStats:
     rank_llm_calls: int = 0
     rollup_llm_calls: int = 0
     rollup_cost_usd: float = 0.0
+    summarize_cost_usd: float = 0.0
+    categorize_cost_usd: float = 0.0
+    rank_cost_usd: float = 0.0
     errors: list[dict[str, str]] = field(default_factory=list)
     out_path: Path | None = None
     source_stats: dict[str, SourceRunStats] = field(default_factory=dict)
@@ -442,6 +445,7 @@ def _summarize_week_items(
             stats.summaries_written += 1
         if result.cost_usd_estimate is not None:
             stats.cost_usd_estimate += result.cost_usd_estimate
+            stats.summarize_cost_usd += result.cost_usd_estimate
             if budget is not None:
                 budget.record_spend(result.cost_usd_estimate, stage="summarize")
 
@@ -553,6 +557,7 @@ def _categorize_week_clusters(
         )
         if result.cost_usd_estimate is not None:
             stats.cost_usd_estimate += result.cost_usd_estimate
+            stats.categorize_cost_usd += result.cost_usd_estimate
             if budget is not None:
                 budget.record_spend(result.cost_usd_estimate, stage="categorize")
 
@@ -667,6 +672,7 @@ def _rank_week(
     for row in results:
         if row.cost_usd_estimate is not None:
             stats.cost_usd_estimate += row.cost_usd_estimate
+            stats.rank_cost_usd += row.cost_usd_estimate
             if budget is not None:
                 budget.record_spend(row.cost_usd_estimate, stage="rank")
 
