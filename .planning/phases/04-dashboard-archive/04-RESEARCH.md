@@ -497,19 +497,22 @@ Each slice should end testable:
 | A3 | W19/W21 SQLite rows exist locally for backfill | Integration | Backfill UAT skipped if DB empty |
 | A4 | ~4 pages/week × N weeks is fine at build | getStaticPaths | Revisit pagination at ~52 entries (D-A6d) |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **`pipeline_notes` exact JSON shape for OBS-01 expanded signals**
    - What we know: D-A4b lists signals; D-70 has `source_health`, `summary_status`, `budget.halted`; silent-source needs new consecutive-week query.
    - What's unclear: Whether per-source lines are pre-rendered strings in JSON (recommended for D-24) vs structured codes for Astro to map.
    - Recommendation: **Pre-render plain-English strings in Python** (`pipeline_notes.summary_line`, `pipeline_notes.details[]`); Astro is dumb template.
+   - **RESOLVED:** Pre-render plain-English strings in Python (`pipeline_notes.summary_line`, `pipeline_notes.details[]`); Astro is a dumb template only.
 
 2. **W19 schema gaps (pre-Phase-3 columns)**
    - What we know: D-A2b requires null/sensible defaults for missing cluster/rank/rollup.
    - Recommendation: Emitter tolerates empty `briefing_top_n`, missing mini-rollups; Zod fields nullable.
+   - **RESOLVED:** Emitter tolerates empty `briefing_top_n`, missing mini-rollups; Zod fields nullable.
 
 3. **Vitest vs build-only for Astro**
    - Recommendation: **`pnpm build` + manual UAT** for Phase 4 MVP; add Vitest only if component logic grows.
+   - **RESOLVED:** `pnpm astro check` for per-task quick feedback (~10s); `pnpm build` as wave-final and Phase 6 gate; manual UAT for visual checks; Vitest deferred unless component logic grows.
 
 ## Environment Availability
 

@@ -166,7 +166,33 @@ Plans:
   4. Every past weekly digest is preserved as committed JSON, browseable via a "Past Weeks" archive index (newest first, one-line excerpt) with permalink pages that render the full digest as it appeared
   5. The site is readable on desktop and modern mobile without layout breakage — the Sunday-morning read experience matches the reference dashboard intent
 
-**Plans:** TBD
+**Plans:** 6 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 04-01-PLAN.md — Extract partition.py, LOCKED-01 doc anchors, REQUIREMENTS 3-tab reconciliation
+
+**Wave 2** *(blocked on Wave 1)*
+
+- [ ] 04-02-PLAN.md — digest_json emitter, orchestrator/report wiring, CLI flags, contract tests (ARCHIVE-01, OBS-01)
+
+**Wave 3** *(blocked on Wave 2)*
+
+- [ ] 04-03-PLAN.md — Astro 6 + Tailwind 4 scaffold, Zod collections, `/` Briefing slice (DISPLAY-01, 03, 05, 08)
+
+**Wave 4** *(blocked on Wave 3)*
+
+- [ ] 04-04-PLAN.md — Static tab + archive routes, Card/Footer/PlayIcon components (DISPLAY-02, 04, 06, ARCHIVE-03)
+
+**Wave 5** *(blocked on Waves 2 + 4)*
+
+- [ ] 04-05-PLAN.md — Archive index, PipelineNotes UI, OBS-01 emitter completion (ARCHIVE-02, 04, OBS-01, DISPLAY-07)
+
+**Wave 6** *(blocked on Wave 5)*
+
+- [ ] 04-06-PLAN.md — Backfill W19 + W21, full pytest + pnpm build gate, README/UAT (integration)
+
 **UI hint:** yes
 
 **Notes:** Content-first gate satisfied — wire real digest JSON only after Phase 3 produces quality output. Archive uses per-week JSON + manifest index (PITFALLS #19). Static output must contain zero secrets (PITFALLS #5).
@@ -210,7 +236,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Foundation + First Digest | 5/5 | Complete | 2026-05-21 |
 | 2. Expand Ingestion | 4/4 | Complete | 2026-05-22 |
 | 3. AI Quality | 5/10 | Gap closure | 2026-05-22 |
-| 4. Dashboard + Archive | 0/TBD | Not started | - |
+| 4. Dashboard + Archive | 0/6 | Not started | - |
 | 5. Ops & Automation | 0/TBD | Not started | - |
 
 ---
