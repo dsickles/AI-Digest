@@ -48,7 +48,7 @@ Requirements for initial release. Each maps to a roadmap phase (see Traceability
 
 ### Archive
 
-- [ ] **ARCHIVE-01**: Every past weekly digest is preserved as the system's source of record (digest JSON committed to repo)
+- [x] **ARCHIVE-01**: Every past weekly digest is preserved as the system's source of record (digest JSON committed to repo)
 - [ ] **ARCHIVE-02**: Archive index page lists every past week, newest first, with date range and a one-line excerpt (or the rollup's first sentence)
 - [ ] **ARCHIVE-03**: Each past week has a permalink that renders the full digest as it appeared
 - [ ] **ARCHIVE-04**: Past weeks are reachable from the live site nav (e.g., "Past Weeks" link)
@@ -147,7 +147,7 @@ Filled in by the roadmapper. Status updated as phases progress.
 | DISPLAY-06 | Phase 4 | Pending |
 | DISPLAY-07 | Phase 4 | Pending |
 | DISPLAY-08 | Phase 4 | Pending |
-| ARCHIVE-01 | Phase 4 | Pending |
+| ARCHIVE-01 | Phase 4 | Complete |
 | ARCHIVE-02 | Phase 4 | Pending |
 | ARCHIVE-03 | Phase 4 | Pending |
 | ARCHIVE-04 | Phase 4 | Pending |

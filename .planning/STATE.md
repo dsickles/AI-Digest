@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 4 UI-SPEC approved
-last_updated: "2026-05-23T22:41:31.231Z"
-last_activity: 2026-05-23 -- Phase 04 planning complete
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-05-23T22:49:56.556Z"
+last_activity: 2026-05-23
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 25
-  completed_plans: 19
+  completed_plans: 20
   percent: 60
 ---
 
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-21)
 
 **Core value:** A coherent narrative of "what happened in AI this week" across all my sources — read in 15 minutes instead of 5+ hours of skimming feeds.
-**Current focus:** Phase 03 — ai-quality
+**Current focus:** Phase 04 — dashboard-archive
 
 ## Current Position
 
-Phase: 03 (ai-quality) — COMPLETE
-Plan: 7 of 7 (gap closure)
+Phase: 04 (dashboard-archive) — EXECUTING
+Plan: 2 of 6
 Status: Ready to execute
-Last activity: 2026-05-23 -- Phase 04 planning complete
+Last activity: 2026-05-23
 
-Progress: [████████████████] 100% (19/19 plans complete)
+Progress: [████████░░] 80% (20/25 plans complete)
 
 ## Performance Metrics
 
@@ -53,6 +53,10 @@ Progress: [████████████████] 100% (19/19 plans c
 - Trend: Phase 2 executed inline (no subagents) due to gsd-sdk/Claude-only incompatibility; sequential atomic commits per task; deviations documented in 02-VERIFICATION.md
 
 *Updated after each plan completion*
+
+| Phase | Plan | Duration | Tasks | Files |
+|-------|------|----------|-------|-------|
+| Phase 04 P01 | 04-01 | 15min | 2 | 4 |
 
 ## Accumulated Context
 
@@ -97,6 +101,8 @@ Recent decisions affecting current work:
 - **03-08:** WR-01 closed — `normalize_title` comparison in `_apply_cascade_for_item`; ingest pre-upsert lookup + in-window cascade hook; title-only edits invalidate `item_summaries` and trigger dedup; renderer untouched (LOCKED-01)
 - **03-10:** WR-03 closed — `RunStats` per-stage cost fields; `pipeline_report.json` projects `summarize_cost_usd`/`categorize_cost_usd`/`rank_cost_usd` authoritatively; renderer untouched (LOCKED-01)
 - **03-07:** CR-02 closed — `ranks_cover_current_clusters` gates rank/rollup skip; stale orphan `cluster_ranks` or weekly rollup force LLM re-run; renderer untouched (LOCKED-01)
+- **04-01:** partition.py is canonical LOCKED-01 router; html.py deprecated dev-preview re-export only
+- **04-01:** PARTIAL_PUBLISH_COPY reconciled to UI-SPEC long form in partition.py
 
 ### Pending Todos
 
@@ -124,7 +130,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-23T22:20:12.305Z
-Stopped at: Phase 4 UI-SPEC approved
-Resume file: .planning/phases/04-dashboard-archive/04-UI-SPEC.md
+Last session: 2026-05-23T22:49:56.488Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: None
 Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Gemini billing decision (trigger updated to "after 1–2 live Phase 3 weeks"); Phase 3 learnings extraction skipped — institutional knowledge lives in 03-XX-SUMMARY.md, 03-VERIFICATION.md, 03-HUMAN-UAT.md, and PROJECT.md Key Decisions for now
