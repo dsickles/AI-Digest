@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-09-PLAN.md
-last_updated: "2026-05-23T12:13:16Z"
-last_activity: 2026-05-23 -- Completed 03-09 gap closure (WR-02)
+stopped_at: Completed 03-06-PLAN.md
+last_updated: "2026-05-23T12:14:20Z"
+last_activity: 2026-05-23 -- Completed 03-06 gap closure (CR-01, IN-01)
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 19
-  completed_plans: 15
-  percent: 42
+  completed_plans: 16
+  percent: 44
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 ## Current Position
 
 Phase: 03 (ai-quality) — EXECUTING
-Plan: 9 of 10 (gap closure)
+Plan: 6 of 10 (gap closure)
 Status: Executing Phase 03 gap closure
-Last activity: 2026-05-23 -- Completed 03-09 gap closure (WR-02)
+Last activity: 2026-05-23 -- Completed 03-06 gap closure (CR-01, IN-01)
 
-Progress: [██████████] 100% (15/19 plans complete)
+Progress: [███████████░] 84% (16/19 plans complete)
 
 ## Performance Metrics
 
@@ -93,6 +93,7 @@ Recent decisions affecting current work:
 - **02-post-UAT (2026-05-22):** **LOCKED** in PROJECT.md: thin / unsummarizable items go to `<aside id="also-seen">` footer with outbound links only; quota-exhausted / 429 / RESOURCE_EXHAUSTED is the ONLY carve-out that earns an in-place "summary couldn't be generated this week" card. Supersedes Phase 1 D-05 and Phase 2 D-25 (both were renderer-design mistakes I introduced in plans; the locked rule overrides any future phase plan). Backed by `item_summaries.summary_status` column (migration 003), `_classify_llm_exception` in summarize.py, and `_partition_cards` in render/html.py.
 - **03-03:** Flash rank stage with cluster_ranks persistence; numbered Briefing — Top N at digest top; category sections sorted by rank_position; `_partition_cards` unchanged (LOCKED-01)
 - **03-09:** WR-02 closed — `baseline_per_item_from_runs` queries prior ISO week via `prior_week_id()`; first-run pre-flight uses last week's cost/summaries ratio; renderer untouched (LOCKED-01)
+- **03-06:** CR-01/IN-01 closed — `delete_cluster_artifacts_for_week` clears ranks/summaries/rollups before cluster delete; `test_run_all_twice_same_week` proves same-week `run_all` idempotency; renderer untouched (LOCKED-01)
 
 ### Pending Todos
 
@@ -120,7 +121,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-23T12:13:16Z
-Stopped at: Completed 03-09-PLAN.md
+Last session: 2026-05-23T12:14:20Z
+Stopped at: Completed 03-06-PLAN.md
 Resume file: None
-Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Gemini billing decision (trigger updated to "after 1–2 live Phase 3 weeks"); Phase 3 gap closure remaining (03-06, 03-07, 03-08, 03-10)
+Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Gemini billing decision (trigger updated to "after 1–2 live Phase 3 weeks"); Phase 3 gap closure remaining (03-07, 03-08, 03-10)
