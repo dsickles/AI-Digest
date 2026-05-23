@@ -2,7 +2,7 @@
 
 ## Overview
 
-Ship a personal weekly AI digest in five vertical slices — each phase ends with a digest you can actually read, then thickens one layer of the stack. Phase 1 proves the ugly-but-working path (RSS → store → per-item LLM summary → plain HTML). Phases 2–3 widen sources and add dedup, categorization, ranking, and narrative roll-up with cost guardrails. Phase 4 replaces plain HTML with the dark Astro dashboard, full archive, and observability surfaced in the UI. Phase 5 wraps unattended weekly automation on the user's always-on QNAP TS-464 NAS: scheduled containerized pipeline (residential IP avoids YouTube transcript blocking), auto-publish to a free off-network static host, secrets hygiene, heartbeat, failure-only notifications, and hard LLM spend caps.
+Ship a personal weekly AI digest in five vertical slices — each phase ends with a digest you can actually read, then thickens one layer of the stack. Phase 1 proves the ugly-but-working path (RSS → store → per-item LLM summary → plain HTML). Phases 2–3 widen sources and add dedup, categorization, ranking, and narrative roll-up with cost guardrails. Phase 4 replaces plain HTML with the dark Astro dashboard, full archive, and observability surfaced in the UI. Phase 5 wraps unattended weekly automation: a cloud-scheduled pipeline runs the bulk of the weekly job and auto-publishes the digest to a free off-network static host; a narrow always-on residential-IP worker runs only the operations that cloud IPs structurally cannot (YouTube transcript catch-up via Plan 02-04's `--only-pending-transcripts` path). Plus secrets hygiene, heartbeat, failure-only notifications, and hard LLM spend caps.
 
 ## Phases
 
@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Expand Ingestion** - YouTube adapter, 8-source catalog, typed failure isolation, in-place degradation renderer, and residential transcript catch-up *(2026-05-22)*
 - [x] **Phase 3: AI Quality** - Dedup-before-LLM, categorization, ranking, weekly roll-up, checkpoints, and cost guardrails (completed 2026-05-22)
 - [ ] **Phase 4: Dashboard + Archive** - Dark Astro dashboard with tabs, full week archive, and pipeline notes in the UI
-- [ ] **Phase 5: Ops & Automation** - QNAP-hosted weekly scheduled run, auto-publish to free static host, secrets, heartbeat, failure-only notifications, and hard LLM spend ceiling
+- [ ] **Phase 5: Ops & Automation** - Cloud-scheduled weekly pipeline + residential-IP transcript worker, auto-publish to free static host, secrets, heartbeat, failure-only notifications, and hard LLM spend ceiling
 
 ## Phase Details
 
@@ -173,31 +173,32 @@ Plans:
 
 ### Phase 5: Ops & Automation
 
-**Goal:** Unattended weekly runs hosted on the user's QNAP TS-464 NAS with auto-publish, monitoring, and spend protection — the digest is ready Sunday morning without manual intervention or laptop dependency
+**Goal:** Unattended weekly runs ship the digest Sunday morning without manual intervention — a cloud-scheduled pipeline does the bulk of the work and auto-publishes; a narrow always-on residential-IP worker runs only the operations cloud IPs structurally cannot (YouTube transcript catch-up). Plus monitoring and spend protection.
 **Mode:** mvp
 **Depends on:** Phase 4
 **Requirements:** OPS-01, OPS-02, OPS-03, OPS-04, OPS-05, OBS-03
-**Runtime architecture (locked 2026-05-23, see PROJECT.md Blocking Dependencies):** Path 1 — full pipeline runs in a Docker container on the QNAP via Container Station; the QNAP's residential IP avoids YouTube transcript blocking; only the static HTML output is published to an off-network host. This replaces the original "GHA cron from cloud IPs" plan, which would have silently degraded every YouTube card forever.
+**Runtime architecture (locked 2026-05-23; scope corrected same day, see PROJECT.md Blocking Dependencies):** Cloud-primary pipeline (GHA cron or equivalent) runs ingest → dedup → summarize → categorize → rank → rollup → render → publish. A second narrow worker on the operator's always-on home server (residential IP) drains the YouTube transcript backlog by periodically running `--only-pending-transcripts` against the shared SQLite DB. The original draft of this phase had the home server hosting the whole pipeline; that over-applied the residential-IP requirement, since only YouTube transcript fetching is structurally blocked. The corrected scope leaves the home worker maximally narrow — it's not load-bearing for non-YouTube content, an RSS-only week wouldn't need it to run at all, and a missed worker cycle lags transcripts by one window without breaking anything else. Plan 02-04's `pending_local` machinery is now the load-bearing architectural seam, not a vestigial workaround.
 **Success Criteria** (what must be TRUE):
 
-  1. The pipeline runs on a QNAP-side scheduled container (Container Station + crontab) every Sunday morning AND on a daily transient-failure retry; manual trigger is also supported (`docker exec aidigest python -m pipeline.run all`)
-  2. A successful run renders the new digest HTML and auto-publishes it to a free off-network static host — reader can open the digest from anywhere without being on the home network
-  3. API keys (`GEMINI_API_KEY`, any publish-target token) live only in Container Station env vars on the QNAP — never in the repo, never in the static site output (pre-commit or container-build secret scan passes)
-  4. A heartbeat / "last successful run" timestamp is visible on the published site; failure-only notifications fire to the user (ntfy.sh / QuLog Center) when a Sunday window misses; a missed week is obvious within 24 hours
-  5. If LLM spend hits the hard cap ($5/week), the pipeline halts remaining LLM work and still publishes whatever digest content is complete — partial success beats silence
-  6. Container auto-update story (Watchtower or scheduled image pull) means code changes ship to the operator's host without manual SSH — the "as passive as possible" requirement is mechanically enforced, not policy
-  7. All Phase 5 deliverables (Dockerfile, deployment docs, code comments, commit messages) use generic infrastructure terminology — no vendor/model names, no first-person operator identifiers, no home-network specifics — per PROJECT.md "Pre-public-release Privacy Sweep". Deviation in this phase becomes scrub work later; honoring the constraint up front keeps the eventual public-release gate small.
+  1. The cloud-side pipeline runs on a schedule (Sunday morning + a daily transient-failure retry) and supports manual trigger (`python -m pipeline.run all --week …`); cloud secrets live in the cloud provider's secret store, never in the repo
+  2. A successful run renders the new digest HTML and auto-publishes it to a free off-network static host — reader can open the digest from anywhere without being on the home network or having any operator-side device awake
+  3. The home-server worker runs `--only-pending-transcripts` on its own schedule (e.g. nightly), drains the pending YouTube backlog, and writes back to the shared SQLite DB; the worker is idempotent, recovers from a missed cycle without intervention, and is intentionally non-load-bearing for non-YouTube content
+  4. A heartbeat / "last successful run" timestamp is visible on the published site; failure-only notifications fire when a Sunday cloud run misses or when the home worker hasn't checked in for >N days; a missed week is obvious within 24 hours
+  5. If LLM spend hits the hard cap (default $5/week — confirm during plan), the pipeline halts remaining LLM work and still publishes whatever digest content is complete — partial success beats silence
+  6. Code/secret hygiene: API keys (`GEMINI_API_KEY`, publish-target token) live in cloud secrets and home-worker-local env only — never in the repo, the static site, or any commit message (pre-commit or build-time secret scan passes on both sides)
+  7. All Phase 5 deliverables (deployment docs, code comments, commit messages, container/script files if any) use generic infrastructure terminology — no vendor/model names, no first-person operator identifiers, no home-network specifics — per PROJECT.md "Pre-public-release Privacy Sweep". Deviation in this phase becomes scrub work later; honoring the constraint up front keeps the eventual public-release gate small.
 
 **Phase 5 discuss decisions (open):**
 
-- **Static-publish target:** Cloudflare Pages (default candidate — free, off-network, simple Wrangler CLI) vs. GitHub Pages (free but requires public repo at the free tier) vs. QNAP WebStation only (LAN-only — disqualified by criterion 2). Decided during `/gsd-discuss-phase 5`.
-- **Plan 02-04 catchup disposition:** Retire entirely (transcripts succeed first-pass under residential runtime) vs. repurpose as a transient-`youtube_transcript_api`-flake retry. Decided during `/gsd-discuss-phase 5` after a clean QNAP run cycle proves the first-pass success rate.
-- **DB location:** SQLite stays on a NAS share volume mounted into the container; no cloud DB. Confirmed in discuss.
-- **Container registry:** Docker Hub vs. GHCR. Both free for public images; pick during plan.
+- **Cloud scheduler:** GHA cron (default — free, already trusted as source of truth) vs. Cloudflare Workers Cron vs. one-of-the-cheap-cron-as-a-service options. Decided during `/gsd-discuss-phase 5`.
+- **Static-publish target:** Cloudflare Pages (default candidate — free, off-network, simple Wrangler CLI) vs. GitHub Pages (free but requires public repo at the free tier; ties timing to the public-release plan). Decided during `/gsd-discuss-phase 5`.
+- **Shared SQLite location and sync:** Cloud-primary store with the home worker syncing DB down → drains transcripts → syncs DB up (rsync/rclone/git-LFS/blob storage) is the leading default — keeps the home worker maximally narrow. Alternative: home-worker-primary store with the cloud reading/writing via tunneled connection. Decided during `/gsd-discuss-phase 5`.
+- **Plan 02-04 catchup disposition:** Confirmed as the load-bearing home-worker entry point under this architecture. Open sub-decision: also run a transient-failure retry pass for non-transcript items in the cloud cycle (separate from the home worker).
+- **Home-worker runtime:** Docker container vs. a thin Python venv invoked by the OS scheduler. Either works; pick the option that fits the home server's existing workload during plan. (Hardware/SKU details intentionally omitted from this doc per privacy sweep.)
 
 **Plans:** TBD (decomposed during `/gsd-plan-phase 5`)
 
-**Notes:** Primary mitigation for Risk Top-5 #3 (silent cron failure — post-conditions, heartbeat, failure-only notification) and #5 (secret leakage). The QNAP runtime decision came from Phase 3 visual UAT: a cloud-deployed digest would silently fail every YouTube transcript fetch (PITFALLS #7, structural). Hardware confirmed 2026-05-23: QNAP TS-464 with 8 GB RAM — comfortable headroom for the weekly batch (LLM I/O is the bottleneck, not memory) and room to coexist with the user's other NAS workloads. Container restart policy `unless-stopped` survives QTS reboots. Container Station env vars provide secret encryption at rest.
+**Notes:** Primary mitigation for Risk Top-5 #3 (silent cron failure — post-conditions, heartbeat, failure-only notification) and #5 (secret leakage). The cloud-primary + residential-worker split came from a Phase 3 architectural correction (2026-05-23): the original "home server hosts the whole pipeline" framing over-applied the residential-IP requirement, which only matters for YouTube transcript fetching (PITFALLS #7, structural). Cloud reliability + zero-host cost wins for everything else; the home server stays narrow and replaceable. RSS-only subscribers (or weeks with no YouTube items in the feed) wouldn't need the home-worker leg at all.
 
 ## Progress
 
@@ -214,5 +215,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 ---
 *Roadmap created: 2026-05-21*
-*Last updated: 2026-05-23 — Phase 3 visual UAT closed: LOCKED-01 refined to RSS-thin-only footer, design category cut from v1, Phase 5 runtime architecture locked to QNAP-hosted (residential IP avoids YouTube cloud blocking); 175 pytest tests green*
+*Last updated: 2026-05-23 — Phase 3 visual UAT closed: LOCKED-01 refined to RSS-thin-only footer, design category cut from v1, Phase 5 runtime architecture locked to cloud-primary + residential-IP transcript worker (corrected from initial "home-server hosts everything" framing); 175 pytest tests green*
 *Mode: Vertical MVP — every phase ships a readable digest*
