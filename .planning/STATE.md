@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-05-23T22:52:36.379Z"
+stopped_at: Completed 04-03-PLAN.md
+last_updated: "2026-05-23T23:02:53.157Z"
 last_activity: 2026-05-23
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 25
-  completed_plans: 21
+  completed_plans: 22
   percent: 60
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 ## Current Position
 
 Phase: 04 (dashboard-archive) — EXECUTING
-Plan: 3 of 6
+Plan: 4 of 6
 Status: Ready to execute
 Last activity: 2026-05-23
 
-Progress: [████████░░] 84% (21/25 plans complete)
+Progress: [█████████░] 88% (22/25 plans complete)
 
 ## Performance Metrics
 
@@ -58,6 +58,7 @@ Progress: [████████░░] 84% (21/25 plans complete)
 |-------|------|----------|-------|-------|
 | Phase 04 P01 | 04-01 | 15min | 2 | 4 |
 | Phase 04 P02 | 04-02 | 20min | 2 | 10 |
+| Phase 04 P03 | 04-03 | 25min | 2 | 19 |
 
 ## Accumulated Context
 
@@ -106,6 +107,9 @@ Recent decisions affecting current work:
 - **04-01:** PARTIAL_PUBLISH_COPY reconciled to UI-SPEC long form in partition.py
 - **04-02:** digest_json.py emits pre-partitioned JSON with schema_version 1; HTML preview optional via --no-html-preview
 - **04-02:** write_pipeline_report archives to web/src/content/reports/{week_id}.json by default
+- **04-03:** Astro 6 + Tailwind 4 scaffold; Zod content collections; `/` Briefing slice with header, tabs, Top N cards (DISPLAY-01, 03, 05, 08)
+- [Phase 04]: 04-03: pnpm-workspace.yaml allowBuilds for esbuild/sharp under pnpm 11
+- [Phase 04]: 04-03: Briefing index reads briefing_top_n and weekly_synthesis from collection only (LOCKED-01)
 
 ### Pending Todos
 
@@ -133,7 +137,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-23T22:52:32.010Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-05-23T23:02:53.150Z
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None
 Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Gemini billing decision (trigger updated to "after 1–2 live Phase 3 weeks"); Phase 3 learnings extraction skipped — institutional knowledge lives in 03-XX-SUMMARY.md, 03-VERIFICATION.md, 03-HUMAN-UAT.md, and PROJECT.md Key Decisions for now
