@@ -266,6 +266,22 @@ def upsert_item(
     return row["item_id"]
 
 
+def get_item_by_source_external(
+    conn: sqlite3.Connection,
+    source_id: str,
+    external_id: str,
+) -> sqlite3.Row | None:
+    """Return ``item_id``, ``title``, and ``content_hash`` for an existing row, or None."""
+    return conn.execute(
+        """
+        SELECT item_id, title, content_hash
+          FROM items
+         WHERE source_id = ? AND external_id = ?
+        """,
+        (source_id, external_id),
+    ).fetchone()
+
+
 def get_pending_transcript_items(
     conn: sqlite3.Connection,
     *,

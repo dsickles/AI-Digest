@@ -38,6 +38,7 @@ from store.db import (
     get_clusters_for_week,
     get_existing_cluster_summary,
     get_existing_summary,
+    get_item_by_source_external,
     get_items_for_week,
     get_last_known_cluster_category,
     get_pending_transcript_items,
@@ -145,7 +146,13 @@ def _append_ingest_error(
 
 
 def _ingest(
-    sources, conn, log, stats: RunStats, *, week_bounds_iso: tuple[str, str] | None = None
+    sources,
+    conn,
+    log,
+    stats: RunStats,
+    *,
+    week_id: str | None = None,
+    week_bounds_iso: tuple[str, str] | None = None,
 ) -> list[NormalizedItem]:
     """Fetch every enabled source; per-source try/except keeps the run alive.
 
@@ -232,8 +239,11 @@ def _ingest(
 
         in_window_count = 0
         for item in fetched:
+            existing = get_item_by_source_external(
+                conn, item.source_id, item.external_id
+            )
             try:
-                upsert_item(conn, item)
+                item_id = upsert_item(conn, item)
             except Exception as exc:
                 log.warning(
                     "ingest.upsert.failed",
@@ -253,6 +263,17 @@ def _ingest(
                 item_iso = item.published_at_iso()
                 if week_start_iso <= item_iso <= week_end_iso:
                     in_window_count += 1
+                    if week_id and existing is not None:
+                        _apply_cascade_for_item(
+                            conn,
+                            week_id=week_id,
+                            item_id=item_id,
+                            old_hash=existing["content_hash"],
+                            new_hash=item.content_hash,
+                            old_title=existing["title"],
+                            new_title=item.title,
+                            log=log,
+                        )
 
         # D-41: empty_feed only when the fetch succeeded but yielded zero items
         # in the week window. The contract is non-fatal — we still record the
@@ -1086,10 +1107,12 @@ def _apply_cascade_for_item(
     old_hash: str | None,
     new_hash: str,
     log,
+    old_title: str | None = None,
+    new_title: str | None = None,
     force_rebuild_clusters: bool = False,
     force_rebuild_rollup: bool = False,
 ) -> set[str]:
-    """Invalidate downstream artifacts when ``content_hash`` changes (D-68)."""
+    """Invalidate downstream artifacts when ``content_hash`` or title changes (D-68)."""
     from pipeline.cascade import (
         STAGE_DEDUP,
         STAGE_RANK,
@@ -1097,6 +1120,7 @@ def _apply_cascade_for_item(
         STAGE_SUMMARIZE,
         plan_invalidation,
     )
+    from pipeline.dedup.title_fuzzy import normalize_title
 
     cluster_row = conn.execute(
         """
@@ -1107,12 +1131,17 @@ def _apply_cascade_for_item(
     ).fetchone()
     is_canonical = cluster_row is not None
 
+    if old_title is not None and new_title is not None:
+        title_changed = normalize_title(old_title) != normalize_title(new_title)
+    else:
+        title_changed = False
+
     stages = plan_invalidation(
         item_id=item_id,
         old_hash=old_hash,
         new_hash=new_hash,
         is_canonical=is_canonical,
-        title_changed=False,
+        title_changed=title_changed,
         force_rebuild_clusters=force_rebuild_clusters,
         force_rebuild_rollup=force_rebuild_rollup,
     )
@@ -1281,6 +1310,8 @@ def _ingest_pending_transcripts(
                     item_id=row["item_id"],
                     old_hash=old_hash,
                     new_hash=new_hash,
+                    old_title=row["title"],
+                    new_title=row["title"],
                     log=log,
                     force_rebuild_clusters=force_rebuild_clusters,
                     force_rebuild_rollup=force_rebuild_rollup,
@@ -1341,7 +1372,14 @@ def run_ingest(
             sources = enabled_sources()
             if not sources:
                 log.warning("orchestrator.no_sources")
-            _ingest(sources, conn, log, stats, week_bounds_iso=week_iso)
+            _ingest(
+                sources,
+                conn,
+                log,
+                stats,
+                week_id=week_id,
+                week_bounds_iso=week_iso,
+            )
             _finalize(conn, run_id, stats, phase="ingest")
             return stats
         except Exception as exc:
@@ -1772,7 +1810,14 @@ def run_all(
                     week_start.strftime("%Y-%m-%dT%H:%M:%SZ"),
                     week_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 )
-                _ingest(sources, conn, log, stats, week_bounds_iso=week_iso)
+                _ingest(
+                    sources,
+                    conn,
+                    log,
+                    stats,
+                    week_id=week_id,
+                    week_bounds_iso=week_iso,
+                )
 
             if force_rebuild_clusters:
                 delete_clusters_for_week(conn, week_id)
