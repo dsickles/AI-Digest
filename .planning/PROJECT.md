@@ -84,6 +84,19 @@ A personal, fully-automated weekly AI news and information digest delivered as a
 - **Reliability**: One flaky source must not break the entire digest run.
 - **Privacy**: Personal-only, no auth for v1, but the site shouldn't accidentally leak anything sensitive (e.g., raw API keys, private newsletter forwarding addresses).
 
+## Blocking Dependencies & Active Risks
+
+These are external dependencies whose failure mode degrades or blocks the
+core value proposition. They must be solved (or have a documented
+acceptance) before the project ships beyond personal-laptop use. New
+phase plans must check this section and propose resolutions if they
+touch a listed dependency.
+
+| Dependency / Risk | Failure mode observed | Status | Notes / acceptance criteria |
+|---|---|---|---|
+| **Gemini API free-tier quota** is too small for a full weekly run | Phase 3 Week 21 run hit `RESOURCE_EXHAUSTED` mid-summarize; 3 of 28 items came back `quota_exhausted` (now in-place degraded per LOCKED-01 v2). Weekly run with full source list will routinely exceed free RPM. | **Open** — surfaced 2026-05-23 | Acceptable resolutions in priority order: (a) upgrade `GEMINI_API_KEY` to a paid tier (highest-quota path, simplest code change — none); (b) implement `--retry-quota` flag that sleeps + re-runs the summarize stage on the next-day quota window; (c) plug in a fallback LLM provider (OpenAI / Claude) for items that 429 on Gemini. The current code already classifies and persists `summary_status='quota_exhausted'`, so any of (a)–(c) lands cleanly. Minimum bar before "ship": the weekly run completes summarize for ≥95% of canonical items without manual intervention. |
+| **YouTube transcript availability from cloud IPs** | `youtube_transcript_api` is rate-limited / blocked on most cloud egress. Plan 02-04 introduced a residential catch-up path that the user runs locally; works today on a Mac, but blocks any future cloud-deployment story. | Mitigated for personal-laptop use; **Open for cloud deployment** | If/when the project moves off the user's laptop: (a) yt-dlp with rotating cookies, (b) audio transcription via Whisper / Gemini audio input, or (c) a paid residential-proxy transcript service. None of these are needed for v1 personal-laptop use — surfaced here so a future cloud-hosting plan doesn't quietly break the YouTube lane. |
+
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
