@@ -30,7 +30,9 @@ blocked: 1
 ## Gaps
 
 ### UAT-FOLLOWUP-01 — YouTube Shorts ingested and summarized
-status: open
+status: resolved
+resolved_in: e47844e — fix(03): skip YouTube Shorts at ingest
+resolved_at: 2026-05-23T13:30:00Z
 severity: high
 reported_by: human-uat
 reported: 2026-05-23T13:23:00Z
