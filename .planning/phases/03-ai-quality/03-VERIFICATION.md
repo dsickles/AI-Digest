@@ -1,36 +1,24 @@
 ---
-status: gaps_found
 phase: 03-ai-quality
-verified_at: 2026-05-22T20:30:00Z
+verified: 2026-05-23T12:25:00Z
+status: human_needed
+score: 4/5 must-haves verified
+overrides_applied: 0
+re_verification:
+  previous_status: gaps_found
+  previous_score: 2/5
+  gaps_closed:
+    - "Re-running the pipeline twice in the same week produces the same digest (idempotent)"
+    - "Rank/rollup checkpoints remain valid after dedup rebuild"
+  gaps_remaining: []
+  regressions: []
 must_haves_total: 5
-must_haves_passed: 2
-must_haves_failed: 2
+must_haves_passed: 4
+must_haves_failed: 0
 must_haves_human: 1
 requirements_total: 10
-requirements_passed: 8
-requirements_failed: 2
-gaps:
-  - truth: "Re-running the pipeline twice in the same week produces the same digest (idempotent)"
-    status: failed
-    reason: "delete_clusters_for_week removes story_clusters while cluster_summaries and cluster_ranks still reference old cluster_id values; second run_all raises sqlite3.IntegrityError at dedup"
-    artifacts:
-      - path: store/db.py
-        issue: "delete_clusters_for_week (L410-421) does not delete cluster_summaries or cluster_ranks before DELETE FROM story_clusters"
-      - path: pipeline/dedup/cluster.py
-        issue: "run_dedup_for_week always calls delete_clusters_for_week before rebuild (L112)"
-    missing:
-      - "Add delete_cluster_artifacts_for_week deleting cluster_summaries, cluster_ranks, and weekly_rollups for week_id before cluster delete"
-      - "Integration test test_run_all_twice_same_week asserting no exception and stable briefing output"
-  - truth: "Rank/rollup checkpoints remain valid after dedup rebuild"
-    status: failed
-    reason: "_rank_week and _rollup_week skip when any week-level row exists without verifying rows JOIN current story_clusters; latent after CR-01 fix if ranks/rollups not cleared"
-    artifacts:
-      - path: pipeline/orchestrator.py
-        issue: "_rank_week L596-599 skip on get_ranks_for_week count; _rollup_week L772-777 L823-825 skip on get_rollup existence"
-    missing:
-      - "Delete rank/rollup rows on dedup rebuild (same helper as CR-01) and/or ranks_cover_current_clusters integrity check before skip"
-score: 2/5 must-haves verified (2 human-deferred)
-overrides_applied: 0
+requirements_passed: 10
+requirements_failed: 0
 human_verification:
   - test: "Open out/digest-{week_id}.html from a live run_all with real sources and GEMINI_API_KEY; skim start to finish"
     expected: "Coherent weekly narrative, Top N briefing, category sections, and attributions readable in ~15 minutes; Core Value hypothesis feels testable"
@@ -40,184 +28,160 @@ human_verification:
 # Phase 3: AI Quality Verification Report
 
 **Phase Goal:** Transform a chronological item list into a curated weekly briefing — deduped story clusters, categorized tabs-ready items, ranked Top N, narrative roll-up, and bounded LLM spend  
-**Verified:** 2026-05-22T20:30:00Z  
-**Status:** gaps_found  
+**Verified:** 2026-05-23T12:25:00Z  
+**Status:** human_needed  
+**Re-verification:** Yes — after gap-closure plans 03-06 through 03-10  
 **Mode:** mvp
 
 ## Executive Summary
 
-Phase 3 delivers the full pipeline architecture on the **first** `run_all` pass: Tier 0/1 dedup, canonical-only summarize, LLM categorize/rank/rollup, Briefing renderer, WeekBudget governance, and `pipeline_report.json`. Automated tests (139 passed) cover dedup, categorization, ranking, rollup rendering, budget halt, and partial summarize resume.
+Gap-closure execution resolved both merge blockers from the prior verification (CR-01 FK crash on same-week re-run; CR-02 stale rank/rollup skip gates). Warning items WR-01, WR-02, and WR-03 are also closed in code with targeted tests. All 10 phase requirement IDs trace to passing implementation evidence. Full pytest suite passes (154 tests, verifier-run).
 
-**Merge blocker:** A second `run_all` for the same ISO week crashes with `IntegrityError: FOREIGN KEY constraint failed` during dedup rebuild (CR-01, independently reproduced). This breaks PIPELINE-05/06 for the normal GHA/cron re-run path. Rank/rollup stage checkpoints use week-level row-exists skips that would serve stale data if dedup invalidation were partial (CR-02).
+**Remaining gate:** ROADMAP SC5 (15-minute human skim / Core Value hypothesis) requires live-source UAT — unchanged from prior report.
 
-## Goal-Backward Analysis (ROADMAP Success Criteria)
+## Goal Achievement
 
-### SC1 — Near-duplicate stories collapse into one card with "also covered by" attributions
+### Observable Truths (ROADMAP Success Criteria)
 
-**Verdict: PASS**
+| # | Truth | Status | Evidence |
+|---|-------|--------|----------|
+| 1 | Near-duplicate stories collapse into one card with "also covered by" attributions | ✓ VERIFIED | `pipeline/dedup/url.py`, `title_fuzzy.py`, `cluster.py`; `tests/dedup/`, `tests/test_render_dedup_attribution.py` |
+| 2 | Each story categorized, ranked; digest opens with weekly narrative + numbered Top N | ✓ VERIFIED | `pipeline/llm/categorize.py`, `rank.py`, `rollup.py`; `pipeline/render/html.py`; `tests/test_render_briefing.py`, `tests/test_render_rollup.py` |
+| 3 | Re-running pipeline twice same week is idempotent; crash resume does not re-bill summarized items | ✓ VERIFIED | CR-01/CR-02 fixes below; `tests/test_run_all_twice_same_week.py`; `tests/test_cli_phase3.py::test_partial_summarize_resume_skips_completed` |
+| 4 | Structured `pipeline_report.json` per run; LLM spend within $2/week hard stop | ✓ VERIFIED | `pipeline/reporting/pipeline_report.py`; `pipeline/budget.py`; WR-03 per-stage costs; `tests/reporting/`, `tests/budget/` |
+| 5 | Human can skim full digest in ~15 minutes; Core Value hypothesis testable | ? HUMAN NEEDED | Renderer structure present; narrative quality requires live run |
 
-| Evidence | Location |
-|----------|----------|
-| URL canonicalization strips `utm_*` and tracking params | `pipeline/dedup/url.py` L8-34, L49-80 |
-| RapidFuzz `token_set_ratio` at threshold 0.85 | `pipeline/dedup/title_fuzzy.py` L21-32; `config/digest.yaml` L4-5 |
-| Union-find clustering + canonical pick (longest content) | `pipeline/dedup/cluster.py` L76-138 |
-| Dedup before summarize; non-canonical members skip LLM | `pipeline/orchestrator.py` L323-335, L336-352; `tests/test_pipeline_dedup_order.py` |
-| "Also covered by" attribution on clustered cards | `pipeline/render/html.py` L50; `tests/test_render_dedup_attribution.py` |
-| Cluster integration | `tests/dedup/test_cluster.py` |
+**Score:** 4/5 must-haves verified (1 human-deferred)
 
-Briefing Top N will not fill with duplicate launch variants when dedup runs successfully on the first pass.
+## Previously Failed Must-Haves — Resolution Evidence
 
-### SC2 — Each story categorized into one topic, ranked; digest opens with weekly narrative + numbered Top N
+### CR-01 / IN-01 — Same-week `run_all` IntegrityError (PIPELINE-05)
 
-**Verdict: PASS** (first-run path)
+**Prior failure:** `delete_clusters_for_week` removed `story_clusters` while `cluster_summaries` / `cluster_ranks` still referenced deleted cluster IDs.
 
-| Evidence | Location |
-|----------|----------|
-| Exactly one category enum per cluster in `cluster_summaries` | `store/migrations/004_*.sql` L29-31; `pipeline/llm/categorize.py` |
-| Global rank positions persisted | `pipeline/llm/rank.py`; `store/db.py` `insert_cluster_ranks_batch` |
-| Weekly synthesis precedes Briefing section | `pipeline/render/html.py` L628-636; `tests/test_render_rollup.py::test_weekly_synthesis_precedes_briefing` |
-| Numbered "Briefing — Top 5 this week" | `tests/test_render_briefing.py::test_briefing_section_top_five_from_ten_ranked_clusters` |
-| Category sections with Title Case labels | `tests/test_render_categories.py` |
-| `top_n_briefing: 5` configurable | `config/digest.yaml` L2; CLI `--top-n` in `tests/test_cli_phase3.py` |
+**Resolution (Plan 03-06):**
 
-Renderer reads DB only for rank/rollup (PIPELINE-05 render idempotency verified in `tests/test_cli_phase3.py::test_double_render_produces_identical_html`).
+```426:449:store/db.py
+def delete_cluster_artifacts_for_week(conn: sqlite3.Connection, week_id: str) -> None:
+    """Remove rank/summary/rollup rows for ``week_id`` before cluster delete.
+    ...
+    """
+    conn.execute("DELETE FROM cluster_ranks WHERE week_id = ?", (week_id,))
+    conn.execute("DELETE FROM cluster_summaries WHERE week_id = ?", (week_id,))
+    conn.execute("DELETE FROM weekly_rollups WHERE week_id = ?", (week_id,))
 
-### SC3 — Same-week re-run idempotent; crash resume does not re-bill summarized items
 
-**Verdict: FAIL**
-
-| Sub-requirement | Status | Evidence |
-|-----------------|--------|----------|
-| Summarize checkpoint skips existing rows | PASS | `pipeline/orchestrator.py` L336-352; `tests/test_cli_phase3.py::test_partial_summarize_resume_skips_completed` |
-| Dedup deterministic rebuild | PASS (single run) | `tests/dedup/test_cluster.py`; dedup is LLM-free |
-| **Second `run_all` same week** | **FAIL** | Reproduced: first run OK, second run `IntegrityError` at `store/db.py:421` |
-| Rank/rollup checkpoint integrity after rebuild | **FAIL (latent)** | `_rank_week` L596-599 skips on any `cluster_ranks` row; `_rollup_week` L772-777 skips on existing rollup without cluster-set validation |
-
-**CR-01 reproduction (verifier-run, mocked LLM):**
-
-```
-First run: OK  (clusters=1 cluster_summaries=1 cluster_ranks=1)
-Second run: IntegrityError: FOREIGN KEY constraint failed
-  at delete_clusters_for_week → DELETE FROM story_clusters
+def delete_clusters_for_week(conn: sqlite3.Connection, week_id: str) -> None:
+    """Remove all cluster rows for ``week_id`` before a deterministic rebuild."""
+    delete_cluster_artifacts_for_week(conn, week_id)
+    ...
 ```
 
-Root cause: `delete_clusters_for_week` (`store/db.py:410-421`) deletes `cluster_members` and `story_clusters` but leaves `cluster_summaries` and `cluster_ranks` referencing deleted cluster IDs. FK enforcement (`PRAGMA foreign_keys = ON`) blocks the delete.
+**Tests:**
 
-**CR-02:** Code review finding confirmed in source — rank skip uses `if existing:` on week-level count (`orchestrator.py:596-599`), not a JOIN against live `story_clusters`. Even attempting manual cluster delete with stale rank rows triggers FK failure, demonstrating coupled artifact invalidation is required.
+- `tests/dedup/test_cluster.py::test_delete_clusters_for_week_clears_artifact_tables` — all four artifact tables empty after delete
+- `tests/test_run_all_twice_same_week.py::test_run_all_twice_same_week_no_integrity_error` — two consecutive `run_all` calls succeed; digest contains `Briefing — Top`; `pipeline_report.json` written
 
-### SC4 — Structured `pipeline_report.json` per run; LLM spend within $2/week with hard stop
+### CR-02 — Stale rank/rollup checkpoint skip
 
-**Verdict: PARTIAL FAIL**
+**Prior failure:** `_rank_week` / `_rollup_week` skipped on week-level row existence without validating ranks JOIN current `story_clusters`.
 
-| Sub-requirement | Status | Evidence |
-|-----------------|--------|----------|
-| Report written each successful run | PASS | `pipeline/reporting/pipeline_report.py`; `tests/reporting/test_pipeline_report_schema.py` |
-| Schema v1 with stages, budget, source_health | PASS | `build_pipeline_report` L204-242; test asserts `schema_version == 1`, `budget.cap_usd == 2.0` |
-| Hard stop $2/week configurable | PASS | `config/digest.yaml` L7-9; `WeekBudget` in `pipeline/budget.py`; `tests/budget/test_budget_halt.py` |
-| Meta reservation + partial publish | PASS | `pipeline/budget.py` L51-106; budget halt test |
-| **Report on re-run** | **FAIL** | Second `run_all` crashes before `_finalize` / `write_pipeline_report` |
-| Summarize stage cost attribution | WARNING | `pipeline_report.py` L227-229: `cost_usd_estimate - rollup_cost_usd` includes categorize+rank spend (WR-03) |
+**Resolution (Plan 03-07):**
 
-Pre-flight baseline uses current week not prior week (`budget.py:109-122`, WR-02) — accuracy gap, not a blocker for cap enforcement.
+```624:630:pipeline/orchestrator.py
+    existing = get_ranks_for_week(conn, week_id, PROMPT_VERSION)
+    if existing:
+        if ranks_cover_current_clusters(conn, week_id, PROMPT_VERSION):
+            log.info("rank.skip_existing", count=len(existing))
+            return
+        log.info("rank.stale_checkpoint", count=len(existing))
+        delete_ranks_for_week(conn, week_id, PROMPT_VERSION)
+```
 
-### SC5 — Human reader can skim full digest in ~15 minutes; Core Value hypothesis testable
+```652:687:store/db.py
+def ranks_cover_current_clusters(
+    conn: sqlite3.Connection,
+    week_id: str,
+    prompt_version: str = "rank_v1",
+) -> bool:
+    ...
+```
 
-**Verdict: HUMAN NEEDED**
+Rollup category and weekly skip paths gate on `ranks_cover_current_clusters` and delete stale rollup rows before re-run (`orchestrator.py` L806-819, L865-876).
 
-Implementation provides weekly synthesis, Top N briefing, and category sections in plain HTML. Narrative quality, pacing, and skim-time are subjective and require a human with live sources + `GEMINI_API_KEY`.
+**Tests:** `tests/test_rank_rollup_checkpoint_integrity.py` (5 tests) — orphan rank rows force rank re-run and weekly rollup re-run.
+
+### WR-01 — `title_changed` cascade wiring
+
+**Resolution (Plan 03-08):** Ingest and catch-up pass `old_title` / `new_title` into `_apply_cascade_for_item`; `title_changed` computed via `normalize_title` comparison (`orchestrator.py` L247-279, L1164-1174).
+
+**Test:** `tests/test_cascade_wiring.py::test_apply_cascade_title_only_deletes_summary`
+
+### WR-02 — Pre-flight baseline uses prior ISO week
+
+**Resolution (Plan 03-09):** `baseline_per_item_from_runs` queries `prior_week_id(week_id)` (`pipeline/budget.py` L110-136; `pipeline/week.py` `prior_week_id`).
+
+**Tests:** `tests/budget/test_baseline_prior_week.py` (year boundary + prior-week ratio + fallback)
+
+### WR-03 — Per-stage cost attribution in pipeline report
+
+**Resolution (Plan 03-10):** `RunStats` fields `summarize_cost_usd`, `categorize_cost_usd`, `rank_cost_usd`; `build_pipeline_report` projects them authoritatively (`pipeline/orchestrator.py` L99-102; `pipeline/reporting/pipeline_report.py` L222-238).
+
+**Test:** `tests/reporting/test_pipeline_report_schema.py::test_stage_summarize_cost_excludes_categorize_and_rank`
 
 ## Requirement Traceability
 
 | Requirement | Description | Status | Code / Test Evidence |
 |-------------|-------------|--------|----------------------|
 | **DEDUP-01** | URL canonicalization before dedup | PASS | `pipeline/dedup/url.py`; `tests/dedup/test_url_canonical.py` |
-| **DEDUP-02** | Title fuzzy clustering via RapidFuzz | PASS | `pipeline/dedup/title_fuzzy.py`; `tests/dedup/test_title_fuzzy.py`, `test_cluster.py::test_fuzzy_title_merge` |
-| **DEDUP-03** | Cluster preserves all source attributions | PASS | `cluster_members` DDL; `get_cluster_members`; `tests/test_render_dedup_attribution.py` |
-| **DEDUP-04** | Dedup before LLM summarize | PASS | `run_all` stage order; `tests/test_pipeline_dedup_order.py`, `test_non_canonical_member_skips_summary_row` |
-| **PIPELINE-02** | LLM categorize into one of four topics | PASS | `pipeline/llm/categorize.py`; `tests/test_categorize.py`, `tests/llm/test_categorize_golden.py` |
+| **DEDUP-02** | Title fuzzy clustering via RapidFuzz | PASS | `pipeline/dedup/title_fuzzy.py`; `tests/dedup/test_title_fuzzy.py`, `test_cluster.py` |
+| **DEDUP-03** | Cluster preserves all source attributions | PASS | migration 004 DDL; `get_cluster_members`; `tests/test_render_dedup_attribution.py` |
+| **DEDUP-04** | Dedup before LLM summarize | PASS | `run_all` stage order; `tests/test_pipeline_dedup_order.py` |
+| **PIPELINE-02** | LLM categorize into four topics | PASS | `pipeline/llm/categorize.py`; `tests/test_categorize.py`, `tests/llm/test_categorize_golden.py` |
 | **PIPELINE-03** | Rank and select Top N for Briefing | PASS | `pipeline/llm/rank.py`; `tests/test_rank.py`, `tests/test_render_briefing.py` |
 | **PIPELINE-04** | Weekly narrative roll-up | PASS | `pipeline/llm/rollup.py`; `tests/test_rollup.py`, `tests/test_render_rollup.py` |
-| **PIPELINE-05** | Pipeline idempotent on re-run | **FAIL** | Render-only idempotency passes; full `run_all` twice crashes (CR-01). No `test_run_all_twice_same_week` |
-| **PIPELINE-06** | Crash-safe checkpointing | **FAIL** | Summarize resume PASS; full pipeline re-run FAIL at dedup; rank/rollup stale-skip risk (CR-02) |
-| **OBS-02** | Structured run report with cost/errors | PARTIAL | Report schema PASS; per-stage summarize cost misattributed (WR-03); re-run cannot complete |
+| **PIPELINE-05** | Pipeline idempotent on re-run | PASS | `tests/test_run_all_twice_same_week.py`; `tests/test_cli_phase3.py::test_double_render_produces_identical_html` |
+| **PIPELINE-06** | Crash-safe checkpointing | PASS | Summarize item skip; rank/rollup integrity gates; partial resume in `tests/test_cli_phase3.py` |
+| **OBS-02** | Structured run report with cost/errors | PASS | `pipeline/reporting/pipeline_report.py`; per-stage costs; `tests/reporting/test_pipeline_report_schema.py` |
 
-## Gaps (Closure Plan)
+**Requirements score:** 10/10 satisfied
 
-1. **CR-01 — FK crash on second weekly run** (Critical)  
-   - **Missing:** `delete_cluster_artifacts_for_week` deleting `cluster_summaries`, `cluster_ranks`, and `weekly_rollups` before `story_clusters`.  
-   - **Files:** `store/db.py`, call from `pipeline/dedup/cluster.py` or `delete_clusters_for_week`.  
-   - **Test:** `tests/test_run_all_twice_same_week.py` — mock LLM, run `run_all` twice, assert no exception and briefing section present.
+## Key Link Verification
 
-2. **CR-02 — Stale rank/rollup checkpoints** (Critical, defense-in-depth)  
-   - **Missing:** Cluster-set integrity check before rank/rollup skip, or artifact deletion bundled with dedup rebuild.  
-   - **Files:** `pipeline/orchestrator.py` (`_rank_week`, `_rollup_week`).
+| From | To | Via | Status |
+|------|-----|-----|--------|
+| `pipeline/dedup/cluster.py` | `store/db.py` | `delete_clusters_for_week` → `delete_cluster_artifacts_for_week` first | ✓ WIRED |
+| `pipeline/orchestrator.py` | `store/db.py` | `ranks_cover_current_clusters` before rank/rollup skip | ✓ WIRED |
+| `pipeline/orchestrator.py` | `pipeline/cascade.py` | `title_changed` from ingest title comparison | ✓ WIRED |
+| `pipeline/budget.py` | `pipeline/week.py` | `prior_week_id` in baseline lookup | ✓ WIRED |
+| `pipeline/reporting/pipeline_report.py` | `RunStats` | `stats.summarize_cost_usd` (not total − rollup) | ✓ WIRED |
 
-3. **WR-03 — pipeline_report summarize cost misattribution** (Warning)  
-   - **Missing:** Track per-stage costs on `RunStats` or derive summarize cost from `item_summaries` aggregate.  
-   - **Files:** `pipeline/reporting/pipeline_report.py`, `pipeline/orchestrator.py`.
+## Behavioral Spot-Checks
 
-4. **WR-01 — Cascade title_changed never wired** (Warning)  
-   - **Missing:** Compare normalized titles on ingest; pass `title_changed=True` to `plan_invalidation`.  
-   - **Files:** `pipeline/orchestrator.py` `_apply_cascade_for_item` L1115.
+| Behavior | Command | Result | Status |
+|----------|---------|--------|--------|
+| Same-week double run_all | `uv run pytest tests/test_run_all_twice_same_week.py -q` | exit 0 | ✓ PASS |
+| Rank/rollup stale checkpoint | `uv run pytest tests/test_rank_rollup_checkpoint_integrity.py -q` | exit 0 | ✓ PASS |
+| WR-03 stage costs | `uv run pytest tests/reporting/test_pipeline_report_schema.py::test_stage_summarize_cost_excludes_categorize_and_rank -q` | exit 0 | ✓ PASS |
+| Full regression | `uv run pytest -q --tb=no` | 154 passed | ✓ PASS |
 
-5. **WR-02 — Pre-flight baseline uses current week** (Warning)  
-   - **Files:** `pipeline/budget.py` `baseline_per_item_from_runs`.
+## Anti-Patterns Scan
 
-6. **IN-01 — No integration test for same-week re-run** (Info)  
-   - Would have caught CR-01.
+No `TBD` / `FIXME` / `XXX` markers in gap-closure modified files (`store/db.py`, `pipeline/orchestrator.py`, `pipeline/budget.py`, `pipeline/reporting/pipeline_report.py`, `pipeline/week.py`). No stub handlers or hardcoded empty render paths found in verified artifacts.
 
-## Human Verification Items
+## Human Verification Required
 
 1. **15-minute skim test** — Run `uv run python -m pipeline.run all --week {current}` with live feeds and `GEMINI_API_KEY`. Open `out/digest-{week}.html`. Confirm weekly narrative + Top N + categories tell a coherent "what happened in AI this week" story within ~15 minutes.
 
-2. **Visual Briefing quality** — Confirm Top N items are genuinely distinct stories (not near-duplicates that dedup missed) and ranked by perceived importance.
+2. **Visual Briefing quality** — Confirm Top N items are genuinely distinct stories and ranked by perceived importance.
 
 3. **Budget behavior under real volume** — After a full week of 8 sources, confirm total cost in `out/pipeline_report.json` stays under `$2.00` and partial-publish notice appears if cap hit mid-run.
 
-## Test Evidence
-
-```
-uv run pytest -v --tb=no
-======================== 139 passed in 87.96s ========================
-```
-
-Phase 3-specific coverage includes:
-
-- Dedup: `tests/dedup/` (5 files), `tests/test_pipeline_dedup_order.py`
-- Categorize: `tests/test_categorize.py`, `tests/llm/test_categorize_golden.py`
-- Rank: `tests/test_rank.py`, `tests/llm/test_rank_determinism.py`
-- Rollup: `tests/test_rollup.py`, `tests/test_render_rollup.py`
-- Briefing: `tests/test_render_briefing.py`
-- Budget: `tests/budget/test_budget_halt.py`
-- Report: `tests/reporting/test_pipeline_report_schema.py`
-- CLI/idempotency (partial): `tests/test_cli_phase3.py`
-- LOCKED-01 regression: `tests/render/test_partition_cards_phase3.py`
-
-**Gap in test suite:** No test exercises consecutive `run_all` for the same `week_id` through dedup → rank → render (CR-01).
-
-## CONTEXT.md Decision Honor Check
-
-| Decision | Honored? | Notes |
-|----------|----------|-------|
-| Dedup before summarize (D-67) | Yes | Orchestrator stage order verified |
-| Hierarchical rollup 4+1 calls (D-55) | Yes | `_rollup_week` category loop + weekly |
-| $2 hard stop + $0.10 meta reservation (D-59/D-60) | Yes | `config/digest.yaml`, `WeekBudget` |
-| Briefing Top N at top of main (DISPLAY-03) | Yes | Renderer + tests |
-| LOCKED-01 footer routing unchanged | Yes | `test_partition_cards_phase3.py` |
-| Same-week idempotent re-run (PIPELINE-05) | **No** | CR-01 |
-
 ## Recommendation
 
-**Do not treat Phase 3 as complete until CR-01 and CR-02 are fixed and covered by an integration test.** First-run functionality is solid; the re-run path used by cron/GHA is broken.
-
-Suggested fix order (matches `03-REVIEW.md`):
-
-1. `delete_cluster_artifacts_for_week` + call before cluster rebuild  
-2. Harden rank/rollup skip checks (cluster coverage fingerprint)  
-3. Add `test_run_all_twice_same_week`  
-4. Fix pipeline_report stage cost attribution before Phase 4 OBS-01 consumption
+**Automated verification passes.** Phase 3 code meets all ROADMAP success criteria except SC5 (subjective reader experience). Proceed to Phase 4 after human UAT on a live digest, or accept SC5 deferral per project workflow.
 
 ---
 
-_Verified: 2026-05-22T20:30:00Z_  
+_Verified: 2026-05-23T12:25:00Z_  
 _Verifier: Claude (gsd-verifier)_
