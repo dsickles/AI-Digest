@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "week_id": "2026-W21",
+  "generated_at": "2026-05-23T22:53:33Z",
+  "run_id": "ce32c970a20d488db3bee9b6db784a6a",
+  "status": "success",
+  "items_ingested": 0,
+  "clusters": 26,
+  "llm_calls": 0,
+  "cost_usd": 0.0,
+  "errors": [],
+  "summary_status": {
+    "ok": 24,
+    "thin": 5,
+    "quota_exhausted": 3,
+    "api_error": 0,
+    "parse_error": 0,
+    "client_init_error": 0
+  },
+  "stages": {
+    "ingest": {
+      "items": 0
+    },
+    "dedup": {
+      "clusters_created": 0,
+      "items_clustered": 0
+    },
+    "summarize": {
+      "llm_calls": 0,
+      "cost_usd": 0.0,
+      "summaries_written": 0,
+      "items_degraded": 0
+    },
+    "categorize": {
+      "llm_calls": 0,
+      "cost_usd": 0.0,
+      "distribution": {
+        "edtech": 0,
+        "business": 13,
+        "technical": 13,
+        "fallback_source_tag": 0
+      }
+    },
+    "rank": {
+      "llm_calls": 0,
+      "cost_usd": 0.0
+    },
+    "rollup": {
+      "mini_rollups": 2,
+      "weekly": true,
+      "llm_calls": 0,
+      "cost_usd": 0.0
+    }
+  },
+  "source_health": {
+    "simon-willison": {
+      "last_success_at": "2026-05-23T13:35:55Z",
+      "last_error_category": null,
+      "items_this_week": 17,
+      "clusters_canonical_this_week": 11
+    },
+    "one-useful-thing": {
+      "last_success_at": "2026-05-23T13:35:55Z",
+      "last_error_category": null,
+      "items_this_week": 0,
+      "clusters_canonical_this_week": 0
+    },
+    "import-ai": {
+      "last_success_at": "2026-05-23T13:35:55Z",
+      "last_error_category": null,
+      "items_this_week": 1,
+      "clusters_canonical_this_week": 1
+    },
+    "where-your-ed-at": {
+      "last_success_at": "2026-05-23T13:35:56Z",
+      "last_error_category": null,
+      "items_this_week": 4,
+      "clusters_canonical_this_week": 4
+    },
+    "bensbites": {
+      "last_success_at": "2026-05-23T13:35:56Z",
+      "last_error_category": null,
+      "items_this_week": 2,
+      "clusters_canonical_this_week": 2
+    },
+    "last-week-in-ai": {
+      "last_success_at": "2026-05-23T13:35:56Z",
+      "last_error_category": null,
+      "items_this_week": 1,
+      "clusters_canonical_this_week": 1
+    },
+    "how-i-ai": {
+      "last_success_at": "2026-05-23T13:36:01Z",
+      "last_error_category": null,
+      "items_this_week": 2,
+      "clusters_canonical_this_week": 2
+    },
+    "nate-b-jones": {
+      "last_success_at": "2026-05-23T13:36:07Z",
+      "last_error_category": null,
+      "items_this_week": 5,
+      "clusters_canonical_this_week": 5
+    }
+  },
+  "budget": {
+    "cap_usd": 2.0,
+    "reserved_meta_usd": 0.1,
+    "spent_usd": 0.0,
+    "pre_flight_estimate_usd": 0.0,
+    "halted": false,
+    "halted_at_stage": null
+  }
+}
