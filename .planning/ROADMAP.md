@@ -108,7 +108,7 @@ Plans:
   4. A structured `pipeline_report.json` accompanies each run (items ingested, deduped, LLM calls, cost USD, errors) and LLM spend stays within the $2/week target with a configurable hard stop
   5. The human reader can skim the full digest in ~15 minutes and get a coherent sense of "what happened in AI this week" — the Core Value hypothesis is testable
 
-**Plans:** 5/5 plans complete
+**Plans:** 10 plans (5 shipped + 5 gap closure)
 
 Plans:
 **Wave 1**
@@ -130,6 +130,25 @@ Plans:
 **Wave 5** *(blocked on Wave 4 completion)*
 
 - [x] 03-05-PLAN.md — Cost governance + pipeline_report.json + cascade + CLI flags (OBS-02, PIPELINE-05/06)
+
+**Gap closure** *(verification gaps CR-01..CR-02, WR-01..WR-03, IN-01)*
+
+**Wave 1** *(parallel — no file overlap)*
+
+- [ ] 03-06-PLAN.md — FK-safe cluster artifact delete + run_all twice integration test (PIPELINE-05/06 → CR-01, IN-01)
+- [ ] 03-09-PLAN.md — Prior-week pre-flight baseline (PIPELINE-05 → WR-02)
+
+**Wave 2** *(blocked on 03-06)*
+
+- [ ] 03-08-PLAN.md — Wire cascade title_changed on ingest (PIPELINE-06 → WR-01)
+
+**Wave 3** *(blocked on 03-08)*
+
+- [ ] 03-10-PLAN.md — Per-stage cost attribution in pipeline_report.json (OBS-02 → WR-03)
+
+**Wave 4** *(blocked on 03-06, 03-08, 03-10)*
+
+- [ ] 03-07-PLAN.md — Rank/rollup checkpoint integrity guards (PIPELINE-05/06 → CR-02)
 
 **Notes:** Primary mitigation phase for Risk Top-5 items #1 (under-dedup), #2 (runaway LLM costs — pre-flight budget, dedup-before-summarize, tiered models, $5/week hard cap), #4 (hallucinated summaries — grounding prompts, confidence flags, hierarchical roll-up per PITFALLS #14). Prompts versioned in files with `prompt_version` in digest metadata (PITFALLS #13).
 
@@ -179,7 +198,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation + First Digest | 5/5 | Complete | 2026-05-21 |
 | 2. Expand Ingestion | 4/4 | Complete | 2026-05-22 |
-| 3. AI Quality | 5/5 | Complete   | 2026-05-22 |
+| 3. AI Quality | 5/10 | Gap closure | 2026-05-22 |
 | 4. Dashboard + Archive | 0/TBD | Not started | - |
 | 5. Ops & Automation | 0/TBD | Not started | - |
 
