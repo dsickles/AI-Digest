@@ -1,24 +1,36 @@
 """Plain-HTML weekly digest renderer.
 
-PROJECT.md **LOCKED** directive (2026-05-22): items the pipeline could not
-turn into a real TL;DR fall into two buckets:
+PROJECT.md **LOCKED** directive (2026-05-22, refined 2026-05-23): the only
+items that route to the ``<aside id="also-seen">`` footer are those whose
+RSS body is genuinely too short to summarize (``summary_status='thin'``).
+Everything else either renders normally or as an in-place degraded card in
+the main feed.
 
-1. **Content-thin / unsummarizable** — RSS body too short, YouTube transcript
-   missing/pending, content_too_thin gate, enrichment failure, parse error,
-   etc. These go to the ``<aside id="also-seen">`` footer as outbound links
-   only. They do **not** appear in the main feed. This is non-negotiable.
+Routing table:
 
-2. **Transient LLM-call failure** — the only carve-out. When the summary
-   could not be generated because the LLM call itself failed for a
-   transient reason (rate-limit / quota exhausted / ``RESOURCE_EXHAUSTED``
-   / HTTP 429), the item DOES appear in the main feed as an in-place card
-   with "summary couldn't be generated this week" body copy. These items
-   had enough content to summarize and the next run is likely to succeed.
+1. ``summary_status='ok'`` (or any card with a real ``tldr``) → main feed,
+   full card.
 
-This rule supersedes Phase 1 D-05 (footer-link style) and Phase 2 D-25
-(in-place degradation). Plan 01-03 inline-regressed on it once (reverted
-5f8e9f0) and Plan 02-03 attempted to override it; this module is now the
-single source of truth and must not be loosened by phase-level plans.
+2. ``summary_status='thin'`` (RSS body too short to summarize) → footer
+   ``<aside id="also-seen">`` as outbound link only. This is the SOLE
+   footer category.
+
+3. Everything else (``quota_exhausted``, ``api_error``, ``parse_error``,
+   ``client_init_error``, ``transcript_missing``) → main feed, in-place
+   degraded card with the locked body copy
+   ``"The summary couldn't be generated this week."``
+
+The 2026-05-23 refinement narrowed the footer from "anything we couldn't
+summarize" to "RSS body too short only". User feedback on the prior week's
+visual UAT was that long-form videos with successfully fetched transcripts
+that hit quota during summarize were being mis-classified as "didn't have
+enough content" because they ended up next to genuinely-thin RSS stubs.
+
+This rule supersedes Phase 1 D-05 (footer-link style), Phase 2 D-25
+(in-place degradation), and the original 2026-05-22 lock. Plan 01-03
+inline-regressed once (reverted 5f8e9f0); Plan 02-03 attempted to override
+it; this module is now the single source of truth and must not be loosened
+by phase-level plans.
 
 D-26 adds a top-of-digest ``<p class="pipeline-notice">`` element placed
 directly under the ``Updated …`` timestamp. It is rendered only when there
@@ -68,10 +80,23 @@ PARTIAL_PUBLISH_COPY = (
 )
 
 # Summary-status values that warrant an in-place "couldn't be generated" card
-# instead of the footer aside. ``parse_error`` and ``api_error`` are bundled
-# with ``quota_exhausted`` because they all share the same UX shape: the
-# content was summarizable but the LLM round-trip failed transiently.
-_IN_PLACE_TRANSIENT_STATUSES = frozenset({"quota_exhausted"})
+# instead of the footer aside. Per LOCKED-01 (2026-05-23 refinement), the ONLY
+# status that routes to the footer is 'thin' (RSS body too short to summarize).
+# Everything else with a missing tldr renders in-place with the locked degraded
+# body copy. The reader doesn't need to know whether the LLM ran out of quota,
+# the API errored, the parser couldn't parse the response, the client failed
+# to init, or the YouTube transcript hadn't been fetched yet — the UX shape
+# is the same: "summary couldn't be generated this week, here's the title +
+# link, try again next run".
+_IN_PLACE_TRANSIENT_STATUSES = frozenset(
+    {
+        "quota_exhausted",
+        "api_error",
+        "parse_error",
+        "client_init_error",
+        "transcript_missing",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -313,16 +338,21 @@ def _is_healthy(card: DigestCard) -> bool:
 def _partition_cards(
     cards: list[DigestCard],
 ) -> tuple[list[DigestCard], list[DigestCard]]:
-    """Return ``(main_feed, also_seen)`` per the PROJECT.md LOCKED directive.
+    """Return ``(main_feed, also_seen)`` per the PROJECT.md LOCKED-01 directive.
 
     Main feed:
-      * Healthy cards (tldr present).
-      * Quota-exhausted cards (LLM call failed transiently, content was fine).
+      * Healthy cards (real ``tldr`` present).
+      * In-place degraded cards — ``summary_status`` is one of
+        {``quota_exhausted``, ``api_error``, ``parse_error``,
+        ``client_init_error``, ``transcript_missing``}. All render with the
+        locked "summary couldn't be generated this week" body.
 
-    Also-seen footer:
-      * Everything else — content too thin, transcript missing/pending,
-        parse error, api error, client init error, or a card with neither
-        a tldr nor a recognised transient ``summary_status``.
+    Also-seen footer (``<aside id="also-seen">``):
+      * ``summary_status='thin'`` only — RSS body too short to summarize.
+      * Cards with NULL ``summary_status`` AND no ``tldr`` (legacy rows
+        where we can't determine the cause) also fall back to footer; the
+        orchestrator's ``_infer_summary_status`` should normally prevent
+        this case for any modern row.
     """
     main_feed: list[DigestCard] = []
     also_seen: list[DigestCard] = []

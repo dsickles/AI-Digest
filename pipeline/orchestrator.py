@@ -940,22 +940,26 @@ def _infer_summary_status(
 
     Modern rows from plan 02-04+ carry a real ``summary_status`` and we
     return it as-is. Older rows have ``summary_status IS NULL``; we infer
-    a conservative status so the renderer can still route them correctly:
+    a status so the renderer routes them correctly per LOCKED-01:
 
-    * tldr present                                  → ``ok``
-    * transcript_status in {pending_local, missing} → ``thin`` (footer)
+    * tldr present                                  → ``ok`` (main feed)
+    * transcript_status in {pending_local, missing} → ``transcript_missing``
+                                                       (main feed, in-place
+                                                       degraded card)
     * summary_confidence == 'unavailable'           → ``thin`` (footer)
-    * fallback                                      → ``thin``
+    * fallback                                      → ``thin`` (footer)
 
-    Default to footer-bound when in doubt; the PROJECT.md LOCKED rule says
-    only the explicit ``quota_exhausted`` carve-out earns an in-place slot.
+    The 2026-05-23 LOCKED-01 refinement narrowed the footer to RSS-thin
+    only. YouTube items whose transcripts haven't fetched yet now route to
+    the in-place degraded bucket so the reader sees the title + link in
+    context with the rest of the week's items, not buried in the footer.
     """
     if persisted_status:
         return persisted_status
     if tldr and tldr.strip():
         return "ok"
     if transcript_status in {"pending_local", "missing"}:
-        return "thin"
+        return "transcript_missing"
     if summary_confidence == "unavailable":
         return "thin"
     return "thin"

@@ -1,22 +1,27 @@
-"""HTML renderer tests — PROJECT.md LOCKED footer-aside contract.
+"""HTML renderer tests — PROJECT.md LOCKED-01 footer-aside contract.
 
-The locked rule (2026-05-22): items the pipeline could not turn into a real
-TL;DR fall into two buckets:
+The locked rule (2026-05-22, refined 2026-05-23):
 
-* **Content-thin / unsummarizable** — RSS body too thin, YouTube transcript
-  missing/pending, parse error, api error, content_too_thin gate, etc.
-  → routed to the ``<aside id="also-seen">`` footer as outbound links only.
-* **Transient LLM-call failure (quota_exhausted)** — the only carve-out.
-  Item stays in the main feed as an in-place card with the
-  ``"The summary couldn't be generated this week."`` body copy.
+* **Footer (``<aside id="also-seen">``) — RSS-thin only.** A card routes
+  to the footer iff ``summary_status='thin'`` (RSS body too short).
+* **Main feed — everything else.** Healthy cards render as full cards;
+  the in-place degraded bucket (``quota_exhausted``, ``api_error``,
+  ``parse_error``, ``client_init_error``, ``transcript_missing``) renders
+  in-place with the locked body
+  ``"The summary couldn't be generated this week."``.
 
-Healthy cards (``summary_status='ok'`` with a real ``tldr``) render in-place
-in the main feed as before.
+The 2026-05-23 refinement narrowed the footer (previously held all
+"couldn't summarize" reasons) so that long-form videos with successful
+transcripts but failed summarize calls keep their context (publisher,
+video badge, date, category) instead of dropping into the link-only
+footer next to genuinely-thin RSS stubs.
 
 History (do not bring back):
 - Plan 01-03 inline-regressed the footer once; reverted 5f8e9f0.
 - Plan 02-03 D-25 tried to remove the footer again ("in-place degradation,
   no relegation") and was rejected during Phase 2 visual UAT.
+- 2026-05-22 lock briefly kept api_error / pending_local in the footer;
+  the 2026-05-23 Phase 3 visual UAT moved them to in-place degraded.
 """
 from __future__ import annotations
 
@@ -204,8 +209,10 @@ def test_thin_card_goes_to_footer_aside(tmp_path: Path) -> None:
     assert "Also seen this week" in aside
 
 
-def test_youtube_pending_local_goes_to_footer(tmp_path: Path) -> None:
-    """A YouTube card with no transcript and no TL;DR is footer-bound."""
+def test_youtube_pending_local_renders_in_place_degraded(tmp_path: Path) -> None:
+    """LOCKED-01 (2026-05-23 refinement): a YouTube card with a missing
+    transcript renders in-place with the locked degraded body, NOT in the
+    footer. Reader sees publisher + video badge + date in context."""
     out = render_digest(
         week_id="2026-W21",
         week_start=datetime(2026, 5, 18, tzinfo=UTC),
@@ -217,35 +224,45 @@ def test_youtube_pending_local_goes_to_footer(tmp_path: Path) -> None:
                 confidence="unavailable",
                 source_type="youtube",
                 transcript_status="pending_local",
-                summary_status="thin",
+                summary_status="transcript_missing",
             ),
         ],
         out_dir=tmp_path,
     )
     body = out.read_text(encoding="utf-8")
-    aside = re.search(r'<aside id="also-seen">(.*?)</aside>', body, re.DOTALL).group(1)
-    assert "Some video with no captions yet" in aside
+    main_block = re.search(r"<main>(.*?)</main>", body, re.DOTALL).group(1)
+    assert "Some video with no captions yet" in main_block
+    assert QUOTA_BODY_COPY in main_block
+    assert '<aside id="also-seen">' not in body
 
 
-def test_api_error_card_goes_to_footer(tmp_path: Path) -> None:
-    """Non-quota LLM failures (timeout, 5xx) are footer-bound — only the
-    explicit quota_exhausted carve-out earns an in-place slot."""
-    out = render_digest(
-        week_id="2026-W21",
-        week_start=datetime(2026, 5, 18, tzinfo=UTC),
-        week_end=datetime(2026, 5, 24, 23, 59, 59, tzinfo=UTC),
-        cards=[
-            _card(
-                title="API blew up",
-                tldr=None,
-                summary_status="api_error",
-            ),
-        ],
-        out_dir=tmp_path,
-    )
-    body = out.read_text(encoding="utf-8")
-    assert "API blew up" not in re.search(r"<main>(.*?)</main>", body, re.DOTALL).group(1)
-    assert "API blew up" in body
+def test_api_error_card_renders_in_place_degraded(tmp_path: Path) -> None:
+    """LOCKED-01 (2026-05-23 refinement): non-quota LLM failures
+    (api_error, parse_error, client_init_error) render in-place degraded.
+    Only `summary_status='thin'` routes to the footer."""
+    for status in ("api_error", "parse_error", "client_init_error"):
+        out = render_digest(
+            week_id="2026-W21",
+            week_start=datetime(2026, 5, 18, tzinfo=UTC),
+            week_end=datetime(2026, 5, 24, 23, 59, 59, tzinfo=UTC),
+            cards=[
+                _card(
+                    title=f"Failure {status}",
+                    tldr=None,
+                    summary_status=status,
+                ),
+            ],
+            out_dir=tmp_path,
+        )
+        body = out.read_text(encoding="utf-8")
+        main_block = re.search(r"<main>(.*?)</main>", body, re.DOTALL).group(1)
+        assert f"Failure {status}" in main_block, (
+            f"{status} must render in main feed (in-place degraded)"
+        )
+        assert QUOTA_BODY_COPY in main_block
+        assert '<aside id="also-seen">' not in body, (
+            f"{status} must not appear in footer aside"
+        )
 
 
 def test_footer_omitted_when_no_thin_items(tmp_path: Path) -> None:
