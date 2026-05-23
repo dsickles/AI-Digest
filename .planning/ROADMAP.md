@@ -166,7 +166,7 @@ Plans:
   4. Every past weekly digest is preserved as committed JSON, browseable via a "Past Weeks" archive index (newest first, one-line excerpt) with permalink pages that render the full digest as it appeared
   5. The site is readable on desktop and modern mobile without layout breakage — the Sunday-morning read experience matches the reference dashboard intent
 
-**Plans:** 3/6 plans executed
+**Plans:** 4/6 plans executed
 
 Plans:
 **Wave 1**
@@ -183,7 +183,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3)*
 
-- [ ] 04-04-PLAN.md — Static tab + archive routes, Card/Footer/PlayIcon components (DISPLAY-02, 04, 06, ARCHIVE-03)
+- [x] 04-04-PLAN.md — Static tab + archive routes, Card/Footer/PlayIcon components (DISPLAY-02, 04, 06, ARCHIVE-03)
 
 **Wave 5** *(blocked on Waves 2 + 4)*
 
@@ -236,7 +236,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Foundation + First Digest | 5/5 | Complete | 2026-05-21 |
 | 2. Expand Ingestion | 4/4 | Complete | 2026-05-22 |
 | 3. AI Quality | 5/10 | Gap closure | 2026-05-22 |
-| 4. Dashboard + Archive | 3/6 | In Progress|  |
+| 4. Dashboard + Archive | 4/6 | In Progress|  |
 | 5. Ops & Automation | 0/TBD | Not started | - |
 
 ---
