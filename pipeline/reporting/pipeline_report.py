@@ -224,17 +224,19 @@ def build_pipeline_report(
                 - stats.categorize_llm_calls
                 - stats.rank_llm_calls
                 - stats.rollup_llm_calls,
-                "cost_usd": round(
-                    stats.cost_usd_estimate - stats.rollup_cost_usd, 6
-                ),
+                "cost_usd": round(stats.summarize_cost_usd, 6),
                 "summaries_written": stats.summaries_written,
                 "items_degraded": stats.items_degraded,
             },
             "categorize": {
                 "llm_calls": stats.categorize_llm_calls,
+                "cost_usd": round(stats.categorize_cost_usd, 6),
                 "distribution": _categorize_distribution(conn, week_id),
             },
-            "rank": {"llm_calls": stats.rank_llm_calls},
+            "rank": {
+                "llm_calls": stats.rank_llm_calls,
+                "cost_usd": round(stats.rank_cost_usd, 6),
+            },
             "rollup": _rollup_stage_metrics(conn, week_id, stats),
         },
         "source_health": _source_health_snapshot(conn, week_id),
