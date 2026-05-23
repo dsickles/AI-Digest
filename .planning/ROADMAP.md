@@ -2,7 +2,7 @@
 
 ## Overview
 
-Ship a personal weekly AI digest in five vertical slices — each phase ends with a digest you can actually read, then thickens one layer of the stack. Phase 1 proves the ugly-but-working path (RSS → store → per-item LLM summary → plain HTML). Phases 2–3 widen sources and add dedup, categorization, ranking, and narrative roll-up with cost guardrails. Phase 4 replaces plain HTML with the dark Astro dashboard, full archive, and observability surfaced in the UI. Phase 5 wraps unattended weekly automation: GitHub Actions cron, Cloudflare Pages deploy, secrets hygiene, heartbeat, and hard LLM spend caps.
+Ship a personal weekly AI digest in five vertical slices — each phase ends with a digest you can actually read, then thickens one layer of the stack. Phase 1 proves the ugly-but-working path (RSS → store → per-item LLM summary → plain HTML). Phases 2–3 widen sources and add dedup, categorization, ranking, and narrative roll-up with cost guardrails. Phase 4 replaces plain HTML with the dark Astro dashboard, full archive, and observability surfaced in the UI. Phase 5 wraps unattended weekly automation on the user's always-on QNAP TS-464 NAS: scheduled containerized pipeline (residential IP avoids YouTube transcript blocking), auto-publish to a free off-network static host, secrets hygiene, heartbeat, failure-only notifications, and hard LLM spend caps.
 
 ## Phases
 
@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Expand Ingestion** - YouTube adapter, 8-source catalog, typed failure isolation, in-place degradation renderer, and residential transcript catch-up *(2026-05-22)*
 - [x] **Phase 3: AI Quality** - Dedup-before-LLM, categorization, ranking, weekly roll-up, checkpoints, and cost guardrails (completed 2026-05-22)
 - [ ] **Phase 4: Dashboard + Archive** - Dark Astro dashboard with tabs, full week archive, and pipeline notes in the UI
-- [ ] **Phase 5: Ops & Automation** - GHA weekly cron, auto-deploy, secrets, heartbeat, and hard LLM spend ceiling
+- [ ] **Phase 5: Ops & Automation** - QNAP-hosted weekly scheduled run, auto-publish to free static host, secrets, heartbeat, failure-only notifications, and hard LLM spend ceiling
 
 ## Phase Details
 
@@ -160,7 +160,7 @@ Plans:
 **Requirements:** DISPLAY-01, DISPLAY-02, DISPLAY-03, DISPLAY-04, DISPLAY-05, DISPLAY-06, DISPLAY-07, DISPLAY-08, ARCHIVE-01, ARCHIVE-02, ARCHIVE-03, ARCHIVE-04, OBS-01
 **Success Criteria** (what must be TRUE):
 
-  1. The live site is a dark-themed dashboard with header (project name, week date range, "Updated" timestamp) and tabbed navigation: Briefing + Edtech / Business / Technical / Design
+  1. The live site is a dark-themed dashboard with header (project name, week date range, "Updated" timestamp) and tabbed navigation: Briefing + Edtech / Business / Technical
   2. Briefing tab shows the weekly roll-up, numbered Top N stories, and a "Pipeline notes" section listing any sources that failed or were skipped this week
   3. Each story card displays title, TL;DR, publisher attribution(s), source link(s) opening in a new tab, publication date, and a visual hint for YouTube/video content
   4. Every past weekly digest is preserved as committed JSON, browseable via a "Past Weeks" archive index (newest first, one-line excerpt) with permalink pages that render the full digest as it appeared
@@ -173,21 +173,30 @@ Plans:
 
 ### Phase 5: Ops & Automation
 
-**Goal:** Unattended weekly runs with deploy, monitoring, and spend protection — the digest is ready Sunday morning without manual intervention
+**Goal:** Unattended weekly runs hosted on the user's QNAP TS-464 NAS with auto-publish, monitoring, and spend protection — the digest is ready Sunday morning without manual intervention or laptop dependency
 **Mode:** mvp
 **Depends on:** Phase 4
 **Requirements:** OPS-01, OPS-02, OPS-03, OPS-04, OPS-05, OBS-03
+**Runtime architecture (locked 2026-05-23, see PROJECT.md Blocking Dependencies):** Path 1 — full pipeline runs in a Docker container on the QNAP via Container Station; the QNAP's residential IP avoids YouTube transcript blocking; only the static HTML output is published to an off-network host. This replaces the original "GHA cron from cloud IPs" plan, which would have silently degraded every YouTube card forever.
 **Success Criteria** (what must be TRUE):
 
-  1. The pipeline runs on a GitHub Actions weekly cron schedule and can also be triggered manually via workflow_dispatch for testing or recovery
-  2. A successful run commits the new digest JSON, builds the Astro site, and auto-deploys to Cloudflare Pages — hosting stays on a free or near-free tier
-  3. API keys and newsletter bridge URLs live only in CI secrets / gitignored config — never in the repo or static site output (pre-commit or CI secret scan passes)
-  4. A heartbeat / "last successful run" timestamp is visible on the site; a missed week is obvious within 24 hours (dead-man's-switch ping on successful publish)
+  1. The pipeline runs on a QNAP-side scheduled container (Container Station + crontab) every Sunday morning AND on a daily transient-failure retry; manual trigger is also supported (`docker exec aidigest python -m pipeline.run all`)
+  2. A successful run renders the new digest HTML and auto-publishes it to a free off-network static host — reader can open the digest from anywhere without being on the home network
+  3. API keys (`GEMINI_API_KEY`, any publish-target token) live only in Container Station env vars on the QNAP — never in the repo, never in the static site output (pre-commit or container-build secret scan passes)
+  4. A heartbeat / "last successful run" timestamp is visible on the published site; failure-only notifications fire to the user (ntfy.sh / QuLog Center) when a Sunday window misses; a missed week is obvious within 24 hours
   5. If LLM spend hits the hard cap ($5/week), the pipeline halts remaining LLM work and still publishes whatever digest content is complete — partial success beats silence
+  6. Container auto-update story (Watchtower or scheduled image pull) means code changes ship to the QNAP without manual SSH — the "as passive as possible" requirement is mechanically enforced, not policy
 
-**Plans:** TBD
+**Phase 5 discuss decisions (open):**
 
-**Notes:** Primary mitigation for Risk Top-5 #3 (silent cron failure — post-conditions, heartbeat, failure notification) and #5 (secret leakage). GHA schedule slip (5–15 min) acceptable; overlap protection via lock file. Free-tier hosting on CF Pages + GHA (PITFALLS #23).
+- **Static-publish target:** Cloudflare Pages (default candidate — free, off-network, simple Wrangler CLI) vs. GitHub Pages (free but requires public repo at the free tier) vs. QNAP WebStation only (LAN-only — disqualified by criterion 2). Decided during `/gsd-discuss-phase 5`.
+- **Plan 02-04 catchup disposition:** Retire entirely (transcripts succeed first-pass under residential runtime) vs. repurpose as a transient-`youtube_transcript_api`-flake retry. Decided during `/gsd-discuss-phase 5` after a clean QNAP run cycle proves the first-pass success rate.
+- **DB location:** SQLite stays on a NAS share volume mounted into the container; no cloud DB. Confirmed in discuss.
+- **Container registry:** Docker Hub vs. GHCR. Both free for public images; pick during plan.
+
+**Plans:** TBD (decomposed during `/gsd-plan-phase 5`)
+
+**Notes:** Primary mitigation for Risk Top-5 #3 (silent cron failure — post-conditions, heartbeat, failure-only notification) and #5 (secret leakage). The QNAP runtime decision came from Phase 3 visual UAT: a cloud-deployed digest would silently fail every YouTube transcript fetch (PITFALLS #7, structural). RAM verification on the TS-464 is a phase prerequisite (4 GB minimum acceptable; 8 GB+ ideal — verify before plan). Container restart policy `unless-stopped` survives QTS reboots. Container Station env vars provide secret encryption at rest.
 
 ## Progress
 
@@ -204,5 +213,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 ---
 *Roadmap created: 2026-05-21*
-*Last updated: 2026-05-22 — Phase 2 complete; YouTube ingestion, typed failure isolation, in-place degradation renderer, and residential transcript catch-up all shipped; 68 pytest tests green*
+*Last updated: 2026-05-23 — Phase 3 visual UAT closed: LOCKED-01 refined to RSS-thin-only footer, design category cut from v1, Phase 5 runtime architecture locked to QNAP-hosted (residential IP avoids YouTube cloud blocking); 175 pytest tests green*
 *Mode: Vertical MVP — every phase ships a readable digest*
