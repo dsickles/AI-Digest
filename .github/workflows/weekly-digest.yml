@@ -1,0 +1,70 @@
+name: Weekly digest
+
+# Phase 5 plan 05-01: dispatch-only entry point. Sunday cron schedule
+# is added by plan 05-02 (D-B1). Object-storage sync, marker handoff,
+# and heartbeat pings are layered on by plans 05-02 / 05-05 / 05-06.
+
+on:
+  workflow_dispatch:
+    inputs:
+      week_id:
+        description: "ISO week id (YYYY-Www). Leave blank to resolve from the current week."
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-digest
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    name: Run pipeline and commit digest
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Install Python and project dependencies
+        run: uv sync --frozen
+
+      - name: Resolve digest week id
+        id: resolve_week
+        run: |
+          INPUT_WEEK="${{ inputs.week_id }}"
+          if [ -z "$INPUT_WEEK" ]; then
+            WEEK_ID="$(uv run python -c 'from pipeline.week import current_week_id; print(current_week_id())')"
+          else
+            WEEK_ID="$INPUT_WEEK"
+          fi
+          echo "Resolved digest week_id: $WEEK_ID"
+          echo "week_id=$WEEK_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Run pipeline (ingest → summarize → render)
+        run: uv run python -m pipeline.run all --week "${{ steps.resolve_week.outputs.week_id }}"
+
+      - name: Commit digest and report JSON
+        env:
+          WEEK_ID: ${{ steps.resolve_week.outputs.week_id }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add web/src/content/digests/ web/src/content/reports/ || true
+          if git diff --cached --quiet; then
+            echo "No digest changes to commit for $WEEK_ID."
+            exit 0
+          fi
+          git commit -m "chore(digest): manual weekly $WEEK_ID"
+          git push

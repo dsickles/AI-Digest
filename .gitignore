@@ -1,8 +1,12 @@
-# Secrets — never commit
+# Secrets — never commit (D-B8 layer 2)
 .env
+.env.local
+*.pem
+*.key
 
 # Working data (gitignored per ARCHITECTURE store-and-forward)
 data/
+data/*.db
 
 # Generated digest output (Phase 1 plain HTML; archive JSON moves to git in Phase 4)
 out/
