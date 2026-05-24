@@ -1,8 +1,8 @@
 ---
 phase: 04-dashboard-archive
-reviewed: 2026-05-23T23:30:00Z
+reviewed: 2026-05-23T20:05:00Z
 depth: standard
-files_reviewed: 42
+files_reviewed: 46
 files_reviewed_list:
   - pipeline/render/partition.py
   - pipeline/render/digest_json.py
@@ -47,18 +47,26 @@ files_reviewed_list:
   - .gitignore
 findings:
   critical: 0
-  warning: 4
+  warning: 3
   info: 3
-  total: 7
-status: major
+  total: 6
+status: issues_found
+wave_07_plan_04_07:
+  status: clean
+  commits: [98a5555, bd2aa81]
+  findings:
+    critical: 0
+    warning: 0
+    info: 0
+    total: 0
 ---
 
 # Phase 4: Code Review Report
 
-**Reviewed:** 2026-05-23T23:30:00Z  
+**Reviewed:** 2026-05-23T23:30:00Z (waves 1–6); 2026-05-23T20:05:00Z (wave 7 / plan 04-07)  
 **Depth:** standard  
-**Files Reviewed:** 42  
-**Status:** major
+**Files Reviewed:** 46 (42 prior + 4 in wave 7)  
+**Status:** issues_found (3 open warnings; WR-01 resolved in wave 7)
 
 ## Summary
 
@@ -169,3 +177,53 @@ export const QUOTA_BODY_COPY = "The summary couldn't be generated this week.";
 _Reviewed: 2026-05-23T23:30:00Z_  
 _Reviewer: Claude (gsd-code-reviewer)_  
 _Depth: standard_
+
+---
+
+## Wave 7 / Plan 04-07 review
+
+**Reviewed:** 2026-05-23T20:05:00Z  
+**Plan:** 04-07 (gap_closure, ARCHIVE-03 / WR-01)  
+**Commits:** `98a5555` (fix), `bd2aa81` (docs)  
+**Files reviewed:** `web/src/lib/canonicalUrl.ts`, `web/src/components/ArchiveList.astro`, `web/src/pages/index.astro`, `web/src/pages/[topic].astro`  
+**Status:** clean
+
+### Summary
+
+Plan 04-07 closes WR-01 with a minimal, web-only slug normalization: `canonicalDigestUrl` lowercases the week segment, archive hrefs use `digest.id`, and latest-week canonical tags pass `digest.id` instead of `data.week_id`. LOCKED-01 boundary verified — `pipeline/render/partition.py` and `pipeline/render/digest_json.py` were not modified in commits `98a5555` or `bd2aa81`. Build verification passes: archive hrefs are `/digest/2026-w21` and `/digest/2026-w19`; index and business canonical tags match existing `dist/digest/2026-w*/` paths with no uppercase `2026-W` segments.
+
+### LOCKED-01 boundary check
+
+| File | Touched by 04-07? |
+|------|-------------------|
+| `pipeline/render/partition.py` | No |
+| `pipeline/render/digest_json.py` | No |
+
+### Prior finding resolution
+
+**WR-01 — RESOLVED.** Archive "Read this week" links and latest-week `<link rel="canonical">` tags now derive slugs from `digest.id` (with `toLowerCase()` defense-in-depth in `canonicalDigestUrl`). Case-exact dist grep confirms parity with `getStaticPaths` output on case-sensitive hosts.
+
+### Critical Issues
+
+*(none)*
+
+### Warnings
+
+*(none introduced by plan 04-07)*
+
+### Info
+
+*(none introduced by plan 04-07)*
+
+### Positive Observations
+
+- Fix scope matches plan exactly — four web files, no partition or emitter edits.
+- Dual normalization (`digest.id` + `toLowerCase()`) protects against future callers passing uppercase `week_id`.
+- Unused `week_id` destructure removed from `ArchiveList.astro` after href migration.
+
+---
+
+_Reviewed: 2026-05-23T20:05:00Z_  
+_Reviewer: Claude (gsd-code-reviewer)_  
+_Depth: standard_  
+_Wave: 7 / Plan 04-07_
