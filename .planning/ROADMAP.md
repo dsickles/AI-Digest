@@ -226,7 +226,23 @@ Plans:
 - **Plan 02-04 catchup disposition:** Confirmed as the load-bearing home-worker entry point under this architecture. Open sub-decision: also run a transient-failure retry pass for non-transcript items in the cloud cycle (separate from the home worker).
 - **Home-worker runtime:** Docker container vs. a thin Python venv invoked by the OS scheduler. Either works; pick the option that fits the home server's existing workload during plan. (Hardware/SKU details intentionally omitted from this doc per privacy sweep.)
 
-**Plans:** TBD (decomposed during `/gsd-plan-phase 5`)
+**Plans:** 6 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 05-01-PLAN.md — Manual GHA workflow_dispatch + secret hygiene + Wave 0 test stubs (OPS-01, OPS-02, OPS-04)
+- [ ] 05-02-PLAN.md — B2 rclone sync + cron-complete marker + Sunday cron schedule (OPS-01)
+
+**Wave 2** *(05-03 blocked on 05-01; 05-04 on 05-03; 05-05 on 05-02)*
+
+- [ ] 05-03-PLAN.md — $1/week hard cap + deferred_budget LOCKED-01 + StatusBanner (OPS-05, OBS-03)
+- [ ] 05-04-PLAN.md — Mon–Sat daily-retry.yml + --retry-transient-only (OPS-01)
+- [ ] 05-05-PLAN.md — Home worker Docker + GHCR multi-arch + OPS-03 docs (OPS-01, OPS-03, OPS-04)
+
+**Wave 3** *(blocked on 05-01, 05-02, 05-05)*
+
+- [ ] 05-06-PLAN.md — week_bounds_et + Healthchecks pings + Monday sentinel (OPS-01, OBS-03)
 
 **Notes:** Primary mitigation for Risk Top-5 #3 (silent cron failure — post-conditions, heartbeat, failure-only notification) and #5 (secret leakage). The cloud-primary + residential-worker split came from a Phase 3 architectural correction (2026-05-23): the original "home server hosts the whole pipeline" framing over-applied the residential-IP requirement, which only matters for YouTube transcript fetching (PITFALLS #7, structural). Cloud reliability + zero-host cost wins for everything else; the home server stays narrow and replaceable. RSS-only subscribers (or weeks with no YouTube items in the feed) wouldn't need the home-worker leg at all.
 

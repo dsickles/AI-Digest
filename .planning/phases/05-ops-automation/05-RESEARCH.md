@@ -677,20 +677,19 @@ Each slice must pass existing pytest + targeted new tests before the next slice 
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED 2026-05-24)
 
-1. **`active_digest_week_id` mapping rule**  
+1. **`active_digest_week_id` mapping rule / ISO `week_id` for Sun–Sat ET window**  
    - What we know: D-B6b wants prior Sun–Sat ET at Sunday cron; `week_id` stays ISO.  
-   - Unclear: ISO week of Sunday-start vs Saturday-end of window.  
-   - Recommendation: ISO week of **Saturday** ending the window (label = "week ending Sat") — confirm in plan with one concrete date example.
+   - **Resolved:** Use the ISO week number of the **Saturday** that ends the digest window. Example: a digest published Sun 2026-05-24 covers Sun 2026-05-17 through Sat 2026-05-23; `week_id = "2026-W21"` (ISO week of Sat 2026-05-23). Document this rule in `pipeline/week.py` docstrings and README Operations section.
 
-2. **GHA `timezone:` vs locked UTC cron**  
+2. **GHA `timezone:` vs single UTC cron**  
    - D-B1 locked UTC; official docs now support IANA timezone.  
-   - Recommendation: ship D-B1; file UAT note to revisit if ±1h matters to operator.
+   - **Resolved:** Ship the single UTC cron expression `0 10 * * 0` (per D-B1) for v1. Accept the ±1h ET drift across DST as documented. Defer GHA `timezone:` upgrade until a Future-UAT-Watch item triggers it.
 
-3. **Separate degraded copy for `deferred_budget` cards**  
+3. **`deferred_budget` card copy**  
    - CONTEXT mentions spend-cap copy on cards; LOCKED-01 locks `QUOTA_BODY_COPY` for all in-place statuses.  
-   - Recommendation: banner carries spend message; cards keep `QUOTA_BODY_COPY` unless user unlocks LOCKED-01 wording.
+   - **Resolved:** Card body remains the locked `QUOTA_BODY_COPY` per LOCKED-01 (no unlock). The "weekly spend cap" plain-English copy lives on the `StatusBanner.astro` reader-confidence surface only, never on the card body.
 
 ---
 

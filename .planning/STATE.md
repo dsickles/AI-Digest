@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: phase_complete
-stopped_at: Phase 04 verified (automated + human UAT)
-last_updated: "2026-05-24T02:10:00.000Z"
-last_activity: 2026-05-24 -- Phase 04 human UAT complete (8/8 passed); ready for Phase 05
+status: executing
+stopped_at: Phase 05 discuss-phase complete — produced 05-CONTEXT.md, 05-DISCUSSION-LOG.md, and `.planning/runbooks/leak-recovery.md`. Architecture sequence diagram locked.
+last_updated: "2026-05-24T21:24:13.153Z"
+last_activity: 2026-05-24 -- Phase 5 planning complete
 progress:
   total_phases: 5
   completed_phases: 4
-  total_plans: 27
+  total_plans: 32
   completed_plans: 26
   percent: 80
 ---
@@ -21,17 +21,17 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-21)
 
 **Core value:** A coherent narrative of "what happened in AI this week" across all my sources — read in 15 minutes instead of 5+ hours of skimming feeds.
-**Current focus:** Phase 05 — Ops & Automation (next, awaiting discuss-phase)
+**Current focus:** Phase 05 — Ops & Automation (discuss-phase complete; plan-phase next)
 
 ## Current Position
 
-Phase: 04 (dashboard-archive) — VERIFIED (automated 35/35 + human UAT 8/8)
-Plan: 7 of 7
-Status: Phase 04 complete and verified — ready to advance to Phase 05
-Last activity: 2026-05-24 -- Human UAT all 8 tests passed
+Phase: 05 (ops-automation) — CONTEXT GATHERED (9 decisions locked: D-B1..B9)
+Plan: 0 of N (pending plan-phase)
+Status: Ready to execute
+Last activity: 2026-05-24 -- Phase 5 planning complete
 
-Progress: [██████████] 100% (26/26 plans complete across phases 1–4)
-Next: Phase 05 (Ops & Automation) — discuss-phase
+Progress: [██████████] 100% (26/26 plans complete across phases 1–4); Phase 05 plans TBD
+Next: Phase 05 (Ops & Automation) — plan-phase
 
 ## Performance Metrics
 
@@ -119,12 +119,14 @@ Recent decisions affecting current work:
 - [Phase 04]: 04-05: PipelineNotes in Briefing main only; /archive index; OBS-01 tests; fetch failures without conn
 - [Phase 04]: 04-06: Phase 4 exit gate — W19/W21 backfill via render-only CLI; emit_digest_json anchor in LOCKED-DIRECTIVES
 - [Phase 04]: 04-07: WR-01 closed — permalink slugs from digest.id + canonicalDigestUrl.toLowerCase(); LOCKED-01 routing untouched
+- **Phase 05 discuss-phase (2026-05-24):** 9 decisions locked (D-B1..B9). Cloud scheduler = GHA cron (D-B1). Static publish = Vercel Hobby + Git integration (D-B2). Shared SQLite storage = Backblaze B2 + rclone (D-B3). Cloud-side daily retry = Mon–Sat GHA workflow scoped to transient LLM failures (D-B4). Home worker = multi-arch Docker container (D-B5a) handing off via B2 marker rendezvous, not self-hosted GHA runner (D-B5b — public-repo PR-fork attack surface). Reader-confidence promise = complete digest by Sun 07:00 ET (D-B6a); week boundary = Sun 00:00 ET – Sat 23:59 ET (D-B6b). Heartbeat = Healthchecks.io 3 checks + GHA failure email + Monday sentinel (D-B7). Secret hygiene = repo secrets + host `.env` + fine-grained PAT (annual rotation) + GitHub native scanning, no pre-commit hook (D-B8). LLM spend caps = $1/week app-side + $10/month vendor-side, graceful degrade on hit, cap-deferred items abandoned (no auto-backfill) (D-B9). New sentinel status `summary_status='deferred_budget'` added to `_IN_PLACE_TRANSIENT_STATUSES`. Architecture diagram: Mermaid sequence diagram with 8 actors (Cron, Backblaze, Sources, Gemini, Home Worker, GitHub, Vercel, Reader).
 
 ### Pending Todos
 
 | Todo | Surfaces in | Captured | Note |
 |------|-------------|----------|------|
-| **Gemini billing decision — DEFERRED, trigger updated 2026-05-22 by Phase 3 discuss D-62** | Post-Phase-3 (after 1–2 live weeks of observed post-dedup volume) | 2026-05-22 (post Phase 2 visual UAT); updated 2026-05-22 (Phase 3 discuss D-62) | Original deferral stands. Updated trigger: re-evaluate after 1–2 live Phase 3 weeks of post-dedup observation. Stay on free tier (20 req/day) through Phase 3 build + first 1–2 live runs. LOCKED-01 quota_exhausted carve-out keeps the UX coherent in the interim. Decision inputs needed: actual items/week post-dedup, % items hitting 429 in a typical post-dedup run, perceived reader impact from quota-exhausted footer items. |
+| ~~**Gemini billing decision — DEFERRED, trigger updated 2026-05-22 by Phase 3 discuss D-62**~~ | ~~Post-Phase-3 (after 1–2 live weeks of observed post-dedup volume)~~ | ~~2026-05-22 (post Phase 2 visual UAT); updated 2026-05-22 (Phase 3 discuss D-62)~~ | **CLOSED 2026-05-24 by Phase 05 D-B9.** Decision: stay on Gemini free tier; $1/week app-side cap is well below free-tier daily quota and observed normal weekly spend ($0.05–$0.10). Upgrade to paid only if a week's normal spend approaches free-tier limit (currently no such signal). |
+| **Pre-public-release documentation set** | Public-release plan (post-Phase-5, before flipping repo visibility) | 2026-05-24 (Phase 05 discuss) | Produce `.planning/ARCHITECTURE.md` (top-level synthesis of system architecture across all 5 phases, citing phase contexts as source-of-truth for phase-scoped decisions), `README.md` (project entry point — what / why / how to read / how to fork), and any supporting "how to read this repo" / changelog / screenshots assets. Operates alongside the Privacy Sweep gate in PROJECT.md. Full target list in PROJECT.md "Pre-public-release Documentation" section. |
 | **Live three-feed E2E re-run** | Manual / Plan 01-02 verification | 2026-05-21 (Plan 01-02) | Run `python -m pipeline.run all` twice outside sandbox; confirm item count stable across re-ingest for all three D-01 feeds. |
 | **Live backfill UAT** | Manual / Plan 01-04 verification | 2026-05-21 (Plan 01-04) | Run `python -m pipeline.run render --week 2026-W19` outside sandbox; confirm `out/digest-2026-W19.html` produced. |
 | **Browser digest UAT** | Manual / Plan 01-05 | 2026-05-21 (Plan 01-05) | Open `out/digest-*.html`; confirm dark theme, Week of header, badges, rel=noopener links. |
@@ -133,7 +135,7 @@ Recent decisions affecting current work:
 ### Blockers/Concerns
 
 - YouTube transcript reliability from GHA cloud IPs — **shipped in Phase 2 via D-23** (cloud→residential catch-up via `--only-pending-transcripts`; only path that may set `missing`); residual risk is operational and tracked in `02-UAT.md` manual UAT test 5
-- Heartbeat provider (Healthchecks.io vs email) — decide during Phase 5 planning
+- ~~Heartbeat provider (Healthchecks.io vs email) — decide during Phase 5 planning~~ — **CLOSED 2026-05-24 by Phase 05 D-B7.** Both: Healthchecks.io for ping-based failure modes (skipped runs, mid-run crashes) + GHA built-in email for workflow-errored failures.
 - `gsd-sdk` / Claude-Agent-SDK incompatibility with Cursor — **resolved 2026-05-22 by Phase 3 discuss D-71**: Phase 3 continues inline execution (Phase 2 was 30% faster per plan than Phase 1 subagent mode); pipeline deliverable stays Cursor-independent; Cursor `Task` available for parallel read-only work (research, audits) if needed
 
 ## Deferred Items
@@ -146,7 +148,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-24T00:00:00.000Z
-Stopped at: Completed 04-07-PLAN.md
-Resume file: None
-Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Gemini billing decision (trigger updated to "after 1–2 live Phase 3 weeks"); Phase 3 learnings extraction skipped — institutional knowledge lives in 03-XX-SUMMARY.md, 03-VERIFICATION.md, 03-HUMAN-UAT.md, and PROJECT.md Key Decisions for now
+Last session: 2026-05-24T16:30:00.000Z
+Stopped at: Phase 05 discuss-phase complete — produced 05-CONTEXT.md, 05-DISCUSSION-LOG.md, and `.planning/runbooks/leak-recovery.md`. Architecture sequence diagram locked.
+Resume file: `.planning/phases/05-ops-automation/05-CONTEXT.md`
+Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Phase 3 learnings extraction skipped — institutional knowledge lives in 03-XX-SUMMARY.md, 03-VERIFICATION.md, 03-HUMAN-UAT.md, and PROJECT.md Key Decisions for now
