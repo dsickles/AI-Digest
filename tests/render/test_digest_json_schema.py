@@ -56,3 +56,9 @@ def test_emitter_source_has_no_gemini_string() -> None:
     source_path = Path("pipeline/render/digest_json.py")
     text = source_path.read_text(encoding="utf-8")
     assert "GEMINI" not in text
+
+
+def test_emitter_source_has_no_api_key_prefix() -> None:
+    source_path = Path("pipeline/render/digest_json.py")
+    text = source_path.read_text(encoding="utf-8")
+    assert "sk-" not in text
