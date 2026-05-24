@@ -19,6 +19,7 @@ const digestCardSchema = z.object({
   category: z.enum(['edtech', 'business', 'technical']).nullable(),
   rank_position: z.number().int().nullable(),
   degraded_body: z.string().nullable().optional(),
+  channel_url: z.string().url().nullable().optional(),
 });
 
 const categorySectionSchema = z.object({

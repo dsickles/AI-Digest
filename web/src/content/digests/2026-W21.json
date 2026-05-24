@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W21",
-  "generated_at": "2026-05-23T23:09:33Z",
+  "generated_at": "2026-05-24T01:46:54Z",
   "week_range": {
     "start": "2026-05-18T00:00:00Z",
     "end": "2026-05-24T23:59:59Z"
   },
-  "updated_at": "2026-05-23T23:09:33Z",
+  "updated_at": "2026-05-24T01:46:54Z",
   "weekly_synthesis": {
     "text": null,
     "status": "quota_exhausted"
@@ -23,7 +23,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 1,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "Premium: What If...We're In An AI Bubble? (Part 2)",
@@ -36,7 +37,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 2,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "News: OpenAI Had A Negative 122% Non-GAAP Operating Margin In Q1 2026, and ChatGPT Growth Has Stalled",
@@ -49,7 +51,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 3,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "The One AI Writing Hack Nobody Talks About.",
@@ -62,7 +65,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 4,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": "https://www.youtube.com/@NateBJones"
     },
     {
       "title": "FTC to Require Cox Media Group, Two Other Firms to Pay Nearly $1 Million to Settle Charges They Deceived Customers About “Active Listening” AI-Powered Marketing Service",
@@ -75,7 +79,8 @@
       "also_covered": [],
       "category": "technical",
       "rank_position": 5,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     }
   ],
   "category_sections": {
@@ -97,7 +102,8 @@
           "also_covered": [],
           "category": "business",
           "rank_position": 1,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "Premium: What If...We're In An AI Bubble? (Part 2)",
@@ -110,7 +116,8 @@
           "also_covered": [],
           "category": "business",
           "rank_position": 2,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "News: OpenAI Had A Negative 122% Non-GAAP Operating Margin In Q1 2026, and ChatGPT Growth Has Stalled",
@@ -123,7 +130,8 @@
           "also_covered": [],
           "category": "business",
           "rank_position": 3,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "The One AI Writing Hack Nobody Talks About.",
@@ -136,7 +144,8 @@
           "also_covered": [],
           "category": "business",
           "rank_position": 4,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": "https://www.youtube.com/@NateBJones"
         },
         {
           "title": "Anthropic's \"Profitability\" Swindle",
@@ -149,7 +158,8 @@
           "also_covered": [],
           "category": "business",
           "rank_position": 7,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "Opus 4.7 and OpenAI 5.5 Made Your Prompting Style Obsolete.",
@@ -162,7 +172,8 @@
           "also_covered": [],
           "category": "business",
           "rank_position": 8,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": "https://www.youtube.com/@NateBJones"
         },
         {
           "title": "Google's take on openclaw",
@@ -175,7 +186,8 @@
           "also_covered": [],
           "category": "business",
           "rank_position": 9,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "These 5 Infrastructure Giants Secretly Rule AI",
@@ -188,7 +200,8 @@
           "also_covered": [],
           "category": "business",
           "rank_position": 13,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": "https://www.youtube.com/@NateBJones"
         },
         {
           "title": "AI Is Too Expensive",
@@ -201,7 +214,8 @@
           "also_covered": [],
           "category": "business",
           "rank_position": 19,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "Google Spent a Year Stitching MCP, A2A, AG-UI Together. I/O Today.",
@@ -214,7 +228,8 @@
           "also_covered": [],
           "category": "business",
           "rank_position": 20,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": "https://www.youtube.com/@NateBJones"
         },
         {
           "title": "Can I get my agents on the phone?",
@@ -227,7 +242,8 @@
           "also_covered": [],
           "category": "business",
           "rank_position": 21,
-          "degraded_body": "The summary couldn't be generated this week."
+          "degraded_body": "The summary couldn't be generated this week.",
+          "channel_url": null
         },
         {
           "title": "The Prove-It Economy is Here | And Most Marketers Aren't Ready",
@@ -240,7 +256,8 @@
           "also_covered": [],
           "category": "business",
           "rank_position": 24,
-          "degraded_body": "The summary couldn't be generated this week."
+          "degraded_body": "The summary couldn't be generated this week.",
+          "channel_url": "https://www.youtube.com/@NateBJones"
         },
         {
           "title": "Import AI 457: AI stuxnet; cursed Muon optimizer; and positive alignment",
@@ -253,7 +270,8 @@
           "also_covered": [],
           "category": "business",
           "rank_position": 25,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         }
       ]
     },
@@ -271,7 +289,8 @@
           "also_covered": [],
           "category": "technical",
           "rank_position": 5,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "Datasette Agent",
@@ -301,7 +320,8 @@
           ],
           "category": "technical",
           "rank_position": 6,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "Quoting SpaceX S-1",
@@ -314,7 +334,8 @@
           "also_covered": [],
           "category": "technical",
           "rank_position": 10,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "How fast is 10 tokens per second really?",
@@ -327,7 +348,8 @@
           "also_covered": [],
           "category": "technical",
           "rank_position": 11,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "Google I/O, Gemini Spark, Antigravity",
@@ -340,7 +362,8 @@
           "also_covered": [],
           "category": "technical",
           "rank_position": 12,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "LWiAI Podcast #245 - TML-Interaction, Claude For Legal, Sam Altman on Stand",
@@ -353,7 +376,8 @@
           "also_covered": [],
           "category": "technical",
           "rank_position": 14,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "Was anything good released at Google I/O 2026?",
@@ -366,7 +390,8 @@
           "also_covered": [],
           "category": "technical",
           "rank_position": 15,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": "https://www.youtube.com/@howiaipodcast"
         },
         {
           "title": "llm-gemini 0.32",
@@ -384,7 +409,8 @@
           ],
           "category": "technical",
           "rank_position": 16,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "Gemini 3.5 Flash: more expensive, but Google plan to use it for everything",
@@ -397,7 +423,8 @@
           "also_covered": [],
           "category": "technical",
           "rank_position": 17,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "The last six months in LLMs in five minutes",
@@ -410,7 +437,8 @@
           "also_covered": [],
           "category": "technical",
           "rank_position": 22,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "Glaucous-winged Gull, Brown Pelican, Snowy Egret, Canada Goose",
@@ -423,7 +451,8 @@
           "also_covered": [],
           "category": "technical",
           "rank_position": 23,
-          "degraded_body": null
+          "degraded_body": null,
+          "channel_url": null
         },
         {
           "title": "Why this Claude Code engineer uses HTML files as AI specs | Thariq Shihipar (Anthropic)",
@@ -436,7 +465,8 @@
           "also_covered": [],
           "category": "technical",
           "rank_position": 26,
-          "degraded_body": "The summary couldn't be generated this week."
+          "degraded_body": "The summary couldn't be generated this week.",
+          "channel_url": "https://www.youtube.com/@howiaipodcast"
         }
       ]
     }
@@ -453,7 +483,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 1,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "Premium: What If...We're In An AI Bubble? (Part 2)",
@@ -466,7 +497,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 2,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "News: OpenAI Had A Negative 122% Non-GAAP Operating Margin In Q1 2026, and ChatGPT Growth Has Stalled",
@@ -479,7 +511,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 3,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "The One AI Writing Hack Nobody Talks About.",
@@ -492,7 +525,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 4,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": "https://www.youtube.com/@NateBJones"
     },
     {
       "title": "FTC to Require Cox Media Group, Two Other Firms to Pay Nearly $1 Million to Settle Charges They Deceived Customers About “Active Listening” AI-Powered Marketing Service",
@@ -505,7 +539,8 @@
       "also_covered": [],
       "category": "technical",
       "rank_position": 5,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "Datasette Agent",
@@ -535,7 +570,8 @@
       ],
       "category": "technical",
       "rank_position": 6,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "Anthropic's \"Profitability\" Swindle",
@@ -548,7 +584,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 7,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "Opus 4.7 and OpenAI 5.5 Made Your Prompting Style Obsolete.",
@@ -561,7 +598,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 8,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": "https://www.youtube.com/@NateBJones"
     },
     {
       "title": "Google's take on openclaw",
@@ -574,7 +612,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 9,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "Quoting SpaceX S-1",
@@ -587,7 +626,8 @@
       "also_covered": [],
       "category": "technical",
       "rank_position": 10,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "How fast is 10 tokens per second really?",
@@ -600,7 +640,8 @@
       "also_covered": [],
       "category": "technical",
       "rank_position": 11,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "Google I/O, Gemini Spark, Antigravity",
@@ -613,7 +654,8 @@
       "also_covered": [],
       "category": "technical",
       "rank_position": 12,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "These 5 Infrastructure Giants Secretly Rule AI",
@@ -626,7 +668,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 13,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": "https://www.youtube.com/@NateBJones"
     },
     {
       "title": "LWiAI Podcast #245 - TML-Interaction, Claude For Legal, Sam Altman on Stand",
@@ -639,7 +682,8 @@
       "also_covered": [],
       "category": "technical",
       "rank_position": 14,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "Was anything good released at Google I/O 2026?",
@@ -652,7 +696,8 @@
       "also_covered": [],
       "category": "technical",
       "rank_position": 15,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": "https://www.youtube.com/@howiaipodcast"
     },
     {
       "title": "llm-gemini 0.32",
@@ -670,7 +715,8 @@
       ],
       "category": "technical",
       "rank_position": 16,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "Gemini 3.5 Flash: more expensive, but Google plan to use it for everything",
@@ -683,7 +729,8 @@
       "also_covered": [],
       "category": "technical",
       "rank_position": 17,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "AI Is Too Expensive",
@@ -696,7 +743,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 19,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "Google Spent a Year Stitching MCP, A2A, AG-UI Together. I/O Today.",
@@ -709,7 +757,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 20,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": "https://www.youtube.com/@NateBJones"
     },
     {
       "title": "Can I get my agents on the phone?",
@@ -722,7 +771,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 21,
-      "degraded_body": "The summary couldn't be generated this week."
+      "degraded_body": "The summary couldn't be generated this week.",
+      "channel_url": null
     },
     {
       "title": "The last six months in LLMs in five minutes",
@@ -735,7 +785,8 @@
       "also_covered": [],
       "category": "technical",
       "rank_position": 22,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "Glaucous-winged Gull, Brown Pelican, Snowy Egret, Canada Goose",
@@ -748,7 +799,8 @@
       "also_covered": [],
       "category": "technical",
       "rank_position": 23,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "The Prove-It Economy is Here | And Most Marketers Aren't Ready",
@@ -761,7 +813,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 24,
-      "degraded_body": "The summary couldn't be generated this week."
+      "degraded_body": "The summary couldn't be generated this week.",
+      "channel_url": "https://www.youtube.com/@NateBJones"
     },
     {
       "title": "Import AI 457: AI stuxnet; cursed Muon optimizer; and positive alignment",
@@ -774,7 +827,8 @@
       "also_covered": [],
       "category": "business",
       "rank_position": 25,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     },
     {
       "title": "Why this Claude Code engineer uses HTML files as AI specs | Thariq Shihipar (Anthropic)",
@@ -787,7 +841,8 @@
       "also_covered": [],
       "category": "technical",
       "rank_position": 26,
-      "degraded_body": "The summary couldn't be generated this week."
+      "degraded_body": "The summary couldn't be generated this week.",
+      "channel_url": "https://www.youtube.com/@howiaipodcast"
     }
   ],
   "footer_aside": [
@@ -807,7 +862,8 @@
       ],
       "category": "technical",
       "rank_position": 18,
-      "degraded_body": null
+      "degraded_body": null,
+      "channel_url": null
     }
   ],
   "pipeline_notes": {

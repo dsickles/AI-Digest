@@ -99,6 +99,7 @@ class DigestCard:
     also_covered: tuple[AlsoCoveredMember, ...] = ()
     category: str | None = None  # cluster category enum for section grouping
     rank_position: int | None = None  # global rank for Briefing + section sort
+    channel_url: str | None = None  # Phase 4 UAT: publisher home / channel URL
 
 
 def _is_quota_in_place(card: DigestCard) -> bool:

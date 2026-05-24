@@ -1023,6 +1023,7 @@ def _build_card_from_row(
         also_covered=also_covered,
         category=category,
         rank_position=rank_position,
+        channel_url=_row_get(row, "channel_url"),
     )
 
 

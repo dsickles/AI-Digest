@@ -65,6 +65,7 @@ class DigestCardJson(BaseModel):
     category: str | None = None
     rank_position: int | None = None
     degraded_body: str | None = None
+    channel_url: str | None = None
 
 
 class WeekRangeJson(BaseModel):
@@ -157,6 +158,7 @@ def _card_to_json(card: DigestCard) -> DigestCardJson:
         category=card.category,
         rank_position=card.rank_position,
         degraded_body=degraded,
+        channel_url=card.channel_url,
     )
 
 

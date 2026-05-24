@@ -188,16 +188,18 @@ def upsert_source(conn: sqlite3.Connection, source: SourceConfig) -> None:
     Preserves any existing fetch state (etag/last_modified/last_fetched_at);
     only the static config columns are overwritten.
     """
+    channel_url = getattr(source, "channel_url", None)
     conn.execute(
         """
-        INSERT INTO sources (source_id, type, url, display_name, tag, enabled)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO sources (source_id, type, url, display_name, tag, enabled, channel_url)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(source_id) DO UPDATE SET
             type         = excluded.type,
             url          = excluded.url,
             display_name = excluded.display_name,
             tag          = excluded.tag,
-            enabled      = excluded.enabled
+            enabled      = excluded.enabled,
+            channel_url  = excluded.channel_url
         """,
         (
             source.id,
@@ -206,6 +208,7 @@ def upsert_source(conn: sqlite3.Connection, source: SourceConfig) -> None:
             source.display_name,
             source.tag,
             1 if source.enabled else 0,
+            channel_url,
         ),
     )
 
@@ -293,7 +296,8 @@ def get_pending_transcript_items(
     filter without re-querying the sources table per item.
     """
     sql = (
-        "SELECT items.*, sources.type AS source_type "
+        "SELECT items.*, sources.type AS source_type, "
+        "sources.channel_url AS channel_url "
         "FROM items JOIN sources ON sources.source_id = items.source_id "
         "WHERE items.transcript_status = 'pending_local'"
     )
@@ -343,7 +347,9 @@ def get_items_for_week(
     """
     return conn.execute(
         """
-        SELECT items.*, sources.type AS source_type
+        SELECT items.*,
+               sources.type        AS source_type,
+               sources.channel_url AS channel_url
           FROM items
           JOIN sources ON sources.source_id = items.source_id
          WHERE items.published_at >= ? AND items.published_at <= ?

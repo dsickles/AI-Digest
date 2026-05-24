@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Annotated, Literal, Union
 
 import yaml
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 DEFAULT_SOURCES_PATH = Path("config") / "sources.yaml"
 DEFAULT_DIGEST_PATH = Path("config") / "digest.yaml"
@@ -26,6 +26,7 @@ _CHANNEL_ID_RE = re.compile(r"^UC[A-Za-z0-9_-]{22}$")
 _YOUTUBE_FEED_TEMPLATE = (
     "https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}"
 )
+_YOUTUBE_CHANNEL_HOME_TEMPLATE = "https://www.youtube.com/channel/{channel_id}"
 
 
 _VALID_CATEGORY_TAGS = frozenset({"edtech", "business", "technical"})
@@ -62,6 +63,10 @@ class RssSource(_SourceBase):
 
     type: Literal["rss"]
     url: str = Field(min_length=1)
+    # Phase 4 UAT: optional explicit publisher home URL so the dashboard can
+    # link the publisher badge. When omitted, the renderer falls back to the
+    # canonical_url origin (works for most blogs).
+    home_url: str | None = None
 
     @field_validator("url")
     @classmethod
@@ -70,17 +75,40 @@ class RssSource(_SourceBase):
             raise ValueError(f"source url must include http(s):// scheme: {value!r}")
         return value
 
+    @field_validator("home_url")
+    @classmethod
+    def _home_url_has_scheme(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        if not (value.startswith("http://") or value.startswith("https://")):
+            raise ValueError(f"home_url must include http(s):// scheme: {value!r}")
+        return value
+
+    @property
+    def channel_url(self) -> str | None:
+        """Publisher home URL exposed to the renderer (Phase 4 UAT)."""
+        return self.home_url
+
 
 class YoutubeSource(_SourceBase):
     """Phase 2 YouTube channel row (D-27, D-29, D-36).
 
     The feed URL is derived from ``channel_id`` rather than stored in the
     YAML — channel RSS is the single discovery endpoint and the template is
-    fixed per D-27.
+    fixed per D-27. The public channel home URL is derived the same way
+    (Phase 4 UAT) so the dashboard can link publisher badges to the channel.
+
+    YouTube's ``/channel/UC…`` URL works but reads as an opaque code; an
+    optional ``channel_url`` in the YAML lets us override with the friendly
+    ``/@handle`` form (or any other channel-page variant). When unset, we
+    fall back to the derived ``/channel/UC…`` URL.
     """
 
     type: Literal["youtube"]
     channel_id: str = Field(min_length=24, max_length=24)
+    channel_url_override: str | None = Field(default=None, alias="channel_url")
+
+    model_config = ConfigDict(populate_by_name=True)
 
     @field_validator("channel_id")
     @classmethod
@@ -88,6 +116,17 @@ class YoutubeSource(_SourceBase):
         if not _CHANNEL_ID_RE.match(value):
             raise ValueError(
                 f"youtube channel_id must match ^UC[A-Za-z0-9_-]{{22}}$: {value!r}"
+            )
+        return value
+
+    @field_validator("channel_url_override")
+    @classmethod
+    def _channel_url_has_scheme(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        if not (value.startswith("http://") or value.startswith("https://")):
+            raise ValueError(
+                f"channel_url must include http(s):// scheme: {value!r}"
             )
         return value
 
@@ -100,6 +139,13 @@ class YoutubeSource(_SourceBase):
     def url(self) -> str:
         """Alias for ``feed_url`` so generic callers (store/db.py) stay type-agnostic."""
         return self.feed_url
+
+    @property
+    def channel_url(self) -> str:
+        """Public channel home URL: explicit YAML override else ``/channel/UC…`` form."""
+        if self.channel_url_override:
+            return self.channel_url_override
+        return _YOUTUBE_CHANNEL_HOME_TEMPLATE.format(channel_id=self.channel_id)
 
 
 SourceConfig = Annotated[

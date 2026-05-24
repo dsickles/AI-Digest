@@ -10,6 +10,10 @@
 #   type          Adapter type — "rss" (Phase 1) or "youtube" (Phase 2 D-27)
 #   url           Feed URL (RSS rows only)
 #   channel_id    YouTube UC… channel handle (YouTube rows only — feed URL derived)
+#   channel_url   Optional friendly /@handle URL for the publisher badge link
+#                 (YouTube rows; falls back to /channel/UC… if omitted)
+#   home_url      Optional explicit publisher home URL (RSS rows; falls back to
+#                 canonical_url origin in the renderer if omitted)
 #   display_name  Human-readable publisher name shown in the digest
 #   tag           Topic hint for later categorization (Phase 3) — not stored on items (D-02)
 #   enabled       true → fetched on every run; false → skipped silently
@@ -53,12 +57,14 @@ sources:
   - id: how-i-ai
     type: youtube
     channel_id: UCRYY7IEbkHLH_ScJCu9eWDQ
+    channel_url: https://www.youtube.com/@howiaipodcast
     display_name: How I AI
     tag: technical
     enabled: true
   - id: nate-b-jones
     type: youtube
     channel_id: UC0C-17n9iuUQPylguM1d-lQ
+    channel_url: https://www.youtube.com/@NateBJones
     display_name: AI News & Strategy Daily | Nate B Jones
     tag: business
     enabled: true

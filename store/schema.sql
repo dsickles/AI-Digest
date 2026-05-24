@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS sources (
     last_error          TEXT,
     last_success_at     TEXT,
     last_item_at        TEXT,
-    last_error_category TEXT
+    last_error_category TEXT,
+    channel_url         TEXT
 );
 
 CREATE TABLE IF NOT EXISTS items (
