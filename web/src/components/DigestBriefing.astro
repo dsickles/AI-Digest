@@ -1,10 +1,8 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import BriefingTopN from './BriefingTopN.astro';
-import CategorySection from './CategorySection.astro';
 import FooterAside from './FooterAside.astro';
 import WeeklySynthesis from './WeeklySynthesis.astro';
-import { TOPICS } from '../lib/topics';
 
 interface Props {
   digest: CollectionEntry<'digests'>;
@@ -17,11 +15,4 @@ const topN = data.briefing_top_n.length;
 
 <WeeklySynthesis weeklySynthesis={data.weekly_synthesis} topN={topN} />
 <BriefingTopN cards={data.briefing_top_n} />
-
-{
-  TOPICS.map((topic) => (
-    <CategorySection topic={topic} section={data.category_sections[topic]} />
-  ))
-}
-
 <FooterAside items={data.footer_aside} />

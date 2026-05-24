@@ -14,8 +14,9 @@ interface Props {
 }
 
 const { topic, section, variant = 'briefing' } = Astro.props;
+const isEmpty = section.cards.length === 0;
 
-if (section.cards.length === 0) {
+if (isEmpty && variant === 'briefing') {
   return null;
 }
 ---
@@ -41,9 +42,17 @@ if (section.cards.length === 0) {
       </p>
     )
   }
-  <div>
-    {section.cards.map((card) => (
-      <Card card={card} />
-    ))}
-  </div>
+  {
+    isEmpty ? (
+      <p class="m-0 text-base leading-normal text-[hsl(216_12%_81%)]">
+        No items in this category this week.
+      </p>
+    ) : (
+      <div>
+        {section.cards.map((card) => (
+          <Card card={card} />
+        ))}
+      </div>
+    )
+  }
 </section>

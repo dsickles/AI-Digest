@@ -1,7 +1,8 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { formatPublishedDate } from '../lib/formatWeekRange';
-import PlayIcon from './PlayIcon.astro';
+import { publisherHomeUrl } from '../lib/publisherHomeUrl';
+import SourceTypeBadge from './SourceTypeBadge.astro';
 
 type DigestCard = CollectionEntry<'digests'>['data']['briefing_top_n'][number];
 
@@ -17,8 +18,12 @@ const bodyText =
     ? card.tldr
     : (card.degraded_body ?? "The summary couldn't be generated this week.");
 
-const isYoutube = card.source_type === 'youtube';
 const dateLabel = formatPublishedDate(card.published_at);
+const publisherHref = publisherHomeUrl(
+  card.canonical_url,
+  card.source_type,
+  card.channel_url,
+);
 ---
 
 <article
@@ -28,14 +33,23 @@ const dateLabel = formatPublishedDate(card.published_at);
   ]}
 >
   <div class="mb-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-    <span
-      class="rounded bg-[hsl(216_22%_15%)] px-2 py-0.5 text-[hsl(216_12%_81%)]"
-    >
-      {card.publisher}
-    </span>
     {
-      isYoutube && <PlayIcon />
+      publisherHref ? (
+        <a
+          href={publisherHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="rounded bg-[hsl(216_22%_15%)] px-2 py-0.5 text-[hsl(216_12%_81%)] no-underline hover:text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          {card.publisher}
+        </a>
+      ) : (
+        <span class="rounded bg-[hsl(216_22%_15%)] px-2 py-0.5 text-[hsl(216_12%_81%)]">
+          {card.publisher}
+        </span>
+      )
     }
+    <SourceTypeBadge sourceType={card.source_type} />
     <span>{dateLabel}</span>
   </div>
   <h2 class="m-0 mb-2 text-base font-semibold leading-snug">

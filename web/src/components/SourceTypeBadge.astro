@@ -1,0 +1,34 @@
+---
+/**
+ * Visible item-type label rendered next to the publisher badge.
+ *
+ * Maps `source_type` (from the digest JSON) to a discoverable text label so
+ * readers can scan a feed and tell videos from articles at a glance. Designed
+ * as the hook point for a future "filter by type" UI (videos / blog posts /
+ * podcasts).
+ *
+ * Unknown / default `rss` returns null so we don't bulk up text-only cards.
+ */
+interface Props {
+  sourceType: string | undefined | null;
+}
+
+const { sourceType } = Astro.props;
+
+const BADGE_LABELS: Record<string, string> = {
+  youtube: 'video',
+};
+
+const label = sourceType ? BADGE_LABELS[sourceType] : undefined;
+---
+
+{
+  label && (
+    <span
+      class="inline-flex items-center rounded bg-[hsl(213_100%_75%/0.14)] px-2 py-0.5 text-sm font-medium text-accent"
+      aria-label={`Item type: ${label}`}
+    >
+      {label}
+    </span>
+  )
+}
