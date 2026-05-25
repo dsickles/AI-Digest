@@ -1,10 +1,11 @@
 ---
 phase: 5
 slug: ops-automation
-status: draft
+status: wave-0-complete
 nyquist_compliant: false
-wave_0_complete: false
+wave_0_complete: true
 created: 2026-05-24
+updated: 2026-05-24
 ---
 
 # Phase 5 — Validation Strategy
@@ -20,8 +21,16 @@ created: 2026-05-24
 | **Framework** | pytest 8.x (Python pipeline) + vitest/astro test (web, where applicable) + GHA workflow lint via `actionlint` |
 | **Config file** | `pyproject.toml` (pytest) · `web/package.json` (Astro/Vite) · Wave 0 installs `actionlint` for workflow validation |
 | **Quick run command** | `uv run pytest tests/ -x -q` |
-| **Full suite command** | `uv run pytest tests/ -q && cd web && pnpm test --run && actionlint .github/workflows/*.yml` |
+| **Full suite command** | `uv run pytest tests/ -q && cd web && pnpm test --run && actionlint .github/workflows/*.yml` [^actionlint-install] |
 | **Estimated runtime** | ~45–60 seconds (pytest), ~15s (web), ~5s (actionlint) |
+
+[^actionlint-install]: Install `actionlint` once per operator workstation
+    via **either** `brew install actionlint` (macOS / Homebrew) **or** the
+    official prebuilt-binary install script:
+    `mkdir -p .tools && cd .tools && curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash`
+    (the script downloads a single static binary; `.tools/` is gitignored).
+    Add the binary to `PATH` (`export PATH="$(pwd)/.tools:$PATH"`) when the
+    curl-install path is used. CI agents fall back to the same script.
 
 ---
 
@@ -46,14 +55,14 @@ created: 2026-05-24
 
 ## Wave 0 Requirements
 
-- [ ] `tests/test_week_bounds_et.py` — covers REQ-OPS-01 (Sun-Sat ET week semantics, DST boundary cases, week-id mapping rule from RESEARCH.md)
-- [ ] `tests/test_budget_hard_cap.py` — extended; covers REQ-OPS-05 cross-run spend load from `pipeline_runs`, halt-and-mark behavior writing `summary_status='deferred_budget'` (NOT just `break`), LOCKED-01 routing to `_IN_PLACE_TRANSIENT_STATUSES`
-- [ ] `tests/test_retry_transient_only.py` — covers daily-retry CLI filter (`summary_status ∈ {quota_exhausted, api_error, client_init_error}` only; cap-deferred items NOT retried)
-- [ ] `tests/test_partition_deferred_budget.py` — covers LOCKED-01 compliance: `deferred_budget` ∈ `_IN_PLACE_TRANSIENT_STATUSES`, never routed to footer
-- [ ] `tests/test_marker_file.py` — covers B2 marker write/read roundtrip with `week_id` schema validation
-- [ ] `web/src/test/StatusBanner.test.ts` — covers OBS-03 banner copy variants (complete / filling-in N videos / partial - N skipped / cap-hit)
-- [ ] `actionlint` installed (Wave 0): `brew install actionlint` or curl-install — verifies all new `.github/workflows/*.yml` syntactically before commit
-- [ ] `tests/conftest.py` — extend with `b2_stub_fixture` (rclone-mock) and `healthcheck_stub_fixture` (requests-mock)
+- [x] `tests/test_week_bounds_et.py` — covers REQ-OPS-01 (Sun-Sat ET week semantics, DST boundary cases, week-id mapping rule from RESEARCH.md) — RED stub landed in 05-01-01
+- [x] `tests/test_budget_hard_cap.py` — extended; covers REQ-OPS-05 cross-run spend load from `pipeline_runs`, halt-and-mark behavior writing `summary_status='deferred_budget'` (NOT just `break`), LOCKED-01 routing to `_IN_PLACE_TRANSIENT_STATUSES` — RED stub landed in 05-01-01
+- [x] `tests/test_retry_transient_only.py` — covers daily-retry CLI filter (`summary_status ∈ {quota_exhausted, api_error, client_init_error}` only; cap-deferred items NOT retried) — RED stub landed in 05-01-01
+- [x] `tests/test_partition_deferred_budget.py` — covers LOCKED-01 compliance: `deferred_budget` ∈ `_IN_PLACE_TRANSIENT_STATUSES`, never routed to footer — RED stub landed in 05-01-01
+- [x] `tests/test_marker_file.py` — covers B2 marker write/read roundtrip with `week_id` schema validation — RED stub landed in 05-01-01
+- [x] `web/src/test/StatusBanner.test.ts` — covers OBS-03 banner copy variants (complete / filling-in N videos / partial - N skipped / cap-hit) — RED stub landed in 05-01-01
+- [x] `actionlint` installed (Wave 0): `brew install actionlint` or curl-install via the official prebuilt-binary script (see footnote on Full suite command); operator workstation verified `actionlint 1.7.12` passes against `.github/workflows/weekly-digest.yml` (the only workflow in tree after 05-01-02)
+- [x] `tests/conftest.py` — extended with `b2_stub_fixture` (in-memory rclone substitute) and `healthcheck_stub_fixture` (records ping URLs + bodies) — landed in 05-01-01
 
 ---
 

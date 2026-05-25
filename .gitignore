@@ -31,6 +31,10 @@ web/node_modules/
 web/.astro/
 web/dist/
 
+# Operator-local tool binaries (e.g. actionlint downloaded via the
+# official install script — operators may also use `brew install actionlint`).
+.tools/
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db
