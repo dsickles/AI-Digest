@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 05 discuss-phase complete — produced 05-CONTEXT.md, 05-DISCUSSION-LOG.md, and `.planning/runbooks/leak-recovery.md`. Architecture sequence diagram locked.
-last_updated: "2026-05-24T21:24:13.153Z"
-last_activity: 2026-05-24 -- Phase 5 planning complete
+stopped_at: Phase 05 Wave 1 complete — 05-01 (workflow_dispatch + Wave 0 RED stubs + secret hygiene) shipped as 3 atomic commits (aad7bea, 2561fc8, 19f158c). Awaiting wave-2 go.
+last_updated: "2026-05-24T22:55:00.000Z"
+last_activity: 2026-05-24 -- Phase 5 plan 05-01 complete (Wave 1)
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 32
-  completed_plans: 26
-  percent: 80
+  completed_plans: 27
+  percent: 84
 ---
 
 # Project State
@@ -21,17 +21,17 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-21)
 
 **Core value:** A coherent narrative of "what happened in AI this week" across all my sources — read in 15 minutes instead of 5+ hours of skimming feeds.
-**Current focus:** Phase 05 — Ops & Automation (discuss-phase complete; plan-phase next)
+**Current focus:** Phase 05 — Ops & Automation (Wave 1 of 4 complete; awaiting Wave 2 go from operator)
 
 ## Current Position
 
-Phase: 05 (ops-automation) — CONTEXT GATHERED (9 decisions locked: D-B1..B9)
-Plan: 0 of N (pending plan-phase)
-Status: Ready to execute
-Last activity: 2026-05-24 -- Phase 5 planning complete
+Phase: 05 (ops-automation) — EXECUTING (Wave 1/4 complete)
+Plan: 1 of 6 complete (05-01 shipped; 05-02..05-06 pending)
+Status: Wave 1 done — checkpoint pause per wave-by-wave gating mode
+Last activity: 2026-05-24 -- Phase 5 plan 05-01 complete (Wave 1)
 
-Progress: [██████████] 100% (26/26 plans complete across phases 1–4); Phase 05 plans TBD
-Next: Phase 05 (Ops & Automation) — plan-phase
+Progress: 27/32 plans complete (5 phases × ~6 plans avg); Phase 05: 1/6 plans (Wave 1 done, Wave 2 next)
+Next: Wave 2 = plans 05-02 (cron + B2 marker) + 05-03 (budget cap + StatusBanner) — run in parallel per plan dependency graph
 
 ## Performance Metrics
 
@@ -119,6 +119,8 @@ Recent decisions affecting current work:
 - [Phase 04]: 04-05: PipelineNotes in Briefing main only; /archive index; OBS-01 tests; fetch failures without conn
 - [Phase 04]: 04-06: Phase 4 exit gate — W19/W21 backfill via render-only CLI; emit_digest_json anchor in LOCKED-DIRECTIVES
 - [Phase 04]: 04-07: WR-01 closed — permalink slugs from digest.id + canonicalDigestUrl.toLowerCase(); LOCKED-01 routing untouched
+- **05-01 (2026-05-24):** Wave 1 vertical slice shipped — `.github/workflows/weekly-digest.yml` is dispatch-only (cron explicitly deferred to 05-02); Wave 0 RED stub layer pins all Phase 5 contracts before any implementation lands (5 pytest + 1 vitest files, each assertion names its target plan); `b2_stub_fixture` + `healthcheck_stub_fixture` give downstream plans a zero-dependency network-free way to test cron/worker/sentinel; `actionlint` is operator-installed via Homebrew **or** the official prebuilt-binary curl script to gitignored `.tools/` (both paths documented in 05-VALIDATION.md footnote)
+- **05-01 (2026-05-24):** `worker/.env.example` uses vendor-prescribed env var names (D-B8) — Privacy Sweep applies to prose and literal bucket/repo names, not to standard secret identifiers a forker must recognize
 - **Phase 05 discuss-phase (2026-05-24):** 9 decisions locked (D-B1..B9). Cloud scheduler = GHA cron (D-B1). Static publish = Vercel Hobby + Git integration (D-B2). Shared SQLite storage = Backblaze B2 + rclone (D-B3). Cloud-side daily retry = Mon–Sat GHA workflow scoped to transient LLM failures (D-B4). Home worker = multi-arch Docker container (D-B5a) handing off via B2 marker rendezvous, not self-hosted GHA runner (D-B5b — public-repo PR-fork attack surface). Reader-confidence promise = complete digest by Sun 07:00 ET (D-B6a); week boundary = Sun 00:00 ET – Sat 23:59 ET (D-B6b). Heartbeat = Healthchecks.io 3 checks + GHA failure email + Monday sentinel (D-B7). Secret hygiene = repo secrets + host `.env` + fine-grained PAT (annual rotation) + GitHub native scanning, no pre-commit hook (D-B8). LLM spend caps = $1/week app-side + $10/month vendor-side, graceful degrade on hit, cap-deferred items abandoned (no auto-backfill) (D-B9). New sentinel status `summary_status='deferred_budget'` added to `_IN_PLACE_TRANSIENT_STATUSES`. Architecture diagram: Mermaid sequence diagram with 8 actors (Cron, Backblaze, Sources, Gemini, Home Worker, GitHub, Vercel, Reader).
 
 ### Pending Todos
