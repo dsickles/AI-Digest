@@ -14,6 +14,7 @@ dependencies (D-20).
 from __future__ import annotations
 
 import json
+import os
 import time
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -28,7 +29,7 @@ from pipeline.render.html import render_digest
 from pipeline.render.partition import AlsoCoveredMember, DigestCard
 from pipeline.reporting.last_run import RunSummary, write_last_run_md
 from pipeline.reporting.pipeline_report import build_pipeline_report, write_pipeline_report
-from pipeline.week import week_bounds
+from pipeline.week import parse_week_id, week_bounds
 from store.db import (
     connect,
     delete_clusters_for_week,
@@ -66,6 +67,73 @@ from store.db import (
 def _utc_iso_now() -> str:
     """Second-precision ISO 8601 UTC timestamp (matches items.published_at format)."""
     return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+# Cloud-cron mode is signaled by an environment variable (set by the GHA
+# workflow in .github/workflows/weekly-digest.yml). Manual local runs
+# leave it unset so they never write a cron-complete marker.
+CLOUD_CRON_MODE_ENV = "CLOUD_CRON_MODE"
+
+# Markers directory inside the runner workspace (or local working tree).
+# The workflow `rclone copy`-uploads this to the shared object-storage
+# bucket's `markers/` path after the pipeline succeeds (D-B5b).
+DEFAULT_MARKERS_DIR = Path("markers")
+
+
+def write_cron_complete_marker(
+    week_id: str,
+    markers_dir: Path | str | None = None,
+    *,
+    now: datetime | None = None,
+) -> Path:
+    """Write ``markers/cron-complete-{week_id}.json`` (D-B5b).
+
+    The cron-complete marker is the architectural seam between the cloud
+    Sunday cron and the residential home worker (05-CONTEXT.md D-B5b):
+    cron writes this file on success, then ``rclone copy``-uploads it to
+    the shared object-storage bucket. The worker polls the bucket every
+    ~10 minutes and, on finding a marker whose ``week_id`` matches the
+    current calendar week, downloads the database, drains pending
+    YouTube transcripts via ``--only-pending-transcripts``, commits the
+    upgraded digest JSON, and deletes the marker (idempotency: a
+    duplicate cycle finds no marker and exits).
+
+    ``week_id`` is validated through :func:`pipeline.week.parse_week_id`
+    so a malformed week id fails loudly rather than producing a marker
+    the worker cannot match.
+
+    Returns the path the marker was written to so the workflow can
+    upload it without recomputing the filename.
+    """
+    parse_week_id(week_id)
+    target_dir = Path(markers_dir) if markers_dir is not None else DEFAULT_MARKERS_DIR
+    target_dir.mkdir(parents=True, exist_ok=True)
+    completed = (now or datetime.now(UTC)).astimezone(UTC)
+    completed_iso = completed.strftime("%Y-%m-%dT%H:%M:%SZ")
+    target = target_dir / f"cron-complete-{week_id}.json"
+    payload = {"week_id": week_id, "completed_at": completed_iso}
+    target.write_text(json.dumps(payload), encoding="utf-8")
+    return target
+
+
+def _maybe_write_cron_complete_marker(week_id: str, log) -> None:
+    """Write the cron-complete marker only when ``CLOUD_CRON_MODE=1``.
+
+    Local manual ``pipeline.run all`` invocations never set this env var,
+    so a developer running the pipeline against the working tree does
+    not produce a marker the home worker might pick up.
+    """
+    if os.environ.get(CLOUD_CRON_MODE_ENV) != "1":
+        return
+    try:
+        path = write_cron_complete_marker(week_id)
+        log.info("orchestrator.cron_complete_marker_written", path=str(path))
+    except Exception as exc:  # pragma: no cover — best-effort; never break run_all
+        log.warning(
+            "orchestrator.cron_complete_marker_failed",
+            error=type(exc).__name__,
+            message=str(exc),
+        )
 
 if TYPE_CHECKING:
     from pipeline.budget import WeekBudget
@@ -2013,6 +2081,7 @@ def run_all(
                 budget=budget,
                 out_dir=out_dir,
             )
+            _maybe_write_cron_complete_marker(week_id, log)
             return stats
 
         except Exception as exc:
@@ -2041,6 +2110,8 @@ def run_all(
 
 
 __all__ = [
+    "CLOUD_CRON_MODE_ENV",
+    "DEFAULT_MARKERS_DIR",
     "RunStats",
     "run_all",
     "run_categorize",
@@ -2050,4 +2121,5 @@ __all__ = [
     "run_render",
     "run_rollup",
     "run_summarize",
+    "write_cron_complete_marker",
 ]
