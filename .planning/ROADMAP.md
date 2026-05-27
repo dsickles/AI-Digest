@@ -232,7 +232,7 @@ Plans:
 **Wave 1**
 
 - [x] 05-01-PLAN.md — Manual GHA workflow_dispatch + secret hygiene + Wave 0 test stubs (OPS-01, OPS-02, OPS-04) *(2026-05-24)*
-- [ ] 05-02-PLAN.md — B2 rclone sync + cron-complete marker + Sunday cron schedule (OPS-01)
+- [x] 05-02-PLAN.md — B2 rclone sync + cron-complete marker + Sunday cron schedule (OPS-01) — *Completed 2026-05-27*
 
 **Wave 2** *(05-03 blocked on 05-01; 05-04 on 05-03; 05-05 on 05-02)*
 
