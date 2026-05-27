@@ -56,6 +56,12 @@ PARTIAL_PUBLISH_COPY = (
 # Summary-status values that warrant an in-place "couldn't be generated" card
 # instead of the footer aside. Per LOCKED-01 (2026-05-23 refinement), the ONLY
 # status that routes to the footer is 'thin' (RSS body too short to summarize).
+#
+# Phase 5 plan 05-03 (D-B9) added `deferred_budget` for items the weekly
+# $1 hard cap halted before they could be summarized. LOCKED-01 explicitly
+# permits new statuses provided they are placed in either the in-place or
+# footer bucket — never silently routed by default. See
+# `.planning/LOCKED-DIRECTIVES.md` LOCKED-01 amendment 2026-05-27.
 _IN_PLACE_TRANSIENT_STATUSES = frozenset(
     {
         "quota_exhausted",
@@ -63,6 +69,7 @@ _IN_PLACE_TRANSIENT_STATUSES = frozenset(
         "parse_error",
         "client_init_error",
         "transcript_missing",
+        "deferred_budget",
     }
 )
 

@@ -48,6 +48,7 @@ removing one does too.
 
 **Locked:** 2026-05-22 after Phase 2 visual UAT
 **Refined:** 2026-05-23 during Phase 3 visual UAT (narrowed footer scope)
+**Amended:** 2026-05-27 during Phase 5 plan 05-03 (added `deferred_budget`)
 **Authority:** PROJECT.md `Key Decisions` table → row labeled
 "LOCKED — Footer-aside is RSS-thin-only"
 **History:**
@@ -59,7 +60,7 @@ removing one does too.
   main feed that the user rejected during Phase 2 UAT.
 - 2026-05-22 lock made footer = "anything we couldn't summarize"
   with quota_exhausted as the sole in-place exception.
-- 2026-05-23 refinement (this version) narrowed the footer to
+- 2026-05-23 refinement narrowed the footer to
   `summary_status='thin'` only. The 2026-05-22 lock was sending
   long-form videos (full transcripts fetched, LLM hit quota) and
   short RSS stubs to the same footer aside, blurring two genuinely
@@ -69,6 +70,15 @@ removing one does too.
   every other failure mode shows in-place with the locked degraded
   body so the reader sees context (publisher, video badge, date,
   category) rather than just an outbound link in a footer.
+- 2026-05-27 amendment (Phase 5 plan 05-03 / D-B9): added
+  `summary_status='deferred_budget'` to the in-place bucket for items
+  the $1/week LLM hard cap halted before they could be summarized.
+  The reader signal is identical to the other transient in-place
+  statuses ("we couldn't generate this one — the next run might fix
+  it") so it routes the same way. StatusBanner (OBS-03) carries the
+  spend-cap framing on the reader surface so the in-place card body
+  can stay the locked `QUOTA_BODY_COPY` string without referencing
+  the budget at all.
 
 **Rule:** Cards route to one of two display surfaces based on
 `summary_status`:
@@ -92,6 +102,10 @@ removing one does too.
      - `summary_status='transcript_missing'` — YouTube transcript
        not fetched yet (`pending_local` / `missing`); summary will
        come on the next residential catch-up + summarize run.
+     - `summary_status='deferred_budget'` — weekly $1 LLM spend cap
+       reached; summary deferred until next week (D-B9, plan 05-03).
+       The reader-surface framing lives on `StatusBanner.astro`
+       (OBS-03), never in the card body.
 
 **Why these are all the same UX:** the reader doesn't need to know
 *why* the summary isn't ready. Quota / api / parse / transcript-pending
