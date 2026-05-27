@@ -25,6 +25,9 @@ _SUMMARY_STATUS_KEYS = (
     "api_error",
     "parse_error",
     "client_init_error",
+    # Phase 5 D-B9: cap-deferred items show as an in-place degraded
+    # card per LOCKED-01 amendment in plan 05-03.
+    "deferred_budget",
 )
 
 
@@ -182,6 +185,11 @@ def build_pipeline_report(
 
     budget_block: dict[str, Any]
     if budget is not None:
+        # Phase 5 D-B9: hard_cap_hit is currently identical to `halted`
+        # — we keep both fields because StatusBanner (OBS-03) reads
+        # hard_cap_hit while pipeline notes / dev tools still read
+        # halted; should the semantics ever diverge (e.g. a soft cap),
+        # the reader-surface field can stay stable without renaming.
         budget_block = {
             "cap_usd": budget.cap_usd,
             "reserved_meta_usd": budget.reserved_meta_usd,
@@ -189,6 +197,8 @@ def build_pipeline_report(
             "pre_flight_estimate_usd": round(budget.pre_flight_estimate_usd, 6),
             "halted": budget.halted,
             "halted_at_stage": budget.halted_at_stage,
+            "hard_cap_hit": bool(budget.halted),
+            "deferred_items_count": len(budget.deferred_items),
         }
     else:
         cfg = __import__("pipeline.config", fromlist=["load_digest_config"]).load_digest_config()
@@ -199,6 +209,8 @@ def build_pipeline_report(
             "pre_flight_estimate_usd": 0.0,
             "halted": False,
             "halted_at_stage": None,
+            "hard_cap_hit": False,
+            "deferred_items_count": 0,
         }
 
     return {

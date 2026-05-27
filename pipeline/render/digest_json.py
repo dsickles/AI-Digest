@@ -284,6 +284,15 @@ def _build_pipeline_notes(
             f"{n} {noun} couldn't be generated this run due to a processing error."
         )
 
+    deferred_n = int(summary_status.get("deferred_budget", 0))
+    if deferred_n > 0:
+        # D-24: plain English on reader surface — never expose the
+        # `deferred_budget` sentinel itself. The number is enough.
+        noun = "story" if deferred_n == 1 else "stories"
+        details.append(
+            f"{deferred_n} {noun} were skipped after the weekly spend cap was reached."
+        )
+
     for source_id, health in source_health.items():
         err = health.get("last_error_category")
         if err in _FETCH_FAILURE_CATEGORIES:

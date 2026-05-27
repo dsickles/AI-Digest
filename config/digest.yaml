@@ -5,7 +5,11 @@ dedup:
   title_fuzzy_threshold: 0.85
 
 pipeline:
-  hard_stop_usd: 2.0
+  # Hard cap per ISO week (D-B9). Reaching this halts new LLM calls and
+  # marks unprocessed canonical items with summary_status='deferred_budget'
+  # (LOCKED-01 in-place card). HARD_CAP_USD env var overrides this for
+  # CI / operator runs.
+  hard_stop_usd: 1.0
   meta_reservation_usd: 0.10
 
 models:

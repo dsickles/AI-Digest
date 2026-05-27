@@ -397,6 +397,70 @@ def _dedup_week(
     )
 
 
+def _mark_deferred_budget_for_remaining(
+    *,
+    conn,
+    log,
+    week_id: str,
+    rows,
+    canonical_ids: set[str],
+    summaries: dict[str, SummaryResult],
+    budget: WeekBudget,
+) -> None:
+    """Mark every canonical item left un-summarized at cap halt (D-B9).
+
+    Walks every canonical row in the week and inserts an
+    ``item_summaries`` row with ``summary_status='deferred_budget'`` for
+    each one that still lacks a summary at halt time. The row carries
+    ``tldr=None`` and ``summary_confidence='unavailable'`` so the
+    partition router treats it as an in-place degraded card (LOCKED-01:
+    deferred_budget is explicitly in ``_IN_PLACE_TRANSIENT_STATUSES`` —
+    see plan 05-03 task 5-03-02 and the LOCKED-DIRECTIVES.md
+    amendment).
+
+    Pre-existing rows are not overwritten: if the orchestrator already
+    persisted a summary for an item earlier in the run (e.g. a prior
+    daily-retry success that's now part of ``summaries`` or visible via
+    ``get_existing_summary``), we leave it alone. The deferred marker
+    is strictly for items that have **no** ``item_summaries`` row yet.
+    This means the helper is safe to call from any halt point — the
+    same canonical-without-summary set falls out regardless of which
+    row tripped the cap.
+
+    The budget object accumulates the deferred ids so the reporter can
+    emit ``budget.deferred_items_count`` without re-querying SQL.
+    """
+    for row in rows:
+        item_id = row["item_id"]
+        if item_id not in canonical_ids:
+            continue
+        if item_id in summaries:
+            continue
+        if get_existing_summary(conn, item_id, week_id, "summarize_v1") is not None:
+            continue
+        insert_item_summary(
+            conn,
+            item_id=item_id,
+            week_id=week_id,
+            tldr=None,
+            summary_confidence="unavailable",
+            prompt_version="summarize_v1",
+            model_id="",
+            input_tokens=None,
+            output_tokens=None,
+            cost_usd_estimate=None,
+            summary_input_truncated=False,
+            summary_status="deferred_budget",
+        )
+        budget.mark_deferred_budget(item_id)
+    if budget.deferred_items:
+        log.info(
+            "budget.deferred_budget_marked",
+            count=len(budget.deferred_items),
+            cap_usd=budget.cap_usd,
+        )
+
+
 def _summarize_week_items(
     *,
     week_id: str,
@@ -462,6 +526,15 @@ def _summarize_week_items(
                 "budget.summarize_halted",
                 spent_usd=budget.spent_usd,
                 cap_usd=budget.cap_usd,
+            )
+            _mark_deferred_budget_for_remaining(
+                conn=conn,
+                log=log,
+                week_id=week_id,
+                rows=rows,
+                canonical_ids=canonical_ids,
+                summaries=summaries,
+                budget=budget,
             )
             break
 
