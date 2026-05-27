@@ -1,8 +1,17 @@
 name: Weekly digest
 
-# Phase 5 plan 05-01: dispatch-only entry point. Sunday cron schedule
-# is added by plan 05-02 (D-B1). Object-storage sync, marker handoff,
-# and heartbeat pings are layered on by plans 05-02 / 05-05 / 05-06.
+# Phase 5 plan 05-02 wires the Sunday cron schedule and the
+# object-storage rendezvous on top of the dispatch-only entry from 05-01.
+#
+# Cron expression intent (D-B1): Sunday 10:00 UTC, which is ~05:00 EST
+# or ~06:00 EDT (we accept ±1h ET drift across DST rather than paying
+# for a DST-aware schedule). The home worker is the residential-IP
+# transcript catch-up; this workflow is the cloud half of the
+# rendezvous and writes a marker the worker polls for.
+#
+# Bucket name lives only in repo secrets (B2_BUCKET) / operator
+# rclone.conf — never in this committed YAML (Pre-public-release
+# Privacy Sweep).
 
 on:
   workflow_dispatch:
@@ -11,6 +20,9 @@ on:
         description: "ISO week id (YYYY-Www). Leave blank to resolve from the current week."
         required: false
         type: string
+  schedule:
+    # Sunday 10:00 UTC — see header comment for ET intent.
+    - cron: "0 10 * * 0"
 
 permissions:
   contents: write
@@ -26,6 +38,8 @@ jobs:
     timeout-minutes: 30
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      CLOUD_CRON_MODE: "1"
+      B2_BUCKET: ${{ secrets.B2_BUCKET }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -40,6 +54,33 @@ jobs:
       - name: Install Python and project dependencies
         run: uv sync --frozen
 
+      - name: Install rclone
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends rclone
+          rclone version | head -1
+
+      - name: Materialize rclone configuration
+        # Writes ~/.config/rclone/rclone.conf at job runtime from repo
+        # secrets. The remote alias is `b2`; the bucket name is read
+        # from B2_BUCKET (also a secret) at copy time. Config is
+        # chmod 600 and the job runner is ephemeral — the file is
+        # never committed and disappears with the runner (T-05-02-01).
+        env:
+          B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+          B2_APPLICATION_KEY: ${{ secrets.B2_APPLICATION_KEY }}
+        run: |
+          mkdir -p "${HOME}/.config/rclone"
+          umask 077
+          cat > "${HOME}/.config/rclone/rclone.conf" <<EOF
+          [b2]
+          type = b2
+          account = ${B2_KEY_ID}
+          key = ${B2_APPLICATION_KEY}
+          hard_delete = false
+          EOF
+          chmod 600 "${HOME}/.config/rclone/rclone.conf"
+
       - name: Resolve digest week id
         id: resolve_week
         run: |
@@ -52,8 +93,45 @@ jobs:
           echo "Resolved digest week_id: $WEEK_ID"
           echo "week_id=$WEEK_ID" >> "$GITHUB_OUTPUT"
 
+      - name: Prepare data and markers directories
+        run: mkdir -p data markers
+
+      - name: Pull working database from object storage
+        # First-run tolerance: an empty bucket has no db/aidigest.db yet,
+        # so rclone exits non-zero. We swallow that case so the very
+        # first cron run can bootstrap the database from scratch (the
+        # pipeline's init_db creates the schema on its own); subsequent
+        # runs find the file and pull it down.
+        run: |
+          if ! rclone copy "b2:${B2_BUCKET}/db/aidigest.db" data/ --no-traverse; then
+            echo "No prior database found on object storage — bootstrapping a fresh one."
+          fi
+
       - name: Run pipeline (ingest → summarize → render)
-        run: uv run python -m pipeline.run all --week "${{ steps.resolve_week.outputs.week_id }}"
+        env:
+          WEEK_ID: ${{ steps.resolve_week.outputs.week_id }}
+        run: uv run python -m pipeline.run all --week "${WEEK_ID}"
+
+      - name: Push working database back to object storage
+        # Use `rclone copy` not `sync` — `sync` would delete other
+        # objects in the destination (e.g. markers from earlier cycles
+        # in the worker handoff). D-B3 + RESEARCH Pitfall 4.
+        run: rclone copy data/aidigest.db "b2:${B2_BUCKET}/db/"
+
+      - name: Upload cron-complete marker
+        # The marker is the home-worker rendezvous signal (D-B5b). The
+        # orchestrator wrote it locally when CLOUD_CRON_MODE=1; we copy
+        # it up so the worker's poller can see it. `copy` not `sync` so
+        # other workers' markers (or stale files) are never deleted.
+        env:
+          WEEK_ID: ${{ steps.resolve_week.outputs.week_id }}
+        run: |
+          if [ -f "markers/cron-complete-${WEEK_ID}.json" ]; then
+            rclone copy "markers/cron-complete-${WEEK_ID}.json" "b2:${B2_BUCKET}/markers/"
+          else
+            echo "No cron-complete marker present — pipeline likely halted before finalize."
+            exit 1
+          fi
 
       - name: Commit digest and report JSON
         env:
@@ -66,5 +144,5 @@ jobs:
             echo "No digest changes to commit for $WEEK_ID."
             exit 0
           fi
-          git commit -m "chore(digest): manual weekly $WEEK_ID"
+          git commit -m "chore(digest): cloud weekly $WEEK_ID"
           git push
