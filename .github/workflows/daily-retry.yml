@@ -1,0 +1,120 @@
+name: Daily transient retry
+
+# Mon–Sat cloud retry for transient LLM summarize failures (D-B4).
+# No ingest, no cron-complete marker, no Healthchecks pings — best-effort
+# recovery bounded by the same weekly spend counter as the Sunday cron.
+#
+# Bucket name lives only in repo secrets (B2_BUCKET) — never in committed
+# YAML (Pre-public-release Privacy Sweep).
+
+on:
+  workflow_dispatch:
+    inputs:
+      week_id:
+        description: "ISO week id (YYYY-Www). Leave blank to resolve from the active digest week."
+        required: false
+        type: string
+  schedule:
+    # Mon–Sat 10:00 UTC (D-B4).
+    - cron: "0 10 * * 1-6"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-retry
+  cancel-in-progress: false
+
+jobs:
+  retry:
+    name: Retry transient summarize failures
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      B2_BUCKET: ${{ secrets.B2_BUCKET }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Install Python and project dependencies
+        run: uv sync --frozen
+
+      - name: Install rclone
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends rclone
+          rclone version | head -1
+
+      - name: Materialize rclone configuration
+        env:
+          B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+          B2_APPLICATION_KEY: ${{ secrets.B2_APPLICATION_KEY }}
+        run: |
+          mkdir -p "${HOME}/.config/rclone"
+          umask 077
+          cat > "${HOME}/.config/rclone/rclone.conf" <<EOF
+          [b2]
+          type = b2
+          account = ${B2_KEY_ID}
+          key = ${B2_APPLICATION_KEY}
+          hard_delete = false
+          EOF
+          chmod 600 "${HOME}/.config/rclone/rclone.conf"
+
+      - name: Resolve digest week id
+        id: resolve_week
+        run: |
+          INPUT_WEEK="${{ inputs.week_id }}"
+          if [ -n "$INPUT_WEEK" ]; then
+            WEEK_ID="$INPUT_WEEK"
+          else
+            WEEK_ID="$(uv run python -c 'from pipeline import week; fn = getattr(week, "active_digest_week_id", week.current_week_id); print(fn())')"
+          fi
+          echo "Resolved digest week_id: $WEEK_ID"
+          echo "week_id=$WEEK_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare data directory
+        run: mkdir -p data
+
+      - name: Pull working database from object storage
+        run: |
+          if ! rclone copy "b2:${B2_BUCKET}/db/aidigest.db" data/ --no-traverse; then
+            echo "No prior database found on object storage — bootstrapping a fresh one."
+          fi
+
+      - name: Retry transient summarize failures
+        env:
+          WEEK_ID: ${{ steps.resolve_week.outputs.week_id }}
+        run: uv run python -m pipeline.run summarize --week "$WEEK_ID" --retry-transient-only
+
+      - name: Re-render digest JSON after summarize changes
+        # Explicit render ensures D-68 cascade output lands in the committed
+        # archive when summarize alone does not trigger a full re-emit.
+        env:
+          WEEK_ID: ${{ steps.resolve_week.outputs.week_id }}
+        run: uv run python -m pipeline.run render --week "$WEEK_ID"
+
+      - name: Push working database back to object storage
+        run: rclone copy data/aidigest.db "b2:${B2_BUCKET}/db/"
+
+      - name: Commit digest and report JSON
+        env:
+          WEEK_ID: ${{ steps.resolve_week.outputs.week_id }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add web/src/content/digests/ web/src/content/reports/ || true
+          if git diff --cached --quiet; then
+            echo "No digest changes to commit for $WEEK_ID."
+            exit 0
+          fi
+          git commit -m "chore(digest): daily transient retry $WEEK_ID"
+          git push
