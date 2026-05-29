@@ -179,6 +179,25 @@ captions (`TranscriptsDisabled`) the catch-up path advances the status to
 `missing` — that's the only path in the codebase that may set `missing`, so
 those items will not be retried by future catch-up runs.
 
+### Daily transient LLM retry
+
+The Mon–Sat cloud workflow (`.github/workflows/daily-retry.yml`) re-runs
+summarize for items that failed with a **transient** LLM error —
+`quota_exhausted`, `api_error`, or `client_init_error` — without re-ingesting
+sources. Cap-deferred items (`deferred_budget`) are **not** retried; they stay
+skipped for the week per the $1/week spend cap (D-B9).
+
+```bash
+# Retry transient summarize failures for the current week (no ingest)
+uv run python -m pipeline.run summarize --retry-transient-only
+
+# Same for a specific week
+uv run python -m pipeline.run summarize --week 2026-W21 --retry-transient-only
+```
+
+The pass shares the cross-run weekly spend counter with the Sunday cron, so
+retries halt when the cap is already exhausted.
+
 ### Manual browser check
 
 Open the digest and confirm readability (dark theme, week header, source badges):

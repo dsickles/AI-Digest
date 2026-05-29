@@ -42,6 +42,14 @@ _PENDING_TRANSCRIPTS_HELP = (
     "network where the YouTube transcript API works without a proxy."
 )
 
+_RETRY_TRANSIENT_HELP = (
+    "Re-run summarize only for items whose summary_status is a transient LLM "
+    "failure (quota_exhausted, api_error, client_init_error). Skips "
+    "deferred_budget, parse_error, and items without summaries. Does not "
+    "ingest new sources — intended for the Mon–Sat cloud daily-retry workflow "
+    "(D-B4)."
+)
+
 
 def _add_week_arg(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
@@ -60,6 +68,16 @@ def _add_only_pending_transcripts_arg(parser: argparse.ArgumentParser) -> None:
         action="store_true",
         default=False,
         help=_PENDING_TRANSCRIPTS_HELP,
+    )
+
+
+def _add_retry_transient_only_arg(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--retry-transient-only",
+        dest="retry_transient_only",
+        action="store_true",
+        default=False,
+        help=_RETRY_TRANSIENT_HELP,
     )
 
 
@@ -179,6 +197,7 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Summarize items in the week window missing a TL;DR (LLM).",
     )
     _add_week_arg(summarize_cmd)
+    _add_retry_transient_only_arg(summarize_cmd)
     _add_phase3_flags(summarize_cmd)
 
     render_cmd = sub.add_parser(
@@ -239,6 +258,10 @@ def main(argv: list[str] | None = None) -> int:
             "--only-pending-transcripts is only valid with `ingest` or `all`"
         )
 
+    retry_transient = getattr(args, "retry_transient_only", False)
+    if retry_transient and command != "summarize":
+        parser.error("--retry-transient-only is only valid with `summarize`")
+
     p3 = _phase3_kwargs(args)
 
     try:
@@ -249,7 +272,11 @@ def main(argv: list[str] | None = None) -> int:
         elif command == "summarize":
             from pipeline.orchestrator import run_summarize
 
-            stats = run_summarize(week_id, max_cost_usd=p3["max_cost_usd"])
+            stats = run_summarize(
+                week_id,
+                max_cost_usd=p3["max_cost_usd"],
+                retry_transient_only=retry_transient,
+            )
         elif command == "render":
             from pipeline.orchestrator import run_render
 

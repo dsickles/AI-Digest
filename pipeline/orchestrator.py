@@ -74,6 +74,13 @@ def _utc_iso_now() -> str:
 # leave it unset so they never write a cron-complete marker.
 CLOUD_CRON_MODE_ENV = "CLOUD_CRON_MODE"
 
+# Daily-retry scope (D-B4): only transient LLM failures re-bill on Mon–Sat.
+# ``deferred_budget`` is intentionally excluded (D-B9 abandons cap-deferred
+# items for the week).
+TRANSIENT_RETRY_STATUSES: frozenset[str] = frozenset(
+    {"quota_exhausted", "api_error", "client_init_error"}
+)
+
 # Markers directory inside the runner workspace (or local working tree).
 # The workflow `rclone copy`-uploads this to the shared object-storage
 # bucket's `markers/` path after the pipeline succeeds (D-B5b).
@@ -470,8 +477,15 @@ def _summarize_week_items(
     log,
     stats: RunStats,
     budget: WeekBudget | None = None,
+    retry_transient_only: bool = False,
 ) -> dict[str, SummaryResult]:
-    """Summarize items in [week_start, week_end] missing a current summary."""
+    """Summarize items in [week_start, week_end] missing a current summary.
+
+    When ``retry_transient_only`` is True (D-B4 daily-retry), only re-process
+    rows whose ``summary_status`` is in :data:`TRANSIENT_RETRY_STATUSES`.
+    Items without summaries, ``deferred_budget``, and other non-transient
+    statuses are skipped — no ingest runs in this mode.
+    """
     from pipeline.budget import META_STAGE_ESTIMATE_USD
     from pipeline.llm.summarize import GeminiKeyMissing, SummaryResult, summarize_item
 
@@ -495,7 +509,24 @@ def _summarize_week_items(
         if item_id not in canonical_ids:
             continue
         existing = get_existing_summary(conn, item_id, week_id, "summarize_v1")
-        if existing is not None:
+        if retry_transient_only:
+            if existing is None:
+                continue
+            existing_status = (
+                existing["summary_status"]
+                if "summary_status" in existing.keys() and existing["summary_status"]
+                else "ok"
+            )
+            if existing_status not in TRANSIENT_RETRY_STATUSES:
+                continue
+            conn.execute(
+                """
+                DELETE FROM item_summaries
+                 WHERE item_id = ? AND week_id = ? AND prompt_version = ?
+                """,
+                (item_id, week_id, "summarize_v1"),
+            )
+        elif existing is not None:
             existing_status = (
                 existing["summary_status"]
                 if "summary_status" in existing.keys() and existing["summary_status"]
@@ -1646,6 +1677,7 @@ def run_summarize(
     db_path: Path | str | None = None,
     out_dir: Path | None = None,
     max_cost_usd: float | None = None,
+    retry_transient_only: bool = False,
 ) -> RunStats:
     """Summarize items in the week window that lack a current summary."""
     from pipeline.budget import WeekBudget
@@ -1675,6 +1707,7 @@ def run_summarize(
                 log=log,
                 stats=stats,
                 budget=budget,
+                retry_transient_only=retry_transient_only,
             )
             _finalize(
                 conn, run_id, stats, phase="summarize", budget=budget, out_dir=out_dir
@@ -2182,10 +2215,25 @@ def run_all(
             raise
 
 
+def retry_transient_summaries(
+    week_id: str,
+    **kwargs,
+) -> RunStats:
+    """Re-summarize transient LLM failures only (D-B4 Mon–Sat daily-retry).
+
+    Thin wrapper around :func:`run_summarize` with ``retry_transient_only=True``.
+    Scope: ``summary_status ∈ TRANSIENT_RETRY_STATUSES`` — excludes
+    ``deferred_budget`` per D-B9.
+    """
+    return run_summarize(week_id, retry_transient_only=True, **kwargs)
+
+
 __all__ = [
     "CLOUD_CRON_MODE_ENV",
     "DEFAULT_MARKERS_DIR",
     "RunStats",
+    "TRANSIENT_RETRY_STATUSES",
+    "retry_transient_summaries",
     "run_all",
     "run_categorize",
     "run_dedup",
