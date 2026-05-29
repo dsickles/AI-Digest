@@ -63,8 +63,8 @@ Requirements for initial release. Each maps to a roadmap phase (see Traceability
 
 - [x] **OPS-01**: Pipeline runs on a scheduled weekly cadence (GitHub Actions cron or equivalent) without manual intervention
 - [ ] **OPS-02**: Pipeline can be triggered manually for testing/recovery
-- [ ] **OPS-03**: Site is hosted on a free or near-free tier and auto-deploys when a new digest is committed
-- [ ] **OPS-04**: API keys and newsletter forwarding addresses are stored as secrets, never committed to the repo
+- [x] **OPS-03**: Site is hosted on a free or near-free tier and auto-deploys when a new digest is committed
+- [x] **OPS-04**: API keys and newsletter forwarding addresses are stored as secrets, never committed to the repo
 - [ ] **OPS-05**: LLM spend has a per-run cost ceiling (target $2/week, hard cap $5/week); pipeline halts LLM work if the hard cap is hit and still publishes whatever is done
 
 ## v2 Requirements
@@ -154,8 +154,8 @@ Filled in by the roadmapper. Status updated as phases progress.
 | OBS-01 | Phase 4 | Complete |
 | OPS-01 | Phase 5 | Complete |
 | OPS-02 | Phase 5 | Pending |
-| OPS-03 | Phase 5 | Pending |
-| OPS-04 | Phase 5 | Pending |
+| OPS-03 | Phase 5 | Complete |
+| OPS-04 | Phase 5 | Complete |
 | OPS-05 | Phase 5 | Pending |
 | OBS-03 | Phase 5 | Pending |
 

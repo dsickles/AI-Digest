@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 05-04-PLAN.md (daily-retry.yml + --retry-transient-only). Next: 05-05 (worker Docker + GHCR) and 05-06 (sentinel + heartbeat) — independent of each other.
-last_updated: "2026-05-29T16:00:00.000Z"
-last_activity: 2026-05-29 -- Phase 5 plan 05-04 complete
+stopped_at: "Completed 05-04-PLAN.md (daily-retry.yml + --retry-transient-only). Next: 05-05 (worker Docker + GHCR) and 05-06 (sentinel + heartbeat)."
+last_updated: "2026-05-29T15:29:04.291Z"
+last_activity: 2026-05-29
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 32
-  completed_plans: 30
-  percent: 94
+  completed_plans: 31
+  percent: 80
 ---
 
 # Project State
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 ## Current Position
 
 Phase: 05 (ops-automation) — EXECUTING (Wave 3 partial)
-Plan: 4 of 6 complete (05-01..05-04 shipped; 05-05..05-06 pending)
+Plan: 5 of 6 complete (05-01..05-04 shipped; 05-05..05-06 pending)
 Status: Ready to execute
-Last activity: 2026-05-29 -- Phase 5 plan 05-04 complete
+Last activity: 2026-05-29
 
 Progress: 30/32 plans complete; Phase 05: 4/6 plans
 Next: 05-05 (worker Docker + GHCR multi-arch) and 05-06 (sentinel + heartbeat) — independent, can run in parallel
@@ -154,7 +154,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-29T16:00:00.000Z
+Last session: 2026-05-29T15:29:04.285Z
 Stopped at: Completed 05-04-PLAN.md (daily-retry.yml + --retry-transient-only). Next: 05-05 (worker Docker + GHCR) and 05-06 (sentinel + heartbeat).
 Resume file: None
 Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Phase 3 learnings extraction skipped — institutional knowledge lives in 03-XX-SUMMARY.md, 03-VERIFICATION.md, 03-HUMAN-UAT.md, and PROJECT.md Key Decisions for now; W21 JSON render drift left in working tree per operator instruction ("leave the files as is for now") — they already validate against the new tightened Zod schemas.
