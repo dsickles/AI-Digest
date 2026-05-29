@@ -4,12 +4,23 @@ import Header from '../components/Header.astro';
 import DigestBriefing from '../components/DigestBriefing.astro';
 import PipelineNotes from '../components/PipelineNotes.astro';
 import PartialPublishNotice from '../components/PartialPublishNotice.astro';
+import StatusBanner from '../components/StatusBanner.astro';
+import { getCollection } from 'astro:content';
 import { getLatestDigest } from '../lib/latestWeek';
 import { canonicalDigestUrl } from '../lib/canonicalUrl';
 
 const digest = await getLatestDigest();
 const { data } = digest;
 const canonicalHref = canonicalDigestUrl(digest.id);
+
+// Match the per-week pipeline report by week_id. Missing reports are
+// non-fatal — older weeks may not have one and the banner falls back
+// to "complete" framing when budget data is unavailable.
+const reports = await getCollection('reports');
+const report = reports.find((r) => r.data.week_id === data.week_id);
+const hardCapHit = report?.data.budget.hard_cap_hit ?? false;
+const deferredItemsCount = report?.data.budget.deferred_items_count ?? 0;
+const pendingTranscriptsCount = data.pending_transcripts_count ?? 0;
 ---
 
 <BaseLayout title="AI Digest" canonicalHref={canonicalHref}>
@@ -19,6 +30,12 @@ const canonicalHref = canonicalDigestUrl(digest.id);
     updatedAt={data.updated_at}
   />
   <main class="mx-auto w-full max-w-[720px] px-4 py-6 md:px-5">
+    <StatusBanner
+      pendingTranscriptsCount={pendingTranscriptsCount}
+      hardCapHit={hardCapHit}
+      deferredItemsCount={deferredItemsCount}
+      updatedAt={data.updated_at}
+    />
     <PipelineNotes pipelineNotes={data.pipeline_notes} />
     <PartialPublishNotice failureNotice={data.failure_notice} />
     <DigestBriefing digest={digest} />

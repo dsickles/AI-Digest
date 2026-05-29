@@ -61,9 +61,27 @@ const digests = defineCollection({
     }),
     main_feed: z.array(digestCardSchema),
     footer_aside: z.array(digestCardSchema),
+    pending_transcripts_count: z.number().int().nonnegative().default(0),
     pipeline_notes: pipelineNotesSchema.nullable().optional(),
     failure_notice: failureNoticeSchema.nullable().optional(),
   }),
+});
+
+// Phase 5 plan 05-03: budget block carries the two reader-banner
+// inputs (hard_cap_hit, deferred_items_count) plus the existing
+// halt/cap fields. We tighten the schema from a permissive
+// `z.record` so Astro fails the build when the pipeline emits a
+// report missing either field — that's the contract OBS-03's
+// StatusBanner depends on.
+const budgetSchema = z.object({
+  cap_usd: z.number().nonnegative(),
+  reserved_meta_usd: z.number().nonnegative(),
+  spent_usd: z.number().nonnegative(),
+  pre_flight_estimate_usd: z.number().nonnegative().optional(),
+  halted: z.boolean(),
+  halted_at_stage: z.string().nullable(),
+  hard_cap_hit: z.boolean(),
+  deferred_items_count: z.number().int().nonnegative(),
 });
 
 const reports = defineCollection({
@@ -82,7 +100,7 @@ const reports = defineCollection({
     summary_status: z.record(z.string(), z.number()),
     stages: z.record(z.string(), z.unknown()),
     source_health: z.record(z.string(), z.unknown()),
-    budget: z.record(z.string(), z.unknown()),
+    budget: budgetSchema,
   }),
 });
 

@@ -111,6 +111,11 @@ class DigestDocument(BaseModel):
     category_sections: CategorySectionsJson
     main_feed: list[DigestCardJson]
     footer_aside: list[DigestCardJson]
+    # Phase 5 plan 05-03: surfaced to StatusBanner (OBS-03) as the
+    # `filling_in` variant input. We count cards with
+    # `transcript_status='pending_local'` at emission time so Astro
+    # can stay structurally simple (no card-level scanning at build).
+    pending_transcripts_count: int = 0
     pipeline_notes: PipelineNotesJson | None = None
     failure_notice: FailureNoticeJson | None = None
 
@@ -391,6 +396,9 @@ def emit_digest_json(
         )
 
     now_iso = _utc_iso_now()
+    pending_transcripts_count = sum(
+        1 for c in cards if c.transcript_status == "pending_local"
+    )
     doc = DigestDocument(
         week_id=week_id,
         generated_at=now_iso,
@@ -404,6 +412,7 @@ def emit_digest_json(
         category_sections=_category_sections_from_rollups(grouped, rollups),
         main_feed=[_card_to_json(card) for card in main_feed],
         footer_aside=[_card_to_json(card) for card in footer_sorted],
+        pending_transcripts_count=pending_transcripts_count,
         pipeline_notes=pipeline_notes,
         failure_notice=failure_notice,
     )
