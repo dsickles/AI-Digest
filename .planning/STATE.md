@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 05 Wave 1 complete — 05-01 (workflow_dispatch + Wave 0 RED stubs + secret hygiene) shipped as 3 atomic commits (aad7bea, 2561fc8, 19f158c). Awaiting wave-2 go.
-last_updated: "2026-05-24T22:55:00.000Z"
-last_activity: 2026-05-24 -- Phase 5 plan 05-01 complete (Wave 1)
+stopped_at: Phase 05 Wave 2 complete — 05-02 (cron + B2 rendezvous + marker) shipped as 2 atomic commits (42177c9, e7d5458) + summary (e4057b7); 05-03 ($1/week hard cap + deferred_budget + LOCKED-01 amendment + StatusBanner + vitest) shipped as 3 atomic commits (921008a, 01dcec8, 3093613). Awaiting wave-3 go.
+last_updated: "2026-05-29T15:00:00.000Z"
+last_activity: 2026-05-29 -- Phase 5 Wave 2 complete (plans 05-02 + 05-03)
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 32
-  completed_plans: 27
-  percent: 84
+  completed_plans: 29
+  percent: 91
 ---
 
 # Project State
@@ -21,17 +21,17 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-21)
 
 **Core value:** A coherent narrative of "what happened in AI this week" across all my sources — read in 15 minutes instead of 5+ hours of skimming feeds.
-**Current focus:** Phase 05 — Ops & Automation (Wave 1 of 4 complete; awaiting Wave 2 go from operator)
+**Current focus:** Phase 05 — Ops & Automation (Wave 2 of 4 complete; awaiting Wave 3 go from operator)
 
 ## Current Position
 
-Phase: 05 (ops-automation) — EXECUTING (Wave 1/4 complete)
-Plan: 1 of 6 complete (05-01 shipped; 05-02..05-06 pending)
-Status: Wave 1 done — checkpoint pause per wave-by-wave gating mode
-Last activity: 2026-05-24 -- Phase 5 plan 05-01 complete (Wave 1)
+Phase: 05 (ops-automation) — EXECUTING (Wave 2/4 complete)
+Plan: 3 of 6 complete (05-01, 05-02, 05-03 shipped; 05-04..05-06 pending)
+Status: Wave 2 done — checkpoint pause per wave-by-wave gating mode
+Last activity: 2026-05-29 -- Phase 5 Wave 2 complete (plans 05-02 + 05-03)
 
-Progress: 27/32 plans complete (5 phases × ~6 plans avg); Phase 05: 1/6 plans (Wave 1 done, Wave 2 next)
-Next: Wave 2 = plans 05-02 (cron + B2 marker) + 05-03 (budget cap + StatusBanner) — run in parallel per plan dependency graph
+Progress: 29/32 plans complete (5 phases × ~6 plans avg); Phase 05: 3/6 plans (Wave 2 done, Wave 3 next)
+Next: Wave 3 = plans 05-04 (Mon–Sat daily retry + --retry-transient-only) + 05-05 (worker Docker + GHCR multi-arch) — independent, can run in parallel per plan dependency graph
 
 ## Performance Metrics
 
@@ -121,6 +121,8 @@ Recent decisions affecting current work:
 - [Phase 04]: 04-07: WR-01 closed — permalink slugs from digest.id + canonicalDigestUrl.toLowerCase(); LOCKED-01 routing untouched
 - **05-01 (2026-05-24):** Wave 1 vertical slice shipped — `.github/workflows/weekly-digest.yml` is dispatch-only (cron explicitly deferred to 05-02); Wave 0 RED stub layer pins all Phase 5 contracts before any implementation lands (5 pytest + 1 vitest files, each assertion names its target plan); `b2_stub_fixture` + `healthcheck_stub_fixture` give downstream plans a zero-dependency network-free way to test cron/worker/sentinel; `actionlint` is operator-installed via Homebrew **or** the official prebuilt-binary curl script to gitignored `.tools/` (both paths documented in 05-VALIDATION.md footnote)
 - **05-01 (2026-05-24):** `worker/.env.example` uses vendor-prescribed env var names (D-B8) — Privacy Sweep applies to prose and literal bucket/repo names, not to standard secret identifiers a forker must recognize
+- **05-02 (2026-05-27):** Cron-complete marker writer (`pipeline.orchestrator.write_cron_complete_marker`) gated by `CLOUD_CRON_MODE=1` env var (exact-match `"1"`; any other value is local-manual mode and never writes a marker the home worker might pick up). Sunday cron `0 10 * * 0` lands on `weekly-digest.yml` alongside the dispatch entry from 05-01. `rclone.conf` materialized at job runtime from `B2_KEY_ID`/`B2_APPLICATION_KEY` secrets (chmod 600); `B2_BUCKET` is also a secret (no literal bucket name in committed YAML per Privacy Sweep). DB round-trip uses `rclone copy` (never `sync`) with first-run tolerance for an empty bucket; marker-upload step exits non-zero if the marker is missing (defensive guard against a regressed orchestrator hook).
+- **05-03 (2026-05-29):** $1/week LLM hard cap with cross-run cumulative spend. `pipeline_runs.cost_usd_estimate` SUM over status IN (`success`, `partial`, `failed`) and phase IN (`all`, `summarize`) — failed-run spend still counts (hit the wallet); isolated `run_render` rows excluded (no double-count). `HARD_CAP_USD` env override with precedence `cap_override > env > config`; invalid env values silently fall back. Halt-and-mark: on cap fire, `_mark_deferred_budget_for_remaining` walks all canonical rows and inserts `item_summaries` with `summary_status='deferred_budget'` for each one without an existing summary (pre-existing rows never overwritten). LOCKED-01 amended in same commit as code: `deferred_budget` routes in-place (not footer); `QUOTA_BODY_COPY` untouched. StatusBanner.astro reads `pipeline_report.budget.{hard_cap_hit, deferred_items_count}` + new digest field `pending_transcripts_count`; variant precedence `partial_cap > filling_in > complete` (reader anxiety hierarchy); hardCapHit with zero deferred items falls back to complete (degenerate-signal guard); negative inputs clamped. `content.config.ts` reports.budget tightened from `z.record` to explicit `budgetSchema` so missing banner fields fail the Astro build. vitest 3.2.4 dev-only.
 - **Phase 05 discuss-phase (2026-05-24):** 9 decisions locked (D-B1..B9). Cloud scheduler = GHA cron (D-B1). Static publish = Vercel Hobby + Git integration (D-B2). Shared SQLite storage = Backblaze B2 + rclone (D-B3). Cloud-side daily retry = Mon–Sat GHA workflow scoped to transient LLM failures (D-B4). Home worker = multi-arch Docker container (D-B5a) handing off via B2 marker rendezvous, not self-hosted GHA runner (D-B5b — public-repo PR-fork attack surface). Reader-confidence promise = complete digest by Sun 07:00 ET (D-B6a); week boundary = Sun 00:00 ET – Sat 23:59 ET (D-B6b). Heartbeat = Healthchecks.io 3 checks + GHA failure email + Monday sentinel (D-B7). Secret hygiene = repo secrets + host `.env` + fine-grained PAT (annual rotation) + GitHub native scanning, no pre-commit hook (D-B8). LLM spend caps = $1/week app-side + $10/month vendor-side, graceful degrade on hit, cap-deferred items abandoned (no auto-backfill) (D-B9). New sentinel status `summary_status='deferred_budget'` added to `_IN_PLACE_TRANSIENT_STATUSES`. Architecture diagram: Mermaid sequence diagram with 8 actors (Cron, Backblaze, Sources, Gemini, Home Worker, GitHub, Vercel, Reader).
 
 ### Pending Todos
@@ -150,7 +152,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-24T16:30:00.000Z
-Stopped at: Phase 05 discuss-phase complete — produced 05-CONTEXT.md, 05-DISCUSSION-LOG.md, and `.planning/runbooks/leak-recovery.md`. Architecture sequence diagram locked.
-Resume file: `.planning/phases/05-ops-automation/05-CONTEXT.md`
-Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Phase 3 learnings extraction skipped — institutional knowledge lives in 03-XX-SUMMARY.md, 03-VERIFICATION.md, 03-HUMAN-UAT.md, and PROJECT.md Key Decisions for now
+Last session: 2026-05-29T15:00:00.000Z
+Stopped at: Phase 05 Wave 2 complete (3/6 Phase-5 plans done). Wave 3 = 05-04 (Mon–Sat daily-retry.yml + --retry-transient-only) + 05-05 (home worker Docker + GHCR multi-arch). Both share the cross-run weekly spend counter introduced in 05-03; both are independent of each other.
+Resume file: `.planning/phases/05-ops-automation/05-04-PLAN.md` (or 05-05-PLAN.md)
+Pending operator follow-ups: 02-UAT.md tests 6 + 7b (fault-injection, opportunistic); Phase 3 learnings extraction skipped — institutional knowledge lives in 03-XX-SUMMARY.md, 03-VERIFICATION.md, 03-HUMAN-UAT.md, and PROJECT.md Key Decisions for now; W21 JSON render drift left in working tree per operator instruction ("leave the files as is for now") — they already validate against the new tightened Zod schemas.

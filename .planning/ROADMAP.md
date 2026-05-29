@@ -236,7 +236,7 @@ Plans:
 
 **Wave 2** *(05-03 blocked on 05-01; 05-04 on 05-03; 05-05 on 05-02)*
 
-- [ ] 05-03-PLAN.md — $1/week hard cap + deferred_budget LOCKED-01 + StatusBanner (OPS-05, OBS-03)
+- [x] 05-03-PLAN.md — $1/week hard cap + deferred_budget LOCKED-01 + StatusBanner (OPS-05, OBS-03) — *Completed 2026-05-29*
 - [ ] 05-04-PLAN.md — Mon–Sat daily-retry.yml + --retry-transient-only (OPS-01)
 - [ ] 05-05-PLAN.md — Home worker Docker + GHCR multi-arch + OPS-03 docs (OPS-01, OPS-03, OPS-04)
 
