@@ -105,7 +105,7 @@ def test_pipeline_report_schema_keys(
 
     payload = json.loads(latest.read_text(encoding="utf-8"))
     assert payload["schema_version"] == 1
-    assert payload["budget"]["cap_usd"] == 2.0
+    assert payload["budget"]["cap_usd"] == 1.0
     assert "dedup" in payload["stages"]
     assert "summary_status" in payload
     assert "source_health" in payload
