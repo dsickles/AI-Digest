@@ -226,7 +226,7 @@ Plans:
 - **Plan 02-04 catchup disposition:** Confirmed as the load-bearing home-worker entry point under this architecture. Open sub-decision: also run a transient-failure retry pass for non-transcript items in the cloud cycle (separate from the home worker).
 - **Home-worker runtime:** Docker container vs. a thin Python venv invoked by the OS scheduler. Either works; pick the option that fits the home server's existing workload during plan. (Hardware/SKU details intentionally omitted from this doc per privacy sweep.)
 
-**Plans:** 6 plans
+**Plans:** 4/6 plans executed
 
 Plans:
 **Wave 1**
@@ -237,7 +237,7 @@ Plans:
 **Wave 2** *(05-03 blocked on 05-01; 05-04 on 05-03; 05-05 on 05-02)*
 
 - [x] 05-03-PLAN.md — $1/week hard cap + deferred_budget LOCKED-01 + StatusBanner (OPS-05, OBS-03) — *Completed 2026-05-29*
-- [ ] 05-04-PLAN.md — Mon–Sat daily-retry.yml + --retry-transient-only (OPS-01)
+- [x] 05-04-PLAN.md — Mon–Sat daily-retry.yml + --retry-transient-only (OPS-01)
 - [ ] 05-05-PLAN.md — Home worker Docker + GHCR multi-arch + OPS-03 docs (OPS-01, OPS-03, OPS-04)
 
 **Wave 3** *(blocked on 05-01, 05-02, 05-05)*
@@ -257,7 +257,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Expand Ingestion | 4/4 | Complete | 2026-05-22 |
 | 3. AI Quality | 5/10 | Gap closure | 2026-05-22 |
 | 4. Dashboard + Archive | 6/6 | Complete   | 2026-05-23 |
-| 5. Ops & Automation | 0/TBD | Not started | - |
+| 5. Ops & Automation | 4/6 | In Progress|  |
 
 ---
 *Roadmap created: 2026-05-21*

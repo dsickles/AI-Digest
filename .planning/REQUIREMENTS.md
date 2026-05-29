@@ -61,7 +61,7 @@ Requirements for initial release. Each maps to a roadmap phase (see Traceability
 
 ### Operations
 
-- [ ] **OPS-01**: Pipeline runs on a scheduled weekly cadence (GitHub Actions cron or equivalent) without manual intervention
+- [x] **OPS-01**: Pipeline runs on a scheduled weekly cadence (GitHub Actions cron or equivalent) without manual intervention
 - [ ] **OPS-02**: Pipeline can be triggered manually for testing/recovery
 - [ ] **OPS-03**: Site is hosted on a free or near-free tier and auto-deploys when a new digest is committed
 - [ ] **OPS-04**: API keys and newsletter forwarding addresses are stored as secrets, never committed to the repo
@@ -152,7 +152,7 @@ Filled in by the roadmapper. Status updated as phases progress.
 | ARCHIVE-03 | Phase 4 | Complete |
 | ARCHIVE-04 | Phase 4 | Complete |
 | OBS-01 | Phase 4 | Complete |
-| OPS-01 | Phase 5 | Pending |
+| OPS-01 | Phase 5 | Complete |
 | OPS-02 | Phase 5 | Pending |
 | OPS-03 | Phase 5 | Pending |
 | OPS-04 | Phase 5 | Pending |
