@@ -280,6 +280,26 @@ validate against the Zod schema and regenerate static routes.
 
 Manual UAT checklist: `.planning/phases/04-dashboard-archive/04-UAT.md`
 
+## Operations
+
+### Digest week boundaries (D-B6b)
+
+The automated weekly digest uses an **America/New_York** window, not the UTC
+ISO Mon–Sun window used by ``week_bounds()`` for legacy filtering:
+
+- **Window:** Sunday 00:00 ET through Saturday 23:59:59 ET.
+- **`week_id` rule:** ISO week number of the **Saturday** ending that window
+  (Saturday-ending rule).
+
+Example: the digest published on **Sunday 2026-05-24** covers
+**Sunday 2026-05-17 through Saturday 2026-05-23** and is archived as
+``2026-W21`` (ISO week of Sat 2026-05-23).
+
+Cloud cron (``.github/workflows/weekly-digest.yml``), daily retry, the home
+worker, and the Monday sentinel all resolve the active week via
+``pipeline.week.active_digest_week_id()``. Manual backfill still accepts
+``--week YYYY-Www`` explicitly.
+
 ## Test
 
 ```bash

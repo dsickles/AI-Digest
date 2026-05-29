@@ -1,14 +1,23 @@
-"""ISO week helpers (D-10: UTC week boundaries).
+"""ISO week helpers (D-10: UTC week boundaries; D-B6b: ET digest windows).
 
 Plan 01-04 wires ``--week YYYY-Www`` through the CLI; in the skeleton the
 orchestrator just calls ``current_week_id()`` once at the entry point.
 ``datetime.now()`` lives ONLY here — adapters and renderers receive the
 resolved week_id from the orchestrator.
+
+Digest week semantics (D-B6b): the reader-facing window is Sunday 00:00
+America/New_York through Saturday 23:59:59 ET. The archive ``week_id`` is
+the ISO week number of the **Saturday** ending that window — e.g. a digest
+published Sun 2026-05-24 covers Sun 2026-05-17 – Sat 2026-05-23 and is
+stored as ``2026-W21`` (ISO week of Sat 2026-05-23).
 """
 from __future__ import annotations
 
 import re
 from datetime import UTC, date, datetime, time, timedelta
+from zoneinfo import ZoneInfo
+
+ET = ZoneInfo("America/New_York")
 
 WEEK_ID_RE = re.compile(r"^(\d{4})-W(\d{2})$")
 
@@ -58,3 +67,37 @@ def week_bounds(week_id: str) -> tuple[datetime, datetime]:
     week_start = datetime.combine(monday, time.min, tzinfo=UTC)
     week_end = datetime.combine(sunday, time(23, 59, 59), tzinfo=UTC)
     return week_start, week_end
+
+
+def week_bounds_et(week_id: str) -> tuple[datetime, datetime]:
+    """Return ``(week_start, week_end)`` as tz-aware ET datetimes.
+
+    The digest window is Sunday 00:00:00 through Saturday 23:59:59 in
+    ``America/New_York``. ``week_id`` is the ISO week of the Saturday that
+    ends the window (Saturday-ending rule, D-B6b).
+    """
+    year, week = parse_week_id(week_id)
+    saturday = date.fromisocalendar(year, week, 6)
+    sunday = saturday - timedelta(days=6)
+    week_start = datetime.combine(sunday, time.min, tzinfo=ET)
+    week_end = datetime.combine(saturday, time(23, 59, 59), tzinfo=ET)
+    return week_start, week_end
+
+
+def active_digest_week_id(reference: datetime | None = None) -> str:
+    """Return the ``week_id`` for the active digest week at ``reference``.
+
+    On Sunday (e.g. the 05:00 ET cron), returns the ISO week of the Saturday
+    that ended the prior Sun–Sat ET window. Mon–Sat returns the ISO week of
+    the Saturday before the most recent Sunday — the week whose digest was
+    (or will be) published on that Sunday.
+    """
+    moment = (reference or datetime.now(ET)).astimezone(ET)
+    if moment.weekday() == 6:
+        saturday = moment.date() - timedelta(days=1)
+    else:
+        days_since_sunday = (moment.weekday() + 1) % 7
+        last_sunday = moment.date() - timedelta(days=days_since_sunday)
+        saturday = last_sunday - timedelta(days=1)
+    iso_year, iso_week, _ = saturday.isocalendar()
+    return f"{iso_year:04d}-W{iso_week:02d}"
