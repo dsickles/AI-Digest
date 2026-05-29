@@ -1,0 +1,21 @@
+# Home-worker deployment template (D-B5a).
+#
+# Operator steps:
+#   1. Copy worker/.env.example to a path OUTSIDE the cloned repo (e.g.
+#      ~/aidigest/.env), chmod 600, fill in real values.
+#   2. Set AIDIGEST_ENV_FILE and AIDIGEST_DATA_DIR below (or export in shell).
+#   3. Pull the published image from your container registry dashboard
+#      (see worker/README.md — substitute owner/image from your registry UI).
+#   4. docker compose -f worker/docker-compose.yml up -d
+
+services:
+  aidigest-worker:
+    image: ${WORKER_IMAGE:-ghcr.io/OWNER/aidigest-worker:latest}
+    env_file:
+      # Host path outside the git clone — secrets never live in the repo (D-B8).
+      - ${AIDIGEST_ENV_FILE:?Set AIDIGEST_ENV_FILE to your host .env path}
+    environment:
+      REPO_DIR: /repo
+    volumes:
+      - ${AIDIGEST_DATA_DIR:-./data}:/repo/data
+    restart: unless-stopped

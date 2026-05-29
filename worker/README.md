@@ -31,11 +31,13 @@ cron finishes and the complete digest after the home worker finishes.
 The full sequence diagram lives in
 [`.planning/phases/05-ops-automation/05-CONTEXT.md`](../.planning/phases/05-ops-automation/05-CONTEXT.md).
 
-## Reader-confidence promise
+## Reader-confidence promise (D-B6a)
 
-The complete weekly digest is live by **Sunday 07:00 ET**. Plan 05-06
-wires the reader-facing banner that surfaces whichever state the digest
-is currently in ("complete" / "filling in N videos" / "partial — N items
+Open the digest with confidence after **7am ET on Sunday** — by then,
+every story including videos has been summarized. The complete weekly
+digest is live by **Sunday 07:00 ET** on a healthy run. Plan 05-06 wires
+the reader-facing banner that surfaces whichever state the digest is
+currently in ("complete" / "filling in N videos" / "partial — N items
 skipped this week"). A reader landing before 07:00 ET sees an honest
 status; a reader landing after sees the complete week.
 
@@ -104,29 +106,92 @@ Two independent caps protect against runaway spend:
   items are marked as deferred and rendered in the digest as honest
   "skipped this week — spend cap reached" cards. Plan 05-03 implements
   this cap; the reader banner names the state explicitly.
-- **Vendor-side, monthly.** Configure a $10/month catch-all alert in your
-  LLM provider's billing console. This is a catastrophe control — the
-  app-side cap is the operational control. The vendor console is outside
-  the repository; document the path you used in your local operator
-  notes.
+- **Vendor-side, monthly (layer 2).** In your LLM vendor's billing
+  console, configure a **monthly catch-all cap** with a default alert
+  threshold of **$10/month**. This is catastrophe control outside the
+  repository — the app-side weekly cap is the operational control. A
+  screenshot of your billing-console alert setup is optional; keep
+  operator-specific console URLs in local notes only.
 
 Cap-deferred items from a prior week are **abandoned permanently**. They
 are not retried by the daily-retry workflow. Cap hits are anomalies and
 should be visible signals, not smeared across weeks.
 
+## Container image and start
+
+Multi-arch images (`linux/amd64`, `linux/arm64`) publish to your
+container registry when `worker/**` changes (workflow
+`.github/workflows/build-worker-image.yml`). Substitute **owner** and
+**image name** from your registry dashboard — do not hardcode hostnames
+in operator notes committed to this repo.
+
+```bash
+# Pull (substitute REGISTRY/OWNER from your container-registry dashboard)
+docker pull REGISTRY/OWNER/aidigest-worker:latest
+
+# One-time: host .env outside the clone
+cp worker/.env.example ~/aidigest/.env
+chmod 600 ~/aidigest/.env
+# Edit ~/aidigest/.env — see worker/.env.example for every variable.
+
+# Start via compose (from repo root)
+export AIDIGEST_ENV_FILE=~/aidigest/.env
+export AIDIGEST_DATA_DIR=~/aidigest/data
+export WORKER_IMAGE=REGISTRY/OWNER/aidigest-worker:latest
+docker compose -f worker/docker-compose.yml up -d
+
+# Logs
+docker compose -f worker/docker-compose.yml logs -f aidigest-worker
+```
+
+The compose file mounts `AIDIGEST_ENV_FILE` read-only from a path **outside**
+the cloned repository and sets `restart: unless-stopped`.
+
+### Fine-grained PAT (D-B8)
+
+Issue a **fine-grained personal access token** in GitHub settings:
+
+- **Repository access:** this repository only (one repo).
+- **Permissions:** `contents: write` only — no admin, no workflows, no packages.
+- **Expiration:** one year; rotate annually when GitHub sends the expiration
+  email (same sitting as object-storage and LLM keys).
+
+Store the token as `GITHUB_TOKEN` in the host `.env` only. It is never baked
+into the image or committed.
+
+### Static host auto-deploy (OPS-03)
+
+Connect the repository once in your **static host** dashboard: project root
+`web/`, default branch, standard Git integration. **No deploy hook** and no
+custom CI deploy step — every `git push` that touches digest JSON triggers an
+automatic rebuild. The partial digest push (cloud cron) and the complete
+digest push (home worker) use the same mechanism.
+
 ## Operations
 
 The container ships with `rclone`, Python 3.12, and the project
 dependencies pre-installed. `entrypoint.sh` runs an idle polling loop on a
-configurable interval (`WORKER_POLL_INTERVAL_SECONDS`, default 600s).
-When it observes the cron-complete marker for the current week it pulls
-the database, runs `python -m pipeline.run all --only-pending-transcripts`,
-writes the database back, commits the upgraded JSON, and deletes the
-marker.
+configurable interval (`WORKER_POLL_INTERVAL_SECONDS`, default 600s) during
+the Sunday UTC processing window. When it observes the cron-complete marker
+for the current week it pulls the database with `rclone copy` (never `sync`),
+runs `python -m pipeline.run all --only-pending-transcripts`, writes the
+database back, commits the upgraded JSON, deletes the marker on object
+storage, and pings the worker heartbeat URL when configured.
 
 Idempotency is structural: a duplicate cycle finds no marker and exits
 immediately. Stopping the container mid-cycle is safe — the next
 restart picks up wherever the marker state left off.
+
+### First dry-run (before relying on Sunday automation)
+
+1. **Cloud cron:** trigger `.github/workflows/weekly-digest.yml` via
+   `workflow_dispatch` once. Confirm object-storage DB sync, digest commit,
+   marker upload, and static-host rebuild.
+2. **Home worker:** with the container running, manually upload a
+   `cron-complete-{week_id}.json` marker (or wait for a real cron run).
+   Watch logs for DB pull → catch-up → git push → marker delete.
+3. **Reader check:** load the public site — YouTube items should upgrade
+   from degraded placeholders to full summaries after the worker push.
 
 ## Health checks and alerting (D-B7)
 
@@ -142,12 +207,6 @@ Plan 05-06 walks the operator through one-time heartbeat setup in
 
 ## What this README does not cover
 
-- **First live cron run.** The first Sunday after this phase ships is the
-  integration test. Trigger the cron manually ahead of Sunday with
-  `workflow_dispatch` once to validate the secrets, object-storage sync,
-  commit, and static-host rebuild chain before relying on the schedule.
-- **First live worker run.** Manually drop a marker into the bucket and
-  watch the container pick it up before relying on the polling loop.
 - **Operator-personal infrastructure.** Hostnames, network topology,
   drive layouts, and similar specifics belong in your own operator
   notes, not in this repository.

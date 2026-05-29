@@ -1,0 +1,14 @@
+# Example rclone remote for object-storage sync (Privacy Sweep).
+#
+# Copy structure into your operator gitignored rclone.conf, or let
+# worker/entrypoint.sh materialize ~/.config/rclone/rclone.conf from
+# B2_KEY_ID / B2_APPLICATION_KEY at container start.
+#
+# The remote alias must match B2_REMOTE_NAME in worker/.env (default: b2).
+# Bucket name lives only in B2_BUCKET — never commit a real bucket name.
+
+[b2]
+type = b2
+account = YOUR_APPLICATION_KEY_ID
+key = YOUR_APPLICATION_KEY
+hard_delete = false
