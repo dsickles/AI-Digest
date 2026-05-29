@@ -76,7 +76,7 @@ jobs:
           if [ -n "$INPUT_WEEK" ]; then
             WEEK_ID="$INPUT_WEEK"
           else
-            WEEK_ID="$(uv run python -c 'from pipeline import week; fn = getattr(week, "active_digest_week_id", week.current_week_id); print(fn())')"
+            WEEK_ID="$(uv run python -c 'from pipeline.week import active_digest_week_id; print(active_digest_week_id())')"
           fi
           echo "Resolved digest week_id: $WEEK_ID"
           echo "week_id=$WEEK_ID" >> "$GITHUB_OUTPUT"

@@ -50,7 +50,7 @@ is_sunday_processing_window() {
 }
 
 resolve_week_id() {
-  "${PYTHON}" -c 'from pipeline.week import current_week_id; print(current_week_id())'
+  "${PYTHON}" -c 'from pipeline.week import active_digest_week_id; print(active_digest_week_id())'
 }
 
 marker_remote_path() {
@@ -150,9 +150,33 @@ commit_and_push() {
 }
 
 # Plan 05-06 wires full Healthchecks start/end pings (D-B7).
-ping_worker_finish() {
+ping_worker_start() {
   if [ -n "${HEALTHCHECK_WORKER_URL:-}" ]; then
-    curl -fsS -m 30 --retry 2 "${HEALTHCHECK_WORKER_URL}" || true
+    curl -fsS -m 30 --retry 2 "${HEALTHCHECK_WORKER_URL}/start" || true
+  fi
+}
+
+ping_worker_finish() {
+  local week_id="$1"
+  if [ -n "${HEALTHCHECK_WORKER_URL:-}" ]; then
+    local spend
+    spend="$("${PYTHON}" -c "
+import json
+from pathlib import Path
+report = Path('${REPO_DIR}') / 'web/src/content/reports' / '${week_id}.json'
+if report.is_file():
+    data = json.loads(report.read_text())
+    print(data.get('budget', {}).get('spent_usd', 0))
+else:
+    print(0)
+")"
+    curl -fsS -m 30 --retry 2 --data-raw "spent_usd=${spend}" "${HEALTHCHECK_WORKER_URL}" || true
+  fi
+}
+
+ping_worker_fail() {
+  if [ -n "${HEALTHCHECK_WORKER_URL:-}" ]; then
+    curl -fsS -m 30 --retry 2 "${HEALTHCHECK_WORKER_URL}/fail" || true
   fi
 }
 
@@ -163,15 +187,20 @@ process_marker() {
 
   log "Marker found for ${week_id} — starting transcript catch-up."
 
-  # Plan 05-06: curl "${HEALTHCHECK_WORKER_URL}/start" at cycle start.
+  ping_worker_start
 
-  ensure_repo
-  pull_database
-  run_catch_up "${week_id}"
-  push_database
-  commit_and_push "${week_id}"
-  delete_marker "${week_id}"
-  ping_worker_finish
+  if ! (
+    ensure_repo
+    pull_database
+    run_catch_up "${week_id}"
+    push_database
+    commit_and_push "${week_id}"
+    delete_marker "${week_id}"
+    ping_worker_finish "${week_id}"
+  ); then
+    ping_worker_fail
+    return 1
+  fi
 
   log "Cycle complete for ${week_id}; marker deleted."
 }

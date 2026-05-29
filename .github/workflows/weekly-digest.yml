@@ -40,11 +40,15 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       CLOUD_CRON_MODE: "1"
       B2_BUCKET: ${{ secrets.B2_BUCKET }}
+      HEALTHCHECK_CRON_URL: ${{ secrets.HEALTHCHECK_CRON_URL }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Ping heartbeat start
+        run: curl -fsS -m 10 --retry 3 "${HEALTHCHECK_CRON_URL}/start"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v3
@@ -86,7 +90,7 @@ jobs:
         run: |
           INPUT_WEEK="${{ inputs.week_id }}"
           if [ -z "$INPUT_WEEK" ]; then
-            WEEK_ID="$(uv run python -c 'from pipeline.week import current_week_id; print(current_week_id())')"
+            WEEK_ID="$(uv run python -c 'from pipeline.week import active_digest_week_id; print(active_digest_week_id())')"
           else
             WEEK_ID="$INPUT_WEEK"
           fi
@@ -146,3 +150,21 @@ jobs:
           fi
           git commit -m "chore(digest): cloud weekly $WEEK_ID"
           git push
+
+      - name: Ping heartbeat success
+        if: success()
+        env:
+          WEEK_ID: ${{ steps.resolve_week.outputs.week_id }}
+        run: |
+          SPEND="$(uv run python -c "
+          import json
+          from pathlib import Path
+          report = Path('web/src/content/reports') / '${WEEK_ID}.json'
+          data = json.loads(report.read_text())
+          print(data.get('budget', {}).get('spent_usd', 0))
+          ")"
+          curl -fsS -m 10 --retry 3 --data-raw "spent_usd=${SPEND}" "${HEALTHCHECK_CRON_URL}"
+
+      - name: Ping heartbeat failure
+        if: failure()
+        run: curl -fsS -m 10 --retry 3 "${HEALTHCHECK_CRON_URL}/fail"
