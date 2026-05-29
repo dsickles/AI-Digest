@@ -203,7 +203,13 @@ needs attention. Workflow-level failures are caught separately by the
 built-in failure email from the CI provider.
 
 Plan 05-06 walks the operator through one-time heartbeat setup in
-`worker/setup-healthchecks.md`.
+[`worker/setup-healthchecks.md`](setup-healthchecks.md).
+
+The Monday sentinel (`.github/workflows/sentinel.yml`) runs at 12:00 UTC
+each Monday (~08:00 ET). It confirms the prior week's digest JSON exists,
+that `budget.hard_cap_hit` is false in the matching report, and pings the
+third heartbeat check. Run it manually from the Actions tab to validate
+after wiring secrets.
 
 ## What this README does not cover
 
