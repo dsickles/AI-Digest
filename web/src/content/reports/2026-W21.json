@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "week_id": "2026-W21",
-  "generated_at": "2026-05-24T01:46:54Z",
-  "run_id": "f04b07492ffb45ba9f4cb67a89c75620",
+  "generated_at": "2026-05-31T17:13:10Z",
+  "run_id": "0deaa3cde198436780634c4bca425ef0",
   "status": "success",
   "items_ingested": 0,
   "clusters": 26,
@@ -15,7 +15,8 @@
     "quota_exhausted": 3,
     "api_error": 0,
     "parse_error": 0,
-    "client_init_error": 0
+    "client_init_error": 0,
+    "deferred_budget": 0
   },
   "stages": {
     "ingest": {
@@ -103,11 +104,13 @@
     }
   },
   "budget": {
-    "cap_usd": 2.0,
+    "cap_usd": 1.0,
     "reserved_meta_usd": 0.1,
     "spent_usd": 0.0,
     "pre_flight_estimate_usd": 0.0,
     "halted": false,
-    "halted_at_stage": null
+    "halted_at_stage": null,
+    "hard_cap_hit": false,
+    "deferred_items_count": 0
   }
 }
