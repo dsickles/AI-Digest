@@ -71,7 +71,7 @@ A personal, fully-automated weekly AI news and information digest delivered as a
 ## Context
 
 - **Origin**: I follow a lot of AI resources (blogs, Substacks, YouTube, newsletters, Reddit) across multiple topical concerns (edtech, business, technical/coding). It takes hours per week to keep up, and I miss things. I want one place that does the work for me. (Design was originally a fourth concern; cut from v1 scope on 2026-05-23 — UX/product/design tooling stories now route to `technical`.)
-- **Reference inspiration**: A weekly AI digest dashboard (Google Apps Script under `script.google.com/a/macros/workday.com/...`) seen elsewhere — dark theme, tabbed layout, weekly date range header, numbered ranked stories with rich summaries. I want to build my own version, not migrate this one.
+- **Reference inspiration**: An internal weekly AI digest dashboard (Google Apps Script) seen at a previous employer — dark theme, tabbed layout, weekly date range header, numbered ranked stories with rich summaries. I want to build my own version, not migrate that one.
 - **Architectural commitment**: Fully automated ingestion + LLM processing. I should not be hand-curating items into a sheet each week — the whole point is that the machine does the work.
 - **Future evolution hint**: v1 hard-codes my source list, but the architecture should not preclude turning this into a "bring your own sources" framework later. Keep source config decoupled from code where reasonable.
 

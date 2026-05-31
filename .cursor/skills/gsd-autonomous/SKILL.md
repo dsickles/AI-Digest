@@ -56,8 +56,8 @@ Uses ROADMAP.md phase discovery and Skill() flat invocations for each phase comm
 </objective>
 
 <execution_context>
-@/Users/dan.sickles/Documents/(aaCursor/AIDigest/.cursor/get-shit-done/workflows/autonomous.md
-@/Users/dan.sickles/Documents/(aaCursor/AIDigest/.cursor/get-shit-done/references/ui-brand.md
+@.cursor/get-shit-done/workflows/autonomous.md
+@.cursor/get-shit-done/references/ui-brand.md
 </execution_context>
 
 <context>
