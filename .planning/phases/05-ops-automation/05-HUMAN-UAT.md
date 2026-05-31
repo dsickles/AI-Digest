@@ -1,14 +1,20 @@
 ---
-status: partial
+status: testing
 phase: 05-ops-automation
 source: ["05-VERIFICATION.md"]
 started: 2026-05-29T16:40:00Z
-updated: 2026-05-29T16:40:00Z
+updated: 2026-05-31T16:14:00Z
 ---
 
 ## Current Test
 
-[awaiting human testing]
+number: 1
+name: Configure GitHub repo secrets and run weekly-digest via workflow_dispatch
+expected: |
+  Workflow completes green; web/src/content/digests/{week_id}.json and
+  reports/{week_id}.json are committed; Healthchecks weekly-cron check shows
+  start + finish pings.
+awaiting: user response
 
 ## Tests
 
