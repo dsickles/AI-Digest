@@ -1,0 +1,712 @@
+{
+  "schema_version": 1,
+  "week_id": "2026-W23",
+  "generated_at": "2026-06-07T18:55:25Z",
+  "week_range": {
+    "start": "2026-06-01T00:00:00Z",
+    "end": "2026-06-07T23:59:59Z"
+  },
+  "updated_at": "2026-06-07T18:55:25Z",
+  "weekly_synthesis": {
+    "text": "This week highlighted a growing tension between the perceived value of AI and the practicalities of its deployment. While Ed Zitron's declaration of a \"bullshit boom\" sharpened skepticism around the",
+    "status": "ok"
+  },
+  "briefing_top_n": [
+    {
+      "title": "Running Python code in a sandbox with MicroPython and WASM",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jun/6/micropython-in-a-sandbox/#atom-everything",
+      "published_at": "2026-06-06T03:53:34Z",
+      "tldr": "Simon Willison has developed micropython-wasm, an alpha package for running Python code in a WebAssembly sandbox. This solution aims to provide a safe environment for executing untrusted code within Python applications, addressing limitations of previous sandboxing attempts. The system allows for controlled file and network access, memory and CPU limits, and host function interaction, with a live demo available for Datasette Agent.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 1,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "OpenAI Help: Lockdown Mode",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jun/5/openai-help-lockdown-mode/#atom-everything",
+      "published_at": "2026-06-05T23:56:40Z",
+      "tldr": "OpenAI has launched Lockdown Mode for eligible ChatGPT accounts to mitigate data exfiltration risks from prompt injection attacks. This feature limits outbound network requests, addressing one leg of the \"lethal trifecta\" by preventing data theft. While it doesn't prevent prompt injections from affecting responses, it offers enhanced security for users with elevated risk profiles, albeit with some functional tradeoffs.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 2,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "Premium: The Hater's Guide To The AI Bubble 3.0",
+      "publisher": "Ed Zitron's Where's Your Ed At",
+      "canonical_url": "https://www.wheresyoured.at/premium-the-haters-guide-to-the-ai-bubble-3-0/",
+      "published_at": "2026-06-05T15:57:04Z",
+      "tldr": "Ed Zitron argues that the current AI bubble is a \"psyop\" and a massive exploitation of ignorance, driven by hype rather than actual utility. He contends that while LLMs exist, their capabilities are vastly overstated, leading to billions in investment with no clear ROI. Companies like OpenAI and Anthropic, despite raising huge sums, are losing money, and the market is conflating data center spending with genuine AI demand. Zitron criticizes the media for failing to scrutinize the industry and highlights that most AI revenues and compute demand come from just two companies, whose business models are unsustainable.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "business",
+      "rank_position": 3,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "My Codex Ran 800 Million Tokens in A Day. The Real Story Isn't Cost.",
+      "publisher": "AI News & Strategy Daily | Nate B Jones",
+      "canonical_url": "https://www.youtube.com/watch?v=l8BloTSLK6M",
+      "published_at": "2026-06-05T14:00:07Z",
+      "tldr": "The author details building a token burn dashboard to analyze AI usage, burning 800 million tokens in a day not for the number itself, but to understand the feedback loop between behavior and token consumption. This data allows users to see if they are truly innovating with AI or repeating habits, providing a measurable signal for improvement. The approach, using an open-source visualization skill and logarithmic scale, is applicable to various models like Codex and Claude, serving as a crucial metering layer for AI operators and builders.",
+      "summary_status": "ok",
+      "source_type": "youtube",
+      "also_covered": [],
+      "category": "business",
+      "rank_position": 4,
+      "degraded_body": null,
+      "channel_url": "https://www.youtube.com/@NateBJones"
+    },
+    {
+      "title": "Quoting Andreas Kling",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jun/5/andreas-kling/#atom-everything",
+      "published_at": "2026-06-05T11:10:05Z",
+      "tldr": "Andreas Kling announced that the Ladybird browser will no longer accept public pull requests, shifting to a model where contributors must be vetted and responsible for their code. This change aims to ensure accountability as Ladybird evolves into a browser for real users, moving away from the assumption that substantial code contributions imply good faith.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 5,
+      "degraded_body": null,
+      "channel_url": null
+    }
+  ],
+  "category_sections": {
+    "edtech": {
+      "mini_rollup": null,
+      "cards": []
+    },
+    "business": {
+      "mini_rollup": "This week, skepticism around AI's true value sharpened as Ed Zitron declared the current boom a \"",
+      "cards": [
+        {
+          "title": "Premium: The Hater's Guide To The AI Bubble 3.0",
+          "publisher": "Ed Zitron's Where's Your Ed At",
+          "canonical_url": "https://www.wheresyoured.at/premium-the-haters-guide-to-the-ai-bubble-3-0/",
+          "published_at": "2026-06-05T15:57:04Z",
+          "tldr": "Ed Zitron argues that the current AI bubble is a \"psyop\" and a massive exploitation of ignorance, driven by hype rather than actual utility. He contends that while LLMs exist, their capabilities are vastly overstated, leading to billions in investment with no clear ROI. Companies like OpenAI and Anthropic, despite raising huge sums, are losing money, and the market is conflating data center spending with genuine AI demand. Zitron criticizes the media for failing to scrutinize the industry and highlights that most AI revenues and compute demand come from just two companies, whose business models are unsustainable.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "business",
+          "rank_position": 3,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "My Codex Ran 800 Million Tokens in A Day. The Real Story Isn't Cost.",
+          "publisher": "AI News & Strategy Daily | Nate B Jones",
+          "canonical_url": "https://www.youtube.com/watch?v=l8BloTSLK6M",
+          "published_at": "2026-06-05T14:00:07Z",
+          "tldr": "The author details building a token burn dashboard to analyze AI usage, burning 800 million tokens in a day not for the number itself, but to understand the feedback loop between behavior and token consumption. This data allows users to see if they are truly innovating with AI or repeating habits, providing a measurable signal for improvement. The approach, using an open-source visualization skill and logarithmic scale, is applicable to various models like Codex and Claude, serving as a crucial metering layer for AI operators and builders.",
+          "summary_status": "ok",
+          "source_type": "youtube",
+          "also_covered": [],
+          "category": "business",
+          "rank_position": 4,
+          "degraded_body": null,
+          "channel_url": "https://www.youtube.com/@NateBJones"
+        },
+        {
+          "title": "Build tools, to build more",
+          "publisher": "Ben's Bites",
+          "canonical_url": "https://www.bensbites.com/p/build-tools-to-build-more",
+          "published_at": "2026-06-04T13:03:42Z",
+          "tldr": "Several new open-source AI models have been released, including Gemma 4 12B for multimodal tasks and Ideogram 4.0 for image generation with enhanced control. Companies are also fine-tuning large models for specific domains, with Harvey's Kimi 2.6 agent outperforming GPT-4.7 on legal benchmarks at a lower cost. Additionally, new tools and platforms are emerging to support AI agent development and deployment, such as Codex's Plugins and Sites, Microsoft Scout, and Bloom for generating on-brand assets.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "business",
+          "rank_position": 9,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "AI Doesn't Have ROI",
+          "publisher": "Ed Zitron's Where's Your Ed At",
+          "canonical_url": "https://www.wheresyoured.at/ai-doesnt-have-roi/",
+          "published_at": "2026-06-02T14:04:43Z",
+          "tldr": null,
+          "summary_status": "quota_exhausted",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "business",
+          "rank_position": 15,
+          "degraded_body": "The summary couldn't be generated this week.",
+          "channel_url": null
+        }
+      ]
+    },
+    "technical": {
+      "mini_rollup": "This week saw notable technical advancements and shifts in AI deployment. Simon Willison released `mic",
+      "cards": [
+        {
+          "title": "Running Python code in a sandbox with MicroPython and WASM",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jun/6/micropython-in-a-sandbox/#atom-everything",
+          "published_at": "2026-06-06T03:53:34Z",
+          "tldr": "Simon Willison has developed micropython-wasm, an alpha package for running Python code in a WebAssembly sandbox. This solution aims to provide a safe environment for executing untrusted code within Python applications, addressing limitations of previous sandboxing attempts. The system allows for controlled file and network access, memory and CPU limits, and host function interaction, with a live demo available for Datasette Agent.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 1,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "OpenAI Help: Lockdown Mode",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jun/5/openai-help-lockdown-mode/#atom-everything",
+          "published_at": "2026-06-05T23:56:40Z",
+          "tldr": "OpenAI has launched Lockdown Mode for eligible ChatGPT accounts to mitigate data exfiltration risks from prompt injection attacks. This feature limits outbound network requests, addressing one leg of the \"lethal trifecta\" by preventing data theft. While it doesn't prevent prompt injections from affecting responses, it offers enhanced security for users with elevated risk profiles, albeit with some functional tradeoffs.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 2,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "Quoting Andreas Kling",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jun/5/andreas-kling/#atom-everything",
+          "published_at": "2026-06-05T11:10:05Z",
+          "tldr": "Andreas Kling announced that the Ladybird browser will no longer accept public pull requests, shifting to a model where contributors must be vetted and responsible for their code. This change aims to ensure accountability as Ladybird evolves into a browser for real users, moving away from the assumption that substantial code contributions imply good faith.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 5,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "AI enthusiasts are in a race against time, AI skeptics are in a race against entropy",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jun/4/ai-enthusiasts-ai-skeptics/#atom-everything",
+          "published_at": "2026-06-04T23:55:27Z",
+          "tldr": "Charity Majors describes the dynamic between AI enthusiasts and skeptics as a race against time versus a race against entropy. Enthusiasts see rapid, discontinuous leaps in AI capabilities, posing an existential threat to companies that don't adopt them quickly. Skeptics, however, warn that rapid AI adoption can degrade reliability, erode institutional knowledge, and lead to incomprehensible systems, also posing an existential threat. Majors suggests bridging this gap is a leadership and engineering challenge requiring designed feedback loops.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 6,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "Co-Existence and the End of Co-Intelligence",
+          "publisher": "One Useful Thing",
+          "canonical_url": "https://www.oneusefulthing.org/p/co-existence-and-the-end-of-co-intelligence",
+          "published_at": "2026-06-04T21:13:42Z",
+          "tldr": "Two years after publishing \"Co-Intelligence,\" the author is releasing a new book, \"Co-Existence,\" which addresses the shift from AI as a cooperative tool to increasingly autonomous agents that outperform humans in many fields. The book explores how humans can thrive alongside AI that is sometimes superior, detailing the author's own experience using AI cautiously in the writing process and even optimizing content for AI readers. This reflects a new era where AI acts not just as an assistant but as a critic and gatekeeper, necessitating a continuous negotiation of the human-AI relationship.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 7,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "Quoting Emanuel Maiberg, 404 Media",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jun/4/a-slightly-different-version/#atom-everything",
+          "published_at": "2026-06-04T16:38:29Z",
+          "tldr": "Google employees are reportedly sharing internal memes that criticize the company's AI capabilities, with one meme humorously suggesting that AI is \"so good we can finally get rid of the humans.\"\n\nThis comes after Google's spokesperson requested a modification to a previous statement, removing the emphasis on the necessity of human oversight in AI processes. This shift in messaging may indicate a broader trend in how Google is positioning its AI development and deployment.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 8,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "Uber Caps Usage of AI Tools Like Claude Code to Manage Costs",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jun/3/uber-caps-usage/#atom-everything",
+          "published_at": "2026-06-03T12:01:27Z",
+          "tldr": "Uber has implemented a $1,500 monthly spending cap per employee for AI coding tools like Claude Code and Cursor to manage costs. This policy aims to curb overspending, which previously led the company to exhaust its 2026 AI budget within four months. The new limits suggest a significant perceived value for these tools, with the annual cap per engineer potentially reaching around $36,000.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 10,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "I cloned myself with Gemini Omni in 15 minutes (and it's terrifyingly good)",
+          "publisher": "How I AI",
+          "canonical_url": "https://www.youtube.com/watch?v=UNZczH0gpHc",
+          "published_at": "2026-06-03T12:00:23Z",
+          "tldr": "The author demonstrates cloning themselves using Google Flow and Gemini Omni, generating a one-minute podcast hype video in approximately 15 minutes. The process involved scanning a face, using AI for storyboarding and scene generation, and stitching the clips together, highlighting both the creative potential and uncanny valley aspects of AI video generation.",
+          "summary_status": "ok",
+          "source_type": "youtube",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 11,
+          "degraded_body": null,
+          "channel_url": "https://www.youtube.com/@howiaipodcast"
+        },
+        {
+          "title": "Microsoft's new MAI models",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jun/2/microsofts-new-models/#atom-everything",
+          "published_at": "2026-06-02T22:21:52Z",
+          "tldr": null,
+          "summary_status": "quota_exhausted",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 12,
+          "degraded_body": "The summary couldn't be generated this week.",
+          "channel_url": null
+        },
+        {
+          "title": "datasette-agent-micropython 0.1a0",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jun/2/datasette-agent-micropython/#atom-everything",
+          "published_at": "2026-06-02T19:28:36Z",
+          "tldr": null,
+          "summary_status": "quota_exhausted",
+          "source_type": "rss",
+          "also_covered": [
+            {
+              "display_name": "Simon Willison",
+              "url": "https://simonwillison.net/2026/Jun/2/micropython-wasm-2/#atom-everything"
+            },
+            {
+              "display_name": "Simon Willison",
+              "url": "https://simonwillison.net/2026/Jun/2/micropython-wasm/#atom-everything"
+            },
+            {
+              "display_name": "Simon Willison",
+              "url": "https://simonwillison.net/2026/Jun/6/micropython-wasm/#atom-everything"
+            }
+          ],
+          "category": "technical",
+          "rank_position": 13,
+          "degraded_body": "The summary couldn't be generated this week.",
+          "channel_url": null
+        },
+        {
+          "title": "California Brown Pelican",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jun/2/sighting-367841339/#atom-everything",
+          "published_at": "2026-06-02T18:17:03Z",
+          "tldr": "This is a placeholder for a summary of the California Brown Pelican, but the provided text only contains a title and a list of recent articles from Simon Willison's Weblog. There is no actual content about the California Brown Pelican to summarize.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 14,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "Opus 4.8",
+          "publisher": "Ben's Bites",
+          "canonical_url": "https://www.bensbites.com/p/opus-48",
+          "published_at": "2026-06-02T13:29:05Z",
+          "tldr": "Anthropic has released Claude Opus 4.8, which features dynamic workflows allowing agents to work in parallel on complex tasks. While some view this as a modest upgrade focused on honesty about uncertainty, others see it as a significant leap, competitive with GPT-4.5 on coding and knowledge tasks, though its interface remains less polished. Separately, NVIDIA and Microsoft are collaborating on AI-powered Windows PCs with new hardware and software designed for personal AI agents.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [
+            {
+              "display_name": "AI News & Strategy Daily | Nate B Jones",
+              "url": "https://www.youtube.com/watch?v=z73yuF14udI"
+            }
+          ],
+          "category": "technical",
+          "rank_position": 16,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "Pasted File Editor",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jun/2/pasted-file-editor/#atom-everything",
+          "published_at": "2026-06-02T04:13:36Z",
+          "tldr": null,
+          "summary_status": "quota_exhausted",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 17,
+          "degraded_body": "The summary couldn't be generated this week.",
+          "channel_url": null
+        },
+        {
+          "title": "Hackers Simply Asked Meta AI to Give Them Access to High-Profile Instagram Accounts. It Worked",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jun/1/hackers-simply-asked-meta-ai/#atom-everything",
+          "published_at": "2026-06-01T21:14:47Z",
+          "tldr": null,
+          "summary_status": "quota_exhausted",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 18,
+          "degraded_body": "The summary couldn't be generated this week.",
+          "channel_url": null
+        },
+        {
+          "title": "How to build an iPhone app with zero technical skills",
+          "publisher": "How I AI",
+          "canonical_url": "https://www.youtube.com/watch?v=EJKwI4m0fZg",
+          "published_at": "2026-06-01T12:00:16Z",
+          "tldr": "Bryce Rattner Keithley, without prior coding experience, successfully built and launched an iPhone fitness app called Daily Hundred to the App Store. She utilized tools like Replit, Claude, and Gemini, demonstrating that AI era execution is more accessible for innovative ideas. The process involved creating custom AI-generated exercise videos and navigating App Store submission requirements.",
+          "summary_status": "ok",
+          "source_type": "youtube",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 19,
+          "degraded_body": null,
+          "channel_url": "https://www.youtube.com/@howiaipodcast"
+        },
+        {
+          "title": "May 2026 newsletter",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jun/1/may-newsletter/#atom-everything",
+          "published_at": "2026-06-01T04:45:00Z",
+          "tldr": "Simon Willison sent out his May newsletter, detailing a busy month. Key topics include the rising cost of Al, a successful month for Anthropic, and a somewhat disappointing release of new models. Willison also shared progress on Datasette Agent and his current tech stack.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 20,
+          "degraded_body": null,
+          "channel_url": null
+        }
+      ]
+    }
+  },
+  "main_feed": [
+    {
+      "title": "Running Python code in a sandbox with MicroPython and WASM",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jun/6/micropython-in-a-sandbox/#atom-everything",
+      "published_at": "2026-06-06T03:53:34Z",
+      "tldr": "Simon Willison has developed micropython-wasm, an alpha package for running Python code in a WebAssembly sandbox. This solution aims to provide a safe environment for executing untrusted code within Python applications, addressing limitations of previous sandboxing attempts. The system allows for controlled file and network access, memory and CPU limits, and host function interaction, with a live demo available for Datasette Agent.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 1,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "OpenAI Help: Lockdown Mode",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jun/5/openai-help-lockdown-mode/#atom-everything",
+      "published_at": "2026-06-05T23:56:40Z",
+      "tldr": "OpenAI has launched Lockdown Mode for eligible ChatGPT accounts to mitigate data exfiltration risks from prompt injection attacks. This feature limits outbound network requests, addressing one leg of the \"lethal trifecta\" by preventing data theft. While it doesn't prevent prompt injections from affecting responses, it offers enhanced security for users with elevated risk profiles, albeit with some functional tradeoffs.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 2,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "Premium: The Hater's Guide To The AI Bubble 3.0",
+      "publisher": "Ed Zitron's Where's Your Ed At",
+      "canonical_url": "https://www.wheresyoured.at/premium-the-haters-guide-to-the-ai-bubble-3-0/",
+      "published_at": "2026-06-05T15:57:04Z",
+      "tldr": "Ed Zitron argues that the current AI bubble is a \"psyop\" and a massive exploitation of ignorance, driven by hype rather than actual utility. He contends that while LLMs exist, their capabilities are vastly overstated, leading to billions in investment with no clear ROI. Companies like OpenAI and Anthropic, despite raising huge sums, are losing money, and the market is conflating data center spending with genuine AI demand. Zitron criticizes the media for failing to scrutinize the industry and highlights that most AI revenues and compute demand come from just two companies, whose business models are unsustainable.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "business",
+      "rank_position": 3,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "My Codex Ran 800 Million Tokens in A Day. The Real Story Isn't Cost.",
+      "publisher": "AI News & Strategy Daily | Nate B Jones",
+      "canonical_url": "https://www.youtube.com/watch?v=l8BloTSLK6M",
+      "published_at": "2026-06-05T14:00:07Z",
+      "tldr": "The author details building a token burn dashboard to analyze AI usage, burning 800 million tokens in a day not for the number itself, but to understand the feedback loop between behavior and token consumption. This data allows users to see if they are truly innovating with AI or repeating habits, providing a measurable signal for improvement. The approach, using an open-source visualization skill and logarithmic scale, is applicable to various models like Codex and Claude, serving as a crucial metering layer for AI operators and builders.",
+      "summary_status": "ok",
+      "source_type": "youtube",
+      "also_covered": [],
+      "category": "business",
+      "rank_position": 4,
+      "degraded_body": null,
+      "channel_url": "https://www.youtube.com/@NateBJones"
+    },
+    {
+      "title": "Quoting Andreas Kling",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jun/5/andreas-kling/#atom-everything",
+      "published_at": "2026-06-05T11:10:05Z",
+      "tldr": "Andreas Kling announced that the Ladybird browser will no longer accept public pull requests, shifting to a model where contributors must be vetted and responsible for their code. This change aims to ensure accountability as Ladybird evolves into a browser for real users, moving away from the assumption that substantial code contributions imply good faith.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 5,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "AI enthusiasts are in a race against time, AI skeptics are in a race against entropy",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jun/4/ai-enthusiasts-ai-skeptics/#atom-everything",
+      "published_at": "2026-06-04T23:55:27Z",
+      "tldr": "Charity Majors describes the dynamic between AI enthusiasts and skeptics as a race against time versus a race against entropy. Enthusiasts see rapid, discontinuous leaps in AI capabilities, posing an existential threat to companies that don't adopt them quickly. Skeptics, however, warn that rapid AI adoption can degrade reliability, erode institutional knowledge, and lead to incomprehensible systems, also posing an existential threat. Majors suggests bridging this gap is a leadership and engineering challenge requiring designed feedback loops.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 6,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "Co-Existence and the End of Co-Intelligence",
+      "publisher": "One Useful Thing",
+      "canonical_url": "https://www.oneusefulthing.org/p/co-existence-and-the-end-of-co-intelligence",
+      "published_at": "2026-06-04T21:13:42Z",
+      "tldr": "Two years after publishing \"Co-Intelligence,\" the author is releasing a new book, \"Co-Existence,\" which addresses the shift from AI as a cooperative tool to increasingly autonomous agents that outperform humans in many fields. The book explores how humans can thrive alongside AI that is sometimes superior, detailing the author's own experience using AI cautiously in the writing process and even optimizing content for AI readers. This reflects a new era where AI acts not just as an assistant but as a critic and gatekeeper, necessitating a continuous negotiation of the human-AI relationship.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 7,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "Quoting Emanuel Maiberg, 404 Media",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jun/4/a-slightly-different-version/#atom-everything",
+      "published_at": "2026-06-04T16:38:29Z",
+      "tldr": "Google employees are reportedly sharing internal memes that criticize the company's AI capabilities, with one meme humorously suggesting that AI is \"so good we can finally get rid of the humans.\"\n\nThis comes after Google's spokesperson requested a modification to a previous statement, removing the emphasis on the necessity of human oversight in AI processes. This shift in messaging may indicate a broader trend in how Google is positioning its AI development and deployment.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 8,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "Build tools, to build more",
+      "publisher": "Ben's Bites",
+      "canonical_url": "https://www.bensbites.com/p/build-tools-to-build-more",
+      "published_at": "2026-06-04T13:03:42Z",
+      "tldr": "Several new open-source AI models have been released, including Gemma 4 12B for multimodal tasks and Ideogram 4.0 for image generation with enhanced control. Companies are also fine-tuning large models for specific domains, with Harvey's Kimi 2.6 agent outperforming GPT-4.7 on legal benchmarks at a lower cost. Additionally, new tools and platforms are emerging to support AI agent development and deployment, such as Codex's Plugins and Sites, Microsoft Scout, and Bloom for generating on-brand assets.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "business",
+      "rank_position": 9,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "Uber Caps Usage of AI Tools Like Claude Code to Manage Costs",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jun/3/uber-caps-usage/#atom-everything",
+      "published_at": "2026-06-03T12:01:27Z",
+      "tldr": "Uber has implemented a $1,500 monthly spending cap per employee for AI coding tools like Claude Code and Cursor to manage costs. This policy aims to curb overspending, which previously led the company to exhaust its 2026 AI budget within four months. The new limits suggest a significant perceived value for these tools, with the annual cap per engineer potentially reaching around $36,000.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 10,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "I cloned myself with Gemini Omni in 15 minutes (and it's terrifyingly good)",
+      "publisher": "How I AI",
+      "canonical_url": "https://www.youtube.com/watch?v=UNZczH0gpHc",
+      "published_at": "2026-06-03T12:00:23Z",
+      "tldr": "The author demonstrates cloning themselves using Google Flow and Gemini Omni, generating a one-minute podcast hype video in approximately 15 minutes. The process involved scanning a face, using AI for storyboarding and scene generation, and stitching the clips together, highlighting both the creative potential and uncanny valley aspects of AI video generation.",
+      "summary_status": "ok",
+      "source_type": "youtube",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 11,
+      "degraded_body": null,
+      "channel_url": "https://www.youtube.com/@howiaipodcast"
+    },
+    {
+      "title": "Microsoft's new MAI models",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jun/2/microsofts-new-models/#atom-everything",
+      "published_at": "2026-06-02T22:21:52Z",
+      "tldr": null,
+      "summary_status": "quota_exhausted",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 12,
+      "degraded_body": "The summary couldn't be generated this week.",
+      "channel_url": null
+    },
+    {
+      "title": "datasette-agent-micropython 0.1a0",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jun/2/datasette-agent-micropython/#atom-everything",
+      "published_at": "2026-06-02T19:28:36Z",
+      "tldr": null,
+      "summary_status": "quota_exhausted",
+      "source_type": "rss",
+      "also_covered": [
+        {
+          "display_name": "Simon Willison",
+          "url": "https://simonwillison.net/2026/Jun/2/micropython-wasm-2/#atom-everything"
+        },
+        {
+          "display_name": "Simon Willison",
+          "url": "https://simonwillison.net/2026/Jun/2/micropython-wasm/#atom-everything"
+        },
+        {
+          "display_name": "Simon Willison",
+          "url": "https://simonwillison.net/2026/Jun/6/micropython-wasm/#atom-everything"
+        }
+      ],
+      "category": "technical",
+      "rank_position": 13,
+      "degraded_body": "The summary couldn't be generated this week.",
+      "channel_url": null
+    },
+    {
+      "title": "California Brown Pelican",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jun/2/sighting-367841339/#atom-everything",
+      "published_at": "2026-06-02T18:17:03Z",
+      "tldr": "This is a placeholder for a summary of the California Brown Pelican, but the provided text only contains a title and a list of recent articles from Simon Willison's Weblog. There is no actual content about the California Brown Pelican to summarize.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 14,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "AI Doesn't Have ROI",
+      "publisher": "Ed Zitron's Where's Your Ed At",
+      "canonical_url": "https://www.wheresyoured.at/ai-doesnt-have-roi/",
+      "published_at": "2026-06-02T14:04:43Z",
+      "tldr": null,
+      "summary_status": "quota_exhausted",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "business",
+      "rank_position": 15,
+      "degraded_body": "The summary couldn't be generated this week.",
+      "channel_url": null
+    },
+    {
+      "title": "Opus 4.8",
+      "publisher": "Ben's Bites",
+      "canonical_url": "https://www.bensbites.com/p/opus-48",
+      "published_at": "2026-06-02T13:29:05Z",
+      "tldr": "Anthropic has released Claude Opus 4.8, which features dynamic workflows allowing agents to work in parallel on complex tasks. While some view this as a modest upgrade focused on honesty about uncertainty, others see it as a significant leap, competitive with GPT-4.5 on coding and knowledge tasks, though its interface remains less polished. Separately, NVIDIA and Microsoft are collaborating on AI-powered Windows PCs with new hardware and software designed for personal AI agents.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [
+        {
+          "display_name": "AI News & Strategy Daily | Nate B Jones",
+          "url": "https://www.youtube.com/watch?v=z73yuF14udI"
+        }
+      ],
+      "category": "technical",
+      "rank_position": 16,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "Pasted File Editor",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jun/2/pasted-file-editor/#atom-everything",
+      "published_at": "2026-06-02T04:13:36Z",
+      "tldr": null,
+      "summary_status": "quota_exhausted",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 17,
+      "degraded_body": "The summary couldn't be generated this week.",
+      "channel_url": null
+    },
+    {
+      "title": "Hackers Simply Asked Meta AI to Give Them Access to High-Profile Instagram Accounts. It Worked",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jun/1/hackers-simply-asked-meta-ai/#atom-everything",
+      "published_at": "2026-06-01T21:14:47Z",
+      "tldr": null,
+      "summary_status": "quota_exhausted",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 18,
+      "degraded_body": "The summary couldn't be generated this week.",
+      "channel_url": null
+    },
+    {
+      "title": "How to build an iPhone app with zero technical skills",
+      "publisher": "How I AI",
+      "canonical_url": "https://www.youtube.com/watch?v=EJKwI4m0fZg",
+      "published_at": "2026-06-01T12:00:16Z",
+      "tldr": "Bryce Rattner Keithley, without prior coding experience, successfully built and launched an iPhone fitness app called Daily Hundred to the App Store. She utilized tools like Replit, Claude, and Gemini, demonstrating that AI era execution is more accessible for innovative ideas. The process involved creating custom AI-generated exercise videos and navigating App Store submission requirements.",
+      "summary_status": "ok",
+      "source_type": "youtube",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 19,
+      "degraded_body": null,
+      "channel_url": "https://www.youtube.com/@howiaipodcast"
+    },
+    {
+      "title": "May 2026 newsletter",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jun/1/may-newsletter/#atom-everything",
+      "published_at": "2026-06-01T04:45:00Z",
+      "tldr": "Simon Willison sent out his May newsletter, detailing a busy month. Key topics include the rising cost of Al, a successful month for Anthropic, and a somewhat disappointing release of new models. Willison also shared progress on Datasette Agent and his current tech stack.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 20,
+      "degraded_body": null,
+      "channel_url": null
+    }
+  ],
+  "footer_aside": [],
+  "pending_transcripts_count": 3,
+  "pipeline_notes": {
+    "show": true,
+    "summary_line": "3 video summaries pending; 1 source unreachable; 5 budget-limited summaries",
+    "details": [
+      "5 summaries hit the weekly LLM budget and weren't generated this run.",
+      "Import AI couldn't be reached this Sunday morning. The next run will retry.",
+      "3 video transcripts will fill in when the digest is refreshed from a different network."
+    ]
+  },
+  "failure_notice": null
+}
