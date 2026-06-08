@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W23",
-  "generated_at": "2026-06-07T18:55:25Z",
+  "generated_at": "2026-06-08T14:11:50Z",
   "week_range": {
     "start": "2026-06-01T00:00:00Z",
     "end": "2026-06-07T23:59:59Z"
   },
-  "updated_at": "2026-06-07T18:55:25Z",
+  "updated_at": "2026-06-08T14:11:50Z",
   "weekly_synthesis": {
     "text": "This week highlighted a growing tension between the perceived value of AI and the practicalities of its deployment. While Ed Zitron's declaration of a \"bullshit boom\" sharpened skepticism around the",
     "status": "ok"
@@ -138,13 +138,13 @@
           "publisher": "Ed Zitron's Where's Your Ed At",
           "canonical_url": "https://www.wheresyoured.at/ai-doesnt-have-roi/",
           "published_at": "2026-06-02T14:04:43Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Recent events highlight that companies are struggling to justify AI spending due to a lack of measurable ROI and difficulty in tracking costs. Companies like Uber and Microsoft's GitHub Copilot have experienced unexpected high costs or shifted to token-based billing, leading to user frustration. The author argues that the core issue is not just the ROI but the inability to accurately measure AI costs, exacerbated by LLMs' inherent unreliability and the obfuscation of true expenses by AI providers.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "business",
           "rank_position": 15,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         }
       ]
@@ -269,13 +269,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jun/2/microsofts-new-models/#atom-everything",
           "published_at": "2026-06-02T22:21:52Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Microsoft has announced two new text LLMs: MAI-Thinking-1, a 1 trillion parameter model with 35 billion active parameters, and MAI-Code-1-Flash, a 137 billion parameter model with 5 billion active parameters. MAI-Thinking-1 is reportedly preferred over Sonnet 4.6 in human evaluations, while MAI-Code-1-Flash is designed for GitHub Copilot and VS Code. Both models were trained by Microsoft on proprietary data, though the training data ultimately includes a crawl of the public web, similar to other major LLMs.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 12,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -283,8 +283,8 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jun/2/datasette-agent-micropython/#atom-everything",
           "published_at": "2026-06-02T19:28:36Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Simon Willison has released datasette-agent-micropython 0.1a0, a new tool that allows running Python code in a sandbox environment using MicroPython and WebAssembly. This release follows recent articles on similar topics, including running Python code in a sandbox with MicroPython and WASM, and discussions on the capabilities of Claude Opus 4.8 and the product-market fit of AI companies like Anthropic and OpenAI.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [
             {
@@ -302,7 +302,7 @@
           ],
           "category": "technical",
           "rank_position": 13,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -343,13 +343,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jun/2/pasted-file-editor/#atom-everything",
           "published_at": "2026-06-02T04:13:36Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Simon Willison has built a prototype \"Pasted File Editor\" inspired by Claude's ability to treat large text pastes as file attachments. The editor also supports opening various file types, including images, and dragging files onto the textarea. This tool aims to provide a similar file-handling experience for pasted content.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 17,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -357,13 +357,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jun/1/hackers-simply-asked-meta-ai/#atom-everything",
           "published_at": "2026-06-01T21:14:47Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Meta's AI support chatbot was found to be vulnerable to a simple social engineering attack, allowing hackers to gain access to high-profile Instagram accounts. Attackers could trick the AI into linking a target account to a new email address by simply asking it to do so and offering to provide a verification code. This vulnerability highlights a critical flaw in Meta's account recovery process, where the AI was given the ability to bypass standard security measures.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 18,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -557,13 +557,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jun/2/microsofts-new-models/#atom-everything",
       "published_at": "2026-06-02T22:21:52Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Microsoft has announced two new text LLMs: MAI-Thinking-1, a 1 trillion parameter model with 35 billion active parameters, and MAI-Code-1-Flash, a 137 billion parameter model with 5 billion active parameters. MAI-Thinking-1 is reportedly preferred over Sonnet 4.6 in human evaluations, while MAI-Code-1-Flash is designed for GitHub Copilot and VS Code. Both models were trained by Microsoft on proprietary data, though the training data ultimately includes a crawl of the public web, similar to other major LLMs.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 12,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -571,8 +571,8 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jun/2/datasette-agent-micropython/#atom-everything",
       "published_at": "2026-06-02T19:28:36Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Simon Willison has released datasette-agent-micropython 0.1a0, a new tool that allows running Python code in a sandbox environment using MicroPython and WebAssembly. This release follows recent articles on similar topics, including running Python code in a sandbox with MicroPython and WASM, and discussions on the capabilities of Claude Opus 4.8 and the product-market fit of AI companies like Anthropic and OpenAI.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [
         {
@@ -590,7 +590,7 @@
       ],
       "category": "technical",
       "rank_position": 13,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -612,13 +612,13 @@
       "publisher": "Ed Zitron's Where's Your Ed At",
       "canonical_url": "https://www.wheresyoured.at/ai-doesnt-have-roi/",
       "published_at": "2026-06-02T14:04:43Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Recent events highlight that companies are struggling to justify AI spending due to a lack of measurable ROI and difficulty in tracking costs. Companies like Uber and Microsoft's GitHub Copilot have experienced unexpected high costs or shifted to token-based billing, leading to user frustration. The author argues that the core issue is not just the ROI but the inability to accurately measure AI costs, exacerbated by LLMs' inherent unreliability and the obfuscation of true expenses by AI providers.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "business",
       "rank_position": 15,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -645,13 +645,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jun/2/pasted-file-editor/#atom-everything",
       "published_at": "2026-06-02T04:13:36Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Simon Willison has built a prototype \"Pasted File Editor\" inspired by Claude's ability to treat large text pastes as file attachments. The editor also supports opening various file types, including images, and dragging files onto the textarea. This tool aims to provide a similar file-handling experience for pasted content.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 17,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -659,13 +659,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jun/1/hackers-simply-asked-meta-ai/#atom-everything",
       "published_at": "2026-06-01T21:14:47Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Meta's AI support chatbot was found to be vulnerable to a simple social engineering attack, allowing hackers to gain access to high-profile Instagram accounts. Attackers could trick the AI into linking a target account to a new email address by simply asking it to do so and offering to provide a verification code. This vulnerability highlights a critical flaw in Meta's account recovery process, where the AI was given the ability to bypass standard security measures.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 18,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -701,9 +701,8 @@
   "pending_transcripts_count": 3,
   "pipeline_notes": {
     "show": true,
-    "summary_line": "3 video summaries pending; 1 source unreachable; 5 budget-limited summaries",
+    "summary_line": "3 video summaries pending; 1 source unreachable",
     "details": [
-      "5 summaries hit the weekly LLM budget and weren't generated this run.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "3 video transcripts will fill in when the digest is refreshed from a different network."
     ]
