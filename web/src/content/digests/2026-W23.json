@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W23",
-  "generated_at": "2026-06-12T12:55:43Z",
+  "generated_at": "2026-06-13T11:55:23Z",
   "week_range": {
     "start": "2026-06-01T00:00:00Z",
     "end": "2026-06-07T23:59:59Z"
   },
-  "updated_at": "2026-06-12T12:55:43Z",
+  "updated_at": "2026-06-13T11:55:23Z",
   "weekly_synthesis": {
     "text": "This week highlighted a growing tension between the perceived value of AI and the practicalities of its deployment. While Ed Zitron's declaration of a \"bullshit boom\" sharpened skepticism around the",
     "status": "ok"
