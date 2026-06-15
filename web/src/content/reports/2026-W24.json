@@ -1,34 +1,18 @@
 {
   "schema_version": 1,
   "week_id": "2026-W24",
-  "generated_at": "2026-06-14T11:54:23Z",
-  "run_id": "3cb94ade30464d0094cd03e96a0352c4",
-  "status": "partial",
-  "items_ingested": 114,
+  "generated_at": "2026-06-15T15:48:41Z",
+  "run_id": "72ca3768e67c40dd9651ea4ecacd7b8c",
+  "status": "success",
+  "items_ingested": 0,
   "clusters": 30,
-  "llm_calls": 27,
-  "cost_usd": 0.004924,
-  "errors": [
-    {
-      "phase": "ingest",
-      "source_id": "import-ai",
-      "category": "fetch_http_error",
-      "message": "FetchError: http error fetching https://importai.substack.com/feed: Client error '403 Forbidden' for url 'https://importai.substack.com/feed'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403",
-      "error": "FetchError: http error fetching https://importai.substack.com/feed: Client error '403 Forbidden' for url 'https://importai.substack.com/feed'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403",
-      "http_status": "403"
-    },
-    {
-      "phase": "ingest",
-      "source_id": "last-week-in-ai",
-      "category": "empty_feed",
-      "message": "source returned 20 items but zero fell in 2026-06-08T00:00:00Z..2026-06-14T23:59:59Z",
-      "error": "source returned 20 items but zero fell in 2026-06-08T00:00:00Z..2026-06-14T23:59:59Z"
-    }
-  ],
+  "llm_calls": 0,
+  "cost_usd": 0.0,
+  "errors": [],
   "summary_status": {
-    "ok": 23,
+    "ok": 29,
     "thin": 1,
-    "quota_exhausted": 6,
+    "quota_exhausted": 0,
     "api_error": 0,
     "parse_error": 0,
     "client_init_error": 0,
@@ -36,21 +20,21 @@
   },
   "stages": {
     "ingest": {
-      "items": 114
+      "items": 0
     },
     "dedup": {
-      "clusters_created": 30,
-      "items_clustered": 1
+      "clusters_created": 0,
+      "items_clustered": 0
     },
     "summarize": {
-      "llm_calls": 23,
-      "cost_usd": 0.004484,
-      "summaries_written": 23,
-      "items_degraded": 7
+      "llm_calls": 0,
+      "cost_usd": 0.0,
+      "summaries_written": 0,
+      "items_degraded": 0
     },
     "categorize": {
-      "llm_calls": 1,
-      "cost_usd": 5.1e-05,
+      "llm_calls": 0,
+      "cost_usd": 0.0,
       "distribution": {
         "edtech": 0,
         "business": 11,
@@ -65,8 +49,8 @@
     "rollup": {
       "mini_rollups": 2,
       "weekly": true,
-      "llm_calls": 3,
-      "cost_usd": 0.000389
+      "llm_calls": 0,
+      "cost_usd": 0.0
     }
   },
   "source_health": {
@@ -122,8 +106,8 @@
   "budget": {
     "cap_usd": 1.0,
     "reserved_meta_usd": 0.1,
-    "spent_usd": 0.004924,
-    "pre_flight_estimate_usd": 0.025,
+    "spent_usd": 0.0,
+    "pre_flight_estimate_usd": 0.0,
     "halted": false,
     "halted_at_stage": null,
     "hard_cap_hit": false,

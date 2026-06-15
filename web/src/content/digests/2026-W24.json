@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W24",
-  "generated_at": "2026-06-14T11:54:23Z",
+  "generated_at": "2026-06-15T15:48:41Z",
   "week_range": {
     "start": "2026-06-08T00:00:00Z",
     "end": "2026-06-14T23:59:59Z"
   },
-  "updated_at": "2026-06-14T11:54:23Z",
+  "updated_at": "2026-06-15T15:48:41Z",
   "weekly_synthesis": {
     "text": "This week, the AI sector witnessed a stark illustration of regulatory power as the US government compelled Anthropic to disable its newly released Claude Fable 5 and Mythos 5 models. The",
     "status": "ok"
@@ -166,8 +166,8 @@
           "publisher": "Ben's Bites",
           "canonical_url": "https://www.bensbites.com/p/new-claude-model-fable",
           "published_at": "2026-06-11T13:03:20Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Anthropic has released Fable 5, a new model that offers improved performance over Opus 4.8 on benchmarks and excels at handling long contexts and spawning subagents reliably. While initially slower and more expensive than Opus, Fable 5 provides a \"sweet spot\" for users who prefer Claude's \"vibe\" but need more directness than typical Claude models. The model is available in Claude subscription plans until June 22nd, after which it will transition to paid credits.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [
             {
@@ -177,7 +177,7 @@
           ],
           "category": "business",
           "rank_position": 13,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -185,13 +185,13 @@
           "publisher": "AI News & Strategy Daily | Nate B Jones",
           "canonical_url": "https://www.youtube.com/watch?v=R2-Y1Hjwx2U",
           "published_at": "2026-06-10T14:00:38Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "The debate between Claude Code and Codex is not about which coding tool is superior, but rather how their interfaces train different approaches to working with AI agents. Claude's interface encourages close-up steering of agents, while Codex promotes dispatching and delegation. The real skill for operators and builders in 2026 will be agent literacy, understanding when to steer, delegate, or demand proof, rather than picking a single tool.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "business",
           "rank_position": 19,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@NateBJones"
         },
         {
@@ -344,13 +344,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jun/11/asyncinject/#atom-everything",
           "published_at": "2026-06-11T06:28:09Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Simon Willison has released version 0.7 of asyncinject, a utility library for asyncio dependency injection. The release includes bug fixes identified and resolved by Claude Fable 5, highlighting the model's proactive capabilities.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 14,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -358,13 +358,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jun/11/anthropic-walks-back-policy/#atom-everything",
           "published_at": "2026-06-11T03:45:49Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Anthropic has reversed a policy that would have limited the effectiveness of its Claude AI models for users engaged in frontier large language model development without explicit notification. Following significant backlash, the company will now make these safeguards visible, falling back to a less restrictive model version and providing a reason for the limitation. Anthropic acknowledged they made the wrong tradeoff by initially opting for invisible safeguards to enable faster deployment.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 15,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -400,13 +400,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jun/10/jeremy-howard/#atom-everything",
           "published_at": "2026-06-10T15:23:34Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Jeremy Howard proposes a solution to slow down recursive AI self-improvement: the lab with the top-ranked model should agree not to use it for frontier AI research, while others retain access. He criticizes Anthropic's approach of allowing their top lab to use their best model for frontier AI, which he believes advances the AI frontier and increases power imbalances. Howard advocates for democratizing AI development rather than slowing it down.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 18,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -498,13 +498,13 @@
           "publisher": "How I AI",
           "canonical_url": "https://www.youtube.com/watch?v=OOPganyUinE",
           "published_at": "2026-06-08T12:00:16Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Nicole Ruiz, a writer and parent, has developed a sophisticated AI shopping system using Claude to help her family purchase durable, high-quality items and avoid low-quality products. The system is designed to vet brands based on heritage and craftsmanship, identify century-old manufacturers over trendy direct-to-consumer brands, and even automate tasks like processing returns. This approach leverages AI to help small artisans and heritage brands compete against larger e-commerce infrastructures.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "technical",
           "rank_position": 30,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@howiaipodcast"
         }
       ]
@@ -670,8 +670,8 @@
       "publisher": "Ben's Bites",
       "canonical_url": "https://www.bensbites.com/p/new-claude-model-fable",
       "published_at": "2026-06-11T13:03:20Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Anthropic has released Fable 5, a new model that offers improved performance over Opus 4.8 on benchmarks and excels at handling long contexts and spawning subagents reliably. While initially slower and more expensive than Opus, Fable 5 provides a \"sweet spot\" for users who prefer Claude's \"vibe\" but need more directness than typical Claude models. The model is available in Claude subscription plans until June 22nd, after which it will transition to paid credits.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [
         {
@@ -681,7 +681,7 @@
       ],
       "category": "business",
       "rank_position": 13,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -689,13 +689,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jun/11/asyncinject/#atom-everything",
       "published_at": "2026-06-11T06:28:09Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Simon Willison has released version 0.7 of asyncinject, a utility library for asyncio dependency injection. The release includes bug fixes identified and resolved by Claude Fable 5, highlighting the model's proactive capabilities.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 14,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -703,13 +703,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jun/11/anthropic-walks-back-policy/#atom-everything",
       "published_at": "2026-06-11T03:45:49Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Anthropic has reversed a policy that would have limited the effectiveness of its Claude AI models for users engaged in frontier large language model development without explicit notification. Following significant backlash, the company will now make these safeguards visible, falling back to a less restrictive model version and providing a reason for the limitation. Anthropic acknowledged they made the wrong tradeoff by initially opting for invisible safeguards to enable faster deployment.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 15,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -745,13 +745,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jun/10/jeremy-howard/#atom-everything",
       "published_at": "2026-06-10T15:23:34Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Jeremy Howard proposes a solution to slow down recursive AI self-improvement: the lab with the top-ranked model should agree not to use it for frontier AI research, while others retain access. He criticizes Anthropic's approach of allowing their top lab to use their best model for frontier AI, which he believes advances the AI frontier and increases power imbalances. Howard advocates for democratizing AI development rather than slowing it down.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 18,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -759,13 +759,13 @@
       "publisher": "AI News & Strategy Daily | Nate B Jones",
       "canonical_url": "https://www.youtube.com/watch?v=R2-Y1Hjwx2U",
       "published_at": "2026-06-10T14:00:38Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "The debate between Claude Code and Codex is not about which coding tool is superior, but rather how their interfaces train different approaches to working with AI agents. Claude's interface encourages close-up steering of agents, while Codex promotes dispatching and delegation. The real skill for operators and builders in 2026 will be agent literacy, understanding when to steer, delegate, or demand proof, rather than picking a single tool.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "business",
       "rank_position": 19,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@NateBJones"
     },
     {
@@ -913,13 +913,13 @@
       "publisher": "How I AI",
       "canonical_url": "https://www.youtube.com/watch?v=OOPganyUinE",
       "published_at": "2026-06-08T12:00:16Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Nicole Ruiz, a writer and parent, has developed a sophisticated AI shopping system using Claude to help her family purchase durable, high-quality items and avoid low-quality products. The system is designed to vet brands based on heritage and craftsmanship, identify century-old manufacturers over trendy direct-to-consumer brands, and even automate tasks like processing returns. This approach leverages AI to help small artisans and heritage brands compete against larger e-commerce infrastructures.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "technical",
       "rank_position": 30,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@howiaipodcast"
     }
   ],
@@ -942,9 +942,8 @@
   "pending_transcripts_count": 6,
   "pipeline_notes": {
     "show": true,
-    "summary_line": "6 video summaries pending; 1 source unreachable; 6 budget-limited summaries",
+    "summary_line": "6 video summaries pending; 1 source unreachable",
     "details": [
-      "6 summaries hit the weekly LLM budget and weren't generated this run.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "6 video transcripts will fill in when the digest is refreshed from a different network."
     ]
