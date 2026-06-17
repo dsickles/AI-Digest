@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W24",
-  "generated_at": "2026-06-16T15:11:37Z",
+  "generated_at": "2026-06-17T13:43:09Z",
   "week_range": {
     "start": "2026-06-08T00:00:00Z",
     "end": "2026-06-14T23:59:59Z"
   },
-  "updated_at": "2026-06-16T15:11:37Z",
+  "updated_at": "2026-06-17T13:43:09Z",
   "weekly_synthesis": {
     "text": "This week, the AI sector witnessed a stark illustration of regulatory power as the US government compelled Anthropic to disable its newly released Claude Fable 5 and Mythos 5 models. The",
     "status": "ok"
