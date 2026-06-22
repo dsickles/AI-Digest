@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W25",
-  "generated_at": "2026-06-21T12:10:27Z",
+  "generated_at": "2026-06-22T15:26:49Z",
   "week_range": {
     "start": "2026-06-15T00:00:00Z",
     "end": "2026-06-21T23:59:59Z"
   },
-  "updated_at": "2026-06-21T12:10:27Z",
+  "updated_at": "2026-06-22T15:26:49Z",
   "weekly_synthesis": {
     "text": "This week, the AI sector navigated a dual focus on core technical advancements and the practicalities of business operations. On the technical front, the field saw developments across AI models and data tooling,",
     "status": "ok"
@@ -209,7 +209,7 @@
           "canonical_url": "https://www.youtube.com/watch?v=mn4XBSBIuag",
           "published_at": "2026-06-15T14:00:28Z",
           "tldr": null,
-          "summary_status": "quota_exhausted",
+          "summary_status": "api_error",
           "source_type": "youtube",
           "also_covered": [],
           "category": "business",
@@ -283,13 +283,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jun/17/charity-majors/#atom-everything",
           "published_at": "2026-06-17T17:12:41Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Charity Majors argues that the economics of code production were fundamentally altered in 2025, making code generation nearly free and instant. This shift has led to code becoming disposable and regenerable, demanding more, not less, engineering discipline.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 9,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -423,8 +423,8 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jun/15/datasette-apps/#atom-everything",
           "published_at": "2026-06-15T17:26:11Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Datasette-apps 0.1a2 introduces a new apps-set-csp permission to guard custom network/CSP origins for apps, with an optional allow-list for non-privileged users. The Datasette Agent tool enforces these rules, and the stored query picker now supports keyboard navigation, displaying the three most recent accessible queries. Additionally, fragment links within apps are no longer intercepted by the external-link confirmation modal, and the link confirmation modal and logging panels in full-screen mode have been fixed.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [
             {
@@ -434,7 +434,7 @@
           ],
           "category": "technical",
           "rank_position": 23,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -443,7 +443,7 @@
           "canonical_url": "https://simonwillison.net/2026/Jun/15/datasette-agent/#atom-everything",
           "published_at": "2026-06-15T17:19:27Z",
           "tldr": null,
-          "summary_status": "quota_exhausted",
+          "summary_status": "api_error",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
@@ -456,13 +456,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jun/15/axios-clashes-anthropics/#atom-everything",
           "published_at": "2026-06-15T14:57:33Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Personality clashes and alleged dismissiveness from Anthropic reportedly led to their AI models being taken offline by the US government. Sources suggest that a lack of perceived safety and security among involved parties, rather than purely technical vulnerabilities, may have been the deciding factor. Anthropic representatives are meeting with the Commerce Department, but the future of their models remains uncertain.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 25,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -470,13 +470,13 @@
           "publisher": "How I AI",
           "canonical_url": "https://www.youtube.com/watch?v=QE_1hRLsehM",
           "published_at": "2026-06-15T12:00:19Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Ankur Goyal, CEO of Braintrust, argues that AI evaluations (evals) are becoming the new Product Requirements Document (PRD) for AI products. He highlights how AI agents can now perform tireless, rigorous benchmarking and technical tasks, such as optimizing database queries, which were previously impractical for human engineers. Goyal also introduces the \"agent line\" framework for determining which tasks can be delegated to AI and discusses encoding subjective qualities like designer taste into repeatable evaluation functions.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "technical",
           "rank_position": 27,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@howiaipodcast"
         },
         {
@@ -614,13 +614,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jun/17/charity-majors/#atom-everything",
       "published_at": "2026-06-17T17:12:41Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Charity Majors argues that the economics of code production were fundamentally altered in 2025, making code generation nearly free and instant. This shift has led to code becoming disposable and regenerable, demanding more, not less, engineering discipline.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 9,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -810,8 +810,8 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jun/15/datasette-apps/#atom-everything",
       "published_at": "2026-06-15T17:26:11Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Datasette-apps 0.1a2 introduces a new apps-set-csp permission to guard custom network/CSP origins for apps, with an optional allow-list for non-privileged users. The Datasette Agent tool enforces these rules, and the stored query picker now supports keyboard navigation, displaying the three most recent accessible queries. Additionally, fragment links within apps are no longer intercepted by the external-link confirmation modal, and the link confirmation modal and logging panels in full-screen mode have been fixed.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [
         {
@@ -821,7 +821,7 @@
       ],
       "category": "technical",
       "rank_position": 23,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -830,7 +830,7 @@
       "canonical_url": "https://simonwillison.net/2026/Jun/15/datasette-agent/#atom-everything",
       "published_at": "2026-06-15T17:19:27Z",
       "tldr": null,
-      "summary_status": "quota_exhausted",
+      "summary_status": "api_error",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
@@ -843,13 +843,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jun/15/axios-clashes-anthropics/#atom-everything",
       "published_at": "2026-06-15T14:57:33Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Personality clashes and alleged dismissiveness from Anthropic reportedly led to their AI models being taken offline by the US government. Sources suggest that a lack of perceived safety and security among involved parties, rather than purely technical vulnerabilities, may have been the deciding factor. Anthropic representatives are meeting with the Commerce Department, but the future of their models remains uncertain.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 25,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -858,7 +858,7 @@
       "canonical_url": "https://www.youtube.com/watch?v=mn4XBSBIuag",
       "published_at": "2026-06-15T14:00:28Z",
       "tldr": null,
-      "summary_status": "quota_exhausted",
+      "summary_status": "api_error",
       "source_type": "youtube",
       "also_covered": [],
       "category": "business",
@@ -871,13 +871,13 @@
       "publisher": "How I AI",
       "canonical_url": "https://www.youtube.com/watch?v=QE_1hRLsehM",
       "published_at": "2026-06-15T12:00:19Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Ankur Goyal, CEO of Braintrust, argues that AI evaluations (evals) are becoming the new Product Requirements Document (PRD) for AI products. He highlights how AI agents can now perform tireless, rigorous benchmarking and technical tasks, such as optimizing database queries, which were previously impractical for human engineers. Goyal also introduces the \"agent line\" framework for determining which tasks can be delegated to AI and discusses encoding subjective qualities like designer taste into repeatable evaluation functions.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "technical",
       "rank_position": 27,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@howiaipodcast"
     },
     {
@@ -899,9 +899,9 @@
   "pending_transcripts_count": 6,
   "pipeline_notes": {
     "show": true,
-    "summary_line": "6 video summaries pending; 1 source unreachable; 6 budget-limited summaries",
+    "summary_line": "6 video summaries pending; 1 source unreachable",
     "details": [
-      "6 summaries hit the weekly LLM budget and weren't generated this run.",
+      "2 summaries couldn't be generated this run due to a processing error.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "Last Week in AI didn't publish for the third week in a row.",
       "6 video transcripts will fill in when the digest is refreshed from a different network."

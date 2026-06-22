@@ -1,59 +1,36 @@
 {
   "schema_version": 1,
   "week_id": "2026-W25",
-  "generated_at": "2026-06-21T12:10:27Z",
-  "run_id": "289c1925ec524528bf5f7b10fda14a35",
-  "status": "partial",
-  "items_ingested": 117,
+  "generated_at": "2026-06-22T15:26:49Z",
+  "run_id": "a4626676c6c94ec79a2445a2f69a2147",
+  "status": "success",
+  "items_ingested": 0,
   "clusters": 28,
-  "llm_calls": 25,
-  "cost_usd": 0.004156,
-  "errors": [
-    {
-      "phase": "ingest",
-      "source_id": "one-useful-thing",
-      "category": "empty_feed",
-      "message": "source returned 20 items but zero fell in 2026-06-15T00:00:00Z..2026-06-21T23:59:59Z",
-      "error": "source returned 20 items but zero fell in 2026-06-15T00:00:00Z..2026-06-21T23:59:59Z"
-    },
-    {
-      "phase": "ingest",
-      "source_id": "import-ai",
-      "category": "fetch_http_error",
-      "message": "FetchError: http error fetching https://importai.substack.com/feed: Client error '403 Forbidden' for url 'https://importai.substack.com/feed'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403",
-      "error": "FetchError: http error fetching https://importai.substack.com/feed: Client error '403 Forbidden' for url 'https://importai.substack.com/feed'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403",
-      "http_status": "403"
-    },
-    {
-      "phase": "ingest",
-      "source_id": "last-week-in-ai",
-      "category": "empty_feed",
-      "message": "source returned 20 items but zero fell in 2026-06-15T00:00:00Z..2026-06-21T23:59:59Z",
-      "error": "source returned 20 items but zero fell in 2026-06-15T00:00:00Z..2026-06-21T23:59:59Z"
-    }
-  ],
+  "llm_calls": 0,
+  "cost_usd": 0.0,
+  "errors": [],
   "summary_status": {
-    "ok": 22,
+    "ok": 26,
     "thin": 0,
-    "quota_exhausted": 6,
-    "api_error": 0,
+    "quota_exhausted": 0,
+    "api_error": 2,
     "parse_error": 0,
     "client_init_error": 0,
     "deferred_budget": 0
   },
   "stages": {
     "ingest": {
-      "items": 117
+      "items": 0
     },
     "dedup": {
-      "clusters_created": 28,
-      "items_clustered": 1
+      "clusters_created": 0,
+      "items_clustered": 0
     },
     "summarize": {
-      "llm_calls": 22,
-      "cost_usd": 0.003785,
-      "summaries_written": 22,
-      "items_degraded": 6
+      "llm_calls": 0,
+      "cost_usd": 0.0,
+      "summaries_written": 0,
+      "items_degraded": 0
     },
     "categorize": {
       "llm_calls": 0,
@@ -72,8 +49,8 @@
     "rollup": {
       "mini_rollups": 2,
       "weekly": true,
-      "llm_calls": 3,
-      "cost_usd": 0.000371
+      "llm_calls": 0,
+      "cost_usd": 0.0
     }
   },
   "source_health": {
@@ -129,8 +106,8 @@
   "budget": {
     "cap_usd": 1.0,
     "reserved_meta_usd": 0.1,
-    "spent_usd": 0.004156,
-    "pre_flight_estimate_usd": 0.025,
+    "spent_usd": 0.0,
+    "pre_flight_estimate_usd": 0.0,
     "halted": false,
     "halted_at_stage": null,
     "hard_cap_hit": false,
