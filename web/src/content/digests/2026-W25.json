@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W25",
-  "generated_at": "2026-06-22T15:26:49Z",
+  "generated_at": "2026-06-23T12:35:32Z",
   "week_range": {
     "start": "2026-06-15T00:00:00Z",
     "end": "2026-06-21T23:59:59Z"
   },
-  "updated_at": "2026-06-22T15:26:49Z",
+  "updated_at": "2026-06-23T12:35:32Z",
   "weekly_synthesis": {
     "text": "This week, the AI sector navigated a dual focus on core technical advancements and the practicalities of business operations. On the technical front, the field saw developments across AI models and data tooling,",
     "status": "ok"
@@ -208,13 +208,13 @@
           "publisher": "AI News & Strategy Daily | Nate B Jones",
           "canonical_url": "https://www.youtube.com/watch?v=mn4XBSBIuag",
           "published_at": "2026-06-15T14:00:28Z",
-          "tldr": null,
-          "summary_status": "api_error",
+          "tldr": "The recent correction in AI stocks does not indicate fake demand, but rather a distinction between speculative froth and genuine infrastructure build-out. While some AI companies may struggle with revenue versus spending, the underlying demand for AI compute and inference is real and reshaping the market. Investors should focus on identifying which layers of the AI ecosystem represent durable value versus temporary hype to navigate the evolving landscape.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "business",
           "rank_position": 26,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@NateBJones"
         }
       ]
@@ -857,13 +857,13 @@
       "publisher": "AI News & Strategy Daily | Nate B Jones",
       "canonical_url": "https://www.youtube.com/watch?v=mn4XBSBIuag",
       "published_at": "2026-06-15T14:00:28Z",
-      "tldr": null,
-      "summary_status": "api_error",
+      "tldr": "The recent correction in AI stocks does not indicate fake demand, but rather a distinction between speculative froth and genuine infrastructure build-out. While some AI companies may struggle with revenue versus spending, the underlying demand for AI compute and inference is real and reshaping the market. Investors should focus on identifying which layers of the AI ecosystem represent durable value versus temporary hype to navigate the evolving landscape.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "business",
       "rank_position": 26,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@NateBJones"
     },
     {
@@ -901,7 +901,7 @@
     "show": true,
     "summary_line": "6 video summaries pending; 1 source unreachable",
     "details": [
-      "2 summaries couldn't be generated this run due to a processing error.",
+      "1 summary couldn't be generated this run due to a processing error.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "Last Week in AI didn't publish for the third week in a row.",
       "6 video transcripts will fill in when the digest is refreshed from a different network."

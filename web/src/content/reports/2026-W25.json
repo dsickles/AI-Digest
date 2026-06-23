@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "week_id": "2026-W25",
-  "generated_at": "2026-06-22T15:26:49Z",
-  "run_id": "a4626676c6c94ec79a2445a2f69a2147",
+  "generated_at": "2026-06-23T12:35:32Z",
+  "run_id": "e153f6c3feba484b95098cf598a65e3b",
   "status": "success",
   "items_ingested": 0,
   "clusters": 28,
@@ -10,10 +10,10 @@
   "cost_usd": 0.0,
   "errors": [],
   "summary_status": {
-    "ok": 26,
+    "ok": 27,
     "thin": 0,
     "quota_exhausted": 0,
-    "api_error": 2,
+    "api_error": 1,
     "parse_error": 0,
     "client_init_error": 0,
     "deferred_budget": 0
