@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W25",
-  "generated_at": "2026-06-23T12:35:32Z",
+  "generated_at": "2026-06-24T12:20:48Z",
   "week_range": {
     "start": "2026-06-15T00:00:00Z",
     "end": "2026-06-21T23:59:59Z"
   },
-  "updated_at": "2026-06-23T12:35:32Z",
+  "updated_at": "2026-06-24T12:20:48Z",
   "weekly_synthesis": {
     "text": "This week, the AI sector navigated a dual focus on core technical advancements and the practicalities of business operations. On the technical front, the field saw developments across AI models and data tooling,",
     "status": "ok"
@@ -442,13 +442,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jun/15/datasette-agent/#atom-everything",
           "published_at": "2026-06-15T17:19:27Z",
-          "tldr": null,
-          "summary_status": "api_error",
+          "tldr": "Datasette Agent 0.3a0 introduces the `execute_write_sql` tool, which allows users to approve and then write data to a database, respecting user permissions. This version also enhances the chat terminal mode to support approvals, with new options like `--unsafe` for auto-approval and `--root` to run as root. Additionally, tools can now provide plain text alternatives for CLI display, enabling direct database modification through prompts.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 24,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -829,13 +829,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jun/15/datasette-agent/#atom-everything",
       "published_at": "2026-06-15T17:19:27Z",
-      "tldr": null,
-      "summary_status": "api_error",
+      "tldr": "Datasette Agent 0.3a0 introduces the `execute_write_sql` tool, which allows users to approve and then write data to a database, respecting user permissions. This version also enhances the chat terminal mode to support approvals, with new options like `--unsafe` for auto-approval and `--root` to run as root. Additionally, tools can now provide plain text alternatives for CLI display, enabling direct database modification through prompts.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 24,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -901,7 +901,6 @@
     "show": true,
     "summary_line": "6 video summaries pending; 1 source unreachable",
     "details": [
-      "1 summary couldn't be generated this run due to a processing error.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "Last Week in AI didn't publish for the third week in a row.",
       "6 video transcripts will fill in when the digest is refreshed from a different network."
