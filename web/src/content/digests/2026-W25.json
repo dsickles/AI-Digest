@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W25",
-  "generated_at": "2026-06-25T12:23:37Z",
+  "generated_at": "2026-06-26T12:13:02Z",
   "week_range": {
     "start": "2026-06-15T00:00:00Z",
     "end": "2026-06-21T23:59:59Z"
   },
-  "updated_at": "2026-06-25T12:23:37Z",
+  "updated_at": "2026-06-26T12:13:02Z",
   "weekly_synthesis": {
     "text": "This week, the AI sector navigated a dual focus on core technical advancements and the practicalities of business operations. On the technical front, the field saw developments across AI models and data tooling,",
     "status": "ok"
