@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W26",
-  "generated_at": "2026-06-29T14:09:51Z",
+  "generated_at": "2026-06-30T12:11:56Z",
   "week_range": {
     "start": "2026-06-22T00:00:00Z",
     "end": "2026-06-28T23:59:59Z"
   },
-  "updated_at": "2026-06-29T14:09:51Z",
+  "updated_at": "2026-06-30T12:11:56Z",
   "weekly_synthesis": {
     "text": "This week presented a clear dichotomy in the AI sphere: the relentless march of technical progress met with a growing skepticism regarding its business impact. OpenAI continued its iterative development, launching a limited preview of its GPT-",
     "status": "ok"
