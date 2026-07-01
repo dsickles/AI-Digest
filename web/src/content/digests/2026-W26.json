@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W26",
-  "generated_at": "2026-06-30T12:11:56Z",
+  "generated_at": "2026-07-01T12:35:52Z",
   "week_range": {
     "start": "2026-06-22T00:00:00Z",
     "end": "2026-06-28T23:59:59Z"
   },
-  "updated_at": "2026-06-30T12:11:56Z",
+  "updated_at": "2026-07-01T12:35:52Z",
   "weekly_synthesis": {
     "text": "This week presented a clear dichotomy in the AI sphere: the relentless march of technical progress met with a growing skepticism regarding its business impact. OpenAI continued its iterative development, launching a limited preview of its GPT-",
     "status": "ok"
@@ -138,13 +138,13 @@
           "publisher": "AI News & Strategy Daily | Nate B Jones",
           "canonical_url": "https://www.youtube.com/watch?v=A4zMyjkL0Dc",
           "published_at": "2026-06-24T14:00:11Z",
-          "tldr": null,
-          "summary_status": "api_error",
+          "tldr": "The author suggests moving beyond single-task AI prompts to \"loops,\" which are recurring jobs that remember context, detect changes, and know when to stop for human judgment. This approach, termed \"loop of loops,\" allows AI agents to manage complex, recurring tasks more effectively by defining clear boundaries and identifying points where human oversight is crucial. By spotting and implementing these loops for tasks like sales, research, or even managing children's clothes, users can significantly reduce their mental load.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "business",
           "rank_position": 13,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@NateBJones"
         },
         {
@@ -339,13 +339,13 @@
           "publisher": "How I AI",
           "canonical_url": "https://www.youtube.com/watch?v=ZoBfQZ5utQk",
           "published_at": "2026-06-24T12:00:24Z",
-          "tldr": null,
-          "summary_status": "api_error",
+          "tldr": "The author tested Z.AI's open-weight coding model, GLM 5.2, on real-world tasks including codebase auditing, UI redesign, and autonomous bug hunting, costing only $3.36 for millions of tokens. The model successfully generated a prioritized bug-fix dashboard, a landing page redesign matching a design system, and handled autonomous tasks, though it also had some struggles.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "technical",
           "rank_position": 14,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@howiaipodcast"
         },
         {
@@ -409,13 +409,13 @@
           "publisher": "How I AI",
           "canonical_url": "https://www.youtube.com/watch?v=Idjt53tTv2U",
           "published_at": "2026-06-22T12:00:27Z",
-          "tldr": null,
-          "summary_status": "api_error",
+          "tldr": "Mozilla has developed an agentic bug-finding pipeline that, combined with Anthropic's Claude Mythos model, led to a record number of security fixes in Firefox. The system uses a \"goal-loop\" pattern where an AI agent is given a tightly scoped problem and retries until a solution is found, with a verifier subagent catching false positives. While the AI is powerful, human review remains essential for shipping patches, and the pipeline's success is attributed equally to the AI model and the custom harness.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "technical",
           "rank_position": 23,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@howiaipodcast"
         }
       ]
@@ -595,13 +595,13 @@
       "publisher": "AI News & Strategy Daily | Nate B Jones",
       "canonical_url": "https://www.youtube.com/watch?v=A4zMyjkL0Dc",
       "published_at": "2026-06-24T14:00:11Z",
-      "tldr": null,
-      "summary_status": "api_error",
+      "tldr": "The author suggests moving beyond single-task AI prompts to \"loops,\" which are recurring jobs that remember context, detect changes, and know when to stop for human judgment. This approach, termed \"loop of loops,\" allows AI agents to manage complex, recurring tasks more effectively by defining clear boundaries and identifying points where human oversight is crucial. By spotting and implementing these loops for tasks like sales, research, or even managing children's clothes, users can significantly reduce their mental load.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "business",
       "rank_position": 13,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@NateBJones"
     },
     {
@@ -609,13 +609,13 @@
       "publisher": "How I AI",
       "canonical_url": "https://www.youtube.com/watch?v=ZoBfQZ5utQk",
       "published_at": "2026-06-24T12:00:24Z",
-      "tldr": null,
-      "summary_status": "api_error",
+      "tldr": "The author tested Z.AI's open-weight coding model, GLM 5.2, on real-world tasks including codebase auditing, UI redesign, and autonomous bug hunting, costing only $3.36 for millions of tokens. The model successfully generated a prioritized bug-fix dashboard, a landing page redesign matching a design system, and handled autonomous tasks, though it also had some struggles.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "technical",
       "rank_position": 14,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@howiaipodcast"
     },
     {
@@ -735,13 +735,13 @@
       "publisher": "How I AI",
       "canonical_url": "https://www.youtube.com/watch?v=Idjt53tTv2U",
       "published_at": "2026-06-22T12:00:27Z",
-      "tldr": null,
-      "summary_status": "api_error",
+      "tldr": "Mozilla has developed an agentic bug-finding pipeline that, combined with Anthropic's Claude Mythos model, led to a record number of security fixes in Firefox. The system uses a \"goal-loop\" pattern where an AI agent is given a tightly scoped problem and retries until a solution is found, with a verifier subagent catching false positives. While the AI is powerful, human review remains essential for shipping patches, and the pipeline's success is attributed equally to the AI model and the custom harness.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "technical",
       "rank_position": 23,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@howiaipodcast"
     }
   ],
@@ -751,7 +751,6 @@
     "show": true,
     "summary_line": "6 video summaries pending; 1 source unreachable",
     "details": [
-      "3 summaries couldn't be generated this run due to a processing error.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "Last Week in AI didn't publish for the fourth week in a row.",
       "6 video transcripts will fill in when the digest is refreshed from a different network."
