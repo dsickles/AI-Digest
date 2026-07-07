@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W27",
-  "generated_at": "2026-07-06T13:51:37Z",
+  "generated_at": "2026-07-07T12:31:25Z",
   "week_range": {
     "start": "2026-06-29T00:00:00Z",
     "end": "2026-07-05T23:59:59Z"
   },
-  "updated_at": "2026-07-06T13:51:37Z",
+  "updated_at": "2026-07-07T12:31:25Z",
   "weekly_synthesis": {
     "text": "This week's AI discussions reveal a strong emphasis on internalizing and tailoring artificial intelligence capabilities. Businesses are prioritizing strategic deployment and custom solution building, driven by a desire for greater control and maximized value",
     "status": "ok"
@@ -171,13 +171,13 @@
           "publisher": "One Useful Thing",
           "canonical_url": "https://www.oneusefulthing.org/p/the-twilight-of-the-chatbots",
           "published_at": "2026-06-30T22:18:12Z",
-          "tldr": null,
-          "summary_status": "api_error",
+          "tldr": "AI models are rapidly improving in capability, with frontier models like Claude Fable and GPT-5.6 demonstrating the ability to complete complex software projects in hours that would take humans weeks. This acceleration is shifting AI usage from co-piloting with chatbots to assigning tasks to autonomous agents, even in non-technical fields. This rapid, exponential progress creates instability as human institutions struggle to keep pace with AI's accelerating capabilities.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "business",
           "rank_position": 18,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -185,13 +185,13 @@
           "publisher": "Ed Zitron's Where's Your Ed At",
           "canonical_url": "https://www.wheresyoured.at/the-ai-industry-is-losing/",
           "published_at": "2026-06-30T15:36:38Z",
-          "tldr": null,
-          "summary_status": "api_error",
+          "tldr": "The AI industry is facing a potential bubble burst due to unsustainable capital expenditures by hyperscalers like Microsoft, Google, and Amazon. These companies are spending over a trillion dollars on AI-related infrastructure, outpacing their earnings and free cash flow, leading to significant debt accumulation. The author argues that the demand for AI compute, primarily from unprofitable companies like OpenAI and Anthropic, does not justify this massive investment, creating systemic risk for the tech supply chain, including semiconductor companies and cloud providers like Oracle and CoreWeave.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "business",
           "rank_position": 23,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -200,7 +200,7 @@
           "canonical_url": "https://www.bensbites.com/p/gpt-56-is-here-but",
           "published_at": "2026-06-30T15:02:46Z",
           "tldr": null,
-          "summary_status": "quota_exhausted",
+          "summary_status": "api_error",
           "source_type": "rss",
           "also_covered": [],
           "category": "business",
@@ -213,13 +213,13 @@
           "publisher": "AI News & Strategy Daily | Nate B Jones",
           "canonical_url": "https://www.youtube.com/watch?v=H9oNA5IyrXA",
           "published_at": "2026-06-29T14:00:35Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "The AI race is shifting from model intelligence to context control, with Apple, Anthropic, and OpenAI making moves to integrate AI into personal data and workflows. Apple is enhancing Siri with personal phone context, Anthropic's Claude Tag integrates AI into Slack, and OpenAI's Codex has gained trust for handling sensitive work. This move towards context-aware AI offers significant payoffs but also raises privacy concerns about data access.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "business",
           "rank_position": 29,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@NateBJones"
         }
       ]
@@ -475,13 +475,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jun/29/html-table-extractor/#atom-everything",
           "published_at": "2026-06-29T23:38:21Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Simon Willison has released a new tool that extracts HTML tables from pasted rich text, converting them into various formats like HTML, Markdown, CSV, TSV, or JSON. The tool has been updated to also import and display tables directly from Wikipedia pages using its CORS API. This builds upon his previous work on rich text conversion tools.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 26,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -489,13 +489,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jun/29/safari-tab-count/#atom-everything",
           "published_at": "2026-06-29T18:36:18Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Simon Willison shared a tiny TIL on June 29th, 2026, demonstrating how to count the number of open Safari tabs using AppleScript. The command `osascript -e 'tell application \"Safari\" to count tabs of every window'` can be used to retrieve this information.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 27,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -503,13 +503,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jun/29/ornith/#atom-everything",
           "published_at": "2026-06-29T16:17:59Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "DeepReinforce has released Ornith-1.0, a new family of open-weights LLMs built on Gemma 4 and Qwen 3.5, with variants up to 397B parameters. These models demonstrate state-of-the-art performance for their size on coding benchmarks and are capable of agentic tasks involving tool use. Initial impressions suggest proficiency in code navigation and generation, with good inference speeds.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 28,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -517,13 +517,13 @@
           "publisher": "How I AI",
           "canonical_url": "https://www.youtube.com/watch?v=5FKBkUCaLa8",
           "published_at": "2026-06-29T12:00:33Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Gusto's CTO, Eddie Kim, led a team of five to build a new AI product, Gusto Cofounder, from scratch to launch in just 10 weeks by adopting a \"no-process\" approach. This involved using AI tools like Claude Code, implementing a \"trash can\" method for code reviews, and utilizing a \"perma-Zoom\" setup instead of traditional meetings. Notably, a designer with no engineering background achieved high productivity, and the team focused on an eval-first workflow for bug fixing.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "technical",
           "rank_position": 30,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@howiaipodcast"
         }
       ]
@@ -778,13 +778,13 @@
       "publisher": "One Useful Thing",
       "canonical_url": "https://www.oneusefulthing.org/p/the-twilight-of-the-chatbots",
       "published_at": "2026-06-30T22:18:12Z",
-      "tldr": null,
-      "summary_status": "api_error",
+      "tldr": "AI models are rapidly improving in capability, with frontier models like Claude Fable and GPT-5.6 demonstrating the ability to complete complex software projects in hours that would take humans weeks. This acceleration is shifting AI usage from co-piloting with chatbots to assigning tasks to autonomous agents, even in non-technical fields. This rapid, exponential progress creates instability as human institutions struggle to keep pace with AI's accelerating capabilities.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "business",
       "rank_position": 18,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -848,13 +848,13 @@
       "publisher": "Ed Zitron's Where's Your Ed At",
       "canonical_url": "https://www.wheresyoured.at/the-ai-industry-is-losing/",
       "published_at": "2026-06-30T15:36:38Z",
-      "tldr": null,
-      "summary_status": "api_error",
+      "tldr": "The AI industry is facing a potential bubble burst due to unsustainable capital expenditures by hyperscalers like Microsoft, Google, and Amazon. These companies are spending over a trillion dollars on AI-related infrastructure, outpacing their earnings and free cash flow, leading to significant debt accumulation. The author argues that the demand for AI compute, primarily from unprofitable companies like OpenAI and Anthropic, does not justify this massive investment, creating systemic risk for the tech supply chain, including semiconductor companies and cloud providers like Oracle and CoreWeave.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "business",
       "rank_position": 23,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -877,7 +877,7 @@
       "canonical_url": "https://www.bensbites.com/p/gpt-56-is-here-but",
       "published_at": "2026-06-30T15:02:46Z",
       "tldr": null,
-      "summary_status": "quota_exhausted",
+      "summary_status": "api_error",
       "source_type": "rss",
       "also_covered": [],
       "category": "business",
@@ -890,13 +890,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jun/29/html-table-extractor/#atom-everything",
       "published_at": "2026-06-29T23:38:21Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Simon Willison has released a new tool that extracts HTML tables from pasted rich text, converting them into various formats like HTML, Markdown, CSV, TSV, or JSON. The tool has been updated to also import and display tables directly from Wikipedia pages using its CORS API. This builds upon his previous work on rich text conversion tools.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 26,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -904,13 +904,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jun/29/safari-tab-count/#atom-everything",
       "published_at": "2026-06-29T18:36:18Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Simon Willison shared a tiny TIL on June 29th, 2026, demonstrating how to count the number of open Safari tabs using AppleScript. The command `osascript -e 'tell application \"Safari\" to count tabs of every window'` can be used to retrieve this information.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 27,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -918,13 +918,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jun/29/ornith/#atom-everything",
       "published_at": "2026-06-29T16:17:59Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "DeepReinforce has released Ornith-1.0, a new family of open-weights LLMs built on Gemma 4 and Qwen 3.5, with variants up to 397B parameters. These models demonstrate state-of-the-art performance for their size on coding benchmarks and are capable of agentic tasks involving tool use. Initial impressions suggest proficiency in code navigation and generation, with good inference speeds.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 28,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -932,13 +932,13 @@
       "publisher": "AI News & Strategy Daily | Nate B Jones",
       "canonical_url": "https://www.youtube.com/watch?v=H9oNA5IyrXA",
       "published_at": "2026-06-29T14:00:35Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "The AI race is shifting from model intelligence to context control, with Apple, Anthropic, and OpenAI making moves to integrate AI into personal data and workflows. Apple is enhancing Siri with personal phone context, Anthropic's Claude Tag integrates AI into Slack, and OpenAI's Codex has gained trust for handling sensitive work. This move towards context-aware AI offers significant payoffs but also raises privacy concerns about data access.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "business",
       "rank_position": 29,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@NateBJones"
     },
     {
@@ -946,13 +946,13 @@
       "publisher": "How I AI",
       "canonical_url": "https://www.youtube.com/watch?v=5FKBkUCaLa8",
       "published_at": "2026-06-29T12:00:33Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Gusto's CTO, Eddie Kim, led a team of five to build a new AI product, Gusto Cofounder, from scratch to launch in just 10 weeks by adopting a \"no-process\" approach. This involved using AI tools like Claude Code, implementing a \"trash can\" method for code reviews, and utilizing a \"perma-Zoom\" setup instead of traditional meetings. Notably, a designer with no engineering background achieved high productivity, and the team focused on an eval-first workflow for bug fixing.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "technical",
       "rank_position": 30,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@howiaipodcast"
     }
   ],
@@ -960,10 +960,9 @@
   "pending_transcripts_count": 7,
   "pipeline_notes": {
     "show": true,
-    "summary_line": "7 video summaries pending; 1 source unreachable; 6 budget-limited summaries",
+    "summary_line": "7 video summaries pending; 1 source unreachable",
     "details": [
-      "6 summaries hit the weekly LLM budget and weren't generated this run.",
-      "3 summaries couldn't be generated this run due to a processing error.",
+      "2 summaries couldn't be generated this run due to a processing error.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "Last Week in AI didn't publish for the fifth week in a row.",
       "7 video transcripts will fill in when the digest is refreshed from a different network."
