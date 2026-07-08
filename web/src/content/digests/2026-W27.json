@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W27",
-  "generated_at": "2026-07-07T12:31:25Z",
+  "generated_at": "2026-07-08T11:48:01Z",
   "week_range": {
     "start": "2026-06-29T00:00:00Z",
     "end": "2026-07-05T23:59:59Z"
   },
-  "updated_at": "2026-07-07T12:31:25Z",
+  "updated_at": "2026-07-08T11:48:01Z",
   "weekly_synthesis": {
     "text": "This week's AI discussions reveal a strong emphasis on internalizing and tailoring artificial intelligence capabilities. Businesses are prioritizing strategic deployment and custom solution building, driven by a desire for greater control and maximized value",
     "status": "ok"
@@ -199,13 +199,13 @@
           "publisher": "Ben's Bites",
           "canonical_url": "https://www.bensbites.com/p/gpt-56-is-here-but",
           "published_at": "2026-06-30T15:02:46Z",
-          "tldr": null,
-          "summary_status": "api_error",
+          "tldr": "Etched has emerged from stealth, raising $800 million and securing over $1 billion in backlog orders for its vertically integrated AI inference clusters. The company aims to address the critical bottleneck in AI by providing low-latency, low-cost, and power-efficient inference hardware, with its first chips already functioning on TSMC's 4nm process. Meanwhile, OpenAI's GPT-5.6 models, including Sol, Terra, and Luna, are reportedly facing government blocks on widespread release, with initial access limited to select partners.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "business",
           "rank_position": 25,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -293,13 +293,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jul/3/josh-w-comeau/#atom-everything",
           "published_at": "2026-07-03T21:25:52Z",
-          "tldr": null,
-          "summary_status": "api_error",
+          "tldr": "Josh W. Comeau reports a significant drop in sales for his online courses, attributing it largely to the rise of AI. He explains that AI's potential to automate jobs and provide personalized tutoring reduces the perceived need for developers to invest in new skills through paid courses. Comeau notes this trend is affecting multiple course creators, with revenues down by over 50% as people increasingly turn to LLMs.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 6,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -610,13 +610,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jul/3/josh-w-comeau/#atom-everything",
       "published_at": "2026-07-03T21:25:52Z",
-      "tldr": null,
-      "summary_status": "api_error",
+      "tldr": "Josh W. Comeau reports a significant drop in sales for his online courses, attributing it largely to the rise of AI. He explains that AI's potential to automate jobs and provide personalized tutoring reduces the perceived need for developers to invest in new skills through paid courses. Comeau notes this trend is affecting multiple course creators, with revenues down by over 50% as people increasingly turn to LLMs.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 6,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -876,13 +876,13 @@
       "publisher": "Ben's Bites",
       "canonical_url": "https://www.bensbites.com/p/gpt-56-is-here-but",
       "published_at": "2026-06-30T15:02:46Z",
-      "tldr": null,
-      "summary_status": "api_error",
+      "tldr": "Etched has emerged from stealth, raising $800 million and securing over $1 billion in backlog orders for its vertically integrated AI inference clusters. The company aims to address the critical bottleneck in AI by providing low-latency, low-cost, and power-efficient inference hardware, with its first chips already functioning on TSMC's 4nm process. Meanwhile, OpenAI's GPT-5.6 models, including Sol, Terra, and Luna, are reportedly facing government blocks on widespread release, with initial access limited to select partners.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "business",
       "rank_position": 25,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -962,7 +962,6 @@
     "show": true,
     "summary_line": "7 video summaries pending; 1 source unreachable",
     "details": [
-      "2 summaries couldn't be generated this run due to a processing error.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "Last Week in AI didn't publish for the fifth week in a row.",
       "7 video transcripts will fill in when the digest is refreshed from a different network."
