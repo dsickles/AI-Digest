@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W27",
-  "generated_at": "2026-07-08T11:48:01Z",
+  "generated_at": "2026-07-10T12:26:48Z",
   "week_range": {
     "start": "2026-06-29T00:00:00Z",
     "end": "2026-07-05T23:59:59Z"
   },
-  "updated_at": "2026-07-08T11:48:01Z",
+  "updated_at": "2026-07-10T12:26:48Z",
   "weekly_synthesis": {
     "text": "This week's AI discussions reveal a strong emphasis on internalizing and tailoring artificial intelligence capabilities. Businesses are prioritizing strategic deployment and custom solution building, driven by a desire for greater control and maximized value",
     "status": "ok"
