@@ -1,0 +1,810 @@
+{
+  "schema_version": 1,
+  "week_id": "2026-W28",
+  "generated_at": "2026-07-12T11:06:37Z",
+  "week_range": {
+    "start": "2026-07-06T00:00:00Z",
+    "end": "2026-07-12T23:59:59Z"
+  },
+  "updated_at": "2026-07-12T11:06:37Z",
+  "weekly_synthesis": {
+    "text": "OpenAI's rollout of GPT-5.6 marked a significant technical advancement this week, pushing the capabilities of large language models further. This release, however, arrived amidst growing skepticism regarding the AI",
+    "status": "ok"
+  },
+  "briefing_top_n": [
+    {
+      "title": "Premium: The Hater's Guide To The Memory Crisis",
+      "publisher": "Ed Zitron's Where's Your Ed At",
+      "canonical_url": "https://www.wheresyoured.at/premium-the-haters-guide-to-the-memory-crisis/",
+      "published_at": "2026-07-10T17:51:30Z",
+      "tldr": "The escalating demand for AI servers, particularly for High Bandwidth Memory (HBM), is driving up costs for memory manufacturers like Samsung, SK Hynix, and Micron. This has led to increased prices for consumer electronics, as these companies prioritize HBM production over regular RAM. The situation is exacerbated by massive capital expenditures from tech giants on AI infrastructure, which may not be supported by actual consumer demand, creating a speculative bubble with potential for a significant market collapse.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [
+        {
+          "display_name": "Where's Your Ed At",
+          "url": "https://www.wheresyoured.at/premium-the-haters-guide-to-softbank/"
+        }
+      ],
+      "category": "business",
+      "rank_position": 1,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "Quoting Nilay Patel",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/10/nilay-patel/#atom-everything",
+      "published_at": "2026-07-10T17:05:26Z",
+      "tldr": "Nilay Patel argues that augmented reality glasses require a camera next to the eye that continuously records everything, a task too demanding for current chips that would fit in glasses stems. This necessitates sending data to the cloud or building a device like the Vision Pro with a separate battery pack. Patel suggests that the privacy implications of such devices are so significant that society should consider stopping their development.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 2,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "1.6M agents registered for OpenClaw and did NOTHING.",
+      "publisher": "AI News & Strategy Daily | Nate B Jones",
+      "canonical_url": "https://www.youtube.com/watch?v=PRqiGS6fnIM",
+      "published_at": "2026-07-10T14:00:30Z",
+      "tldr": "Despite 1.6 million AI agents being registered, most users have not found effective uses for them, leading to inactivity. The core challenge is not the agents themselves, but identifying which tasks are suitable for AI automation. A \"one-minute test\" is proposed to quickly determine if a task should be handled by a chat interface, a single agent, a team of agents, or not at all.",
+      "summary_status": "ok",
+      "source_type": "youtube",
+      "also_covered": [],
+      "category": "business",
+      "rank_position": 3,
+      "degraded_body": null,
+      "channel_url": "https://www.youtube.com/@NateBJones"
+    },
+    {
+      "title": "Quoting OpenAI",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/10/openai/#atom-everything",
+      "published_at": "2026-07-10T01:05:57Z",
+      "tldr": "OpenAI has released updates regarding their ChatGPT Work features, clarifying that web and mobile versions operate in the cloud, while desktop apps can utilize local files and desktop applications with user permission. Initially, cloud conversations will not sync with desktop threads, and desktop data will remain local. This follows recent announcements about the GPT-5.6 family (Luna, Terra, Sol) and version 4.0 of sqlite-utils, with an RC2 version reportedly written by Claude Fable.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 4,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "The new GPT-5.6 family: Luna, Terra, Sol",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/9/gpt-5-6/#atom-everything",
+      "published_at": "2026-07-09T19:46:38Z",
+      "tldr": "OpenAI has released its new GPT-5.6 model family, featuring Luna, Terra, and Sol variants with tiered pricing and a million-token context window. These models boast a February 16th, 2026 knowledge cutoff and claim significant improvements in long-running agentic performance, outperforming competitors like Claude Fable 5 on certain benchmarks. The release also introduces new API features such as programmatic tool calling and multi-agent capabilities, though some benchmarks like SWE-Bench Pro show mixed results.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 5,
+      "degraded_body": null,
+      "channel_url": null
+    }
+  ],
+  "category_sections": {
+    "edtech": {
+      "mini_rollup": null,
+      "cards": []
+    },
+    "business": {
+      "mini_rollup": "The AI industry's economic foundations faced scrutiny this week, with Ed Zitron arguing the sector is",
+      "cards": [
+        {
+          "title": "Premium: The Hater's Guide To The Memory Crisis",
+          "publisher": "Ed Zitron's Where's Your Ed At",
+          "canonical_url": "https://www.wheresyoured.at/premium-the-haters-guide-to-the-memory-crisis/",
+          "published_at": "2026-07-10T17:51:30Z",
+          "tldr": "The escalating demand for AI servers, particularly for High Bandwidth Memory (HBM), is driving up costs for memory manufacturers like Samsung, SK Hynix, and Micron. This has led to increased prices for consumer electronics, as these companies prioritize HBM production over regular RAM. The situation is exacerbated by massive capital expenditures from tech giants on AI infrastructure, which may not be supported by actual consumer demand, creating a speculative bubble with potential for a significant market collapse.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [
+            {
+              "display_name": "Where's Your Ed At",
+              "url": "https://www.wheresyoured.at/premium-the-haters-guide-to-softbank/"
+            }
+          ],
+          "category": "business",
+          "rank_position": 1,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "1.6M agents registered for OpenClaw and did NOTHING.",
+          "publisher": "AI News & Strategy Daily | Nate B Jones",
+          "canonical_url": "https://www.youtube.com/watch?v=PRqiGS6fnIM",
+          "published_at": "2026-07-10T14:00:30Z",
+          "tldr": "Despite 1.6 million AI agents being registered, most users have not found effective uses for them, leading to inactivity. The core challenge is not the agents themselves, but identifying which tasks are suitable for AI automation. A \"one-minute test\" is proposed to quickly determine if a task should be handled by a chat interface, a single agent, a team of agents, or not at all.",
+          "summary_status": "ok",
+          "source_type": "youtube",
+          "also_covered": [],
+          "category": "business",
+          "rank_position": 3,
+          "degraded_body": null,
+          "channel_url": "https://www.youtube.com/@NateBJones"
+        },
+        {
+          "title": "Grok x Cursor",
+          "publisher": "Ben's Bites",
+          "canonical_url": "https://www.bensbites.com/p/grok-x-cursor",
+          "published_at": "2026-07-09T13:02:45Z",
+          "tldr": null,
+          "summary_status": "quota_exhausted",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "business",
+          "rank_position": 10,
+          "degraded_body": "The summary couldn't be generated this week.",
+          "channel_url": null
+        },
+        {
+          "title": "Claude Fable 5 Bossed 20 Cheap AI Agents. The Whole Site Cost $8.",
+          "publisher": "AI News & Strategy Daily | Nate B Jones",
+          "canonical_url": "https://www.youtube.com/watch?v=suY66oTDn0s",
+          "published_at": "2026-07-08T14:00:16Z",
+          "tldr": null,
+          "summary_status": "quota_exhausted",
+          "source_type": "youtube",
+          "also_covered": [],
+          "category": "business",
+          "rank_position": 14,
+          "degraded_body": "The summary couldn't be generated this week.",
+          "channel_url": "https://www.youtube.com/@NateBJones"
+        },
+        {
+          "title": "Let AI Burn",
+          "publisher": "Ed Zitron's Where's Your Ed At",
+          "canonical_url": "https://www.wheresyoured.at/let-ai-burn/",
+          "published_at": "2026-07-07T17:09:10Z",
+          "tldr": "Ed Zitron argues that the AI industry is an unsustainable bubble built on manufactured consent and financial engineering, not genuine innovation or demand. He contends that AI companies like OpenAI and Anthropic are not essential to the economy and should not receive bailouts or special treatment. Zitron criticizes the media and tech industry for hyping AI, comparing its current state unfavorably to the Dot Com bubble, and calls for the industry's failures to be allowed to happen without intervention.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "business",
+          "rank_position": 17,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "My thoughts on Fable",
+          "publisher": "Ben's Bites",
+          "canonical_url": "https://www.bensbites.com/p/my-thoughts-on-fable",
+          "published_at": "2026-07-07T13:04:10Z",
+          "tldr": "The author shares their experience using Fable, an Anthropic model, primarily as a \"thinking partner\" rather than for building, noting its Opus-like traits and speed. They express anticipation for GPT 5.6, hoping it will better capture the creative thinking vibe they seek. The piece also touches on Fable's impending transition to a paid credit system and mentions various other AI tools and developments, including OpenAI's inference cost reduction and new models like GPT-Realtime-2.1-mini.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "business",
+          "rank_position": 20,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "OpenAI Just Offered The Government $42 Billion. This Is The Real Reason.",
+          "publisher": "AI News & Strategy Daily | Nate B Jones",
+          "canonical_url": "https://www.youtube.com/watch?v=oOpgmS88pLw",
+          "published_at": "2026-07-06T14:00:31Z",
+          "tldr": "The AI industry's focus is shifting from model superiority to control over compute, distribution, and government permissions, as evidenced by recent moves from Meta, OpenAI, and Anthropic. OpenAI's proposal to offer the government a 5% stake is a significant part of this new strategy, which also includes Meta's ventures into gaming and AI compute sales, and Anthropic's enterprise focus.",
+          "summary_status": "ok",
+          "source_type": "youtube",
+          "also_covered": [],
+          "category": "business",
+          "rank_position": 22,
+          "degraded_body": null,
+          "channel_url": "https://www.youtube.com/@NateBJones"
+        }
+      ]
+    },
+    "technical": {
+      "mini_rollup": "OpenAI dominated the technical news this week, rolling out its new GPT-5.6",
+      "cards": [
+        {
+          "title": "Quoting Nilay Patel",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jul/10/nilay-patel/#atom-everything",
+          "published_at": "2026-07-10T17:05:26Z",
+          "tldr": "Nilay Patel argues that augmented reality glasses require a camera next to the eye that continuously records everything, a task too demanding for current chips that would fit in glasses stems. This necessitates sending data to the cloud or building a device like the Vision Pro with a separate battery pack. Patel suggests that the privacy implications of such devices are so significant that society should consider stopping their development.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 2,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "Quoting OpenAI",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jul/10/openai/#atom-everything",
+          "published_at": "2026-07-10T01:05:57Z",
+          "tldr": "OpenAI has released updates regarding their ChatGPT Work features, clarifying that web and mobile versions operate in the cloud, while desktop apps can utilize local files and desktop applications with user permission. Initially, cloud conversations will not sync with desktop threads, and desktop data will remain local. This follows recent announcements about the GPT-5.6 family (Luna, Terra, Sol) and version 4.0 of sqlite-utils, with an RC2 version reportedly written by Claude Fable.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 4,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "The new GPT-5.6 family: Luna, Terra, Sol",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jul/9/gpt-5-6/#atom-everything",
+          "published_at": "2026-07-09T19:46:38Z",
+          "tldr": "OpenAI has released its new GPT-5.6 model family, featuring Luna, Terra, and Sol variants with tiered pricing and a million-token context window. These models boast a February 16th, 2026 knowledge cutoff and claim significant improvements in long-running agentic performance, outperforming competitors like Claude Fable 5 on certain benchmarks. The release also introduces new API features such as programmatic tool calling and multi-agent capabilities, though some benchmarks like SWE-Bench Pro show mixed results.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 5,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "GPT-5.6 Sol: Better AND cheaper than Fable",
+          "publisher": "How I AI",
+          "canonical_url": "https://www.youtube.com/watch?v=gAWbvEwUoiI",
+          "published_at": "2026-07-09T17:28:38Z",
+          "tldr": "The author's \"Claire Weighted Index\" benchmark shows GPT-5.6 Sol outperforms GPT-5.6 Terra, Luna, Claude Fable 5, and Sonnet 5 across PRDs, prototypes, wireframes, debugging, and agentic voice. Sol also proved cheaper than Fable and enabled impressive use cases like building a gamified homework app with Codex and automating 500 LinkedIn replies via browser automation.",
+          "summary_status": "ok",
+          "source_type": "youtube",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 6,
+          "degraded_body": null,
+          "channel_url": "https://www.youtube.com/@howiaipodcast"
+        },
+        {
+          "title": "Introducing Muse Spark 1.1",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jul/9/muse-spark-1-1/#atom-everything",
+          "published_at": "2026-07-09T16:24:09Z",
+          "tldr": "Meta has released Muse Spark 1.1, an updated version of their AI model. This new release introduces an API, offering significant improvements in agentic tool calling and computer use. A new plugin, llm-meta-ai, provides command-line and Python library access to the model, allowing users to interact with it for tasks like generating images.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 7,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "llm-meta-ai 0.1",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jul/9/llm-meta-ai/#atom-everything",
+          "published_at": "2026-07-09T16:12:20Z",
+          "tldr": "Simon Willison's Weblog has published details on llm-meta-ai version 0.1. This release follows recent articles about the new GPT-5.6 family (Luna, Terra, Sol) and version 4.0 of sqlite-utils, which was largely written by Claude Fable.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 8,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "llm 0.31.1",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jul/9/llm/#atom-everything",
+          "published_at": "2026-07-09T16:06:15Z",
+          "tldr": "Simon Willison's Weblog published an update on llm 0.31.1 on July 9th, 2026. This release follows recent announcements of the GPT-5.6 family (Luna, Terra, Sol) and version 4.0 of sqlite-utils, which includes database schema migrations and was partially written by Claude Fable for approximately $149.25.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 9,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "Rewriting Bun in Rust",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jul/8/rewriting-bun-in-rust/#atom-everything",
+          "published_at": "2026-07-08T23:57:21Z",
+          "tldr": null,
+          "summary_status": "quota_exhausted",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 11,
+          "degraded_body": "The summary couldn't be generated this week.",
+          "channel_url": null
+        },
+        {
+          "title": "Introducing GPT‑Live",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jul/8/introducing-gptlive/#atom-everything",
+          "published_at": "2026-07-08T23:20:48Z",
+          "tldr": "OpenAI has launched GPT-Live, a new model for ChatGPT's voice mode that is significantly more capable than its predecessor. This new model can delegate complex tasks, including web searches, to GPT-5.5 in the background while maintaining conversational flow. The author found the previous voice model to be limited and experienced a bug where it would inappropriately laugh, which has reportedly been addressed in the new version.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 12,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "Quoting Kenton Varda",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jul/8/kenton-varda/#atom-everything",
+          "published_at": "2026-07-08T20:03:34Z",
+          "tldr": "Kenton Varda has declared a moratorium on AI-written change descriptions for his team's code, finding them unhelpful for PR reviews. He stated that the AI-generated descriptions focused on low-level code details while omitting the necessary high-level context. This decision comes amidst recent AI developments, including the GPT-5.6 family and the release of sqlite-utils 4.0, which was largely written by Claude Fable.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 13,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "What is an AI harness? I build one live in less than 30 minutes",
+          "publisher": "How I AI",
+          "canonical_url": "https://www.youtube.com/watch?v=ofS-4RRw9zw",
+          "published_at": "2026-07-08T12:00:21Z",
+          "tldr": null,
+          "summary_status": "quota_exhausted",
+          "source_type": "youtube",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 15,
+          "degraded_body": "The summary couldn't be generated this week.",
+          "channel_url": "https://www.youtube.com/@howiaipodcast"
+        },
+        {
+          "title": "sqlite-utils 4.0, now with database schema migrations",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jul/7/sqlite-utils-4/#atom-everything",
+          "published_at": "2026-07-07T19:32:57Z",
+          "tldr": null,
+          "summary_status": "quota_exhausted",
+          "source_type": "rss",
+          "also_covered": [
+            {
+              "display_name": "Simon Willison",
+              "url": "https://simonwillison.net/2026/Jul/7/sqlite-utils/#atom-everything"
+            },
+            {
+              "display_name": "Simon Willison",
+              "url": "https://simonwillison.net/2026/Jul/6/sqlite-utils/#atom-everything"
+            },
+            {
+              "display_name": "Simon Willison",
+              "url": "https://simonwillison.net/2026/Jul/7/sqlite-utils-2/#atom-everything"
+            },
+            {
+              "display_name": "Simon Willison",
+              "url": "https://simonwillison.net/2026/Jul/11/sqlite-utils/#atom-everything"
+            }
+          ],
+          "category": "technical",
+          "rank_position": 16,
+          "degraded_body": "The summary couldn't be generated this week.",
+          "channel_url": null
+        },
+        {
+          "title": "sqlite-migrate 0.2",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jul/7/sqlite-migrate/#atom-everything",
+          "published_at": "2026-07-07T16:33:55Z",
+          "tldr": "The sqlite-migrate library has released version 0.2, which serves as a retirement release. This new version implements a compatibility shim to work with the recently released sqlite-utils 4.0. The sqlite-utils 4.0 library itself includes new features for database schema migrations.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 18,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "github-code Web Component",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jul/7/github-code-component/#atom-everything",
+          "published_at": "2026-07-07T16:18:16Z",
+          "tldr": "Simon Willison has created an experimental Web Component called `github-code` that embeds code snippets from GitHub. This component uses GPT-5.5 and a specific prompt to fetch code from a given URL, display it with line numbers, but without syntax highlighting. It's designed to be a simple way to share specific code sections directly on a webpage.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 19,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "tencent/Hy3",
+          "publisher": "Simon Willison's Weblog",
+          "canonical_url": "https://simonwillison.net/2026/Jul/6/hy3/#atom-everything",
+          "published_at": "2026-07-06T23:57:35Z",
+          "tldr": "Tencent has released Hy3, a new 295B-parameter Mixture-of-Experts (MoE) large language model under the Apache 2.0 license. Hy3 boasts 21B active parameters and rivals flagship open-source models in performance, showing significant gains in utility across various products and tasks. The model supports a 256K context length and is available on Hugging Face and OpenRouter.",
+          "summary_status": "ok",
+          "source_type": "rss",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 21,
+          "degraded_body": null,
+          "channel_url": null
+        },
+        {
+          "title": "How I run autonomous coding agents from my phone with OpenAI Symphony + Linear",
+          "publisher": "How I AI",
+          "canonical_url": "https://www.youtube.com/watch?v=KtmaWUVdnx4",
+          "published_at": "2026-07-06T12:00:19Z",
+          "tldr": "Alessio Fanelli details two AI workflows: one using OpenAI Symphony and Linear for autonomous coding, treating Linear as a state machine for agent management throughout the development lifecycle. The second workflow employs Codex with browser access to find underpriced Pokémon cards on eBay for his shop, autonomously extracting data and flagging deals. The article explores the benefits of an \"agent manager\" model, scaling agent operations beyond local machines, and the potential for AI in small business arbitrage.",
+          "summary_status": "ok",
+          "source_type": "youtube",
+          "also_covered": [],
+          "category": "technical",
+          "rank_position": 23,
+          "degraded_body": null,
+          "channel_url": "https://www.youtube.com/@howiaipodcast"
+        }
+      ]
+    }
+  },
+  "main_feed": [
+    {
+      "title": "Premium: The Hater's Guide To The Memory Crisis",
+      "publisher": "Ed Zitron's Where's Your Ed At",
+      "canonical_url": "https://www.wheresyoured.at/premium-the-haters-guide-to-the-memory-crisis/",
+      "published_at": "2026-07-10T17:51:30Z",
+      "tldr": "The escalating demand for AI servers, particularly for High Bandwidth Memory (HBM), is driving up costs for memory manufacturers like Samsung, SK Hynix, and Micron. This has led to increased prices for consumer electronics, as these companies prioritize HBM production over regular RAM. The situation is exacerbated by massive capital expenditures from tech giants on AI infrastructure, which may not be supported by actual consumer demand, creating a speculative bubble with potential for a significant market collapse.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [
+        {
+          "display_name": "Where's Your Ed At",
+          "url": "https://www.wheresyoured.at/premium-the-haters-guide-to-softbank/"
+        }
+      ],
+      "category": "business",
+      "rank_position": 1,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "Quoting Nilay Patel",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/10/nilay-patel/#atom-everything",
+      "published_at": "2026-07-10T17:05:26Z",
+      "tldr": "Nilay Patel argues that augmented reality glasses require a camera next to the eye that continuously records everything, a task too demanding for current chips that would fit in glasses stems. This necessitates sending data to the cloud or building a device like the Vision Pro with a separate battery pack. Patel suggests that the privacy implications of such devices are so significant that society should consider stopping their development.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 2,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "1.6M agents registered for OpenClaw and did NOTHING.",
+      "publisher": "AI News & Strategy Daily | Nate B Jones",
+      "canonical_url": "https://www.youtube.com/watch?v=PRqiGS6fnIM",
+      "published_at": "2026-07-10T14:00:30Z",
+      "tldr": "Despite 1.6 million AI agents being registered, most users have not found effective uses for them, leading to inactivity. The core challenge is not the agents themselves, but identifying which tasks are suitable for AI automation. A \"one-minute test\" is proposed to quickly determine if a task should be handled by a chat interface, a single agent, a team of agents, or not at all.",
+      "summary_status": "ok",
+      "source_type": "youtube",
+      "also_covered": [],
+      "category": "business",
+      "rank_position": 3,
+      "degraded_body": null,
+      "channel_url": "https://www.youtube.com/@NateBJones"
+    },
+    {
+      "title": "Quoting OpenAI",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/10/openai/#atom-everything",
+      "published_at": "2026-07-10T01:05:57Z",
+      "tldr": "OpenAI has released updates regarding their ChatGPT Work features, clarifying that web and mobile versions operate in the cloud, while desktop apps can utilize local files and desktop applications with user permission. Initially, cloud conversations will not sync with desktop threads, and desktop data will remain local. This follows recent announcements about the GPT-5.6 family (Luna, Terra, Sol) and version 4.0 of sqlite-utils, with an RC2 version reportedly written by Claude Fable.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 4,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "The new GPT-5.6 family: Luna, Terra, Sol",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/9/gpt-5-6/#atom-everything",
+      "published_at": "2026-07-09T19:46:38Z",
+      "tldr": "OpenAI has released its new GPT-5.6 model family, featuring Luna, Terra, and Sol variants with tiered pricing and a million-token context window. These models boast a February 16th, 2026 knowledge cutoff and claim significant improvements in long-running agentic performance, outperforming competitors like Claude Fable 5 on certain benchmarks. The release also introduces new API features such as programmatic tool calling and multi-agent capabilities, though some benchmarks like SWE-Bench Pro show mixed results.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 5,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "GPT-5.6 Sol: Better AND cheaper than Fable",
+      "publisher": "How I AI",
+      "canonical_url": "https://www.youtube.com/watch?v=gAWbvEwUoiI",
+      "published_at": "2026-07-09T17:28:38Z",
+      "tldr": "The author's \"Claire Weighted Index\" benchmark shows GPT-5.6 Sol outperforms GPT-5.6 Terra, Luna, Claude Fable 5, and Sonnet 5 across PRDs, prototypes, wireframes, debugging, and agentic voice. Sol also proved cheaper than Fable and enabled impressive use cases like building a gamified homework app with Codex and automating 500 LinkedIn replies via browser automation.",
+      "summary_status": "ok",
+      "source_type": "youtube",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 6,
+      "degraded_body": null,
+      "channel_url": "https://www.youtube.com/@howiaipodcast"
+    },
+    {
+      "title": "Introducing Muse Spark 1.1",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/9/muse-spark-1-1/#atom-everything",
+      "published_at": "2026-07-09T16:24:09Z",
+      "tldr": "Meta has released Muse Spark 1.1, an updated version of their AI model. This new release introduces an API, offering significant improvements in agentic tool calling and computer use. A new plugin, llm-meta-ai, provides command-line and Python library access to the model, allowing users to interact with it for tasks like generating images.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 7,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "llm-meta-ai 0.1",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/9/llm-meta-ai/#atom-everything",
+      "published_at": "2026-07-09T16:12:20Z",
+      "tldr": "Simon Willison's Weblog has published details on llm-meta-ai version 0.1. This release follows recent articles about the new GPT-5.6 family (Luna, Terra, Sol) and version 4.0 of sqlite-utils, which was largely written by Claude Fable.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 8,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "llm 0.31.1",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/9/llm/#atom-everything",
+      "published_at": "2026-07-09T16:06:15Z",
+      "tldr": "Simon Willison's Weblog published an update on llm 0.31.1 on July 9th, 2026. This release follows recent announcements of the GPT-5.6 family (Luna, Terra, Sol) and version 4.0 of sqlite-utils, which includes database schema migrations and was partially written by Claude Fable for approximately $149.25.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 9,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "Grok x Cursor",
+      "publisher": "Ben's Bites",
+      "canonical_url": "https://www.bensbites.com/p/grok-x-cursor",
+      "published_at": "2026-07-09T13:02:45Z",
+      "tldr": null,
+      "summary_status": "quota_exhausted",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "business",
+      "rank_position": 10,
+      "degraded_body": "The summary couldn't be generated this week.",
+      "channel_url": null
+    },
+    {
+      "title": "Rewriting Bun in Rust",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/8/rewriting-bun-in-rust/#atom-everything",
+      "published_at": "2026-07-08T23:57:21Z",
+      "tldr": null,
+      "summary_status": "quota_exhausted",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 11,
+      "degraded_body": "The summary couldn't be generated this week.",
+      "channel_url": null
+    },
+    {
+      "title": "Introducing GPT‑Live",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/8/introducing-gptlive/#atom-everything",
+      "published_at": "2026-07-08T23:20:48Z",
+      "tldr": "OpenAI has launched GPT-Live, a new model for ChatGPT's voice mode that is significantly more capable than its predecessor. This new model can delegate complex tasks, including web searches, to GPT-5.5 in the background while maintaining conversational flow. The author found the previous voice model to be limited and experienced a bug where it would inappropriately laugh, which has reportedly been addressed in the new version.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 12,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "Quoting Kenton Varda",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/8/kenton-varda/#atom-everything",
+      "published_at": "2026-07-08T20:03:34Z",
+      "tldr": "Kenton Varda has declared a moratorium on AI-written change descriptions for his team's code, finding them unhelpful for PR reviews. He stated that the AI-generated descriptions focused on low-level code details while omitting the necessary high-level context. This decision comes amidst recent AI developments, including the GPT-5.6 family and the release of sqlite-utils 4.0, which was largely written by Claude Fable.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 13,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "Claude Fable 5 Bossed 20 Cheap AI Agents. The Whole Site Cost $8.",
+      "publisher": "AI News & Strategy Daily | Nate B Jones",
+      "canonical_url": "https://www.youtube.com/watch?v=suY66oTDn0s",
+      "published_at": "2026-07-08T14:00:16Z",
+      "tldr": null,
+      "summary_status": "quota_exhausted",
+      "source_type": "youtube",
+      "also_covered": [],
+      "category": "business",
+      "rank_position": 14,
+      "degraded_body": "The summary couldn't be generated this week.",
+      "channel_url": "https://www.youtube.com/@NateBJones"
+    },
+    {
+      "title": "What is an AI harness? I build one live in less than 30 minutes",
+      "publisher": "How I AI",
+      "canonical_url": "https://www.youtube.com/watch?v=ofS-4RRw9zw",
+      "published_at": "2026-07-08T12:00:21Z",
+      "tldr": null,
+      "summary_status": "quota_exhausted",
+      "source_type": "youtube",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 15,
+      "degraded_body": "The summary couldn't be generated this week.",
+      "channel_url": "https://www.youtube.com/@howiaipodcast"
+    },
+    {
+      "title": "sqlite-utils 4.0, now with database schema migrations",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/7/sqlite-utils-4/#atom-everything",
+      "published_at": "2026-07-07T19:32:57Z",
+      "tldr": null,
+      "summary_status": "quota_exhausted",
+      "source_type": "rss",
+      "also_covered": [
+        {
+          "display_name": "Simon Willison",
+          "url": "https://simonwillison.net/2026/Jul/7/sqlite-utils/#atom-everything"
+        },
+        {
+          "display_name": "Simon Willison",
+          "url": "https://simonwillison.net/2026/Jul/6/sqlite-utils/#atom-everything"
+        },
+        {
+          "display_name": "Simon Willison",
+          "url": "https://simonwillison.net/2026/Jul/7/sqlite-utils-2/#atom-everything"
+        },
+        {
+          "display_name": "Simon Willison",
+          "url": "https://simonwillison.net/2026/Jul/11/sqlite-utils/#atom-everything"
+        }
+      ],
+      "category": "technical",
+      "rank_position": 16,
+      "degraded_body": "The summary couldn't be generated this week.",
+      "channel_url": null
+    },
+    {
+      "title": "Let AI Burn",
+      "publisher": "Ed Zitron's Where's Your Ed At",
+      "canonical_url": "https://www.wheresyoured.at/let-ai-burn/",
+      "published_at": "2026-07-07T17:09:10Z",
+      "tldr": "Ed Zitron argues that the AI industry is an unsustainable bubble built on manufactured consent and financial engineering, not genuine innovation or demand. He contends that AI companies like OpenAI and Anthropic are not essential to the economy and should not receive bailouts or special treatment. Zitron criticizes the media and tech industry for hyping AI, comparing its current state unfavorably to the Dot Com bubble, and calls for the industry's failures to be allowed to happen without intervention.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "business",
+      "rank_position": 17,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "sqlite-migrate 0.2",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/7/sqlite-migrate/#atom-everything",
+      "published_at": "2026-07-07T16:33:55Z",
+      "tldr": "The sqlite-migrate library has released version 0.2, which serves as a retirement release. This new version implements a compatibility shim to work with the recently released sqlite-utils 4.0. The sqlite-utils 4.0 library itself includes new features for database schema migrations.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 18,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "github-code Web Component",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/7/github-code-component/#atom-everything",
+      "published_at": "2026-07-07T16:18:16Z",
+      "tldr": "Simon Willison has created an experimental Web Component called `github-code` that embeds code snippets from GitHub. This component uses GPT-5.5 and a specific prompt to fetch code from a given URL, display it with line numbers, but without syntax highlighting. It's designed to be a simple way to share specific code sections directly on a webpage.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 19,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "My thoughts on Fable",
+      "publisher": "Ben's Bites",
+      "canonical_url": "https://www.bensbites.com/p/my-thoughts-on-fable",
+      "published_at": "2026-07-07T13:04:10Z",
+      "tldr": "The author shares their experience using Fable, an Anthropic model, primarily as a \"thinking partner\" rather than for building, noting its Opus-like traits and speed. They express anticipation for GPT 5.6, hoping it will better capture the creative thinking vibe they seek. The piece also touches on Fable's impending transition to a paid credit system and mentions various other AI tools and developments, including OpenAI's inference cost reduction and new models like GPT-Realtime-2.1-mini.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "business",
+      "rank_position": 20,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "tencent/Hy3",
+      "publisher": "Simon Willison's Weblog",
+      "canonical_url": "https://simonwillison.net/2026/Jul/6/hy3/#atom-everything",
+      "published_at": "2026-07-06T23:57:35Z",
+      "tldr": "Tencent has released Hy3, a new 295B-parameter Mixture-of-Experts (MoE) large language model under the Apache 2.0 license. Hy3 boasts 21B active parameters and rivals flagship open-source models in performance, showing significant gains in utility across various products and tasks. The model supports a 256K context length and is available on Hugging Face and OpenRouter.",
+      "summary_status": "ok",
+      "source_type": "rss",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 21,
+      "degraded_body": null,
+      "channel_url": null
+    },
+    {
+      "title": "OpenAI Just Offered The Government $42 Billion. This Is The Real Reason.",
+      "publisher": "AI News & Strategy Daily | Nate B Jones",
+      "canonical_url": "https://www.youtube.com/watch?v=oOpgmS88pLw",
+      "published_at": "2026-07-06T14:00:31Z",
+      "tldr": "The AI industry's focus is shifting from model superiority to control over compute, distribution, and government permissions, as evidenced by recent moves from Meta, OpenAI, and Anthropic. OpenAI's proposal to offer the government a 5% stake is a significant part of this new strategy, which also includes Meta's ventures into gaming and AI compute sales, and Anthropic's enterprise focus.",
+      "summary_status": "ok",
+      "source_type": "youtube",
+      "also_covered": [],
+      "category": "business",
+      "rank_position": 22,
+      "degraded_body": null,
+      "channel_url": "https://www.youtube.com/@NateBJones"
+    },
+    {
+      "title": "How I run autonomous coding agents from my phone with OpenAI Symphony + Linear",
+      "publisher": "How I AI",
+      "canonical_url": "https://www.youtube.com/watch?v=KtmaWUVdnx4",
+      "published_at": "2026-07-06T12:00:19Z",
+      "tldr": "Alessio Fanelli details two AI workflows: one using OpenAI Symphony and Linear for autonomous coding, treating Linear as a state machine for agent management throughout the development lifecycle. The second workflow employs Codex with browser access to find underpriced Pokémon cards on eBay for his shop, autonomously extracting data and flagging deals. The article explores the benefits of an \"agent manager\" model, scaling agent operations beyond local machines, and the potential for AI in small business arbitrage.",
+      "summary_status": "ok",
+      "source_type": "youtube",
+      "also_covered": [],
+      "category": "technical",
+      "rank_position": 23,
+      "degraded_body": null,
+      "channel_url": "https://www.youtube.com/@howiaipodcast"
+    }
+  ],
+  "footer_aside": [],
+  "pending_transcripts_count": 6,
+  "pipeline_notes": {
+    "show": true,
+    "summary_line": "6 video summaries pending; 1 source unreachable; 5 budget-limited summaries",
+    "details": [
+      "5 summaries hit the weekly LLM budget and weren't generated this run.",
+      "Import AI couldn't be reached this Sunday morning. The next run will retry.",
+      "Last Week in AI didn't publish for the 6th week in a row.",
+      "6 video transcripts will fill in when the digest is refreshed from a different network."
+    ]
+  },
+  "failure_notice": null
+}
