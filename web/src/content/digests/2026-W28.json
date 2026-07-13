@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W28",
-  "generated_at": "2026-07-12T11:06:37Z",
+  "generated_at": "2026-07-13T12:33:44Z",
   "week_range": {
     "start": "2026-07-06T00:00:00Z",
     "end": "2026-07-12T23:59:59Z"
   },
-  "updated_at": "2026-07-12T11:06:37Z",
+  "updated_at": "2026-07-13T12:33:44Z",
   "weekly_synthesis": {
     "text": "OpenAI's rollout of GPT-5.6 marked a significant technical advancement this week, pushing the capabilities of large language models further. This release, however, arrived amidst growing skepticism regarding the AI",
     "status": "ok"
@@ -134,13 +134,13 @@
           "publisher": "Ben's Bites",
           "canonical_url": "https://www.bensbites.com/p/grok-x-cursor",
           "published_at": "2026-07-09T13:02:45Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "SpaceXAI and Cursor have jointly trained Grok 4.5, an Opus-class model that performs between Opus 4.7 and 4.8 but is significantly cheaper and more token-efficient. OpenAI has also announced GPT-5.6 models (Sol, Terra, and Luna) are rolling out today, with early testers finding Sol to be more reliable than previous models. Additionally, ChatGPT Voice is updating with new models, GPT-Live-1 and Live-1-mini, enabling smoother conversations and background GPT-5.5 usage.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "business",
           "rank_position": 10,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -148,13 +148,13 @@
           "publisher": "AI News & Strategy Daily | Nate B Jones",
           "canonical_url": "https://www.youtube.com/watch?v=suY66oTDn0s",
           "published_at": "2026-07-08T14:00:16Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "A multi-agent AI system successfully rebuilt a website for approximately $8 using over 20 agents across four model families. This system demonstrated the ability to catch hallucinations, shortcuts, and even bugs from the main model without human intervention. The author argues that by building verification into the system's structure, delegating complex tasks to AI agents becomes a design challenge rather than a trust issue.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "business",
           "rank_position": 14,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@NateBJones"
         },
         {
@@ -307,13 +307,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jul/8/rewriting-bun-in-rust/#atom-everything",
           "published_at": "2026-07-08T23:57:21Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Jarred Sumner details the ambitious rewrite of Bun from Zig to Rust, driven by memory management challenges and enabled by AI agents. The rewrite leveraged Bun's TypeScript test suite as a conformance suite, allowing AI models to automate much of the porting process. This approach, involving dynamic workflows and adversarial review, resulted in a Rust implementation that has been live in Claude Code for nearly a month, with minimal user-facing changes but significant behind-the-scenes engineering.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 11,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -349,13 +349,13 @@
           "publisher": "How I AI",
           "canonical_url": "https://www.youtube.com/watch?v=ofS-4RRw9zw",
           "published_at": "2026-07-08T12:00:21Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "The author demonstrates how to build an AI harness, a specialized tool that automates repetitive workflows, using the Claude Agent SDK. This live-built harness for ChatPRD integrates with services like Sentry and GitHub to handle bug debugging, evidence gathering, and artifact creation without manual prompting. The explanation covers when to build a harness, its core components, and how to use models like Claude Opus and GPT-5.5 in its development.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "technical",
           "rank_position": 15,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@howiaipodcast"
         },
         {
@@ -363,8 +363,8 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jul/7/sqlite-utils-4/#atom-everything",
           "published_at": "2026-07-07T19:32:57Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "The sqlite-utils library has been updated to version 4.0, introducing major new features including database schema migrations, nested transactions via `db.atomic()`, and support for compound foreign keys. The migration system allows for structured schema evolution using Python files and a `table.transform()` method for complex alterations not directly supported by SQLite. This release also includes several other improvements, such as enhanced upsert functionality and default type detection for CSV imports, with significant contributions from AI models in testing and documentation.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [
             {
@@ -386,7 +386,7 @@
           ],
           "category": "technical",
           "rank_position": 16,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -585,13 +585,13 @@
       "publisher": "Ben's Bites",
       "canonical_url": "https://www.bensbites.com/p/grok-x-cursor",
       "published_at": "2026-07-09T13:02:45Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "SpaceXAI and Cursor have jointly trained Grok 4.5, an Opus-class model that performs between Opus 4.7 and 4.8 but is significantly cheaper and more token-efficient. OpenAI has also announced GPT-5.6 models (Sol, Terra, and Luna) are rolling out today, with early testers finding Sol to be more reliable than previous models. Additionally, ChatGPT Voice is updating with new models, GPT-Live-1 and Live-1-mini, enabling smoother conversations and background GPT-5.5 usage.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "business",
       "rank_position": 10,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -599,13 +599,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jul/8/rewriting-bun-in-rust/#atom-everything",
       "published_at": "2026-07-08T23:57:21Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Jarred Sumner details the ambitious rewrite of Bun from Zig to Rust, driven by memory management challenges and enabled by AI agents. The rewrite leveraged Bun's TypeScript test suite as a conformance suite, allowing AI models to automate much of the porting process. This approach, involving dynamic workflows and adversarial review, resulted in a Rust implementation that has been live in Claude Code for nearly a month, with minimal user-facing changes but significant behind-the-scenes engineering.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 11,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -641,13 +641,13 @@
       "publisher": "AI News & Strategy Daily | Nate B Jones",
       "canonical_url": "https://www.youtube.com/watch?v=suY66oTDn0s",
       "published_at": "2026-07-08T14:00:16Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "A multi-agent AI system successfully rebuilt a website for approximately $8 using over 20 agents across four model families. This system demonstrated the ability to catch hallucinations, shortcuts, and even bugs from the main model without human intervention. The author argues that by building verification into the system's structure, delegating complex tasks to AI agents becomes a design challenge rather than a trust issue.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "business",
       "rank_position": 14,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@NateBJones"
     },
     {
@@ -655,13 +655,13 @@
       "publisher": "How I AI",
       "canonical_url": "https://www.youtube.com/watch?v=ofS-4RRw9zw",
       "published_at": "2026-07-08T12:00:21Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "The author demonstrates how to build an AI harness, a specialized tool that automates repetitive workflows, using the Claude Agent SDK. This live-built harness for ChatPRD integrates with services like Sentry and GitHub to handle bug debugging, evidence gathering, and artifact creation without manual prompting. The explanation covers when to build a harness, its core components, and how to use models like Claude Opus and GPT-5.5 in its development.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "technical",
       "rank_position": 15,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@howiaipodcast"
     },
     {
@@ -669,8 +669,8 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jul/7/sqlite-utils-4/#atom-everything",
       "published_at": "2026-07-07T19:32:57Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "The sqlite-utils library has been updated to version 4.0, introducing major new features including database schema migrations, nested transactions via `db.atomic()`, and support for compound foreign keys. The migration system allows for structured schema evolution using Python files and a `table.transform()` method for complex alterations not directly supported by SQLite. This release also includes several other improvements, such as enhanced upsert functionality and default type detection for CSV imports, with significant contributions from AI models in testing and documentation.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [
         {
@@ -692,7 +692,7 @@
       ],
       "category": "technical",
       "rank_position": 16,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -798,9 +798,8 @@
   "pending_transcripts_count": 6,
   "pipeline_notes": {
     "show": true,
-    "summary_line": "6 video summaries pending; 1 source unreachable; 5 budget-limited summaries",
+    "summary_line": "6 video summaries pending; 1 source unreachable",
     "details": [
-      "5 summaries hit the weekly LLM budget and weren't generated this run.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "Last Week in AI didn't publish for the 6th week in a row.",
       "6 video transcripts will fill in when the digest is refreshed from a different network."
