@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W28",
-  "generated_at": "2026-07-14T11:26:33Z",
+  "generated_at": "2026-07-15T11:36:44Z",
   "week_range": {
     "start": "2026-07-06T00:00:00Z",
     "end": "2026-07-12T23:59:59Z"
   },
-  "updated_at": "2026-07-14T11:26:33Z",
+  "updated_at": "2026-07-15T11:36:44Z",
   "weekly_synthesis": {
     "text": "OpenAI's rollout of GPT-5.6 marked a significant technical advancement this week, pushing the capabilities of large language models further. This release, however, arrived amidst growing skepticism regarding the AI",
     "status": "ok"
