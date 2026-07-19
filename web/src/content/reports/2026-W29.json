@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "week_id": "2026-W29",
+  "generated_at": "2026-07-19T11:08:45Z",
+  "run_id": "df391df63ff94d14a4693c866a133b3c",
+  "status": "partial",
+  "items_ingested": 114,
+  "clusters": 33,
+  "llm_calls": 26,
+  "cost_usd": 0.003696,
+  "errors": [
+    {
+      "phase": "ingest",
+      "source_id": "one-useful-thing",
+      "category": "empty_feed",
+      "message": "source returned 20 items but zero fell in 2026-07-13T00:00:00Z..2026-07-19T23:59:59Z",
+      "error": "source returned 20 items but zero fell in 2026-07-13T00:00:00Z..2026-07-19T23:59:59Z"
+    },
+    {
+      "phase": "ingest",
+      "source_id": "import-ai",
+      "category": "fetch_http_error",
+      "message": "FetchError: http error fetching https://importai.substack.com/feed: Client error '403 Forbidden' for url 'https://importai.substack.com/feed'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403",
+      "error": "FetchError: http error fetching https://importai.substack.com/feed: Client error '403 Forbidden' for url 'https://importai.substack.com/feed'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403",
+      "http_status": "403"
+    },
+    {
+      "phase": "ingest",
+      "source_id": "last-week-in-ai",
+      "category": "empty_feed",
+      "message": "source returned 20 items but zero fell in 2026-07-13T00:00:00Z..2026-07-19T23:59:59Z",
+      "error": "source returned 20 items but zero fell in 2026-07-13T00:00:00Z..2026-07-19T23:59:59Z"
+    }
+  ],
+  "summary_status": {
+    "ok": 21,
+    "thin": 0,
+    "quota_exhausted": 12,
+    "api_error": 0,
+    "parse_error": 0,
+    "client_init_error": 0,
+    "deferred_budget": 0
+  },
+  "stages": {
+    "ingest": {
+      "items": 114
+    },
+    "dedup": {
+      "clusters_created": 33,
+      "items_clustered": 0
+    },
+    "summarize": {
+      "llm_calls": 21,
+      "cost_usd": 0.003233,
+      "summaries_written": 21,
+      "items_degraded": 12
+    },
+    "categorize": {
+      "llm_calls": 2,
+      "cost_usd": 9.5e-05,
+      "distribution": {
+        "edtech": 0,
+        "business": 7,
+        "technical": 26,
+        "fallback_source_tag": 0
+      }
+    },
+    "rank": {
+      "llm_calls": 0,
+      "cost_usd": 0.0
+    },
+    "rollup": {
+      "mini_rollups": 2,
+      "weekly": true,
+      "llm_calls": 3,
+      "cost_usd": 0.000368
+    }
+  },
+  "source_health": {
+    "simon-willison": {
+      "last_success_at": "2026-07-19T11:01:28Z",
+      "last_error_category": null,
+      "items_this_week": 25,
+      "clusters_canonical_this_week": 25
+    },
+    "one-useful-thing": {
+      "last_success_at": "2026-07-19T11:01:29Z",
+      "last_error_category": null,
+      "items_this_week": 0,
+      "clusters_canonical_this_week": 0
+    },
+    "import-ai": {
+      "last_success_at": null,
+      "last_error_category": "fetch_http_error",
+      "items_this_week": 0,
+      "clusters_canonical_this_week": 0
+    },
+    "where-your-ed-at": {
+      "last_success_at": "2026-07-19T11:01:29Z",
+      "last_error_category": null,
+      "items_this_week": 1,
+      "clusters_canonical_this_week": 1
+    },
+    "bensbites": {
+      "last_success_at": "2026-07-19T11:01:30Z",
+      "last_error_category": null,
+      "items_this_week": 2,
+      "clusters_canonical_this_week": 2
+    },
+    "last-week-in-ai": {
+      "last_success_at": "2026-07-19T11:01:30Z",
+      "last_error_category": null,
+      "items_this_week": 0,
+      "clusters_canonical_this_week": 0
+    },
+    "how-i-ai": {
+      "last_success_at": "2026-07-19T11:01:33Z",
+      "last_error_category": null,
+      "items_this_week": 1,
+      "clusters_canonical_this_week": 1
+    },
+    "nate-b-jones": {
+      "last_success_at": "2026-07-19T11:01:38Z",
+      "last_error_category": null,
+      "items_this_week": 4,
+      "clusters_canonical_this_week": 4
+    }
+  },
+  "budget": {
+    "cap_usd": 1.0,
+    "reserved_meta_usd": 0.1,
+    "spent_usd": 0.003696,
+    "pre_flight_estimate_usd": 0.025,
+    "halted": false,
+    "halted_at_stage": null,
+    "hard_cap_hit": false,
+    "deferred_items_count": 0
+  }
+}
