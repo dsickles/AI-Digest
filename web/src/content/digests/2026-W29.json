@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W29",
-  "generated_at": "2026-07-20T12:18:33Z",
+  "generated_at": "2026-07-21T11:47:57Z",
   "week_range": {
     "start": "2026-07-13T00:00:00Z",
     "end": "2026-07-19T23:59:59Z"
   },
-  "updated_at": "2026-07-20T12:18:33Z",
+  "updated_at": "2026-07-21T11:47:57Z",
   "weekly_synthesis": {
     "text": "This week, the focus in AI sharpened on the practical application and underlying infrastructure necessary for robust deployment. Nate B. Jones highlighted the growing demand for secure, practical AI solutions, particularly those capable of operating offline",
     "status": "ok"
@@ -166,13 +166,13 @@
           "publisher": "Ben's Bites",
           "canonical_url": "https://www.bensbites.com/p/how-to-use-gpt-56",
           "published_at": "2026-07-14T13:01:24Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "OpenAI has released GPT-5.6 models, including Luna, Terra, and Sol, with new \"Ultra mode\" for subagents that consumes usage limits faster. The ChatGPT macOS app now merges with Codex into \"ChatGPT Work,\" and a \"ChatGPT Sites\" plugin allows website creation. These models offer different thinking levels and excel at specific tasks, with Sol being good for UI and writing, Terra for general improvements, and Luna for clearly defined tasks. OpenAI also reset usage limits multiple times due to bug fixes from the app merge.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "business",
           "rank_position": 28,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -945,13 +945,13 @@
       "publisher": "Ben's Bites",
       "canonical_url": "https://www.bensbites.com/p/how-to-use-gpt-56",
       "published_at": "2026-07-14T13:01:24Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "OpenAI has released GPT-5.6 models, including Luna, Terra, and Sol, with new \"Ultra mode\" for subagents that consumes usage limits faster. The ChatGPT macOS app now merges with Codex into \"ChatGPT Work,\" and a \"ChatGPT Sites\" plugin allows website creation. These models offer different thinking levels and excel at specific tasks, with Sol being good for UI and writing, Terra for general improvements, and Luna for clearly defined tasks. OpenAI also reset usage limits multiple times due to bug fixes from the app merge.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "business",
       "rank_position": 28,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -1029,9 +1029,8 @@
   "pending_transcripts_count": 5,
   "pipeline_notes": {
     "show": true,
-    "summary_line": "5 video summaries pending; 1 source unreachable; 1 budget-limited summaries",
+    "summary_line": "5 video summaries pending; 1 source unreachable",
     "details": [
-      "1 summary hit the weekly LLM budget and weren't generated this run.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "Last Week in AI didn't publish for the 7th week in a row.",
       "5 video transcripts will fill in when the digest is refreshed from a different network."
