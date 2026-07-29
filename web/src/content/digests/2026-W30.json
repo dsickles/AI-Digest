@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W30",
-  "generated_at": "2026-07-28T11:59:11Z",
+  "generated_at": "2026-07-29T12:02:24Z",
   "week_range": {
     "start": "2026-07-20T00:00:00Z",
     "end": "2026-07-26T23:59:59Z"
   },
-  "updated_at": "2026-07-28T11:59:11Z",
+  "updated_at": "2026-07-29T12:02:24Z",
   "weekly_synthesis": {
     "text": "The week's developments underscore the escalating demands and foundational investments driving AI forward. Oracle made a significant, risky bet on AI infrastructure, securing a major contract with OpenAI, highlighting the immense capital and",
     "status": "ok"
