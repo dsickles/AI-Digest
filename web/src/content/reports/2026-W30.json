@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "week_id": "2026-W30",
-  "generated_at": "2026-07-31T12:02:15Z",
-  "run_id": "95fbff1a083d4976a3c48cc3294090a9",
+  "generated_at": "2026-08-01T11:17:28Z",
+  "run_id": "3c892f44d9fb438493c4c502c1d824c7",
   "status": "success",
   "items_ingested": 0,
   "clusters": 32,
