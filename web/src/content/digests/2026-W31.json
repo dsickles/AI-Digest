@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W31",
-  "generated_at": "2026-08-02T11:16:26Z",
+  "generated_at": "2026-08-03T12:56:30Z",
   "week_range": {
     "start": "2026-07-27T00:00:00Z",
     "end": "2026-08-02T23:59:59Z"
   },
-  "updated_at": "2026-08-02T11:16:26Z",
+  "updated_at": "2026-08-03T12:56:30Z",
   "weekly_synthesis": {
     "text": "This week, the AI narrative was sharply split between accelerating commercial scale and foundational internal debate. OpenAI's ChatGPT is reportedly nearing one billion weekly users, a testament to its pervasive adoption, with",
     "status": "ok"
@@ -339,13 +339,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jul/31/datasette-agent/#atom-everything",
           "published_at": "2026-07-31T14:14:23Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Datasette-agent 0.4a0 introduces a new await context.browser_task() mechanism, enabling agent tools to execute code directly within the user's browser. This feature simplifies the creation of Datasette Agent plugins that offer tools for running custom JavaScript, as demonstrated by its use in datasette-apps 0.2a0 to add a debug loop.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 14,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -354,7 +354,7 @@
           "canonical_url": "https://simonwillison.net/2026/Jul/30/luna-price-drop/#atom-everything",
           "published_at": "2026-07-30T23:58:42Z",
           "tldr": null,
-          "summary_status": "quota_exhausted",
+          "summary_status": "api_error",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
@@ -381,8 +381,8 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jul/30/llm-rc2/#atom-everything",
           "published_at": "2026-07-30T22:52:06Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "The new release of llm 0.32rc2 defaults to using GPT-5.6 Luna as the model, a more capable but expensive option than the previous GPT-4o mini. It also introduces the `llm openai endpoint` command, allowing users to interact with arbitrary OpenAI-compatible endpoints, like those from LM Studio, without prior configuration.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [
             {
@@ -392,7 +392,7 @@
           ],
           "category": "technical",
           "rank_position": 17,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -400,13 +400,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jul/30/bruce-schneier/#atom-everything",
           "published_at": "2026-07-30T18:25:26Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Bruce Schneier argues that writing assignments, even for policy memos, are valuable \"gym tasks\" that develop critical thinking skills essential for future careers. He emphasizes that the process of thinking, outlining, drafting, and revising is crucial for mental exercise, which he believes is often overlooked by employers.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 18,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -414,13 +414,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jul/30/llm-chat-completions-server/#atom-everything",
           "published_at": "2026-07-30T15:43:16Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "A new plugin, llm-chat-completions-server 0.1a0, has been released that exposes LLM models via a ChatGPT Completions compatible endpoint. This server leverages content-addressable logs to efficiently handle conversational requests, where each message extends the previous context. The plugin allows users to interact with their installed LLM models using the familiar OpenAI API format.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 19,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -484,13 +484,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jul/28/discovering-cryptographic-weaknesses-with-claude/#atom-everything",
           "published_at": "2026-07-28T22:45:37Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Anthropic researchers utilized their Claude Mythos model to identify mathematical weaknesses in HAWK and a simplified AES version, though these findings have no immediate practical security implications. The process involved extensive prompting to encourage the model to persist in its search for publishable research findings, costing approximately $100,000 in API usage. This work is detailed in the paper CryptanalysisBench: Can LLMs do Cryptanalysis?, developed in collaboration with several universities.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 26,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -540,13 +540,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Jul/27/kimi-k3/#atom-everything",
           "published_at": "2026-07-27T23:39:04Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Moonshot AI has released the weights for their 2.8 trillion parameter Kimi K3 model, totaling 1.56TB. Unlike previous versions, the K3 license requires a separate agreement with Moonshot AI for businesses generating over $20 million in annual revenue from Model-as-a-Service offerings. Moonshot AI is using the term \"open weight\" rather than \"open source\" to describe this release.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 32,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -754,13 +754,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jul/31/datasette-agent/#atom-everything",
       "published_at": "2026-07-31T14:14:23Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Datasette-agent 0.4a0 introduces a new await context.browser_task() mechanism, enabling agent tools to execute code directly within the user's browser. This feature simplifies the creation of Datasette Agent plugins that offer tools for running custom JavaScript, as demonstrated by its use in datasette-apps 0.2a0 to add a debug loop.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 14,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -769,7 +769,7 @@
       "canonical_url": "https://simonwillison.net/2026/Jul/30/luna-price-drop/#atom-everything",
       "published_at": "2026-07-30T23:58:42Z",
       "tldr": null,
-      "summary_status": "quota_exhausted",
+      "summary_status": "api_error",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
@@ -796,8 +796,8 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jul/30/llm-rc2/#atom-everything",
       "published_at": "2026-07-30T22:52:06Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "The new release of llm 0.32rc2 defaults to using GPT-5.6 Luna as the model, a more capable but expensive option than the previous GPT-4o mini. It also introduces the `llm openai endpoint` command, allowing users to interact with arbitrary OpenAI-compatible endpoints, like those from LM Studio, without prior configuration.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [
         {
@@ -807,7 +807,7 @@
       ],
       "category": "technical",
       "rank_position": 17,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -815,13 +815,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jul/30/bruce-schneier/#atom-everything",
       "published_at": "2026-07-30T18:25:26Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Bruce Schneier argues that writing assignments, even for policy memos, are valuable \"gym tasks\" that develop critical thinking skills essential for future careers. He emphasizes that the process of thinking, outlining, drafting, and revising is crucial for mental exercise, which he believes is often overlooked by employers.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 18,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -829,13 +829,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jul/30/llm-chat-completions-server/#atom-everything",
       "published_at": "2026-07-30T15:43:16Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "A new plugin, llm-chat-completions-server 0.1a0, has been released that exposes LLM models via a ChatGPT Completions compatible endpoint. This server leverages content-addressable logs to efficiently handle conversational requests, where each message extends the previous context. The plugin allows users to interact with their installed LLM models using the familiar OpenAI API format.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 19,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -927,13 +927,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jul/28/discovering-cryptographic-weaknesses-with-claude/#atom-everything",
       "published_at": "2026-07-28T22:45:37Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Anthropic researchers utilized their Claude Mythos model to identify mathematical weaknesses in HAWK and a simplified AES version, though these findings have no immediate practical security implications. The process involved extensive prompting to encourage the model to persist in its search for publishable research findings, costing approximately $100,000 in API usage. This work is detailed in the paper CryptanalysisBench: Can LLMs do Cryptanalysis?, developed in collaboration with several universities.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 26,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -1011,13 +1011,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Jul/27/kimi-k3/#atom-everything",
       "published_at": "2026-07-27T23:39:04Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Moonshot AI has released the weights for their 2.8 trillion parameter Kimi K3 model, totaling 1.56TB. Unlike previous versions, the K3 license requires a separate agreement with Moonshot AI for businesses generating over $20 million in annual revenue from Model-as-a-Service offerings. Moonshot AI is using the term \"open weight\" rather than \"open source\" to describe this release.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 32,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -1082,9 +1082,10 @@
   "pending_transcripts_count": 4,
   "pipeline_notes": {
     "show": true,
-    "summary_line": "4 video summaries pending; 1 source unreachable; 11 budget-limited summaries",
+    "summary_line": "4 video summaries pending; 1 source unreachable; 4 budget-limited summaries",
     "details": [
-      "11 summaries hit the weekly LLM budget and weren't generated this run.",
+      "4 summaries hit the weekly LLM budget and weren't generated this run.",
+      "1 summary couldn't be generated this run due to a processing error.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "4 video transcripts will fill in when the digest is refreshed from a different network."
     ]
