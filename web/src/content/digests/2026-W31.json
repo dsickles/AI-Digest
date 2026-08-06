@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W31",
-  "generated_at": "2026-08-05T12:00:25Z",
+  "generated_at": "2026-08-06T12:03:33Z",
   "week_range": {
     "start": "2026-07-27T00:00:00Z",
     "end": "2026-08-02T23:59:59Z"
   },
-  "updated_at": "2026-08-05T12:00:25Z",
+  "updated_at": "2026-08-06T12:03:33Z",
   "weekly_synthesis": {
     "text": "This week, the AI narrative was sharply split between accelerating commercial scale and foundational internal debate. OpenAI's ChatGPT is reportedly nearing one billion weekly users, a testament to its pervasive adoption, with",
     "status": "ok"
