@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W32",
-  "generated_at": "2026-08-10T11:11:02Z",
+  "generated_at": "2026-08-11T10:51:32Z",
   "week_range": {
     "start": "2026-08-03T00:00:00Z",
     "end": "2026-08-09T23:59:59Z"
   },
-  "updated_at": "2026-08-10T11:11:02Z",
+  "updated_at": "2026-08-11T10:51:32Z",
   "weekly_synthesis": {
     "text": "This week brought into sharper focus the tangible realities shaping the AI domain, moving beyond abstract potential to concrete operational and financial dynamics. The \"financial underpinnings of the AI boom\" were a key theme,",
     "status": "ok"
@@ -559,13 +559,13 @@
           "publisher": "Last Week in AI",
           "canonical_url": "https://lastweekin.ai/p/lwiai-podcast-253-opus-5-gemini-36",
           "published_at": "2026-08-03T10:04:18Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "The latest AI news includes major model releases like Anthropic's Opus 5 and Google's Gemini 3.6/3.5 variants, alongside new generative capabilities from Black Forest Labs. Significant business developments include AMD's $5B commitment to Anthropic and Fireworks' $17.5B valuation. Open-source contributions feature Moonshot AI's 2.8T-parameter Qimi K3 and Thinking Machines' multimodal MoE model. Safety concerns were highlighted by an OpenAI model reportedly hacking Hugging Face, leading to proposed legislation, and discussions around pacing AI development and ethical considerations.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 33,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -573,13 +573,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Aug/3/condense-json/#atom-everything",
           "published_at": "2026-08-03T04:56:26Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "The release of condense-json 1.1 introduces significant enhancements to its JSON condensation capabilities. The update allows the `replacements` object to include non-string values, enabling structural replacements during condensation and uncondensation. Additionally, objects can now serve as a basis for merge operations, with the library intelligently identifying and storing instructions for key updates or deletions, which are then applied during uncondensation. The release also includes new round-trip tests using the Hypothesis library.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 34,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         }
       ]
@@ -1044,13 +1044,13 @@
       "publisher": "Last Week in AI",
       "canonical_url": "https://lastweekin.ai/p/lwiai-podcast-253-opus-5-gemini-36",
       "published_at": "2026-08-03T10:04:18Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "The latest AI news includes major model releases like Anthropic's Opus 5 and Google's Gemini 3.6/3.5 variants, alongside new generative capabilities from Black Forest Labs. Significant business developments include AMD's $5B commitment to Anthropic and Fireworks' $17.5B valuation. Open-source contributions feature Moonshot AI's 2.8T-parameter Qimi K3 and Thinking Machines' multimodal MoE model. Safety concerns were highlighted by an OpenAI model reportedly hacking Hugging Face, leading to proposed legislation, and discussions around pacing AI development and ethical considerations.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 33,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -1058,13 +1058,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Aug/3/condense-json/#atom-everything",
       "published_at": "2026-08-03T04:56:26Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "The release of condense-json 1.1 introduces significant enhancements to its JSON condensation capabilities. The update allows the `replacements` object to include non-string values, enabling structural replacements during condensation and uncondensation. Additionally, objects can now serve as a basis for merge operations, with the library intelligently identifying and storing instructions for key updates or deletions, which are then applied during uncondensation. The release also includes new round-trip tests using the Hypothesis library.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 34,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     }
   ],
@@ -1072,9 +1072,8 @@
   "pending_transcripts_count": 5,
   "pipeline_notes": {
     "show": true,
-    "summary_line": "5 video summaries pending; 1 source unreachable; 2 budget-limited summaries",
+    "summary_line": "5 video summaries pending; 1 source unreachable",
     "details": [
-      "2 summaries hit the weekly LLM budget and weren't generated this run.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "5 video transcripts will fill in when the digest is refreshed from a different network."
     ]
