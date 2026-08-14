@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W32",
-  "generated_at": "2026-08-13T11:01:29Z",
+  "generated_at": "2026-08-14T10:58:39Z",
   "week_range": {
     "start": "2026-08-03T00:00:00Z",
     "end": "2026-08-09T23:59:59Z"
   },
-  "updated_at": "2026-08-13T11:01:29Z",
+  "updated_at": "2026-08-14T10:58:39Z",
   "weekly_synthesis": {
     "text": "This week brought into sharper focus the tangible realities shaping the AI domain, moving beyond abstract potential to concrete operational and financial dynamics. The \"financial underpinnings of the AI boom\" were a key theme,",
     "status": "ok"
