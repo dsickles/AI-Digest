@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W33",
-  "generated_at": "2026-08-16T10:14:25Z",
+  "generated_at": "2026-08-17T10:33:50Z",
   "week_range": {
     "start": "2026-08-10T00:00:00Z",
     "end": "2026-08-16T23:59:59Z"
   },
-  "updated_at": "2026-08-16T10:14:25Z",
+  "updated_at": "2026-08-17T10:33:50Z",
   "weekly_synthesis": {
     "text": "The week brought a sharp focus to the AI sector's financial demands, a topic Ed Zitron notably challenged. This financial scrutiny coincided with a flurry of technical developments, particularly in practical AI tooling",
     "status": "ok"
@@ -138,13 +138,13 @@
           "publisher": "AI News & Strategy Daily | Nate B Jones",
           "canonical_url": "https://www.youtube.com/watch?v=HZLPhPbw3fM",
           "published_at": "2026-08-12T14:00:26Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "This article explains how AI agents manage long runs using context files, moving beyond the idea that larger context windows are the sole solution. It details how OpenAI, Anthropic, and Arize structure these files, emphasizing progressive context shaping and separating different types of context to maintain an agent's direction and prevent outdated instructions from derailing a project. The author shares practical insights and a starter kit for implementing these techniques.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "business",
           "rank_position": 13,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@NateBJones"
         },
         {
@@ -152,13 +152,13 @@
           "publisher": "Ed Zitron's Where's Your Ed At",
           "canonical_url": "https://www.wheresyoured.at/dont-look-up/",
           "published_at": "2026-08-11T19:14:25Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "The AI industry's rapid growth and massive compute spending by companies like OpenAI and Anthropic are creating a bubble that major cloud providers like Microsoft, Google, and Amazon are heavily reliant upon. Analysts estimate that 70% or more of these providers' AI revenues come from these two unprofitable labs, which themselves require hundreds of billions in funding and compute to sustain their operations. This dependency raises concerns about the long-term viability of the AI market, as the future growth of hyperscalers hinges on the ability of these two companies to continue spending and raising capital, a situation that appears unsustainable.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "business",
           "rank_position": 17,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -349,13 +349,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Aug/11/stealing-reasoning-traces/",
           "published_at": "2026-08-11T22:40:45Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Researchers discovered a method to extract proprietary LLM reasoning traces by replaying encrypted chain-of-thought blocks into weaker sibling models and jailbreaking them. This allowed them to recover hidden reasoning in plaintext, revealing internal thought processes not intended for human consumption. While the vulnerability appears to have been patched by major providers like OpenAI and Anthropic, the technique highlighted a novel prompt injection variant and offered a glimpse into the raw reasoning of frontier models.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 15,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -363,13 +363,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Aug/11/datasette-upload-dbs/",
           "published_at": "2026-08-11T20:35:13Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Datasette-upload-dbs 0.5a0 has been released, introducing a formalized API for uploading and atomically swapping SQLite databases on a hosted Datasette instance. This allows for automated database updates, such as those built in GitHub Actions, to be seamlessly deployed to production. The plugin can be used to add new databases or replace existing ones via a simple POST request with an API token.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 16,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -601,13 +601,13 @@
       "publisher": "AI News & Strategy Daily | Nate B Jones",
       "canonical_url": "https://www.youtube.com/watch?v=HZLPhPbw3fM",
       "published_at": "2026-08-12T14:00:26Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "This article explains how AI agents manage long runs using context files, moving beyond the idea that larger context windows are the sole solution. It details how OpenAI, Anthropic, and Arize structure these files, emphasizing progressive context shaping and separating different types of context to maintain an agent's direction and prevent outdated instructions from derailing a project. The author shares practical insights and a starter kit for implementing these techniques.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "business",
       "rank_position": 13,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@NateBJones"
     },
     {
@@ -629,13 +629,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Aug/11/stealing-reasoning-traces/",
       "published_at": "2026-08-11T22:40:45Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Researchers discovered a method to extract proprietary LLM reasoning traces by replaying encrypted chain-of-thought blocks into weaker sibling models and jailbreaking them. This allowed them to recover hidden reasoning in plaintext, revealing internal thought processes not intended for human consumption. While the vulnerability appears to have been patched by major providers like OpenAI and Anthropic, the technique highlighted a novel prompt injection variant and offered a glimpse into the raw reasoning of frontier models.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 15,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -643,13 +643,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Aug/11/datasette-upload-dbs/",
       "published_at": "2026-08-11T20:35:13Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Datasette-upload-dbs 0.5a0 has been released, introducing a formalized API for uploading and atomically swapping SQLite databases on a hosted Datasette instance. This allows for automated database updates, such as those built in GitHub Actions, to be seamlessly deployed to production. The plugin can be used to add new databases or replace existing ones via a simple POST request with an API token.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 16,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -657,13 +657,13 @@
       "publisher": "Ed Zitron's Where's Your Ed At",
       "canonical_url": "https://www.wheresyoured.at/dont-look-up/",
       "published_at": "2026-08-11T19:14:25Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "The AI industry's rapid growth and massive compute spending by companies like OpenAI and Anthropic are creating a bubble that major cloud providers like Microsoft, Google, and Amazon are heavily reliant upon. Analysts estimate that 70% or more of these providers' AI revenues come from these two unprofitable labs, which themselves require hundreds of billions in funding and compute to sustain their operations. This dependency raises concerns about the long-term viability of the AI market, as the future growth of hyperscalers hinges on the ability of these two companies to continue spending and raising capital, a situation that appears unsustainable.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "business",
       "rank_position": 17,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -741,9 +741,8 @@
   "pending_transcripts_count": 4,
   "pipeline_notes": {
     "show": true,
-    "summary_line": "4 video summaries pending; 1 source unreachable; 4 budget-limited summaries",
+    "summary_line": "4 video summaries pending; 1 source unreachable",
     "details": [
-      "4 summaries hit the weekly LLM budget and weren't generated this run.",
       "One Useful Thing didn't publish for the third week in a row.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "4 video transcripts will fill in when the digest is refreshed from a different network."
