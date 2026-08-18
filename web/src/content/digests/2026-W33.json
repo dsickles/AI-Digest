@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W33",
-  "generated_at": "2026-08-17T10:33:50Z",
+  "generated_at": "2026-08-18T10:30:10Z",
   "week_range": {
     "start": "2026-08-10T00:00:00Z",
     "end": "2026-08-16T23:59:59Z"
   },
-  "updated_at": "2026-08-17T10:33:50Z",
+  "updated_at": "2026-08-18T10:30:10Z",
   "weekly_synthesis": {
     "text": "The week brought a sharp focus to the AI sector's financial demands, a topic Ed Zitron notably challenged. This financial scrutiny coincided with a flurry of technical developments, particularly in practical AI tooling",
     "status": "ok"
