@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W34",
-  "generated_at": "2026-08-23T10:15:02Z",
+  "generated_at": "2026-08-24T10:38:39Z",
   "week_range": {
     "start": "2026-08-17T00:00:00Z",
     "end": "2026-08-23T23:59:59Z"
   },
-  "updated_at": "2026-08-23T10:15:02Z",
+  "updated_at": "2026-08-24T10:38:39Z",
   "weekly_synthesis": {
     "text": "This week presented a telling dichotomy in the AI space, highlighting both its undeniable practical utility and the operational pressures faced by its leading developers. While AI earned significant validation from figures like Linus Tor",
     "status": "ok"
@@ -124,13 +124,13 @@
           "publisher": "AI News & Strategy Daily | Nate B Jones",
           "canonical_url": "https://www.youtube.com/watch?v=joRXo6x7Pgk",
           "published_at": "2026-08-19T14:00:36Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Nate B. Jones provides a guide for non-developers to build personal software using AI, outlining five distinct software shapes that influence development choices. The guide details how to select appropriate AI building tools like Lovable, Replit, Bolt, Codex, and Claude Code, and emphasizes the importance of decision-making regarding data storage and functionality. Jones highlights that the core value non-developers bring is in the judgment of what to build, where data resides, and ensuring the software works correctly before deployment.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "business",
           "rank_position": 16,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@NateBJones"
         },
         {
@@ -297,13 +297,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Aug/20/bun-webview-json-api/",
           "published_at": "2026-08-20T15:37:00Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Bun 1.4 has been released, featuring a significant Rust rewrite and over 2,900 bug fixes, leading to substantial performance improvements in CPU usage, memory consumption, and startup time. Key additions include Bun.Image, Bun.WebView for browser automation, Bun.markdown, Bun.cron(), and parallel execution for tests and scripts. The new Bun.WebView, supporting WebKit or Chromium via CDP, was used to build a prototype JSON API for executing JavaScript against web pages, requiring approximately 192-256MB of RAM.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 11,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -339,13 +339,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Aug/19/jeremy-morrell/",
           "published_at": "2026-08-19T22:56:31Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Jeremy Morrell proposes a new opportunity for extensible software on the web, leveraging LLMs to reduce the cost of authoring extensions and modern sandboxing to lower deployment costs and enhance security. This approach allows for a core application to be safely extended in various directions by using LLMs to fill in missing pieces, thereby empowering users.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 14,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -353,13 +353,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Aug/19/conceptual-integrity-and-counting-lines-of-code/",
           "published_at": "2026-08-19T22:46:07Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "In a recent podcast appearance, Simon Willison discussed how AI agents are changing software development. He argued that lines of code can still be a valid productivity metric with AI, as agents can significantly increase output while maintaining quality. However, the limiting factor shifts to cognitive capacity, necessitating teams to manage complexity. Willison also highlighted the challenge of maintaining \"conceptual integrity\" in software when AI makes adding features much faster, potentially leading to disorganized growth akin to the Winchester Mystery House.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 15,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -367,13 +367,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Aug/18/mojo-is-now-open-source/",
           "published_at": "2026-08-18T21:39:20Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Mojo, a programming language designed for AI development and inspired by Python syntax, has officially open-sourced its compiler and toolchain under an Apache 2 license. Initially aiming to be a superset of Python, Mojo has evolved into its own distinct language optimized for GPU programming, though it still leverages AI-assisted tools for Python code migration. This release fulfills a promise made in May 2023, marking a significant step in its development and adoption.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 17,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -581,13 +581,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Aug/20/bun-webview-json-api/",
       "published_at": "2026-08-20T15:37:00Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Bun 1.4 has been released, featuring a significant Rust rewrite and over 2,900 bug fixes, leading to substantial performance improvements in CPU usage, memory consumption, and startup time. Key additions include Bun.Image, Bun.WebView for browser automation, Bun.markdown, Bun.cron(), and parallel execution for tests and scripts. The new Bun.WebView, supporting WebKit or Chromium via CDP, was used to build a prototype JSON API for executing JavaScript against web pages, requiring approximately 192-256MB of RAM.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 11,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -623,13 +623,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Aug/19/jeremy-morrell/",
       "published_at": "2026-08-19T22:56:31Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Jeremy Morrell proposes a new opportunity for extensible software on the web, leveraging LLMs to reduce the cost of authoring extensions and modern sandboxing to lower deployment costs and enhance security. This approach allows for a core application to be safely extended in various directions by using LLMs to fill in missing pieces, thereby empowering users.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 14,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -637,13 +637,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Aug/19/conceptual-integrity-and-counting-lines-of-code/",
       "published_at": "2026-08-19T22:46:07Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "In a recent podcast appearance, Simon Willison discussed how AI agents are changing software development. He argued that lines of code can still be a valid productivity metric with AI, as agents can significantly increase output while maintaining quality. However, the limiting factor shifts to cognitive capacity, necessitating teams to manage complexity. Willison also highlighted the challenge of maintaining \"conceptual integrity\" in software when AI makes adding features much faster, potentially leading to disorganized growth akin to the Winchester Mystery House.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 15,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -651,13 +651,13 @@
       "publisher": "AI News & Strategy Daily | Nate B Jones",
       "canonical_url": "https://www.youtube.com/watch?v=joRXo6x7Pgk",
       "published_at": "2026-08-19T14:00:36Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Nate B. Jones provides a guide for non-developers to build personal software using AI, outlining five distinct software shapes that influence development choices. The guide details how to select appropriate AI building tools like Lovable, Replit, Bolt, Codex, and Claude Code, and emphasizes the importance of decision-making regarding data storage and functionality. Jones highlights that the core value non-developers bring is in the judgment of what to build, where data resides, and ensuring the software works correctly before deployment.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "business",
       "rank_position": 16,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@NateBJones"
     },
     {
@@ -665,13 +665,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Aug/18/mojo-is-now-open-source/",
       "published_at": "2026-08-18T21:39:20Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Mojo, a programming language designed for AI development and inspired by Python syntax, has officially open-sourced its compiler and toolchain under an Apache 2 license. Initially aiming to be a superset of Python, Mojo has evolved into its own distinct language optimized for GPU programming, though it still leverages AI-assisted tools for Python code migration. This release fulfills a promise made in May 2023, marking a significant step in its development and adoption.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 17,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -777,9 +777,8 @@
   "pending_transcripts_count": 5,
   "pipeline_notes": {
     "show": true,
-    "summary_line": "5 video summaries pending; 1 source unreachable; 5 budget-limited summaries",
+    "summary_line": "5 video summaries pending; 1 source unreachable",
     "details": [
-      "5 summaries hit the weekly LLM budget and weren't generated this run.",
       "One Useful Thing didn't publish for the fourth week in a row.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "5 video transcripts will fill in when the digest is refreshed from a different network."
