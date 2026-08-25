@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W34",
-  "generated_at": "2026-08-24T10:38:39Z",
+  "generated_at": "2026-08-25T10:34:34Z",
   "week_range": {
     "start": "2026-08-17T00:00:00Z",
     "end": "2026-08-23T23:59:59Z"
   },
-  "updated_at": "2026-08-24T10:38:39Z",
+  "updated_at": "2026-08-25T10:34:34Z",
   "weekly_synthesis": {
     "text": "This week presented a telling dichotomy in the AI space, highlighting both its undeniable practical utility and the operational pressures faced by its leading developers. While AI earned significant validation from figures like Linus Tor",
     "status": "ok"
