@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "week_id": "2026-W35",
+  "generated_at": "2026-08-30T14:36:33Z",
+  "run_id": "b8573a2c05c04f9a951ccdbf5eed0868",
+  "status": "partial",
+  "items_ingested": 118,
+  "clusters": 18,
+  "llm_calls": 25,
+  "cost_usd": 0.013933,
+  "errors": [
+    {
+      "phase": "ingest",
+      "source_id": "one-useful-thing",
+      "category": "empty_feed",
+      "message": "source returned 20 items but zero fell in 2026-08-24T00:00:00Z..2026-08-30T23:59:59Z",
+      "error": "source returned 20 items but zero fell in 2026-08-24T00:00:00Z..2026-08-30T23:59:59Z"
+    },
+    {
+      "phase": "ingest",
+      "source_id": "import-ai",
+      "category": "fetch_http_error",
+      "message": "FetchError: http error fetching https://importai.substack.com/feed: Client error '403 Forbidden' for url 'https://importai.substack.com/feed'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403",
+      "error": "FetchError: http error fetching https://importai.substack.com/feed: Client error '403 Forbidden' for url 'https://importai.substack.com/feed'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403",
+      "http_status": "403"
+    }
+  ],
+  "summary_status": {
+    "ok": 16,
+    "thin": 0,
+    "quota_exhausted": 2,
+    "api_error": 0,
+    "parse_error": 0,
+    "client_init_error": 0,
+    "deferred_budget": 0
+  },
+  "stages": {
+    "ingest": {
+      "items": 118
+    },
+    "dedup": {
+      "clusters_created": 18,
+      "items_clustered": 0
+    },
+    "summarize": {
+      "llm_calls": 16,
+      "cost_usd": 0.002988,
+      "summaries_written": 16,
+      "items_degraded": 2
+    },
+    "categorize": {
+      "llm_calls": 5,
+      "cost_usd": 0.000244,
+      "distribution": {
+        "edtech": 0,
+        "business": 7,
+        "technical": 11,
+        "fallback_source_tag": 0
+      }
+    },
+    "rank": {
+      "llm_calls": 1,
+      "cost_usd": 0.010404
+    },
+    "rollup": {
+      "mini_rollups": 2,
+      "weekly": true,
+      "llm_calls": 3,
+      "cost_usd": 0.000297
+    }
+  },
+  "source_health": {
+    "simon-willison": {
+      "last_success_at": "2026-08-30T14:32:46Z",
+      "last_error_category": null,
+      "items_this_week": 8,
+      "clusters_canonical_this_week": 8
+    },
+    "one-useful-thing": {
+      "last_success_at": "2026-08-30T14:32:46Z",
+      "last_error_category": null,
+      "items_this_week": 0,
+      "clusters_canonical_this_week": 0
+    },
+    "import-ai": {
+      "last_success_at": null,
+      "last_error_category": "fetch_http_error",
+      "items_this_week": 0,
+      "clusters_canonical_this_week": 0
+    },
+    "where-your-ed-at": {
+      "last_success_at": "2026-08-30T14:32:47Z",
+      "last_error_category": null,
+      "items_this_week": 2,
+      "clusters_canonical_this_week": 2
+    },
+    "bensbites": {
+      "last_success_at": "2026-08-30T14:32:47Z",
+      "last_error_category": null,
+      "items_this_week": 3,
+      "clusters_canonical_this_week": 3
+    },
+    "last-week-in-ai": {
+      "last_success_at": "2026-08-30T14:32:47Z",
+      "last_error_category": null,
+      "items_this_week": 1,
+      "clusters_canonical_this_week": 1
+    },
+    "how-i-ai": {
+      "last_success_at": "2026-08-30T14:32:51Z",
+      "last_error_category": null,
+      "items_this_week": 1,
+      "clusters_canonical_this_week": 1
+    },
+    "nate-b-jones": {
+      "last_success_at": "2026-08-30T14:33:00Z",
+      "last_error_category": null,
+      "items_this_week": 3,
+      "clusters_canonical_this_week": 3
+    }
+  },
+  "budget": {
+    "cap_usd": 1.0,
+    "reserved_meta_usd": 0.1,
+    "spent_usd": 0.013933,
+    "pre_flight_estimate_usd": 0.025,
+    "halted": false,
+    "halted_at_stage": null,
+    "hard_cap_hit": false,
+    "deferred_items_count": 0
+  }
+}
