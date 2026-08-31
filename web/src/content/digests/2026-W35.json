@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W35",
-  "generated_at": "2026-08-30T14:36:33Z",
+  "generated_at": "2026-08-31T17:26:23Z",
   "week_range": {
     "start": "2026-08-24T00:00:00Z",
     "end": "2026-08-30T23:59:59Z"
   },
-  "updated_at": "2026-08-30T14:36:33Z",
+  "updated_at": "2026-08-31T17:26:23Z",
   "weekly_synthesis": {
     "text": "This week presented a clear picture of AI's dual trajectory: rapid commercial and technical advancement meeting an intensifying push for governance. Stripe's reported $7.5 billion acquisition of OpenRouter underscores the",
     "status": "ok"
@@ -180,13 +180,13 @@
           "publisher": "Ed Zitron's Where's Your Ed At",
           "canonical_url": "https://www.wheresyoured.at/the-ai-haters-manifesto/",
           "published_at": "2026-08-25T16:57:38Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Ed Zitron argues that the current AI industry, particularly Large Language Models (LLMs), is a detestable manifestation of \"growth-at-all-costs\" capitalism, enriching companies like NVIDIA and Broadcom while offering mediocre and unreliable software. He criticizes the exorbitant costs, the misleading promises of autonomy, and the industry's failure to invest in human workers and social services, contrasting it with the massive spending on AI development. Zitron concludes that LLMs are primarily tools for \"grifters and imbeciles to do impressions of work\" and that the \"this time it's different\" narrative surrounding AI is a lie, predicting worse outcomes than previous tech bubbles.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "business",
           "rank_position": 17,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         }
       ]
@@ -339,13 +339,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Aug/25/eve-online-move-to-python-3/",
           "published_at": "2026-08-25T22:59:30Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "EVE Online, a game that has used Python at scale for over two decades, has begun its migration from Stackless Python 2.7 to Python 3. This massive undertaking involves processing 2.4 million lines of code with the futurize script and manually addressing approximately 20,000 behavioral differences between Python 2 and 3. The team has previously replaced Stackless in their newer game, EVE Frontier, with their open-source carbonengine/scheduler library.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 18,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         }
       ]
@@ -497,13 +497,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Aug/25/eve-online-move-to-python-3/",
       "published_at": "2026-08-25T22:59:30Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "EVE Online, a game that has used Python at scale for over two decades, has begun its migration from Stackless Python 2.7 to Python 3. This massive undertaking involves processing 2.4 million lines of code with the futurize script and manually addressing approximately 20,000 behavioral differences between Python 2 and 3. The team has previously replaced Stackless in their newer game, EVE Frontier, with their open-source carbonengine/scheduler library.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 18,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -511,13 +511,13 @@
       "publisher": "Ed Zitron's Where's Your Ed At",
       "canonical_url": "https://www.wheresyoured.at/the-ai-haters-manifesto/",
       "published_at": "2026-08-25T16:57:38Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Ed Zitron argues that the current AI industry, particularly Large Language Models (LLMs), is a detestable manifestation of \"growth-at-all-costs\" capitalism, enriching companies like NVIDIA and Broadcom while offering mediocre and unreliable software. He criticizes the exorbitant costs, the misleading promises of autonomy, and the industry's failure to invest in human workers and social services, contrasting it with the massive spending on AI development. Zitron concludes that LLMs are primarily tools for \"grifters and imbeciles to do impressions of work\" and that the \"this time it's different\" narrative surrounding AI is a lie, predicting worse outcomes than previous tech bubbles.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "business",
       "rank_position": 17,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -609,9 +609,8 @@
   "pending_transcripts_count": 4,
   "pipeline_notes": {
     "show": true,
-    "summary_line": "4 video summaries pending; 1 source unreachable; 2 budget-limited summaries",
+    "summary_line": "4 video summaries pending; 1 source unreachable",
     "details": [
-      "2 summaries hit the weekly LLM budget and weren't generated this run.",
       "One Useful Thing didn't publish for the fifth week in a row.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "4 video transcripts will fill in when the digest is refreshed from a different network."
