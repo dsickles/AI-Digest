@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W35",
-  "generated_at": "2026-09-02T14:09:59Z",
+  "generated_at": "2026-09-03T14:13:09Z",
   "week_range": {
     "start": "2026-08-24T00:00:00Z",
     "end": "2026-08-30T23:59:59Z"
   },
-  "updated_at": "2026-09-02T14:09:59Z",
+  "updated_at": "2026-09-03T14:13:09Z",
   "weekly_synthesis": {
     "text": "This week presented a clear picture of AI's dual trajectory: rapid commercial and technical advancement meeting an intensifying push for governance. Stripe's reported $7.5 billion acquisition of OpenRouter underscores the",
     "status": "ok"
