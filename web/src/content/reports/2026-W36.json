@@ -1,27 +1,18 @@
 {
   "schema_version": 1,
   "week_id": "2026-W36",
-  "generated_at": "2026-09-06T13:22:03Z",
-  "run_id": "359008747d104dc992090f507978635a",
-  "status": "partial",
-  "items_ingested": 117,
+  "generated_at": "2026-09-07T15:35:08Z",
+  "run_id": "5dbfd211a20043dabc12144b76bc34d9",
+  "status": "success",
+  "items_ingested": 0,
   "clusters": 27,
-  "llm_calls": 25,
-  "cost_usd": 0.004641,
-  "errors": [
-    {
-      "phase": "ingest",
-      "source_id": "import-ai",
-      "category": "fetch_http_error",
-      "message": "FetchError: http error fetching https://importai.substack.com/feed: Client error '403 Forbidden' for url 'https://importai.substack.com/feed'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403",
-      "error": "FetchError: http error fetching https://importai.substack.com/feed: Client error '403 Forbidden' for url 'https://importai.substack.com/feed'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403",
-      "http_status": "403"
-    }
-  ],
+  "llm_calls": 0,
+  "cost_usd": 0.0,
+  "errors": [],
   "summary_status": {
-    "ok": 22,
+    "ok": 27,
     "thin": 0,
-    "quota_exhausted": 5,
+    "quota_exhausted": 0,
     "api_error": 0,
     "parse_error": 0,
     "client_init_error": 0,
@@ -29,21 +20,21 @@
   },
   "stages": {
     "ingest": {
-      "items": 117
+      "items": 0
     },
     "dedup": {
-      "clusters_created": 27,
-      "items_clustered": 4
+      "clusters_created": 0,
+      "items_clustered": 0
     },
     "summarize": {
-      "llm_calls": 22,
-      "cost_usd": 0.004266,
-      "summaries_written": 22,
-      "items_degraded": 5
+      "llm_calls": 0,
+      "cost_usd": 0.0,
+      "summaries_written": 0,
+      "items_degraded": 0
     },
     "categorize": {
-      "llm_calls": 1,
-      "cost_usd": 4.8e-05,
+      "llm_calls": 0,
+      "cost_usd": 0.0,
       "distribution": {
         "edtech": 0,
         "business": 7,
@@ -58,8 +49,8 @@
     "rollup": {
       "mini_rollups": 2,
       "weekly": true,
-      "llm_calls": 2,
-      "cost_usd": 0.000327
+      "llm_calls": 0,
+      "cost_usd": 0.0
     }
   },
   "source_health": {
@@ -115,8 +106,8 @@
   "budget": {
     "cap_usd": 1.0,
     "reserved_meta_usd": 0.1,
-    "spent_usd": 0.004641,
-    "pre_flight_estimate_usd": 0.025,
+    "spent_usd": 0.0,
+    "pre_flight_estimate_usd": 0.0,
     "halted": false,
     "halted_at_stage": null,
     "hard_cap_hit": false,
