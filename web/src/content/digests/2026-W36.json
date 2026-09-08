@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W36",
-  "generated_at": "2026-09-07T15:35:08Z",
+  "generated_at": "2026-09-08T14:13:37Z",
   "week_range": {
     "start": "2026-08-31T00:00:00Z",
     "end": "2026-09-06T23:59:59Z"
   },
-  "updated_at": "2026-09-07T15:35:08Z",
+  "updated_at": "2026-09-08T14:13:37Z",
   "weekly_synthesis": {
     "text": null,
     "status": "api_error"
