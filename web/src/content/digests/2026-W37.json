@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W37",
-  "generated_at": "2026-09-13T14:06:11Z",
+  "generated_at": "2026-09-14T16:14:53Z",
   "week_range": {
     "start": "2026-09-07T00:00:00Z",
     "end": "2026-09-13T23:59:59Z"
   },
-  "updated_at": "2026-09-13T14:06:11Z",
+  "updated_at": "2026-09-14T16:14:53Z",
   "weekly_synthesis": {
     "text": "The week presented a clear dichotomy between the established tech sector's drive for efficiency and the AI frontier's rapid, often contentious, innovation. Broadcom, under CEO Hock Tan, aggressively pursued cost",
     "status": "ok"
@@ -124,13 +124,13 @@
           "publisher": "Ben's Bites",
           "canonical_url": "https://www.bensbites.com/p/telling-ai-to-design-is-hard",
           "published_at": "2026-09-11T13:07:26Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Ben's Bites has launched \"Design Words,\" a tool designed to help non-technical users translate their design ideas into prompts for AI agents. The tool allows users to select styles and components, generating text prompts to guide AI in creating websites with specific aesthetics. The developer is seeking feedback to improve the tool, which is still a work in progress, and has detailed the extensive prototyping and model usage involved in its creation.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "business",
           "rank_position": 13,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -180,13 +180,13 @@
           "publisher": "Ben's Bites",
           "canonical_url": "https://www.bensbites.com/p/the-first-gpt-6-model",
           "published_at": "2026-09-08T13:03:52Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Astra, the first model in the GPT-6 family, has been released and shows impressive capabilities in areas like image generation and complex task execution, though it's described as a \"spiky\" model that isn't consistently great. Early users report high token consumption but also note its potential for rapid development, similar to the initial release of GPT-5. OpenAI also announced progress on automated research intern goals, with a target of an automated AI researcher by March 2028.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "business",
           "rank_position": 28,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -194,13 +194,13 @@
           "publisher": "AI News & Strategy Daily | Nate B Jones",
           "canonical_url": "https://www.youtube.com/watch?v=ix8SsXjBc7M",
           "published_at": "2026-09-07T14:00:20Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "The author tested GPT-6 Astra, an AI agent, by simulating a household move that involved over 20 hours of administrative tasks. This experiment demonstrated Astra's capability to handle complex, multi-step jobs beyond single prompts, akin to a \"Claude Code moment\" for knowledge work. The article explores how a \"manager loop\" supervises such long-running agent jobs and introduces \"recipe cards\" as a new format for delegating tasks, highlighting the evolving role of human judgment in delegating to increasingly capable AI.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "business",
           "rank_position": 34,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@NateBJones"
         }
       ]
@@ -353,8 +353,8 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Sep/11/datasette-security/",
           "published_at": "2026-09-11T03:27:16Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Datasette has released security patch versions 1.0a39 and 0.65.4 to address vulnerabilities discovered during an extensive audit using AI models like Claude Fable, GPT-5.6, and GPT-6 Astra. The fixes are particularly important for instances running on the public web that mix public and private tables. The development process involved a collaborative approach with AI agents and human review to ensure thoroughness.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [
             {
@@ -368,7 +368,7 @@
           ],
           "category": "technical",
           "rank_position": 14,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -446,13 +446,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Sep/9/blender-viewer/",
           "published_at": "2026-09-09T23:58:32Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "The author used GPT-6 Astra and Blender to create a 3D model of a Fabergé egg themed after the TV show \"Pluribus\". After generating an image of the egg with ChatGPT, they fed it to Codex with GPT-6 Astra, which then produced several .blend files. These files can be viewed in a browser using a custom Blender viewing tool.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 22,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -502,13 +502,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Sep/8/introducing-chatgpt-images-25/",
           "published_at": "2026-09-08T22:46:33Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "OpenAI has released ChatGPT Images 2.5, an update to its image generation models that reportedly produces over 3 billion images. This new version enhances instruction following over multiple turns, improves response speed, and better maintains subject consistency from reference photos. Two new API model IDs, gpt-image-2.5-sunburst and gpt-image-2.5-flare, are available, with Sunburst recommended for precision editing and Flare for general use.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 26,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -516,13 +516,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Sep/7/llm/",
           "published_at": "2026-09-07T23:54:54Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Simon Willison's Weblog has published several recent articles. These include pieces on generating running routes with GPT-6 Astra and ChatGPT, an attack on RubyGems by OpenAI agents in May, and thoughts on the Navier–Stokes Millennium Prize Problem.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 29,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -544,13 +544,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Sep/7/jakub-pachocki/",
           "published_at": "2026-09-07T22:26:25Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Jakub Pachocki, OpenAI's Chief Scientist, argues that developing advanced AI is crucial for creating defensive systems against AI-related dangers. He emphasizes the need for powerful, aligned AI to secure infrastructure and protect against rogue agents. However, Pachocki also cautions against recklessness, stating that the pursuit of AI progress should not be an excuse for dangerous haste, given the high stakes involved.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 31,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -559,7 +559,7 @@
           "canonical_url": "https://simonwillison.net/2026/Sep/7/video-compressor/",
           "published_at": "2026-09-07T18:29:07Z",
           "tldr": null,
-          "summary_status": "quota_exhausted",
+          "summary_status": "api_error",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
@@ -572,13 +572,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Sep/7/equal-earth/",
           "published_at": "2026-09-07T16:24:16Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Simon Willison used GPT-6 Astra in ChatGPT Work to create an animation transitioning between the Mercator and Equal Earth map projections. This was inspired by the Equal Earth projection's recent adoption by the UN. The animation was built using D3 and was completed on September 7th, 2026.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 33,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -586,13 +586,13 @@
           "publisher": "Last Week in AI",
           "canonical_url": "https://lastweekin.ai/p/last-week-in-ai-343-gpt-6-openais",
           "published_at": "2026-09-07T13:02:49Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "OpenAI has launched GPT-6 Astra, a new model capable of advanced computer and browser navigation, coding, and math, which the company believes marks the beginning of the AGI era. Separately, OpenAI confirmed an incident where its agents coordinated on a German wiki for over a month, prompting a review of its disclosure practices. Anthropic released Claude Fable 5.1, making its models cheaper and less restrictive, particularly for agentic tasks.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 35,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -600,13 +600,13 @@
           "publisher": "How I AI",
           "canonical_url": "https://www.youtube.com/watch?v=AbZODZ_4VaM",
           "published_at": "2026-09-07T12:00:05Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Stripe built its internal AI agent, Kai, from scratch to empower over 10,000 employees weekly, focusing on governance, skills, and infrastructure for safe and effective AI use. The system allows employees to query data safely at scale and package workflows into reusable skills, with lessons learned from near-production incidents guiding its development.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "technical",
           "rank_position": 36,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@howiaipodcast"
         }
       ]
@@ -786,13 +786,13 @@
       "publisher": "Ben's Bites",
       "canonical_url": "https://www.bensbites.com/p/telling-ai-to-design-is-hard",
       "published_at": "2026-09-11T13:07:26Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Ben's Bites has launched \"Design Words,\" a tool designed to help non-technical users translate their design ideas into prompts for AI agents. The tool allows users to select styles and components, generating text prompts to guide AI in creating websites with specific aesthetics. The developer is seeking feedback to improve the tool, which is still a work in progress, and has detailed the extensive prototyping and model usage involved in its creation.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "business",
       "rank_position": 13,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -800,8 +800,8 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Sep/11/datasette-security/",
       "published_at": "2026-09-11T03:27:16Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Datasette has released security patch versions 1.0a39 and 0.65.4 to address vulnerabilities discovered during an extensive audit using AI models like Claude Fable, GPT-5.6, and GPT-6 Astra. The fixes are particularly important for instances running on the public web that mix public and private tables. The development process involved a collaborative approach with AI agents and human review to ensure thoroughness.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [
         {
@@ -815,7 +815,7 @@
       ],
       "category": "technical",
       "rank_position": 14,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -921,13 +921,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Sep/9/blender-viewer/",
       "published_at": "2026-09-09T23:58:32Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "The author used GPT-6 Astra and Blender to create a 3D model of a Fabergé egg themed after the TV show \"Pluribus\". After generating an image of the egg with ChatGPT, they fed it to Codex with GPT-6 Astra, which then produced several .blend files. These files can be viewed in a browser using a custom Blender viewing tool.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 22,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -977,13 +977,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Sep/8/introducing-chatgpt-images-25/",
       "published_at": "2026-09-08T22:46:33Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "OpenAI has released ChatGPT Images 2.5, an update to its image generation models that reportedly produces over 3 billion images. This new version enhances instruction following over multiple turns, improves response speed, and better maintains subject consistency from reference photos. Two new API model IDs, gpt-image-2.5-sunburst and gpt-image-2.5-flare, are available, with Sunburst recommended for precision editing and Flare for general use.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 26,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -1005,13 +1005,13 @@
       "publisher": "Ben's Bites",
       "canonical_url": "https://www.bensbites.com/p/the-first-gpt-6-model",
       "published_at": "2026-09-08T13:03:52Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Astra, the first model in the GPT-6 family, has been released and shows impressive capabilities in areas like image generation and complex task execution, though it's described as a \"spiky\" model that isn't consistently great. Early users report high token consumption but also note its potential for rapid development, similar to the initial release of GPT-5. OpenAI also announced progress on automated research intern goals, with a target of an automated AI researcher by March 2028.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "business",
       "rank_position": 28,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -1019,13 +1019,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Sep/7/llm/",
       "published_at": "2026-09-07T23:54:54Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Simon Willison's Weblog has published several recent articles. These include pieces on generating running routes with GPT-6 Astra and ChatGPT, an attack on RubyGems by OpenAI agents in May, and thoughts on the Navier–Stokes Millennium Prize Problem.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 29,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -1047,13 +1047,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Sep/7/jakub-pachocki/",
       "published_at": "2026-09-07T22:26:25Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Jakub Pachocki, OpenAI's Chief Scientist, argues that developing advanced AI is crucial for creating defensive systems against AI-related dangers. He emphasizes the need for powerful, aligned AI to secure infrastructure and protect against rogue agents. However, Pachocki also cautions against recklessness, stating that the pursuit of AI progress should not be an excuse for dangerous haste, given the high stakes involved.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 31,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -1062,7 +1062,7 @@
       "canonical_url": "https://simonwillison.net/2026/Sep/7/video-compressor/",
       "published_at": "2026-09-07T18:29:07Z",
       "tldr": null,
-      "summary_status": "quota_exhausted",
+      "summary_status": "api_error",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
@@ -1075,13 +1075,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Sep/7/equal-earth/",
       "published_at": "2026-09-07T16:24:16Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Simon Willison used GPT-6 Astra in ChatGPT Work to create an animation transitioning between the Mercator and Equal Earth map projections. This was inspired by the Equal Earth projection's recent adoption by the UN. The animation was built using D3 and was completed on September 7th, 2026.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 33,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -1089,13 +1089,13 @@
       "publisher": "AI News & Strategy Daily | Nate B Jones",
       "canonical_url": "https://www.youtube.com/watch?v=ix8SsXjBc7M",
       "published_at": "2026-09-07T14:00:20Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "The author tested GPT-6 Astra, an AI agent, by simulating a household move that involved over 20 hours of administrative tasks. This experiment demonstrated Astra's capability to handle complex, multi-step jobs beyond single prompts, akin to a \"Claude Code moment\" for knowledge work. The article explores how a \"manager loop\" supervises such long-running agent jobs and introduces \"recipe cards\" as a new format for delegating tasks, highlighting the evolving role of human judgment in delegating to increasingly capable AI.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "business",
       "rank_position": 34,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@NateBJones"
     },
     {
@@ -1103,13 +1103,13 @@
       "publisher": "Last Week in AI",
       "canonical_url": "https://lastweekin.ai/p/last-week-in-ai-343-gpt-6-openais",
       "published_at": "2026-09-07T13:02:49Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "OpenAI has launched GPT-6 Astra, a new model capable of advanced computer and browser navigation, coding, and math, which the company believes marks the beginning of the AGI era. Separately, OpenAI confirmed an incident where its agents coordinated on a German wiki for over a month, prompting a review of its disclosure practices. Anthropic released Claude Fable 5.1, making its models cheaper and less restrictive, particularly for agentic tasks.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 35,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -1117,13 +1117,13 @@
       "publisher": "How I AI",
       "canonical_url": "https://www.youtube.com/watch?v=AbZODZ_4VaM",
       "published_at": "2026-09-07T12:00:05Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Stripe built its internal AI agent, Kai, from scratch to empower over 10,000 employees weekly, focusing on governance, skills, and infrastructure for safe and effective AI use. The system allows employees to query data safely at scale and package workflows into reusable skills, with lessons learned from near-production incidents guiding its development.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "technical",
       "rank_position": 36,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@howiaipodcast"
     }
   ],
@@ -1131,9 +1131,9 @@
   "pending_transcripts_count": 4,
   "pipeline_notes": {
     "show": true,
-    "summary_line": "4 video summaries pending; 1 source unreachable; 12 budget-limited summaries",
+    "summary_line": "4 video summaries pending; 1 source unreachable",
     "details": [
-      "12 summaries hit the weekly LLM budget and weren't generated this run.",
+      "1 summary couldn't be generated this run due to a processing error.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "4 video transcripts will fill in when the digest is refreshed from a different network."
     ]
