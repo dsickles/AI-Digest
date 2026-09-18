@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W37",
-  "generated_at": "2026-09-17T14:45:15Z",
+  "generated_at": "2026-09-18T14:11:17Z",
   "week_range": {
     "start": "2026-09-07T00:00:00Z",
     "end": "2026-09-13T23:59:59Z"
   },
-  "updated_at": "2026-09-17T14:45:15Z",
+  "updated_at": "2026-09-18T14:11:17Z",
   "weekly_synthesis": {
     "text": "The week presented a clear dichotomy between the established tech sector's drive for efficiency and the AI frontier's rapid, often contentious, innovation. Broadcom, under CEO Hock Tan, aggressively pursued cost",
     "status": "ok"
