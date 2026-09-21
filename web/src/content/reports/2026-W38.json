@@ -1,45 +1,36 @@
 {
   "schema_version": 1,
   "week_id": "2026-W38",
-  "generated_at": "2026-09-20T13:53:46Z",
-  "run_id": "d76cc85a53ec4741a95a68fb30c06a2b",
-  "status": "partial",
-  "items_ingested": 114,
+  "generated_at": "2026-09-21T16:20:10Z",
+  "run_id": "959ae89d25dd448ab6bb9b8430dd1438",
+  "status": "success",
+  "items_ingested": 0,
   "clusters": 29,
-  "llm_calls": 24,
-  "cost_usd": 0.003803,
-  "errors": [
-    {
-      "phase": "ingest",
-      "source_id": "import-ai",
-      "category": "fetch_http_error",
-      "message": "FetchError: http error fetching https://importai.substack.com/feed: Client error '403 Forbidden' for url 'https://importai.substack.com/feed'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403",
-      "error": "FetchError: http error fetching https://importai.substack.com/feed: Client error '403 Forbidden' for url 'https://importai.substack.com/feed'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403",
-      "http_status": "403"
-    }
-  ],
+  "llm_calls": 0,
+  "cost_usd": 0.0,
+  "errors": [],
   "summary_status": {
-    "ok": 21,
+    "ok": 27,
     "thin": 0,
-    "quota_exhausted": 8,
-    "api_error": 0,
+    "quota_exhausted": 0,
+    "api_error": 2,
     "parse_error": 0,
     "client_init_error": 0,
     "deferred_budget": 0
   },
   "stages": {
     "ingest": {
-      "items": 114
+      "items": 0
     },
     "dedup": {
-      "clusters_created": 29,
+      "clusters_created": 0,
       "items_clustered": 0
     },
     "summarize": {
-      "llm_calls": 21,
-      "cost_usd": 0.003447,
-      "summaries_written": 21,
-      "items_degraded": 8
+      "llm_calls": 0,
+      "cost_usd": 0.0,
+      "summaries_written": 0,
+      "items_degraded": 0
     },
     "categorize": {
       "llm_calls": 0,
@@ -58,8 +49,8 @@
     "rollup": {
       "mini_rollups": 2,
       "weekly": true,
-      "llm_calls": 3,
-      "cost_usd": 0.000356
+      "llm_calls": 0,
+      "cost_usd": 0.0
     }
   },
   "source_health": {
@@ -115,8 +106,8 @@
   "budget": {
     "cap_usd": 1.0,
     "reserved_meta_usd": 0.1,
-    "spent_usd": 0.003803,
-    "pre_flight_estimate_usd": 0.025,
+    "spent_usd": 0.0,
+    "pre_flight_estimate_usd": 0.0,
     "halted": false,
     "halted_at_stage": null,
     "hard_cap_hit": false,
