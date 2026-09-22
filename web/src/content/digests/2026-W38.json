@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W38",
-  "generated_at": "2026-09-21T16:20:10Z",
+  "generated_at": "2026-09-22T14:26:36Z",
   "week_range": {
     "start": "2026-09-14T00:00:00Z",
     "end": "2026-09-20T23:59:59Z"
   },
-  "updated_at": "2026-09-21T16:20:10Z",
+  "updated_at": "2026-09-22T14:26:36Z",
   "weekly_synthesis": {
     "text": "Major tech companies like Google, Amazon, and Meta are accumulating \"massive AI debt,\" funneling hundreds of billions into the field. This immense financial commitment stands out as the week's primary",
     "status": "ok"
@@ -124,13 +124,13 @@
           "publisher": "AI News & Strategy Daily | Nate B Jones",
           "canonical_url": "https://www.youtube.com/watch?v=YTG0rdHPTDE",
           "published_at": "2026-09-17T14:00:22Z",
-          "tldr": null,
-          "summary_status": "api_error",
+          "tldr": "AI agents are increasingly becoming customers, and businesses are often unaware of how their existing systems handle these new transactions. Stripe's Head of Data and AI, Emily Sands, discusses the critical infrastructure and fraud rules that determine whether a business can effectively serve agent-based commerce. The key challenge lies in distinguishing between the technical readiness for agent transactions and the unresolved issues around pricing models, which separates a true plan from a mere payment integration.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "business",
           "rank_position": 12,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@NateBJones"
         },
         {
@@ -138,13 +138,13 @@
           "publisher": "Ben's Bites",
           "canonical_url": "https://www.bensbites.com/p/new-home-for-cowork",
           "published_at": "2026-09-17T13:02:21Z",
-          "tldr": null,
-          "summary_status": "api_error",
+          "tldr": "Anthropic's Cowork is merging with Claude Chat, integrating apps, skills, and context into a single chat interface, and is also launching dedicated products for Docs and Slides. Gemini API now offers 3.8 Live and 3.8 Live Extended Thinking models for real-time audio and video input processing, at a lower cost than previous models. Additionally, a new LLM alternative called Jev has been released by TypeSafe AI, which generates probabilities for answers rather than text, making it suitable for tasks requiring quick judgments.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "business",
           "rank_position": 13,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -665,13 +665,13 @@
       "publisher": "AI News & Strategy Daily | Nate B Jones",
       "canonical_url": "https://www.youtube.com/watch?v=YTG0rdHPTDE",
       "published_at": "2026-09-17T14:00:22Z",
-      "tldr": null,
-      "summary_status": "api_error",
+      "tldr": "AI agents are increasingly becoming customers, and businesses are often unaware of how their existing systems handle these new transactions. Stripe's Head of Data and AI, Emily Sands, discusses the critical infrastructure and fraud rules that determine whether a business can effectively serve agent-based commerce. The key challenge lies in distinguishing between the technical readiness for agent transactions and the unresolved issues around pricing models, which separates a true plan from a mere payment integration.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "business",
       "rank_position": 12,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@NateBJones"
     },
     {
@@ -679,13 +679,13 @@
       "publisher": "Ben's Bites",
       "canonical_url": "https://www.bensbites.com/p/new-home-for-cowork",
       "published_at": "2026-09-17T13:02:21Z",
-      "tldr": null,
-      "summary_status": "api_error",
+      "tldr": "Anthropic's Cowork is merging with Claude Chat, integrating apps, skills, and context into a single chat interface, and is also launching dedicated products for Docs and Slides. Gemini API now offers 3.8 Live and 3.8 Live Extended Thinking models for real-time audio and video input processing, at a lower cost than previous models. Additionally, a new LLM alternative called Jev has been released by TypeSafe AI, which generates probabilities for answers rather than text, making it suitable for tasks requiring quick judgments.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "business",
       "rank_position": 13,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -919,7 +919,6 @@
     "show": true,
     "summary_line": "5 video summaries pending; 1 source unreachable",
     "details": [
-      "2 summaries couldn't be generated this run due to a processing error.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "5 video transcripts will fill in when the digest is refreshed from a different network."
     ]
