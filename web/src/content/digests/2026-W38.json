@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W38",
-  "generated_at": "2026-09-23T14:46:06Z",
+  "generated_at": "2026-09-24T14:41:49Z",
   "week_range": {
     "start": "2026-09-14T00:00:00Z",
     "end": "2026-09-20T23:59:59Z"
   },
-  "updated_at": "2026-09-23T14:46:06Z",
+  "updated_at": "2026-09-24T14:41:49Z",
   "weekly_synthesis": {
     "text": "Major tech companies like Google, Amazon, and Meta are accumulating \"massive AI debt,\" funneling hundreds of billions into the field. This immense financial commitment stands out as the week's primary",
     "status": "ok"
