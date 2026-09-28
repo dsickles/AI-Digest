@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W39",
-  "generated_at": "2026-09-27T14:56:53Z",
+  "generated_at": "2026-09-28T17:59:56Z",
   "week_range": {
     "start": "2026-09-21T00:00:00Z",
     "end": "2026-09-27T23:59:59Z"
   },
-  "updated_at": "2026-09-27T14:56:53Z",
+  "updated_at": "2026-09-28T17:59:56Z",
   "weekly_synthesis": {
     "text": "This week presented a stark contrast between the relentless march of AI innovation and the sobering financial realities underpinning its infrastructure. While OpenAI pushed the technical frontier with the release of GPT-6 Sol and Luna,",
     "status": "ok"
@@ -138,8 +138,8 @@
           "publisher": "Ben's Bites",
           "canonical_url": "https://www.bensbites.com/p/back-to-claude",
           "published_at": "2026-09-24T13:04:08Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Anthropic has released Claude 3.5 Opus, a new flagship model that outperforms previous versions on benchmarks, is cheaper than Opus 5, and offers improved reliability and writing capabilities. OpenAI has launched GPT-6 Luna and Sol, which are 50% cheaper than their predecessors but offer only minor intelligence upgrades, with Sol lagging behind Claude 3.5 Opus. Meta's AI assistant, Muse, is expanding its capabilities to control Mac apps, make purchases, and integrate with Meta's glasses, while Google has introduced Gemini 3.8 Flash and Flash-Lite TTS with enhanced speech generation features.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [
             {
@@ -149,7 +149,7 @@
           ],
           "category": "business",
           "rank_position": 11,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -199,13 +199,13 @@
           "publisher": "AI News & Strategy Daily | Nate B Jones",
           "canonical_url": "https://www.youtube.com/watch?v=tYugqJ9YytQ",
           "published_at": "2026-09-21T14:00:39Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Jev, a new AI classifier from TypeSafe, is gaining rapid adoption because it makes single choices rather than generating text, which is crucial for cost-effective decision-making in software. The article explores four architectural patterns for integrating Jev into existing software, its operational costs at scale, and scenarios where a traditional LLM is still necessary. This technology enables developers to automate tasks previously deemed too expensive with more complex AI models.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "business",
           "rank_position": 27,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@NateBJones"
         }
       ]
@@ -302,13 +302,13 @@
           "publisher": "Last Week in AI",
           "canonical_url": "https://lastweekin.ai/p/lwiai-podcast-257-gpt-6-astra-ai",
           "published_at": "2026-09-24T09:12:28Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "OpenAI has released GPT-6 Astra, a significant advancement in agentic coding and computer use, featuring new reasoning capabilities and alignment monitoring, though concerns about its evaluation methods persist. The AI community is divided on the pace of development, with some leaders like Anthropic's CEO advocating for caution while others dismiss safety concerns. This comes amid increased AI extinction warnings, calls for regulation, and security incidents, including a reported exploit of OpenAI employee accounts using Anthropic's Claude.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 12,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -344,13 +344,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Sep/23/bof-agentic-engineering/",
           "published_at": "2026-09-23T02:53:19Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Simon Willison is hosting a Birds of a Feather session in San Francisco on October 14th focused on \"agentic engineering.\" The event is for builders and experimenters working with coding agents, encouraging informal sharing of early-stage explorations, odd experiments, and unfinished projects. The goal is to compare notes and discuss learnings in a flowing conversation, celebrating the \"weirdness\" of agentic AI.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 15,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -372,13 +372,13 @@
           "publisher": "How I AI",
           "canonical_url": "https://www.youtube.com/watch?v=LMT-bknLmNo",
           "published_at": "2026-09-22T22:48:21Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "The author conducted a live, blind review of new AI models including Claude Opus 5.5 and OpenAI's GPT-6 Sol and Astra. Opus 5.5 excelled in long-running agents and B2B frontend tasks, while Astra was preferred for personal tasks. Sol showed strengths in clear writing and PRDs but left the author undecided. The review also highlighted surprising results in SVG generation and a critical look at AI video editing capabilities, concluding that true AGI has not yet arrived.",
+          "summary_status": "ok",
           "source_type": "youtube",
           "also_covered": [],
           "category": "technical",
           "rank_position": 17,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": "https://www.youtube.com/@howiaipodcast"
         },
         {
@@ -428,13 +428,13 @@
           "publisher": "Simon Willison's Weblog",
           "canonical_url": "https://simonwillison.net/2026/Sep/22/llm-typesafe/",
           "published_at": "2026-09-22T15:54:16Z",
-          "tldr": null,
-          "summary_status": "quota_exhausted",
+          "tldr": "Simon Willison has released llm-typesafe 0.1a0, a new plugin for the LLM tool that adds support for TypeSafe AI's Jev model. This plugin allows users to ask yes/no, choice, or scoring questions to the Jev model, enabling structured outputs for tasks like refund requests or message categorization. Installation and API key setup are straightforward, with detailed usage examples provided in the README.",
+          "summary_status": "ok",
           "source_type": "rss",
           "also_covered": [],
           "category": "technical",
           "rank_position": 21,
-          "degraded_body": "The summary couldn't be generated this week.",
+          "degraded_body": null,
           "channel_url": null
         },
         {
@@ -600,8 +600,8 @@
       "publisher": "Ben's Bites",
       "canonical_url": "https://www.bensbites.com/p/back-to-claude",
       "published_at": "2026-09-24T13:04:08Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Anthropic has released Claude 3.5 Opus, a new flagship model that outperforms previous versions on benchmarks, is cheaper than Opus 5, and offers improved reliability and writing capabilities. OpenAI has launched GPT-6 Luna and Sol, which are 50% cheaper than their predecessors but offer only minor intelligence upgrades, with Sol lagging behind Claude 3.5 Opus. Meta's AI assistant, Muse, is expanding its capabilities to control Mac apps, make purchases, and integrate with Meta's glasses, while Google has introduced Gemini 3.8 Flash and Flash-Lite TTS with enhanced speech generation features.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [
         {
@@ -611,7 +611,7 @@
       ],
       "category": "business",
       "rank_position": 11,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -619,13 +619,13 @@
       "publisher": "Last Week in AI",
       "canonical_url": "https://lastweekin.ai/p/lwiai-podcast-257-gpt-6-astra-ai",
       "published_at": "2026-09-24T09:12:28Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "OpenAI has released GPT-6 Astra, a significant advancement in agentic coding and computer use, featuring new reasoning capabilities and alignment monitoring, though concerns about its evaluation methods persist. The AI community is divided on the pace of development, with some leaders like Anthropic's CEO advocating for caution while others dismiss safety concerns. This comes amid increased AI extinction warnings, calls for regulation, and security incidents, including a reported exploit of OpenAI employee accounts using Anthropic's Claude.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 12,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -661,13 +661,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Sep/23/bof-agentic-engineering/",
       "published_at": "2026-09-23T02:53:19Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Simon Willison is hosting a Birds of a Feather session in San Francisco on October 14th focused on \"agentic engineering.\" The event is for builders and experimenters working with coding agents, encouraging informal sharing of early-stage explorations, odd experiments, and unfinished projects. The goal is to compare notes and discuss learnings in a flowing conversation, celebrating the \"weirdness\" of agentic AI.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 15,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -689,13 +689,13 @@
       "publisher": "How I AI",
       "canonical_url": "https://www.youtube.com/watch?v=LMT-bknLmNo",
       "published_at": "2026-09-22T22:48:21Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "The author conducted a live, blind review of new AI models including Claude Opus 5.5 and OpenAI's GPT-6 Sol and Astra. Opus 5.5 excelled in long-running agents and B2B frontend tasks, while Astra was preferred for personal tasks. Sol showed strengths in clear writing and PRDs but left the author undecided. The review also highlighted surprising results in SVG generation and a critical look at AI video editing capabilities, concluding that true AGI has not yet arrived.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "technical",
       "rank_position": 17,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@howiaipodcast"
     },
     {
@@ -745,13 +745,13 @@
       "publisher": "Simon Willison's Weblog",
       "canonical_url": "https://simonwillison.net/2026/Sep/22/llm-typesafe/",
       "published_at": "2026-09-22T15:54:16Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Simon Willison has released llm-typesafe 0.1a0, a new plugin for the LLM tool that adds support for TypeSafe AI's Jev model. This plugin allows users to ask yes/no, choice, or scoring questions to the Jev model, enabling structured outputs for tasks like refund requests or message categorization. Installation and API key setup are straightforward, with detailed usage examples provided in the README.",
+      "summary_status": "ok",
       "source_type": "rss",
       "also_covered": [],
       "category": "technical",
       "rank_position": 21,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": null
     },
     {
@@ -829,13 +829,13 @@
       "publisher": "AI News & Strategy Daily | Nate B Jones",
       "canonical_url": "https://www.youtube.com/watch?v=tYugqJ9YytQ",
       "published_at": "2026-09-21T14:00:39Z",
-      "tldr": null,
-      "summary_status": "quota_exhausted",
+      "tldr": "Jev, a new AI classifier from TypeSafe, is gaining rapid adoption because it makes single choices rather than generating text, which is crucial for cost-effective decision-making in software. The article explores four architectural patterns for integrating Jev into existing software, its operational costs at scale, and scenarios where a traditional LLM is still necessary. This technology enables developers to automate tasks previously deemed too expensive with more complex AI models.",
+      "summary_status": "ok",
       "source_type": "youtube",
       "also_covered": [],
       "category": "business",
       "rank_position": 27,
-      "degraded_body": "The summary couldn't be generated this week.",
+      "degraded_body": null,
       "channel_url": "https://www.youtube.com/@NateBJones"
     }
   ],
@@ -858,9 +858,8 @@
   "pending_transcripts_count": 5,
   "pipeline_notes": {
     "show": true,
-    "summary_line": "5 video summaries pending; 1 source unreachable; 6 budget-limited summaries",
+    "summary_line": "5 video summaries pending; 1 source unreachable",
     "details": [
-      "6 summaries hit the weekly LLM budget and weren't generated this run.",
       "Import AI couldn't be reached this Sunday morning. The next run will retry.",
       "5 video transcripts will fill in when the digest is refreshed from a different network."
     ]
