@@ -1,0 +1,4 @@
+# Allow all bots to scan and index this site.
+# https://developers.google.com/search/docs/crawling-indexing/robots/create-robots-txt
+User-agent: *
+Allow: /

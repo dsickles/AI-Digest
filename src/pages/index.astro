@@ -1,0 +1,46 @@
+---
+const title = "Dan's Digest";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Dan's weekly AI digest." />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header>
+      <h1>{title}</h1>
+    </header>
+    <main>
+      <section id="digest" aria-label="Digest"></section>
+    </main>
+  </body>
+</html>
+
+<style>
+  :root {
+    color-scheme: light dark;
+    font-family: system-ui, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    padding: 2rem 1.25rem;
+  }
+
+  header,
+  main {
+    max-width: 40rem;
+    margin: 0 auto;
+  }
+
+  h1 {
+    margin: 0 0 1.5rem;
+    font-size: 1.75rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+</style>
