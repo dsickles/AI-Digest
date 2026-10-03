@@ -6,5 +6,5 @@
 *.cmd   text eol=crlf
 *.ps1   text eol=crlf
 
-# Treat lockfiles as text but never merge — regenerate via `uv lock`
-uv.lock text -merge
+# Treat the lockfile as text but never merge — regenerate via `pnpm install`
+pnpm-lock.yaml text -merge
