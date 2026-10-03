@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "week_id": "2026-W39",
-  "generated_at": "2026-10-02T16:08:24Z",
+  "generated_at": "2026-10-03T14:35:48Z",
   "week_range": {
     "start": "2026-09-21T00:00:00Z",
     "end": "2026-09-27T23:59:59Z"
   },
-  "updated_at": "2026-10-02T16:08:24Z",
+  "updated_at": "2026-10-03T14:35:48Z",
   "weekly_synthesis": {
     "text": "This week presented a stark contrast between the relentless march of AI innovation and the sobering financial realities underpinning its infrastructure. While OpenAI pushed the technical frontier with the release of GPT-6 Sol and Luna,",
     "status": "ok"
