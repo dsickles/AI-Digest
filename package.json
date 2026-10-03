@@ -10,12 +10,21 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "validate:weeks": "node scripts/validate-weeks.mjs",
+    "validate:weeks:self-test": "node scripts/validate-weeks.mjs --self-test"
   },
   "dependencies": {
     "astro": "^7.3.5"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
+  "devDependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "yaml": "^2.9.1"
   }
 }
