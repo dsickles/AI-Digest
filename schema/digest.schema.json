@@ -1,0 +1,295 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dans-digest.local/schema/digest.schema.json",
+  "title": "Dan's Digest week file",
+  "description": "Pre-partitioned week file for content/digests/{week_id}.json. Briefing is synthesis plus Top 5 full cards. topics.* are the per-topic main lists. main_feed is those lists concatenated (edtech, business, technical). footer_aside is thin link-only cards. The site renders these lists as written.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "week_id",
+    "timezone",
+    "week_start",
+    "week_end",
+    "generated_at",
+    "briefing",
+    "topics",
+    "main_feed",
+    "footer_aside"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "week_id": {
+      "description": "ISO week of the ending Saturday, the Saturday that closes the America/New_York window.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])$"
+    },
+    "timezone": {
+      "const": "America/New_York"
+    },
+    "week_start": {
+      "description": "Sunday 00:00:00 America/New_York, written with that instant's offset.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "week_end": {
+      "description": "Saturday 23:59:59 America/New_York, written with that instant's offset.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "briefing": {
+      "$ref": "#/$defs/briefing"
+    },
+    "topics": {
+      "$ref": "#/$defs/topics"
+    },
+    "main_feed": {
+      "description": "In-place cards only: ok summaries and degraded cards. Must equal topics.edtech + topics.business + topics.technical.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/mainCard"
+      }
+    },
+    "footer_aside": {
+      "description": "Thin RSS links only. No summary body.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/thinCard"
+      }
+    }
+  },
+  "$defs": {
+    "publisher": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "name"],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "mainCard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "url",
+        "publisher",
+        "published_at",
+        "category",
+        "media",
+        "summary_status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "publisher": {
+          "$ref": "#/$defs/publisher"
+        },
+        "published_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "category": {
+          "enum": ["edtech", "business", "technical"]
+        },
+        "media": {
+          "enum": ["article", "video"]
+        },
+        "summary_status": {
+          "description": "ok is a full card. Every other value is an in-place degraded card. thin is not a main-list status.",
+          "enum": [
+            "ok",
+            "quota_exhausted",
+            "api_error",
+            "parse_error",
+            "client_init_error",
+            "transcript_missing",
+            "deferred_budget"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "body": {
+          "const": "The summary couldn't be generated this week."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["summary_status"],
+            "properties": {
+              "summary_status": { "const": "ok" }
+            }
+          },
+          "then": {
+            "required": ["summary"],
+            "properties": {
+              "summary": {
+                "type": "string",
+                "minLength": 1
+              },
+              "body": false
+            }
+          },
+          "else": {
+            "required": ["body"],
+            "properties": {
+              "summary": false,
+              "body": {
+                "const": "The summary couldn't be generated this week."
+              }
+            }
+          }
+        }
+      ]
+    },
+    "fullCard": {
+      "allOf": [
+        { "$ref": "#/$defs/mainCard" },
+        {
+          "type": "object",
+          "required": ["summary_status"],
+          "properties": {
+            "summary_status": { "const": "ok" }
+          }
+        }
+      ]
+    },
+    "thinCard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "url",
+        "publisher",
+        "published_at",
+        "category",
+        "media",
+        "summary_status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "publisher": {
+          "$ref": "#/$defs/publisher"
+        },
+        "published_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "category": {
+          "enum": ["edtech", "business", "technical"]
+        },
+        "media": {
+          "const": "article"
+        },
+        "summary_status": {
+          "const": "thin"
+        }
+      }
+    },
+    "briefing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["synthesis", "top"],
+      "properties": {
+        "synthesis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "top": {
+          "description": "Briefing Top N. N is 5. Full cards only, not every card in the week.",
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/fullCard"
+          }
+        }
+      }
+    },
+    "topics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["edtech", "business", "technical"],
+      "properties": {
+        "edtech": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/mainCard" },
+              {
+                "type": "object",
+                "required": ["category"],
+                "properties": { "category": { "const": "edtech" } }
+              }
+            ]
+          }
+        },
+        "business": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/mainCard" },
+              {
+                "type": "object",
+                "required": ["category"],
+                "properties": { "category": { "const": "business" } }
+              }
+            ]
+          }
+        },
+        "technical": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/mainCard" },
+              {
+                "type": "object",
+                "required": ["category"],
+                "properties": { "category": { "const": "technical" } }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

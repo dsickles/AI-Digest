@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dans-digest.local/schema/report.schema.json",
+  "title": "Optional week ops report",
+  "description": "content/reports/{week_id}.json may exist. A missing report is valid and must not fail week-file CI. Extra ops fields are allowed.",
+  "type": "object",
+  "required": ["schema_version", "week_id", "generated_at"],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "week_id": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])$"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

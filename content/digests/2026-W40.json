@@ -1,0 +1,304 @@
+{
+  "schema_version": 1,
+  "week_id": "2026-W40",
+  "timezone": "America/New_York",
+  "week_start": "2026-09-27T00:00:00-04:00",
+  "week_end": "2026-10-03T23:59:59-04:00",
+  "generated_at": "2026-10-04T13:00:00Z",
+  "briefing": {
+    "synthesis": "The week clustered around people putting limits on their tools. Local embedding loops, a one-page model budget, and stricter open-weight tool calling all showed up as ways to keep the work inspectable. A classroom experiment and a long invoice story sit beside that pattern.",
+    "top": [
+      {
+        "id": "simon-willison-local-embedding-loop",
+        "title": "A smaller local embedding loop",
+        "url": "https://simonwillison.net/2026/Sep/29/local-embedding-loop/",
+        "publisher": {
+          "source_id": "simon-willison",
+          "name": "Simon Willison"
+        },
+        "published_at": "2026-09-29T18:22:00Z",
+        "category": "technical",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Simon Willison walks through a smaller local embedding loop that keeps vectors next to the notes they describe. The point is that a weekly archive can be rebuilt without a separate database service. He sketches the sqlite-vec layout and the questions to ask before trusting the nearest neighbors."
+      },
+      {
+        "id": "one-useful-thing-model-budget",
+        "title": "Name the model budget before the use case",
+        "url": "https://www.oneusefulthing.org/p/name-the-model-budget",
+        "publisher": {
+          "source_id": "one-useful-thing",
+          "name": "One Useful Thing"
+        },
+        "published_at": "2026-09-29T13:30:00Z",
+        "category": "business",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "One Useful Thing separates experiment spend from the tools a team already depends on. A shared assistant hides cost until the invoice arrives, so the useful artifact is a one-page cap a manager can read without opening a dashboard. The piece stays on the decision, not on a model leaderboard."
+      },
+      {
+        "id": "how-i-ai-local-migration",
+        "title": "Migrating a small tool with a local model",
+        "url": "https://www.youtube.com/watch?v=h0w1a1samp1",
+        "publisher": {
+          "source_id": "how-i-ai",
+          "name": "How I AI"
+        },
+        "published_at": "2026-10-02T14:00:00Z",
+        "category": "technical",
+        "media": "video",
+        "summary_status": "ok",
+        "summary": "How I AI spends the episode migrating a small internal tool with a local model in the editor. The hosts keep the prompts that survived, drop the ones that did not, and stop to read the diff by hand when the model gets ahead of the code. It is a working session, not a product announcement."
+      },
+      {
+        "id": "import-ai-classroom-model",
+        "title": "A classroom week with one shared model",
+        "url": "https://importai.substack.com/p/classroom-week-shared-model",
+        "publisher": {
+          "source_id": "import-ai",
+          "name": "Import AI"
+        },
+        "published_at": "2026-09-28T15:04:00Z",
+        "category": "edtech",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Import AI looks at a class that kept one shared model beside the reading instead of letting it replace the reading. The note covers what the instructor prepared ahead of time, what students had to cite, and where the model was told to stay quiet. The subject is the week of class, not a lab result."
+      },
+      {
+        "id": "last-week-in-ai-open-weight-tools",
+        "title": "What changed in open-weight tool calling",
+        "url": "https://lastweekin.ai/p/open-weight-tool-calling",
+        "publisher": {
+          "source_id": "last-week-in-ai",
+          "name": "Last Week in AI"
+        },
+        "published_at": "2026-10-03T11:40:00Z",
+        "category": "technical",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Last Week in AI tracks tighter schemas, fewer silent argument drops, and a clearer split between the planner and the tool. The roundup stays on behavior a developer can test rather than on leaderboard movement. Two of the linked notes are worth reading before upgrading a stack."
+      }
+    ]
+  },
+  "topics": {
+    "edtech": [
+      {
+        "id": "import-ai-classroom-model",
+        "title": "A classroom week with one shared model",
+        "url": "https://importai.substack.com/p/classroom-week-shared-model",
+        "publisher": {
+          "source_id": "import-ai",
+          "name": "Import AI"
+        },
+        "published_at": "2026-09-28T15:04:00Z",
+        "category": "edtech",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Import AI looks at a class that kept one shared model beside the reading instead of letting it replace the reading. The note covers what the instructor prepared ahead of time, what students had to cite, and where the model was told to stay quiet. The subject is the week of class, not a lab result."
+      }
+    ],
+    "business": [
+      {
+        "id": "one-useful-thing-model-budget",
+        "title": "Name the model budget before the use case",
+        "url": "https://www.oneusefulthing.org/p/name-the-model-budget",
+        "publisher": {
+          "source_id": "one-useful-thing",
+          "name": "One Useful Thing"
+        },
+        "published_at": "2026-09-29T13:30:00Z",
+        "category": "business",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "One Useful Thing separates experiment spend from the tools a team already depends on. A shared assistant hides cost until the invoice arrives, so the useful artifact is a one-page cap a manager can read without opening a dashboard. The piece stays on the decision, not on a model leaderboard."
+      },
+      {
+        "id": "where-your-ed-at-addon-invoice",
+        "title": "The add-on that arrived as a new invoice",
+        "url": "https://www.wheresyoured.at/the-add-on-invoice/",
+        "publisher": {
+          "source_id": "where-your-ed-at",
+          "name": "Where's Your Ed At"
+        },
+        "published_at": "2026-09-30T16:12:00Z",
+        "category": "business",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Where's Your Ed At follows an enterprise suite that shipped an AI add-on and billed it like a separate product. The post stays with the invoice, the default-on setting, and the admin who could not turn the feature off without a support ticket. It is a packaging story, not a benchmark."
+      },
+      {
+        "id": "nate-b-jones-transcript-pending",
+        "title": "Strategy notes still waiting on a transcript",
+        "url": "https://www.youtube.com/watch?v=n4teb0jones",
+        "publisher": {
+          "source_id": "nate-b-jones",
+          "name": "AI News & Strategy Daily | Nate B Jones"
+        },
+        "published_at": "2026-10-01T21:05:00Z",
+        "category": "business",
+        "media": "video",
+        "summary_status": "transcript_missing",
+        "body": "The summary couldn't be generated this week."
+      }
+    ],
+    "technical": [
+      {
+        "id": "simon-willison-local-embedding-loop",
+        "title": "A smaller local embedding loop",
+        "url": "https://simonwillison.net/2026/Sep/29/local-embedding-loop/",
+        "publisher": {
+          "source_id": "simon-willison",
+          "name": "Simon Willison"
+        },
+        "published_at": "2026-09-29T18:22:00Z",
+        "category": "technical",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Simon Willison walks through a smaller local embedding loop that keeps vectors next to the notes they describe. The point is that a weekly archive can be rebuilt without a separate database service. He sketches the sqlite-vec layout and the questions to ask before trusting the nearest neighbors."
+      },
+      {
+        "id": "how-i-ai-local-migration",
+        "title": "Migrating a small tool with a local model",
+        "url": "https://www.youtube.com/watch?v=h0w1a1samp1",
+        "publisher": {
+          "source_id": "how-i-ai",
+          "name": "How I AI"
+        },
+        "published_at": "2026-10-02T14:00:00Z",
+        "category": "technical",
+        "media": "video",
+        "summary_status": "ok",
+        "summary": "How I AI spends the episode migrating a small internal tool with a local model in the editor. The hosts keep the prompts that survived, drop the ones that did not, and stop to read the diff by hand when the model gets ahead of the code. It is a working session, not a product announcement."
+      },
+      {
+        "id": "last-week-in-ai-open-weight-tools",
+        "title": "What changed in open-weight tool calling",
+        "url": "https://lastweekin.ai/p/open-weight-tool-calling",
+        "publisher": {
+          "source_id": "last-week-in-ai",
+          "name": "Last Week in AI"
+        },
+        "published_at": "2026-10-03T11:40:00Z",
+        "category": "technical",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Last Week in AI tracks tighter schemas, fewer silent argument drops, and a clearer split between the planner and the tool. The roundup stays on behavior a developer can test rather than on leaderboard movement. Two of the linked notes are worth reading before upgrading a stack."
+      }
+    ]
+  },
+  "main_feed": [
+    {
+      "id": "import-ai-classroom-model",
+      "title": "A classroom week with one shared model",
+      "url": "https://importai.substack.com/p/classroom-week-shared-model",
+      "publisher": {
+        "source_id": "import-ai",
+        "name": "Import AI"
+      },
+      "published_at": "2026-09-28T15:04:00Z",
+      "category": "edtech",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "Import AI looks at a class that kept one shared model beside the reading instead of letting it replace the reading. The note covers what the instructor prepared ahead of time, what students had to cite, and where the model was told to stay quiet. The subject is the week of class, not a lab result."
+    },
+    {
+      "id": "one-useful-thing-model-budget",
+      "title": "Name the model budget before the use case",
+      "url": "https://www.oneusefulthing.org/p/name-the-model-budget",
+      "publisher": {
+        "source_id": "one-useful-thing",
+        "name": "One Useful Thing"
+      },
+      "published_at": "2026-09-29T13:30:00Z",
+      "category": "business",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "One Useful Thing separates experiment spend from the tools a team already depends on. A shared assistant hides cost until the invoice arrives, so the useful artifact is a one-page cap a manager can read without opening a dashboard. The piece stays on the decision, not on a model leaderboard."
+    },
+    {
+      "id": "where-your-ed-at-addon-invoice",
+      "title": "The add-on that arrived as a new invoice",
+      "url": "https://www.wheresyoured.at/the-add-on-invoice/",
+      "publisher": {
+        "source_id": "where-your-ed-at",
+        "name": "Where's Your Ed At"
+      },
+      "published_at": "2026-09-30T16:12:00Z",
+      "category": "business",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "Where's Your Ed At follows an enterprise suite that shipped an AI add-on and billed it like a separate product. The post stays with the invoice, the default-on setting, and the admin who could not turn the feature off without a support ticket. It is a packaging story, not a benchmark."
+    },
+    {
+      "id": "nate-b-jones-transcript-pending",
+      "title": "Strategy notes still waiting on a transcript",
+      "url": "https://www.youtube.com/watch?v=n4teb0jones",
+      "publisher": {
+        "source_id": "nate-b-jones",
+        "name": "AI News & Strategy Daily | Nate B Jones"
+      },
+      "published_at": "2026-10-01T21:05:00Z",
+      "category": "business",
+      "media": "video",
+      "summary_status": "transcript_missing",
+      "body": "The summary couldn't be generated this week."
+    },
+    {
+      "id": "simon-willison-local-embedding-loop",
+      "title": "A smaller local embedding loop",
+      "url": "https://simonwillison.net/2026/Sep/29/local-embedding-loop/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-09-29T18:22:00Z",
+      "category": "technical",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "Simon Willison walks through a smaller local embedding loop that keeps vectors next to the notes they describe. The point is that a weekly archive can be rebuilt without a separate database service. He sketches the sqlite-vec layout and the questions to ask before trusting the nearest neighbors."
+    },
+    {
+      "id": "how-i-ai-local-migration",
+      "title": "Migrating a small tool with a local model",
+      "url": "https://www.youtube.com/watch?v=h0w1a1samp1",
+      "publisher": {
+        "source_id": "how-i-ai",
+        "name": "How I AI"
+      },
+      "published_at": "2026-10-02T14:00:00Z",
+      "category": "technical",
+      "media": "video",
+      "summary_status": "ok",
+      "summary": "How I AI spends the episode migrating a small internal tool with a local model in the editor. The hosts keep the prompts that survived, drop the ones that did not, and stop to read the diff by hand when the model gets ahead of the code. It is a working session, not a product announcement."
+    },
+    {
+      "id": "last-week-in-ai-open-weight-tools",
+      "title": "What changed in open-weight tool calling",
+      "url": "https://lastweekin.ai/p/open-weight-tool-calling",
+      "publisher": {
+        "source_id": "last-week-in-ai",
+        "name": "Last Week in AI"
+      },
+      "published_at": "2026-10-03T11:40:00Z",
+      "category": "technical",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "Last Week in AI tracks tighter schemas, fewer silent argument drops, and a clearer split between the planner and the tool. The roundup stays on behavior a developer can test rather than on leaderboard movement. Two of the linked notes are worth reading before upgrading a stack."
+    }
+  ],
+  "footer_aside": [
+    {
+      "id": "bens-bites-release-092",
+      "title": "Release: 0.9.2",
+      "url": "https://www.bensbites.com/p/release-0-9-2",
+      "publisher": {
+        "source_id": "bensbites",
+        "name": "Ben's Bites"
+      },
+      "published_at": "2026-10-02T09:15:00Z",
+      "category": "business",
+      "media": "article",
+      "summary_status": "thin"
+    }
+  ]
+}
