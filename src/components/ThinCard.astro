@@ -1,0 +1,20 @@
+---
+import { formatDate, type ThinCard } from '../lib/weeks';
+
+interface Props {
+  item: ThinCard;
+}
+
+const { item } = Astro.props;
+---
+
+<article class="thin" id={item.id}>
+  <h3 class="card-title">
+    <a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a>
+  </h3>
+  <p class="meta">
+    <span class="publisher">{item.publisher.name}</span>
+    <span aria-hidden="true">·</span>
+    <time datetime={item.published_at}>{formatDate(item.published_at)}</time>
+  </p>
+</article>

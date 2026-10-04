@@ -1,0 +1,27 @@
+---
+import Shell from '../components/Shell.astro';
+import { formatWeekRange, loadWeeks, synthesisExcerpt, weekPath } from '../lib/weeks';
+
+const weeks = loadWeeks();
+---
+
+<Shell title="Dan's Digest — Archive" active="archive" scope="latest">
+  <h2>Archive</h2>
+  {
+    weeks.length === 0 ? (
+      <p class="empty">No past digests yet.</p>
+    ) : (
+      <ol class="archive-list">
+        {weeks.map((week) => (
+          <li class="archive-entry">
+            <article>
+              <h3>{formatWeekRange(week.week_start, week.week_end)}</h3>
+              <p class="excerpt">{synthesisExcerpt(week.briefing.synthesis)}</p>
+              <a class="read-week" href={weekPath(week.week_id, 'briefing')}>Read this week</a>
+            </article>
+          </li>
+        ))}
+      </ol>
+    )
+  }
+</Shell>

@@ -1,46 +1,14 @@
 ---
-const title = "Dan's Digest";
+import Shell from '../components/Shell.astro';
+import WeekBody from '../components/WeekBody.astro';
+import { formatWeekRange, latestWeek, synthesisExcerpt, weekPath } from '../lib/weeks';
+
+const week = latestWeek();
+const title = week ? `Dan's Digest — ${formatWeekRange(week.week_start, week.week_end)}` : "Dan's Digest";
+const description = week ? synthesisExcerpt(week.briefing.synthesis) : undefined;
+const canonical = week ? weekPath(week.week_id, 'briefing') : undefined;
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Dan's weekly AI digest." />
-    <title>{title}</title>
-  </head>
-  <body>
-    <header>
-      <h1>{title}</h1>
-    </header>
-    <main>
-      <section id="digest" aria-label="Digest"></section>
-    </main>
-  </body>
-</html>
-
-<style>
-  :root {
-    color-scheme: light dark;
-    font-family: system-ui, sans-serif;
-  }
-
-  body {
-    margin: 0;
-    padding: 2rem 1.25rem;
-  }
-
-  header,
-  main {
-    max-width: 40rem;
-    margin: 0 auto;
-  }
-
-  h1 {
-    margin: 0 0 1.5rem;
-    font-size: 1.75rem;
-    font-weight: 650;
-    letter-spacing: -0.02em;
-  }
-</style>
+<Shell title={title} description={description} canonical={canonical} week={week} active="briefing" scope="latest">
+  {week ? <WeekBody week={week} view="briefing" /> : <p class="empty">No digest yet.</p>}
+</Shell>

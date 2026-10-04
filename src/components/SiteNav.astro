@@ -1,0 +1,28 @@
+---
+import { latestPath, weekPath, TOPIC_LABELS, TOPICS, type Topic } from '../lib/weeks';
+
+interface Props {
+  active: 'briefing' | Topic | 'archive';
+  scope: 'latest' | 'week';
+  weekId?: string;
+}
+
+const { active, scope, weekId } = Astro.props;
+
+function hrefFor(view: 'briefing' | Topic): string {
+  if (scope === 'week' && weekId) return weekPath(weekId, view);
+  return latestPath(view);
+}
+---
+
+<nav class="nav" aria-label="Sections">
+  <a href={hrefFor('briefing')} aria-current={active === 'briefing' ? 'page' : undefined}>Briefing</a>
+  {
+    TOPICS.map((topic) => (
+      <a href={hrefFor(topic)} aria-current={active === topic ? 'page' : undefined}>
+        {TOPIC_LABELS[topic]}
+      </a>
+    ))
+  }
+  <a href="/archive" aria-current={active === 'archive' ? 'page' : undefined}>Archive</a>
+</nav>

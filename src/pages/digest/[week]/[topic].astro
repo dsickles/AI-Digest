@@ -1,0 +1,49 @@
+---
+import Shell from '../../../components/Shell.astro';
+import WeekBody from '../../../components/WeekBody.astro';
+import {
+  TOPIC_LABELS,
+  TOPICS,
+  formatWeekRange,
+  isTopic,
+  latestWeek,
+  loadWeeks,
+  synthesisExcerpt,
+  type Topic,
+  type Week,
+} from '../../../lib/weeks';
+
+export function getStaticPaths() {
+  return loadWeeks().flatMap((week) =>
+    TOPICS.map((topic) => ({
+      params: { week: week.week_id, topic },
+      props: { week },
+    })),
+  );
+}
+
+interface Props {
+  week: Week;
+}
+
+const { week } = Astro.props;
+const topic = Astro.params.topic;
+if (!topic || !isTopic(topic)) {
+  throw new Error(`unknown topic ${topic}`);
+}
+
+const label = TOPIC_LABELS[topic as Topic];
+const latest = latestWeek();
+const title = `Dan's Digest — ${label} — ${formatWeekRange(week.week_start, week.week_end)}`;
+---
+
+<Shell
+  title={title}
+  description={synthesisExcerpt(week.briefing.synthesis)}
+  week={week}
+  active={topic}
+  scope="week"
+  showLatestLink={latest?.week_id !== week.week_id}
+>
+  <WeekBody week={week} view={topic} />
+</Shell>

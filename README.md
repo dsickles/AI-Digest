@@ -1,6 +1,6 @@
 # Dan's Digest
 
-A static site for Dan's weekly AI digest. The app is [Astro](https://astro.build/) with `output: 'static'`. Weekly files live in `content/digests/`. This repository currently boots an empty shell so you can install and run it on your machine. The shell does not render a week yet. No hosted platform is required.
+A static site for Dan's weekly AI digest. The app is [Astro](https://astro.build/) with `output: 'static'`. Weekly files live in `content/digests/`. The site reads those files at build time and renders the latest week. No LLM, Gemini, Python, or SQLite runs at build or serve time.
 
 ## Prerequisites
 
@@ -23,7 +23,13 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:4321](http://localhost:4321). The page title is **Dan's Digest** and the digest section is empty.
+Open [http://localhost:4321](http://localhost:4321). That is the latest week’s Briefing. With the checked-in file, the week is **2026-W40**.
+
+- **Briefing** shows the synthesis and the Top 5 only.
+- **Edtech**, **Business**, and **Technical** stay in the nav and show that topic’s main list in file order. An empty topic stays on the nav and says so.
+- **Business** includes the degraded card. Its summary is exactly `The summary couldn't be generated this week.`
+- **Also seen this week**, under the lists, is the thin footer link with no summary.
+- **Archive** shows an excerpt and a **Read this week** link to `/digest/2026-W40`.
 
 ## Static build
 
@@ -37,7 +43,7 @@ pnpm preview
 ## Layout
 
 ```
-src/pages/          Astro pages (blank shell)
+src/pages/          Briefing, topic tabs, week permalinks, archive
 public/             Static assets copied as-is
 content/digests/    Week files, `content/digests/{week_id}.json`
 content/reports/    Optional ops reports, `content/reports/{week_id}.json`
@@ -61,3 +67,17 @@ pnpm validate:weeks:self-test
 ```
 
 `pnpm validate:weeks` checks the committed week files and passes a tree that has no report. `pnpm validate:weeks:self-test` does that, then writes a temporary invalid week, expects the checker to reject it, and deletes the temp file. Nothing under `content/` is left invalid.
+
+After `pnpm build`, `pnpm check:reader` reads `dist/` and checks the sample week: file order, Top 5 only, the degraded sentence, the thin footer item, archive’s **Read this week** link, and the absence of status chrome.
+
+## Deploy on Vercel
+
+This is a static Astro site. Do not add `vercel.json`, a Vercel adapter, or environment variables for the reader.
+
+In the Vercel project settings:
+
+- Framework Preset: **Astro**
+- Output Directory: **`dist`**
+- Build Command: `pnpm build` (the Astro preset’s `astro build` writes the same `dist/` directory)
+
+`astro.config.mjs` sets `output: 'static'`. The preset serves `dist/` as static files.

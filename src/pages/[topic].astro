@@ -1,0 +1,42 @@
+---
+import Shell from '../components/Shell.astro';
+import WeekBody from '../components/WeekBody.astro';
+import {
+  TOPIC_LABELS,
+  TOPICS,
+  formatWeekRange,
+  isTopic,
+  latestWeek,
+  synthesisExcerpt,
+  weekPath,
+  type Topic,
+} from '../lib/weeks';
+
+export function getStaticPaths() {
+  return TOPICS.map((topic) => ({ params: { topic } }));
+}
+
+const topic = Astro.params.topic;
+if (!topic || !isTopic(topic)) {
+  throw new Error(`unknown topic ${topic}`);
+}
+
+const week = latestWeek();
+const label = TOPIC_LABELS[topic as Topic];
+const title = week
+  ? `Dan's Digest — ${label} — ${formatWeekRange(week.week_start, week.week_end)}`
+  : `Dan's Digest — ${label}`;
+const description = week ? synthesisExcerpt(week.briefing.synthesis) : undefined;
+const canonical = week ? weekPath(week.week_id, topic) : undefined;
+---
+
+<Shell
+  title={title}
+  description={description}
+  canonical={canonical}
+  week={week}
+  active={topic}
+  scope="latest"
+>
+  {week ? <WeekBody week={week} view={topic} /> : <p class="empty">Nothing in {label} this week.</p>}
+</Shell>
