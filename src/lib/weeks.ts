@@ -1,4 +1,5 @@
 import { basename } from 'node:path';
+import { isPublishedWeek, readerNow, selectLatestPublished } from './week-rules.mjs';
 
 export const TOPICS = ['edtech', 'business', 'technical'] as const;
 
@@ -110,8 +111,13 @@ export function loadWeeks(): Week[] {
   return weeks;
 }
 
+export function publishedWeeks(): Week[] {
+  const now = readerNow();
+  return loadWeeks().filter((week) => isPublishedWeek(week, now));
+}
+
 export function latestWeek(): Week | undefined {
-  return loadWeeks()[0];
+  return selectLatestPublished(loadWeeks(), readerNow());
 }
 
 export function weekPath(weekId: string, view: 'briefing' | Topic): string {

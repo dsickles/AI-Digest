@@ -6,6 +6,9 @@ import { fileURLToPath } from 'node:url';
 import { parse as parseYaml } from 'yaml';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
+import { digestWeekId, isoWeekId, newYorkParts } from '../src/lib/week-rules.mjs';
+
+export { isoWeekId };
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DIGEST_SCHEMA_PATH = join(ROOT, 'schema', 'digest.schema.json');
@@ -89,34 +92,6 @@ function sortKeys(value) {
   return value;
 }
 
-function newYorkParts(iso) {
-  const instant = new Date(iso);
-  if (Number.isNaN(instant.getTime())) return null;
-  const formatted = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/New_York',
-    weekday: 'short',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hourCycle: 'h23',
-  }).formatToParts(instant);
-  const parts = Object.fromEntries(
-    formatted.filter((part) => part.type !== 'literal').map((part) => [part.type, part.value]),
-  );
-  return {
-    weekday: parts.weekday,
-    year: Number(parts.year),
-    month: Number(parts.month),
-    day: Number(parts.day),
-    hour: Number(parts.hour),
-    minute: Number(parts.minute),
-    second: Number(parts.second),
-  };
-}
-
 function newYorkOffset(iso) {
   const instant = new Date(iso);
   if (Number.isNaN(instant.getTime())) return null;
@@ -139,16 +114,6 @@ function writtenOffset(iso) {
   if (iso.endsWith('Z')) return '+00:00';
   const match = /([+-]\d{2}:\d{2})$/.exec(iso);
   return match ? match[1] : null;
-}
-
-export function isoWeekId(year, month, day) {
-  const date = new Date(Date.UTC(year, month - 1, day));
-  const dayNum = date.getUTCDay() || 7;
-  date.setUTCDate(date.getUTCDate() + 4 - dayNum);
-  const isoYear = date.getUTCFullYear();
-  const yearStart = new Date(Date.UTC(isoYear, 0, 1));
-  const week = Math.ceil(((date - yearStart) / 86400000 + 1) / 7);
-  return `${isoYear}-W${String(week).padStart(2, '0')}`;
 }
 
 function civilDayNumber(year, month, day) {
@@ -419,9 +384,47 @@ function runSelfTest(sources) {
     console.error('iso week year-boundary checks failed');
     return false;
   }
+  // Sunday Oct 4, 2026 is inside ISO week W40, and it opens digest week W41.
+  // week_id follows the ending Saturday, not the Sunday's own ISO week.
+  if (isoWeekId(2026, 10, 4) !== '2026-W40' || digestWeekId('2026-10-04T12:00:00-04:00') !== '2026-W41') {
+    console.error('Sunday 2026-10-04 must open digest week 2026-W41');
+    return false;
+  }
+  if (digestWeekId('2026-10-03T12:00:00-04:00') !== '2026-W40') {
+    console.error('Saturday 2026-10-03 must stay in digest week 2026-W40');
+    return false;
+  }
+  if (digestWeekId('2026-10-07T15:00:00-04:00') !== '2026-W41') {
+    console.error('Wednesday 2026-10-07 must stay in digest week 2026-W41');
+    return false;
+  }
 
   const samplePath = join(ROOT, 'content', 'digests', '2026-W40.json');
   const sample = JSON.parse(readFileSync(samplePath, 'utf8'));
+  const sampleStart = newYorkParts(sample.week_start);
+  const sampleEnd = newYorkParts(sample.week_end);
+  const sampleWindowOk =
+    sample.timezone === 'America/New_York' &&
+    sample.week_id === '2026-W40' &&
+    sample.week_start === '2026-09-27T00:00:00-04:00' &&
+    sample.week_end === '2026-10-03T23:59:59-04:00' &&
+    sampleStart?.weekday === 'Sun' &&
+    sampleStart.hour === 0 &&
+    sampleStart.minute === 0 &&
+    sampleStart.second === 0 &&
+    sampleEnd?.weekday === 'Sat' &&
+    sampleEnd.hour === 23 &&
+    sampleEnd.minute === 59 &&
+    sampleEnd.second === 59 &&
+    civilDayNumber(sampleEnd.year, sampleEnd.month, sampleEnd.day) -
+      civilDayNumber(sampleStart.year, sampleStart.month, sampleStart.day) ===
+      6 &&
+    sample.week_id === isoWeekId(sampleEnd.year, sampleEnd.month, sampleEnd.day);
+  if (!sampleWindowOk) {
+    console.error('2026-W40 must be Sunday 2026-09-27 00:00:00 through Saturday 2026-10-03 23:59:59 America/New_York, offset -04:00');
+    return false;
+  }
+  console.log('self-test PASS 2026-W40 Sunday through Saturday window');
   const root = mkdtempSync(join(tmpdir(), 'week-schema-'));
   try {
     const digestDir = join(root, 'digests');

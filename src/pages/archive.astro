@@ -1,8 +1,8 @@
 ---
 import Shell from '../components/Shell.astro';
-import { formatWeekRange, loadWeeks, synthesisExcerpt, weekPath } from '../lib/weeks';
+import { formatWeekRange, publishedWeeks, synthesisExcerpt, weekPath } from '../lib/weeks';
 
-const weeks = loadWeeks();
+const weeks = publishedWeeks();
 ---
 
 <Shell title="Dan's Digest — Archive" active="archive" scope="latest">

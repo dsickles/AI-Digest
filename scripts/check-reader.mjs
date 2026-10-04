@@ -1,16 +1,125 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import {
+  digestWeekId,
+  isCompleteWeek,
+  isPublishedWeek,
+  isoWeekId,
+  newYorkParts,
+  selectLatestPublished,
+} from '../src/lib/week-rules.mjs';
 
 const DEGRADED_BODY = "The summary couldn't be generated this week.";
 const WEEK_ID = '2026-W40';
 const DIST = 'dist';
 
 const week = JSON.parse(readFileSync(`content/digests/${WEEK_ID}.json`, 'utf8'));
+const MIDWEEK = '2026-10-07T15:00:00-04:00';
+// One second before 2026-W41 ends. The build clock stays inside the open week.
+const SITE_AS_OF = '2026-10-10T23:59:58-04:00';
+const CLOCK_SYNTHESIS = 'Clock canary synthesis from the saved file.';
+const OPEN_SYNTHESIS = 'Open week fixture stays off the home page.';
+const DRAFT_SYNTHESIS = 'Half-finished draft fixture stays off the home page.';
+const OLDER_SYNTHESIS = 'Saved older week synthesis from the file. The second sentence stays put too.';
 
 function fail(message) {
   throw new Error(message);
 }
+
+function fixtureCard(id, category, summary, publishedAt) {
+  return {
+    id,
+    title: id,
+    url: `https://example.com/${id}`,
+    publisher: { source_id: 'import-ai', name: 'Import AI' },
+    published_at: publishedAt,
+    category,
+    media: 'article',
+    summary_status: 'ok',
+    summary,
+  };
+}
+
+function completeWeek(weekId, weekStart, weekEnd, synthesis, cards, topics) {
+  return {
+    schema_version: 1,
+    week_id: weekId,
+    timezone: 'America/New_York',
+    week_start: weekStart,
+    week_end: weekEnd,
+    generated_at: '2026-10-04T16:00:00Z',
+    briefing: { synthesis, top: cards },
+    topics,
+    main_feed: [],
+    footer_aside: [],
+  };
+}
+
+function proveWeekRules() {
+  const start = newYorkParts(week.week_start);
+  const end = newYorkParts(week.week_end);
+  if (week.timezone !== 'America/New_York') fail('committed week timezone is not America/New_York');
+  if (week.week_start !== '2026-09-27T00:00:00-04:00' || week.week_end !== '2026-10-03T23:59:59-04:00') {
+    fail('committed week is not Sun Sep 27 00:00:00 through Sat Oct 3 23:59:59, offset -04:00');
+  }
+  if (!start || start.weekday !== 'Sun' || start.hour !== 0 || start.minute !== 0 || start.second !== 0) {
+    fail('week_start is not Sunday 00:00:00 America/New_York');
+  }
+  if (!end || end.weekday !== 'Sat' || end.hour !== 23 || end.minute !== 59 || end.second !== 59) {
+    fail('week_end is not Saturday 23:59:59 America/New_York');
+  }
+  if (week.week_id !== '2026-W40' || week.week_id !== isoWeekId(end.year, end.month, end.day)) {
+    fail('week_id is not the ISO week of the ending Saturday');
+  }
+  if (digestWeekId('2026-10-04T12:00:00-04:00') !== '2026-W41') {
+    fail('Sunday Oct 4, 2026 must be in-progress digest week 2026-W41');
+  }
+  if (digestWeekId('2026-10-03T12:00:00-04:00') !== '2026-W40') {
+    fail('Saturday Oct 3, 2026 must stay in digest week 2026-W40');
+  }
+  if (JSON.stringify(week).includes(DEGRADED_BODY)) fail('committed week includes the degraded sentence');
+  if (week.footer_aside[0]?.title !== 'September sponsors-only newsletter') {
+    fail('committed week is missing the September sponsors footer');
+  }
+
+  const sunday = new Date('2026-10-04T12:00:00-04:00');
+  const wednesday = new Date(MIDWEEK);
+  const sundayAfterClose = new Date('2026-10-11T00:00:00-04:00');
+  if (!isCompleteWeek(week) || !isPublishedWeek(week, sunday)) {
+    fail('2026-W40 must be the published week on Sunday Oct 4, 2026');
+  }
+  const openCards = [1, 2, 3, 4, 5].map((n) =>
+    fixtureCard(`open-week-${n}`, 'technical', `Open week summary ${n} from the file.`, '2026-10-05T15:00:00Z'),
+  );
+  const openWeek = completeWeek(
+    '2026-W41',
+    '2026-10-04T00:00:00-04:00',
+    '2026-10-10T23:59:59-04:00',
+    OPEN_SYNTHESIS,
+    openCards,
+    { edtech: [], business: [], technical: [] },
+  );
+  const halfWeek = completeWeek(
+    '2027-W01',
+    '2026-09-27T00:00:00-04:00',
+    '2026-10-03T23:59:59-04:00',
+    DRAFT_SYNTHESIS,
+    [fixtureCard('half-finished-draft', 'business', 'Draft card summary from the file.', '2026-09-29T15:00:00Z')],
+    { edtech: [], business: [], technical: [] },
+  );
+  if (isPublishedWeek(openWeek, wednesday)) fail('a week that is still open must not count as published');
+  if (isPublishedWeek(halfWeek, wednesday)) fail('a half-finished draft must not count as published');
+  const midweek = selectLatestPublished([halfWeek, openWeek, week], wednesday);
+  if (midweek?.week_id !== WEEK_ID) fail(`mid-week selector picked ${midweek?.week_id ?? 'nothing'}`);
+  const afterClose = selectLatestPublished([week, openWeek], sundayAfterClose);
+  if (afterClose?.week_id !== '2026-W41') {
+    fail('a completed week must become latest once its Saturday has ended');
+  }
+  console.log('week rules passed for 2026-W40, Sunday Oct 4, and Wednesday Oct 7');
+}
+
+proveWeekRules();
 
 function decode(value) {
   return value
@@ -166,6 +275,12 @@ if (!pages.business.includes('rel="canonical" href="/digest/2026-W40/business"')
 }
 if (!pages.home.includes('Week of Sep 27 – Oct 3, 2026')) fail('home is missing the week range');
 if (!decode(pages.home).includes(week.briefing.synthesis)) fail('briefing is missing the synthesis');
+if (!decode(pages.home).includes('September sponsors-only newsletter')) {
+  fail('home is missing the September sponsors footer');
+}
+for (const [name, html] of Object.entries(pages)) {
+  if (html.includes(DEGRADED_BODY)) fail(`${name} includes the degraded sentence`);
+}
 
 const homeParts = splitFooter(pages.home);
 assertOrder(homeParts.main, 'card', week.briefing.top, 'briefing');
@@ -254,14 +369,100 @@ const fixture = {
   footer_aside: [],
 };
 
-function rebuild() {
-  const result = spawnSync('pnpm', ['exec', 'astro', 'build'], { stdio: 'inherit' });
+function rebuild(extraEnv = {}) {
+  const env = { ...process.env, ...extraEnv };
+  if (!Object.hasOwn(extraEnv, 'DIGEST_AS_OF')) delete env.DIGEST_AS_OF;
+  const result = spawnSync('pnpm', ['exec', 'astro', 'build'], { stdio: 'inherit', env });
   if (result.status !== 0) fail('astro build failed');
 }
 
-writeFileSync(fixturePath, `${JSON.stringify(fixture, null, 2)}\n`);
+const olderEdtech = fixtureCard(
+  'saved-edtech',
+  'edtech',
+  'Saved edtech summary from the file.',
+  '2026-09-21T15:00:00Z',
+);
+const olderBusiness = fixtureCard(
+  'saved-business',
+  'business',
+  'Saved business summary from the file.',
+  '2026-09-22T15:00:00Z',
+);
+const olderTechnical = fixtureCard(
+  'saved-technical',
+  'technical',
+  'Saved technical summary from the file.',
+  '2026-09-23T15:00:00Z',
+);
+const olderTechnicalExtra = fixtureCard(
+  'saved-technical-extra',
+  'technical',
+  'Saved technical extra summary from the file.',
+  '2026-09-24T15:00:00Z',
+);
+const olderTechnicalThird = fixtureCard(
+  'saved-technical-third',
+  'technical',
+  'Saved technical third summary from the file.',
+  '2026-09-25T15:00:00Z',
+);
+const olderWeek = completeWeek(
+  '2026-W39',
+  '2026-09-20T00:00:00-04:00',
+  '2026-09-26T23:59:59-04:00',
+  OLDER_SYNTHESIS,
+  [olderEdtech, olderBusiness, olderTechnical, olderTechnicalExtra, olderTechnicalThird],
+  {
+    edtech: [olderEdtech],
+    business: [olderBusiness],
+    technical: [olderTechnical, olderTechnicalExtra, olderTechnicalThird],
+  },
+);
+const openWeek = completeWeek(
+  '2026-W41',
+  '2026-10-04T00:00:00-04:00',
+  '2026-10-10T23:59:59-04:00',
+  OPEN_SYNTHESIS,
+  [1, 2, 3, 4, 5].map((n) =>
+    fixtureCard(`open-week-${n}`, 'technical', `Open week summary ${n} from the file.`, '2026-10-05T15:00:00Z'),
+  ),
+  { edtech: [], business: [], technical: [] },
+);
+const halfWeek = completeWeek(
+  '2027-W01',
+  '2026-09-27T00:00:00-04:00',
+  '2026-10-03T23:59:59-04:00',
+  DRAFT_SYNTHESIS,
+  [fixtureCard('half-finished-draft', 'business', 'Draft card summary from the file.', '2026-09-29T15:00:00Z')],
+  { edtech: [], business: [], technical: [] },
+);
+const clockWeek = completeWeek(
+  '2020-W01',
+  '2020-01-05T00:00:00-05:00',
+  SITE_AS_OF,
+  CLOCK_SYNTHESIS,
+  [1, 2, 3, 4, 5].map((n) =>
+    fixtureCard(`clock-canary-${n}`, 'technical', `Clock canary summary ${n} from the file.`, '2020-01-06T15:00:00Z'),
+  ),
+  { edtech: [], business: [], technical: [] },
+);
+if (!isPublishedWeek(clockWeek, new Date(SITE_AS_OF))) fail('clock canary should be published at the build clock');
+if (isPublishedWeek(clockWeek, new Date(new Date(SITE_AS_OF).getTime() - 1000))) {
+  fail('clock canary should still be open a second before the build clock');
+}
+const fixtureFiles = {
+  [fixturePath]: fixture,
+  'content/digests/2026-W39.json': olderWeek,
+  'content/digests/2026-W41.json': openWeek,
+  'content/digests/2027-W01.json': halfWeek,
+  'content/digests/2020-W01.json': clockWeek,
+};
+
+for (const [path, doc] of Object.entries(fixtureFiles)) {
+  writeFileSync(path, `${JSON.stringify(doc, null, 2)}\n`);
+}
 try {
-  rebuild();
+  rebuild({ DIGEST_AS_OF: SITE_AS_OF });
   const emptyEdtech = readPage('digest/1999-W01/edtech/index.html');
   const emptyTechnical = readPage('digest/1999-W01/technical/index.html');
   const filledBusiness = readPage('digest/1999-W01/business/index.html');
@@ -278,16 +479,91 @@ try {
       if (!html.includes(`>${label}<`)) fail(`a zero-item week hid the ${label} tab`);
     }
   }
-  if (!decode(readPage('index.html')).includes(week.briefing.synthesis)) {
+  const homeDuringWeek = decode(readPage('index.html'));
+  if (!homeDuringWeek.includes(week.briefing.synthesis)) {
     fail('the empty fixture replaced the latest week');
   }
+  if (!homeDuringWeek.includes('Week of Sep 27 – Oct 3, 2026')) {
+    fail('mid-week home left the last published week');
+  }
+  if (
+    homeDuringWeek.includes(OPEN_SYNTHESIS) ||
+    homeDuringWeek.includes(DRAFT_SYNTHESIS) ||
+    homeDuringWeek.includes(OLDER_SYNTHESIS) ||
+    homeDuringWeek.includes(CLOCK_SYNTHESIS)
+  ) {
+    fail('mid-week home showed an open week, a half-finished draft, or an older week');
+  }
+  if (!readPage('index.html').includes('rel="canonical" href="/digest/2026-W40"')) {
+    fail('mid-week home canonical left 2026-W40');
+  }
+
+  const archiveDuringWeek = decode(readPage('archive/index.html'));
+  if (
+    !archiveDuringWeek.includes('href="/digest/2026-W40"') ||
+    !archiveDuringWeek.includes('href="/digest/2026-W39"') ||
+    !archiveDuringWeek.includes('href="/digest/2020-W01"')
+  ) {
+    fail('archive must link the published weeks, including the clock canary');
+  }
+  if (!archiveDuringWeek.includes(CLOCK_SYNTHESIS)) fail('archive clock canary does not match the saved file');
+  if (archiveDuringWeek.includes('/digest/2026-W41') || archiveDuringWeek.includes('/digest/2027-W01')) {
+    fail('archive listed an open week or a half-finished draft');
+  }
+  if (!archiveDuringWeek.includes('Saved older week synthesis from the file.')) {
+    fail('archive excerpt for the older week does not match the saved file');
+  }
+  if (!archiveDuringWeek.includes('Week of Sep 20 – Sep 26, 2026')) {
+    fail('archive is missing the older week range');
+  }
+
+  const olderBriefing = decode(readPage('digest/2026-W39/index.html'));
+  const olderEdtechPage = decode(readPage('digest/2026-W39/edtech/index.html'));
+  const olderBusinessPage = decode(readPage('digest/2026-W39/business/index.html'));
+  const olderTechnicalPage = decode(readPage('digest/2026-W39/technical/index.html'));
+  if (!olderBriefing.includes(OLDER_SYNTHESIS)) fail('older briefing does not render the saved synthesis');
+  if (olderBriefing.includes(week.briefing.synthesis)) fail('older briefing picked up the latest week synthesis');
+  for (const saved of [
+    olderEdtech,
+    olderBusiness,
+    olderTechnical,
+    olderTechnicalExtra,
+    olderTechnicalThird,
+  ]) {
+    if (!olderBriefing.includes(saved.summary)) fail(`older briefing dropped the saved summary for ${saved.id}`);
+  }
+  if (!olderEdtechPage.includes(olderEdtech.summary) || olderEdtechPage.includes(olderBusiness.summary)) {
+    fail('older Edtech tab did not render the saved topic list');
+  }
+  if (!olderBusinessPage.includes(olderBusiness.summary) || olderBusinessPage.includes(olderEdtech.summary)) {
+    fail('older Business tab did not render the saved topic list');
+  }
+  for (const saved of [olderTechnical, olderTechnicalExtra, olderTechnicalThird]) {
+    if (!olderTechnicalPage.includes(saved.summary)) fail(`older Technical tab dropped ${saved.id}`);
+  }
+  if (olderTechnicalPage.includes(olderBusiness.summary)) {
+    fail('older Technical tab included a saved card from another topic');
+  }
+  for (const html of [olderBriefing, olderEdtechPage, olderBusinessPage, olderTechnicalPage]) {
+    for (const label of tabLabels) {
+      if (!html.includes(`>${label}<`)) fail(`older week hid the ${label} tab`);
+    }
+  }
+  const olderNav = readPage('digest/2026-W39/index.html');
+  for (const href of ['/digest/2026-W39/edtech', '/digest/2026-W39/business', '/digest/2026-W39/technical']) {
+    if (!olderNav.includes(`href="${href}"`)) fail(`older week tab does not link to ${href}`);
+  }
+  if (!olderNav.includes('← Latest week')) fail('older week is missing the link back to the latest week');
 } finally {
-  rmSync(fixturePath, { force: true });
+  for (const path of Object.keys(fixtureFiles)) rmSync(path, { force: true });
   rebuild();
 }
 
-if (existsSync(fixturePath) || existsSync('dist/digest/1999-W01')) {
-  fail('empty-topic fixture was left behind');
+if (
+  Object.keys(fixtureFiles).some((path) => existsSync(path)) ||
+  ['1999-W01', '2026-W39', '2026-W41', '2027-W01', '2020-W01'].some((id) => existsSync(`dist/digest/${id}`))
+) {
+  fail('throwaway week fixtures were left behind');
 }
 const rebuiltShown = decode(readPage('business/index.html')).split(DEGRADED_BODY).length - 1;
 if (rebuiltShown !== degradedBusiness.length) {
