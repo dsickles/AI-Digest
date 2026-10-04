@@ -33,3 +33,30 @@ jobs:
 
       - name: Prove an invalid week file fails
         run: pnpm validate:weeks:self-test
+
+  site:
+    name: static site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.3
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Check the reader against the sample week
+        run: pnpm check:reader

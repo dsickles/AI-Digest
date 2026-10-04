@@ -1,0 +1,181 @@
+:root {
+  color-scheme: light dark;
+  --text: CanvasText;
+  --bg: Canvas;
+  --muted: color-mix(in srgb, CanvasText 68%, Canvas);
+  --line: color-mix(in srgb, CanvasText 18%, Canvas);
+  --play: color-mix(in srgb, CanvasText 42%, Canvas);
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+body {
+  margin: 0;
+  padding: 2rem 1.25rem;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.wrap {
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+h1 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h2 {
+  margin: 0 0 1rem;
+  font-size: 1.375rem;
+}
+
+h3 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.week-range {
+  margin: 0.4rem 0 0;
+}
+
+.updated {
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.back {
+  margin: 1rem 0 0;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.85rem;
+  margin: 1.1rem 0 1.75rem;
+}
+
+.nav a {
+  color: inherit;
+  text-decoration: none;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  border-bottom: 2px solid transparent;
+}
+
+.nav a[aria-current='page'] {
+  font-weight: 650;
+  border-bottom-color: currentColor;
+}
+
+a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.synthesis {
+  margin: 0 0 1.75rem;
+  font-size: 1.0625rem;
+}
+
+.stories {
+  margin: 0;
+  padding-left: 1.4rem;
+}
+
+.stories > li + li,
+.thin-list > li + li {
+  margin-top: 1.5rem;
+}
+
+.stories > li::marker {
+  font-weight: 650;
+}
+
+.card-title a {
+  color: inherit;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.45rem;
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.play {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--play);
+  flex: none;
+}
+
+.summary {
+  margin: 0.5rem 0 0;
+}
+
+#also-seen {
+  margin-top: 2.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.thin-list,
+.archive-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.archive-entry + .archive-entry {
+  margin-top: 1.75rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--line);
+}
+
+.excerpt {
+  margin: 0.6rem 0 0.75rem;
+}
+
+.read-week {
+  font-weight: 650;
+  color: inherit;
+}
+
+.empty {
+  margin: 0;
+  color: var(--muted);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

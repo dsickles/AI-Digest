@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import SiteNav from './SiteNav.astro';
+import { formatDate, formatWeekRange, type Topic, type Week } from '../lib/weeks';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  week?: Week;
+  active: 'briefing' | Topic | 'archive';
+  scope: 'latest' | 'week';
+  showLatestLink?: boolean;
+}
+
+const { title, description, canonical, week, active, scope, showLatestLink = false } = Astro.props;
+---
+
+<Base title={title} description={description} canonical={canonical}>
+  <header>
+    <h1><a href="/">Dan's Digest</a></h1>
+    {
+      week && (
+        <>
+          <p class="week-range">{formatWeekRange(week.week_start, week.week_end)}</p>
+          <p class="updated">
+            <time datetime={week.generated_at}>Updated {formatDate(week.generated_at)}</time>
+          </p>
+        </>
+      )
+    }
+    {showLatestLink && (
+      <p class="back"><a href="/">← Latest week</a></p>
+    )}
+  </header>
+  <SiteNav active={active} scope={scope} weekId={week?.week_id} />
+  <main>
+    <slot />
+  </main>
+</Base>

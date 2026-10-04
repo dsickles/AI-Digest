@@ -12,7 +12,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "validate:weeks": "node scripts/validate-weeks.mjs",
-    "validate:weeks:self-test": "node scripts/validate-weeks.mjs --self-test"
+    "validate:weeks:self-test": "node scripts/validate-weeks.mjs --self-test",
+    "check:reader": "node scripts/check-reader.mjs"
   },
   "dependencies": {
     "astro": "^7.3.5"

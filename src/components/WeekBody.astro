@@ -1,0 +1,48 @@
+---
+import Card from './Card.astro';
+import ThinCard from './ThinCard.astro';
+import TopicSection from './TopicSection.astro';
+import { TOPIC_LABELS, type Topic, type Week } from '../lib/weeks';
+
+interface Props {
+  week: Week;
+  view: 'briefing' | Topic;
+}
+
+const { week, view } = Astro.props;
+const topicLabel = view === 'briefing' ? '' : TOPIC_LABELS[view];
+const topicCards = view === 'briefing' ? [] : week.topics[view];
+---
+
+{
+  view === 'briefing' ? (
+    <section id="briefing" aria-labelledby="briefing-heading">
+      <p class="synthesis">{week.briefing.synthesis}</p>
+      <h2 id="briefing-heading">Top {week.briefing.top.length} this week</h2>
+      <ol class="stories">
+        {week.briefing.top.map((card) => (
+          <li>
+            <Card card={card} />
+          </li>
+        ))}
+      </ol>
+    </section>
+  ) : (
+    <TopicSection label={topicLabel} cards={topicCards} />
+  )
+}
+
+{
+  week.footer_aside.length > 0 && (
+    <aside id="also-seen">
+      <h2>Also seen this week</h2>
+      <ul class="thin-list">
+        {week.footer_aside.map((item) => (
+          <li>
+            <ThinCard item={item} />
+          </li>
+        ))}
+      </ul>
+    </aside>
+  )
+}

@@ -1,0 +1,28 @@
+---
+import Card from './Card.astro';
+import type { MainCard } from '../lib/weeks';
+
+interface Props {
+  label: string;
+  cards: MainCard[];
+}
+
+const { label, cards } = Astro.props;
+---
+
+<section class="topic" aria-labelledby="topic-heading">
+  <h2 id="topic-heading">{label}</h2>
+  {
+    cards.length === 0 ? (
+      <p class="empty">Nothing in {label} this week.</p>
+    ) : (
+      <ol class="stories">
+        {cards.map((card) => (
+          <li>
+            <Card card={card} />
+          </li>
+        ))}
+      </ol>
+    )
+  }
+</section>

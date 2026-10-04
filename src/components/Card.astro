@@ -1,0 +1,31 @@
+---
+import PlayIcon from './PlayIcon.astro';
+import { formatDate, type MainCard } from '../lib/weeks';
+
+interface Props {
+  card: MainCard;
+}
+
+const { card } = Astro.props;
+const video = card.media === 'video';
+---
+
+<article class="card" id={card.id}>
+  <h3 class="card-title">
+    <a href={card.url} target="_blank" rel="noopener noreferrer">{card.title}</a>
+  </h3>
+  <p class="meta">
+    <span class="publisher">{card.publisher.name}</span>
+    {
+      video && (
+        <>
+          <PlayIcon />
+          <span class="visually-hidden">Video</span>
+        </>
+      )
+    }
+    <span aria-hidden="true">·</span>
+    <time datetime={card.published_at}>{formatDate(card.published_at)}</time>
+  </p>
+  {card.summary_status === 'ok' ? <p class="summary">{card.summary}</p> : <p class="summary">{card.body}</p>}
+</article>
