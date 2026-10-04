@@ -328,11 +328,10 @@ function validateReportDocument(doc, filename) {
   return [];
 }
 
-export function validateArchive(contentDir, sources, { requireExamples = true } = {}) {
+export function validateArchive(contentDir, sources) {
   const digestPaths = jsonFiles(join(contentDir, 'digests'));
   const reportPaths = jsonFiles(join(contentDir, 'reports'));
   const errors = [];
-  const validDocs = [];
 
   if (digestPaths.length === 0) {
     errors.push(`${contentDir}/digests has no week json files`);
@@ -346,22 +345,7 @@ export function validateArchive(contentDir, sources, { requireExamples = true } 
       continue;
     }
     const fileErrors = validateDigestDocument(loaded.doc, label, sources);
-    if (fileErrors.length === 0) validDocs.push(loaded.doc);
     for (const error of fileErrors) errors.push(`${label}: ${error}`);
-  }
-
-  // The checked-in archive must keep a thin footer item and an in-place
-  // degraded card so a later reader has LOCKED-01 examples to render.
-  // --file checks one document and does not use this rule.
-  if (requireExamples) {
-    const hasThin = validDocs.some((doc) => doc.footer_aside.some((card) => card.summary_status === 'thin'));
-    const hasDegraded = validDocs.some((doc) =>
-      doc.main_feed.some((card) => IN_PLACE_STATUSES.has(card.summary_status) && card.body === DEGRADED_BODY),
-    );
-    if (!hasThin) errors.push('archive needs at least one thin footer_aside item');
-    if (!hasDegraded) {
-      errors.push(`archive needs at least one in-place degraded main card with body ${JSON.stringify(DEGRADED_BODY)}`);
-    }
   }
 
   for (const path of reportPaths) {
@@ -399,6 +383,24 @@ function validateFile(path, sources) {
   const loaded = readJson(path);
   if (loaded.error) return [loaded.error];
   return validateDigestDocument(loaded.doc, basename(path), sources);
+}
+
+function withLockedDegradedExample(doc) {
+  const week = structuredClone(doc);
+  const card = {
+    id: 'locked-degraded-example',
+    title: 'Locked degraded example',
+    url: 'https://simonwillison.net/2026/Sep/28/locked-degraded-example/',
+    publisher: { source_id: 'simon-willison', name: 'Simon Willison' },
+    published_at: week.week_start,
+    category: 'technical',
+    media: 'article',
+    summary_status: 'api_error',
+    body: DEGRADED_BODY,
+  };
+  week.topics.technical.push(card);
+  week.main_feed = [...week.topics.edtech, ...week.topics.business, ...week.topics.technical];
+  return week;
 }
 
 function runSelfTest(sources) {
@@ -467,10 +469,73 @@ function runSelfTest(sources) {
     rmSync(root, { recursive: true, force: true });
   }
 
+  const exampleDir = mkdtempSync(join(tmpdir(), 'week-schema-example-'));
+  try {
+    const example = withLockedDegradedExample(sample);
+    const examplePath = join(exampleDir, '2026-W40.json');
+    writeFileSync(examplePath, JSON.stringify(example));
+    const child = spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--file', examplePath], {
+      encoding: 'utf8',
+      cwd: ROOT,
+    });
+    if (child.status !== 0) {
+      console.error('self-test: locked degraded example unexpectedly failed');
+      console.error(child.stdout);
+      console.error(child.stderr);
+      return false;
+    }
+    console.log('self-test PASS locked degraded example');
+
+    const exampleRoot = mkdtempSync(join(tmpdir(), 'week-schema-example-archive-'));
+    try {
+      const digestDir = join(exampleRoot, 'digests');
+      mkdirSync(digestDir, { recursive: true });
+      writeFileSync(join(digestDir, '2026-W40.json'), JSON.stringify(example));
+      const archived = validateArchive(exampleRoot, sources);
+      if (archived.errors.length !== 0) {
+        console.error('self-test: an archive whose only week has a locked degraded card must pass');
+        for (const error of archived.errors) console.error(`- ${error}`);
+        return false;
+      }
+      console.log('self-test PASS archive with locked degraded example');
+    } finally {
+      rmSync(exampleRoot, { recursive: true, force: true });
+    }
+  } finally {
+    rmSync(exampleDir, { recursive: true, force: true });
+  }
+
+  const healthyRoot = mkdtempSync(join(tmpdir(), 'week-schema-healthy-'));
+  try {
+    const digestDir = join(healthyRoot, 'digests');
+    mkdirSync(digestDir, { recursive: true });
+    const healthy = structuredClone(sample);
+    for (const topic of TOPIC_ORDER) {
+      healthy.topics[topic] = healthy.topics[topic].filter((card) => card.summary_status === 'ok');
+    }
+    healthy.main_feed = [...healthy.topics.edtech, ...healthy.topics.business, ...healthy.topics.technical];
+    healthy.footer_aside = [];
+    const mainById = new Map(healthy.main_feed.map((card) => [card.id, card]));
+    healthy.briefing.top = healthy.briefing.top
+      .filter((card) => mainById.has(card.id))
+      .map((card) => mainById.get(card.id));
+    writeFileSync(join(digestDir, '2026-W40.json'), JSON.stringify(healthy));
+    const archived = validateArchive(healthyRoot, sources);
+    if (archived.errors.length !== 0) {
+      console.error('self-test: a healthy week with no degraded card and no thin footer must pass');
+      for (const error of archived.errors) console.error(`- ${error}`);
+      return false;
+    }
+    console.log('self-test PASS healthy week without example cards');
+  } finally {
+    rmSync(healthyRoot, { recursive: true, force: true });
+  }
+
   const cases = [
     {
       name: 'degraded body is not the locked copy',
       filename: '2026-W40.json',
+      base: withLockedDegradedExample,
       mutate(doc) {
         for (const list of [doc.main_feed, doc.topics.business, doc.topics.edtech, doc.topics.technical]) {
           for (const card of list) {
@@ -508,7 +573,7 @@ function runSelfTest(sources) {
     const dir = mkdtempSync(join(tmpdir(), 'week-schema-bad-'));
     const path = join(dir, testCase.filename);
     try {
-      const doc = structuredClone(sample);
+      const doc = testCase.base ? testCase.base(sample) : structuredClone(sample);
       testCase.mutate(doc);
       writeFileSync(path, JSON.stringify(doc));
       const child = spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--file', path], {

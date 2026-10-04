@@ -119,6 +119,17 @@ const pages = {
 
 const htmlFiles = walk(DIST);
 const allHtml = htmlFiles.map((path) => readFileSync(path, 'utf8')).join('\n');
+const readerFacing = [
+  week.briefing.synthesis,
+  ...[...week.main_feed, ...week.footer_aside, ...week.briefing.top].flatMap((card) => [
+    card.title,
+    card.summary,
+    card.body,
+    card.publisher.name,
+  ]),
+]
+  .filter((value) => typeof value === 'string')
+  .join('\n');
 
 for (const banned of [
   'transcript_missing',
@@ -131,7 +142,9 @@ for (const banned of [
   'Gemini',
   'GEMINI',
 ]) {
-  if (allHtml.includes(banned)) fail(`built site contains status chrome: ${banned}`);
+  if (allHtml.includes(banned) && !readerFacing.includes(banned)) {
+    fail(`built site contains status chrome: ${banned}`);
+  }
 }
 
 if (/class="[^"]*(status|banner|notice|pipeline)/i.test(allHtml)) {
@@ -163,20 +176,19 @@ for (const card of week.briefing.top) assertCard(homeParts.main, card);
 assertOrder(homeParts.footer, 'thin', week.footer_aside, 'home footer');
 for (const item of week.footer_aside) assertCard(homeParts.footer, item);
 
-for (const title of [
-  'The add-on that arrived as a new invoice',
-  'Strategy notes still waiting on a transcript',
-]) {
-  if (homeParts.main.includes(title)) fail(`briefing main list includes ${title}`);
-}
-
 const businessParts = splitFooter(pages.business);
 assertOrder(businessParts.main, 'card', week.topics.business, 'business');
 for (const card of week.topics.business) assertCard(businessParts.main, card);
 assertOrder(businessParts.footer, 'thin', week.footer_aside, 'business footer');
-if (businessParts.main.includes(week.footer_aside[0].id)) fail('thin item was placed in the business list');
-if (decode(businessParts.main).split(DEGRADED_BODY).length !== 2) {
-  fail('business page should show the degraded sentence once');
+if (week.footer_aside[0] && businessParts.main.includes(week.footer_aside[0].id)) {
+  fail('thin item was placed in the business list');
+}
+const degradedBusiness = week.topics.business.filter((card) => card.summary_status !== 'ok');
+const degradedShown = decode(businessParts.main).split(DEGRADED_BODY).length - 1;
+if (degradedShown !== degradedBusiness.length) {
+  fail(
+    `business page showed the degraded sentence ${degradedShown} times; the file has ${degradedBusiness.length}`,
+  );
 }
 
 const edtechParts = splitFooter(pages.edtech);
@@ -197,10 +209,8 @@ if (!pages.archive.includes('>Read this week</a>')) fail('archive path must be l
 if (!pages.archive.includes(`href="/digest/${WEEK_ID}"`)) fail('archive path does not open the week');
 if (pages.archive.includes('class="summary"')) fail('archive invented a card summary');
 
-const degraded = week.topics.business.find((card) => card.summary_status !== 'ok');
 const thin = week.footer_aside[0];
-if (!degraded || degraded.body !== DEGRADED_BODY) fail('sample degraded card changed');
-if (thin.summary_status !== 'thin') fail('sample footer item is not thin');
+if (thin && thin.summary_status !== 'thin') fail('footer item is not thin');
 
 // Throwaway build fixture. Not a sample week: it is deleted, and dist is rebuilt from the real files.
 const fixturePath = 'content/digests/1999-W01.json';
@@ -226,6 +236,17 @@ const fixture = {
         summary_status: 'ok',
         summary: 'Fixture summary.',
       },
+      {
+        id: 'locked-degraded-fixture',
+        title: 'Locked degraded fixture',
+        url: 'https://example.com/locked-degraded-fixture',
+        publisher: { source_id: 'import-ai', name: 'Import AI' },
+        published_at: '1999-01-05T15:00:00Z',
+        category: 'business',
+        media: 'article',
+        summary_status: 'api_error',
+        body: DEGRADED_BODY,
+      },
     ],
     technical: [],
   },
@@ -248,6 +269,10 @@ try {
   if (!emptyTechnical.includes('Nothing in Technical this week.')) fail('empty Technical tab has no empty state');
   if (filledBusiness.includes('Nothing in Business this week.')) fail('Business showed an empty state while it had a card');
   if (!filledBusiness.includes('Fixture card')) fail('Business dropped its only card');
+  if (!decode(filledBusiness).includes(DEGRADED_BODY)) {
+    fail('degraded fixture card did not render the locked sentence');
+  }
+  if (filledBusiness.includes('api_error')) fail('degraded fixture card shows its status name');
   for (const html of [emptyEdtech, emptyTechnical, filledBusiness]) {
     for (const label of tabLabels) {
       if (!html.includes(`>${label}<`)) fail(`a zero-item week hid the ${label} tab`);
@@ -264,8 +289,9 @@ try {
 if (existsSync(fixturePath) || existsSync('dist/digest/1999-W01')) {
   fail('empty-topic fixture was left behind');
 }
-if (!decode(readPage('business/index.html')).includes(DEGRADED_BODY)) {
-  fail('rebuilt sample business page lost the degraded card');
+const rebuiltShown = decode(readPage('business/index.html')).split(DEGRADED_BODY).length - 1;
+if (rebuiltShown !== degradedBusiness.length) {
+  fail('rebuilt business page does not match the week file degraded cards');
 }
 
 console.log(`reader check passed for ${WEEK_ID}`);
