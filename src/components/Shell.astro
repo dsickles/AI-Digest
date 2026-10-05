@@ -1,10 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
 import SiteNav from './SiteNav.astro';
+import { documentTitle, SITE_TITLE } from '../lib/site';
 import { formatDate, formatWeekRange, type Topic, type Week } from '../lib/weeks';
 
 interface Props {
-  title: string;
+  titleParts?: string[];
   description?: string;
   canonical?: string;
   week?: Week;
@@ -13,12 +14,13 @@ interface Props {
   showLatestLink?: boolean;
 }
 
-const { title, description, canonical, week, active, scope, showLatestLink = false } = Astro.props;
+const { titleParts = [], description, canonical, week, active, scope, showLatestLink = false } = Astro.props;
+const title = documentTitle(...titleParts);
 ---
 
 <Base title={title} description={description} canonical={canonical}>
   <header>
-    <h1><a href="/">Dan's Digest</a></h1>
+    <h1><a href="/">{SITE_TITLE}</a></h1>
     {
       week && (
         <>

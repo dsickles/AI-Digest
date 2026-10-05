@@ -34,11 +34,11 @@ if (!topic || !isTopic(topic)) {
 
 const label = TOPIC_LABELS[topic as Topic];
 const latest = latestWeek();
-const title = `Dan's Digest — ${label} — ${formatWeekRange(week.week_start, week.week_end)}`;
+const titleParts = [label, formatWeekRange(week.week_start, week.week_end)];
 ---
 
 <Shell
-  title={title}
+  titleParts={titleParts}
   description={synthesisExcerpt(week.briefing.synthesis)}
   week={week}
   active={topic}

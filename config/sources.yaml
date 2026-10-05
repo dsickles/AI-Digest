@@ -15,7 +15,10 @@
 #   home_url      Optional explicit publisher home URL (RSS rows; falls back to
 #                 canonical_url origin in the renderer if omitted)
 #   display_name  Human-readable publisher name shown in the digest
-#   tag           Topic hint for later categorization (Phase 3) — not stored on items (D-02)
+#   tag           Section id: edtech, business, technical, or policy-and-safety.
+#                 edtech and policy-and-safety are the card category. A week file
+#                 must use that category for those sources.
+#   ai_only       Optional. When true, an item that is not about AI stays out of a digest.
 #   enabled       true → fetched on every run; false → skipped silently
 sources:
   - id: simon-willison
@@ -67,4 +70,75 @@ sources:
     channel_url: https://www.youtube.com/@NateBJones
     display_name: AI News & Strategy Daily | Nate B Jones
     tag: business
+    enabled: true
+  - id: hechinger-report
+    type: rss
+    url: https://hechingerreport.org/tags/artificial-intelligence/feed/
+    home_url: https://hechingerreport.org/
+    display_name: Hechinger Report
+    tag: edtech
+    enabled: true
+  - id: educause-review
+    type: rss
+    url: https://er.educause.edu/channels/emerging-technologies-trends/rss
+    home_url: https://er.educause.edu/
+    display_name: EDUCAUSE Review
+    tag: edtech
+    ai_only: true
+    enabled: true
+  - id: education-week
+    type: rss
+    url: https://www.edweek.org/technology/artificial-intelligence.rss
+    home_url: https://www.edweek.org/
+    display_name: Education Week
+    tag: edtech
+    enabled: true
+  - id: philippa-hardman
+    type: rss
+    url: https://drphilippahardman.substack.com/feed
+    home_url: https://drphilippahardman.substack.com/
+    display_name: Philippa Hardman
+    tag: edtech
+    enabled: true
+  - id: ai-as-normal-technology
+    type: rss
+    url: https://www.normaltech.ai/feed
+    home_url: https://www.normaltech.ai/
+    display_name: AI as Normal Technology
+    tag: business
+    enabled: true
+  - id: chinai
+    type: rss
+    url: https://chinai.substack.com/feed
+    home_url: https://chinai.substack.com/
+    display_name: ChinAI
+    tag: business
+    enabled: true
+  - id: interconnects
+    type: rss
+    url: https://www.interconnects.ai/feed
+    home_url: https://www.interconnects.ai/
+    display_name: Interconnects
+    tag: technical
+    enabled: true
+  - id: ahead-of-ai
+    type: rss
+    url: https://magazine.sebastianraschka.com/feed
+    home_url: https://magazine.sebastianraschka.com/
+    display_name: Ahead of AI
+    tag: technical
+    enabled: true
+  - id: metr
+    type: rss
+    url: https://metr.org/feed.xml
+    home_url: https://metr.org/
+    display_name: METR
+    tag: technical
+    enabled: true
+  - id: ai-alignment-forum
+    type: rss
+    url: https://www.alignmentforum.org/feed.xml
+    home_url: https://www.alignmentforum.org/
+    display_name: AI Alignment Forum
+    tag: policy-and-safety
     enabled: true
