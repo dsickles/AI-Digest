@@ -1,11 +1,12 @@
 ---
 import Shell from '../components/Shell.astro';
-import { formatWeekRange, publishedWeeks, synthesisExcerpt, weekPath } from '../lib/weeks';
+import { formatWeekRange, latestWeek, publishedWeeks, synthesisExcerpt, weekPath } from '../lib/weeks';
 
 const weeks = publishedWeeks();
+const week = latestWeek();
 ---
 
-<Shell titleParts={["Archive"]} active="archive" scope="latest">
+<Shell titleParts={["Archive"]} active="archive" scope="latest" week={week}>
   <h2>Archive</h2>
   {
     weeks.length === 0 ? (

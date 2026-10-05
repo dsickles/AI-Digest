@@ -16,21 +16,26 @@ interface Props {
 
 const { titleParts = [], description, canonical, week, active, scope, showLatestLink = false } = Astro.props;
 const title = documentTitle(...titleParts);
+const archiveCurrent = active === 'archive' ? 'page' : undefined;
 ---
 
 <Base title={title} description={description} canonical={canonical}>
   <header>
     <h1><a href="/">{SITE_TITLE}</a></h1>
-    {
-      week && (
-        <>
-          <p class="week-range">{formatWeekRange(week.week_start, week.week_end)}</p>
-          <p class="updated">
-            <time datetime={week.generated_at}>Updated {formatDate(week.generated_at)}</time>
-          </p>
-        </>
-      )
-    }
+    <p class="week-line">
+      {
+        week && (
+          <>
+            <span class="week-range">{formatWeekRange(week.week_start, week.week_end)}</span>
+            <span class="updated">
+              <time datetime={week.generated_at}>Updated {formatDate(week.generated_at)}</time>
+              {' · '}
+            </span>
+          </>
+        )
+      }
+      <a href="/archive" aria-current={archiveCurrent}>Archive</a>
+    </p>
     {showLatestLink && (
       <p class="back"><a href="/">← Latest week</a></p>
     )}
