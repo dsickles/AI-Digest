@@ -4,7 +4,6 @@
   --bg: Canvas;
   --muted: color-mix(in srgb, CanvasText 68%, Canvas);
   --line: color-mix(in srgb, CanvasText 18%, Canvas);
-  --play: color-mix(in srgb, CanvasText 42%, Canvas);
   font-family: system-ui, sans-serif;
   line-height: 1.5;
 }
@@ -152,10 +151,11 @@ a:focus-visible {
 }
 
 .play {
-  width: 0.875rem;
-  height: 0.875rem;
-  color: var(--play);
+  width: 1em;
+  height: 1em;
+  display: block;
   flex: none;
+  color: currentColor;
 }
 
 .summary {
