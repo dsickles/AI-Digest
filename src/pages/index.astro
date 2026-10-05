@@ -4,11 +4,11 @@ import WeekBody from '../components/WeekBody.astro';
 import { formatWeekRange, latestWeek, synthesisExcerpt, weekPath } from '../lib/weeks';
 
 const week = latestWeek();
-const title = week ? `Dan's Digest — ${formatWeekRange(week.week_start, week.week_end)}` : "Dan's Digest";
+const titleParts = week ? [formatWeekRange(week.week_start, week.week_end)] : [];
 const description = week ? synthesisExcerpt(week.briefing.synthesis) : undefined;
 const canonical = week ? weekPath(week.week_id, 'briefing') : undefined;
 ---
 
-<Shell title={title} description={description} canonical={canonical} week={week} active="briefing" scope="latest">
+<Shell titleParts={titleParts} description={description} canonical={canonical} week={week} active="briefing" scope="latest">
   {week ? <WeekBody week={week} view="briefing" /> : <p class="empty">No digest yet.</p>}
 </Shell>

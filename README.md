@@ -1,4 +1,4 @@
-# Dan's Digest
+# Dan's AI Digest
 
 A static site for Dan's weekly AI digest. The app is [Astro](https://astro.build/) with `output: 'static'`. Weekly files live in `content/digests/`. The site reads those files at build time and renders the latest week whose Saturday 23:59:59 America/New_York has already passed. A later file for a week that is still open, including a half-finished draft, stays off the home page and the archive. No LLM, Gemini, Python, or SQLite runs at build or serve time.
 
@@ -71,6 +71,8 @@ pnpm validate:weeks:self-test
 After `pnpm build`, `pnpm check:reader` reads `dist/` and checks the committed week: file order, Top 5 only, the thin footer item, archive’s **Read this week** link, and the absence of status chrome. A degraded card is not required in the committed week. When one is present, its summary is the locked sentence. The reader fixture covers that sentence.
 
 ## Deploy on Vercel
+
+The intended public address is https://dans-ai-digest.vercel.app.
 
 This is a static Astro site. Do not add `vercel.json`, a Vercel adapter, or environment variables for the reader.
 
