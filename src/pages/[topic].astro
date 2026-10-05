@@ -23,15 +23,13 @@ if (!topic || !isTopic(topic)) {
 
 const week = latestWeek();
 const label = TOPIC_LABELS[topic as Topic];
-const title = week
-  ? `Dan's Digest — ${label} — ${formatWeekRange(week.week_start, week.week_end)}`
-  : `Dan's Digest — ${label}`;
+const titleParts = week ? [label, formatWeekRange(week.week_start, week.week_end)] : [label];
 const description = week ? synthesisExcerpt(week.briefing.synthesis) : undefined;
 const canonical = week ? weekPath(week.week_id, topic) : undefined;
 ---
 
 <Shell
-  title={title}
+  titleParts={titleParts}
   description={description}
   canonical={canonical}
   week={week}

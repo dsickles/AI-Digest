@@ -7,6 +7,7 @@ import { parse as parseYaml } from 'yaml';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import { digestWeekId, isoWeekId, newYorkParts } from '../src/lib/week-rules.mjs';
+import { sourcePlacementErrors, validateSourcesDocument } from '../src/lib/source-rules.mjs';
 
 export { isoWeekId };
 
@@ -16,7 +17,7 @@ const REPORT_SCHEMA_PATH = join(ROOT, 'schema', 'report.schema.json');
 const SOURCES_PATH = join(ROOT, 'config', 'sources.yaml');
 const DEGRADED_BODY = "The summary couldn't be generated this week.";
 const WEEK_ID = /^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])$/;
-const TOPIC_ORDER = ['edtech', 'business', 'technical'];
+const TOPIC_ORDER = ['edtech', 'business', 'technical', 'policy-and-safety'];
 const IN_PLACE_STATUSES = new Set([
   'quota_exhausted',
   'api_error',
@@ -46,13 +47,23 @@ function jsonFiles(dir) {
     .map((name) => join(dir, name));
 }
 
+function concatTopics(doc) {
+  return TOPIC_ORDER.flatMap((topic) => doc.topics[topic] ?? []);
+}
+
 function loadSources() {
   const doc = parseYaml(readFileSync(SOURCES_PATH, 'utf8'));
+  const configErrors = validateSourcesDocument(doc);
+  if (configErrors.length > 0) {
+    throw new Error(configErrors.map((error) => `config/sources.yaml: ${error}`).join('\n'));
+  }
   const sources = new Map();
-  for (const source of doc?.sources ?? []) {
+  for (const source of doc.sources) {
     sources.set(source.id, {
       type: source.type,
       name: source.display_name,
+      tag: source.tag,
+      aiOnly: source.ai_only === true,
     });
   }
   if (sources.size === 0) {
@@ -211,6 +222,7 @@ function validateCardIdentity(card, sources, where) {
   if (card.summary_status === 'transcript_missing' && source.type !== 'youtube') {
     errors.push(`${where} transcript_missing is a YouTube in-place status`);
   }
+  errors.push(...sourcePlacementErrors(card, source, where));
   return errors;
 }
 
@@ -226,9 +238,11 @@ function validateDigestDocument(doc, filename, sources) {
   if (!WEEK_ID.test(doc.week_id)) errors.push('week_id is not an ISO week id');
   errors.push(...validateWeekWindow(doc));
 
-  const grouped = TOPIC_ORDER.flatMap((topic) => doc.topics[topic]);
+  const grouped = concatTopics(doc);
   if (!deepEqual(doc.main_feed, grouped)) {
-    errors.push('main_feed must equal topics.edtech + topics.business + topics.technical, in that order');
+    errors.push(
+      'main_feed must equal topics.edtech + topics.business + topics.technical + topics.policy-and-safety, in that order',
+    );
   }
 
   const mainById = new Map();
@@ -364,7 +378,7 @@ function withLockedDegradedExample(doc) {
     body: DEGRADED_BODY,
   };
   week.topics.technical.push(card);
-  week.main_feed = [...week.topics.edtech, ...week.topics.business, ...week.topics.technical];
+  week.main_feed = concatTopics(week);
   return week;
 }
 
@@ -514,9 +528,9 @@ function runSelfTest(sources) {
     mkdirSync(digestDir, { recursive: true });
     const healthy = structuredClone(sample);
     for (const topic of TOPIC_ORDER) {
-      healthy.topics[topic] = healthy.topics[topic].filter((card) => card.summary_status === 'ok');
+      healthy.topics[topic] = (healthy.topics[topic] ?? []).filter((card) => card.summary_status === 'ok');
     }
-    healthy.main_feed = [...healthy.topics.edtech, ...healthy.topics.business, ...healthy.topics.technical];
+    healthy.main_feed = concatTopics(healthy);
     healthy.footer_aside = [];
     const mainById = new Map(healthy.main_feed.map((card) => [card.id, card]));
     healthy.briefing.top = healthy.briefing.top
@@ -616,7 +630,332 @@ function runSelfTest(sources) {
     rmSync(goodDir, { recursive: true, force: true });
   }
 
+  if (!proveSourceRules(sources, sample)) return false;
+
   console.log('self-test PASS');
+  return true;
+}
+
+const ORIGINAL_EIGHT = [
+  {
+    id: 'simon-willison',
+    type: 'rss',
+    url: 'https://simonwillison.net/atom/everything/',
+    display_name: 'Simon Willison',
+    tag: 'technical',
+    enabled: true,
+  },
+  {
+    id: 'one-useful-thing',
+    type: 'rss',
+    url: 'https://www.oneusefulthing.org/feed',
+    display_name: 'One Useful Thing',
+    tag: 'business',
+    enabled: true,
+  },
+  {
+    id: 'import-ai',
+    type: 'rss',
+    url: 'https://importai.substack.com/feed',
+    display_name: 'Import AI',
+    tag: 'business',
+    enabled: true,
+  },
+  {
+    id: 'where-your-ed-at',
+    type: 'rss',
+    url: 'https://www.wheresyoured.at/feed',
+    display_name: "Where's Your Ed At",
+    tag: 'business',
+    enabled: true,
+  },
+  {
+    id: 'bensbites',
+    type: 'rss',
+    url: 'https://www.bensbites.com/feed',
+    display_name: "Ben's Bites",
+    tag: 'business',
+    enabled: true,
+  },
+  {
+    id: 'last-week-in-ai',
+    type: 'rss',
+    url: 'https://lastweekin.ai/feed',
+    display_name: 'Last Week in AI',
+    tag: 'technical',
+    enabled: true,
+  },
+  {
+    id: 'how-i-ai',
+    type: 'youtube',
+    channel_id: 'UCRYY7IEbkHLH_ScJCu9eWDQ',
+    channel_url: 'https://www.youtube.com/@howiaipodcast',
+    display_name: 'How I AI',
+    tag: 'technical',
+    enabled: true,
+  },
+  {
+    id: 'nate-b-jones',
+    type: 'youtube',
+    channel_id: 'UC0C-17n9iuUQPylguM1d-lQ',
+    channel_url: 'https://www.youtube.com/@NateBJones',
+    display_name: 'AI News & Strategy Daily | Nate B Jones',
+    tag: 'business',
+    enabled: true,
+  },
+];
+
+const APPROVED_TEN = [
+  {
+    id: 'hechinger-report',
+    type: 'rss',
+    url: 'https://hechingerreport.org/tags/artificial-intelligence/feed/',
+    home_url: 'https://hechingerreport.org/',
+    display_name: 'Hechinger Report',
+    tag: 'edtech',
+    enabled: true,
+  },
+  {
+    id: 'educause-review',
+    type: 'rss',
+    url: 'https://er.educause.edu/channels/emerging-technologies-trends/rss',
+    home_url: 'https://er.educause.edu/',
+    display_name: 'EDUCAUSE Review',
+    tag: 'edtech',
+    ai_only: true,
+    enabled: true,
+  },
+  {
+    id: 'education-week',
+    type: 'rss',
+    url: 'https://www.edweek.org/technology/artificial-intelligence.rss',
+    home_url: 'https://www.edweek.org/',
+    display_name: 'Education Week',
+    tag: 'edtech',
+    enabled: true,
+  },
+  {
+    id: 'philippa-hardman',
+    type: 'rss',
+    url: 'https://drphilippahardman.substack.com/feed',
+    home_url: 'https://drphilippahardman.substack.com/',
+    display_name: 'Philippa Hardman',
+    tag: 'edtech',
+    enabled: true,
+  },
+  {
+    id: 'ai-as-normal-technology',
+    type: 'rss',
+    url: 'https://www.normaltech.ai/feed',
+    home_url: 'https://www.normaltech.ai/',
+    display_name: 'AI as Normal Technology',
+    tag: 'business',
+    enabled: true,
+  },
+  {
+    id: 'chinai',
+    type: 'rss',
+    url: 'https://chinai.substack.com/feed',
+    home_url: 'https://chinai.substack.com/',
+    display_name: 'ChinAI',
+    tag: 'business',
+    enabled: true,
+  },
+  {
+    id: 'interconnects',
+    type: 'rss',
+    url: 'https://www.interconnects.ai/feed',
+    home_url: 'https://www.interconnects.ai/',
+    display_name: 'Interconnects',
+    tag: 'technical',
+    enabled: true,
+  },
+  {
+    id: 'ahead-of-ai',
+    type: 'rss',
+    url: 'https://magazine.sebastianraschka.com/feed',
+    home_url: 'https://magazine.sebastianraschka.com/',
+    display_name: 'Ahead of AI',
+    tag: 'technical',
+    enabled: true,
+  },
+  {
+    id: 'metr',
+    type: 'rss',
+    url: 'https://metr.org/feed.xml',
+    home_url: 'https://metr.org/',
+    display_name: 'METR',
+    tag: 'technical',
+    enabled: true,
+  },
+  {
+    id: 'ai-alignment-forum',
+    type: 'rss',
+    url: 'https://www.alignmentforum.org/feed.xml',
+    home_url: 'https://www.alignmentforum.org/',
+    display_name: 'AI Alignment Forum',
+    tag: 'policy-and-safety',
+    enabled: true,
+  },
+];
+
+function sourceArticle(sample, id, sourceId, name, category, title, summary) {
+  return {
+    id,
+    title,
+    url: `https://example.com/${id}`,
+    publisher: { source_id: sourceId, name },
+    published_at: sample.week_start,
+    category,
+    media: 'article',
+    summary_status: 'ok',
+    summary,
+  };
+}
+
+function weekWithCard(sample, topic, card) {
+  const week = structuredClone(sample);
+  if (!Array.isArray(week.topics[topic])) week.topics[topic] = [];
+  week.topics[topic].push(card);
+  week.main_feed = concatTopics(week);
+  return week;
+}
+
+function proveSourceRules(sources, sample) {
+  const doc = parseYaml(readFileSync(SOURCES_PATH, 'utf8'));
+  if (!deepEqual(doc.sources.slice(0, 8), ORIGINAL_EIGHT)) {
+    console.error('self-test: the original eight sources changed');
+    return false;
+  }
+  if (!deepEqual(doc.sources.slice(8), APPROVED_TEN) || doc.sources.length !== 18) {
+    console.error('self-test: approved sources are not the ten Dan listed');
+    return false;
+  }
+  if (sources.get('educause-review')?.aiOnly !== true || sources.get('education-week')?.aiOnly !== false) {
+    console.error('self-test: AI-only must be set on EDUCAUSE Review and not on Education Week');
+    return false;
+  }
+  if (sources.get('ai-alignment-forum')?.tag !== 'policy-and-safety' || sources.get('metr')?.tag !== 'technical') {
+    console.error('self-test: METR stays technical and AI Alignment Forum is policy-and-safety');
+    return false;
+  }
+  const badTag = structuredClone(doc);
+  badTag.sources[0] = { ...badTag.sources[0], tag: 'design' };
+  if (validateSourcesDocument(badTag).length === 0) {
+    console.error('self-test: a source tag outside the section list must fail');
+    return false;
+  }
+  if (sample.topics['policy-and-safety'] !== undefined) {
+    console.error('self-test: 2026-W40 must not grow a policy-and-safety list');
+    return false;
+  }
+  const w40Errors = validateDigestDocument(sample, '2026-W40.json', sources);
+  if (w40Errors.length !== 0) {
+    console.error('self-test: 2026-W40 must stay valid without a policy-and-safety list');
+    for (const error of w40Errors) console.error(`- ${error}`);
+    return false;
+  }
+
+  const rejected = [
+    [
+      'edtech source filed as business',
+      weekWithCard(
+        sample,
+        'business',
+        sourceArticle(
+          sample,
+          'hechinger-misfile',
+          'hechinger-report',
+          'Hechinger Report',
+          'business',
+          'AI on campus',
+          'Colleges are buying AI tools.',
+        ),
+      ),
+      'must use category edtech',
+    ],
+    [
+      'policy source filed as technical',
+      weekWithCard(
+        sample,
+        'technical',
+        sourceArticle(
+          sample,
+          'alignment-misfile',
+          'ai-alignment-forum',
+          'AI Alignment Forum',
+          'technical',
+          'A new alignment result',
+          'The post discusses AI alignment.',
+        ),
+      ),
+      'must use category policy-and-safety',
+    ],
+    [
+      'EDUCAUSE item that is not about AI',
+      weekWithCard(
+        sample,
+        'edtech',
+        sourceArticle(
+          sample,
+          'educause-wifi',
+          'educause-review',
+          'EDUCAUSE Review',
+          'edtech',
+          'Campus Wi-Fi upgrade',
+          'The network team replaced access points across the residence halls.',
+        ),
+      ),
+      'not about AI',
+    ],
+  ];
+  for (const [name, week, needle] of rejected) {
+    const errors = validateDigestDocument(week, '2026-W40.json', sources);
+    if (!errors.some((error) => error.includes(needle))) {
+      console.error(`self-test: ${name} was not rejected`);
+      for (const error of errors) console.error(`- ${error}`);
+      return false;
+    }
+    console.log(`self-test PASS ${name} rejected`);
+  }
+
+  const accepted = [
+    weekWithCard(
+      sample,
+      'edtech',
+      sourceArticle(
+        sample,
+        'educause-ai',
+        'educause-review',
+        'EDUCAUSE Review',
+        'edtech',
+        'AI tutoring pilots',
+        'The campus tested a generative model for tutoring.',
+      ),
+    ),
+    weekWithCard(
+      sample,
+      'policy-and-safety',
+      sourceArticle(
+        sample,
+        'alignment-ok',
+        'ai-alignment-forum',
+        'AI Alignment Forum',
+        'policy-and-safety',
+        'A new alignment result',
+        'The post discusses AI alignment.',
+      ),
+    ),
+  ];
+  for (const week of accepted) {
+    const errors = validateDigestDocument(week, '2026-W40.json', sources);
+    if (errors.length !== 0) {
+      console.error('self-test: a correctly filed source card must pass');
+      for (const error of errors) console.error(`- ${error}`);
+      return false;
+    }
+  }
+  console.log('self-test PASS assigned sections and EDUCAUSE AI-only rule');
   return true;
 }
 

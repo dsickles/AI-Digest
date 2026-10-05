@@ -1,4 +1,4 @@
-# Dan's Digest
+# Dan's AI Digest
 
 A static site for Dan's weekly AI digest. The app is [Astro](https://astro.build/) with `output: 'static'`. Weekly files live in `content/digests/`. The site reads those files at build time and renders the latest week whose Saturday 23:59:59 America/New_York has already passed. A later file for a week that is still open, including a half-finished draft, stays off the home page and the archive. No LLM, Gemini, Python, or SQLite runs at build or serve time.
 
@@ -26,8 +26,8 @@ pnpm dev
 Open [http://localhost:4321](http://localhost:4321). That is the latest week’s Briefing. With the checked-in file, the week is **2026-W40**.
 
 - **Briefing** shows the synthesis and the Top 5 only.
-- **Edtech**, **Business**, and **Technical** stay in the nav and show that topic’s main list in file order. An empty topic stays on the nav and says so.
-- **Edtech** is empty in the checked-in week and says so. A degraded card, when a week has one, uses exactly `The summary couldn't be generated this week.`
+- **Education**, **Business**, **Technical**, and **Policy and Safety** stay in the nav and show that topic’s main list in file order. An empty topic stays on the nav and says so.
+- **Education** is empty in the checked-in week and says so. **Policy and Safety** is empty there too. A degraded card, when a week has one, uses exactly `The summary couldn't be generated this week.`
 - **Also seen this week** appears on Briefing only, including an archived briefing. It lists thin items as links with no summary. The checked-in week has one, the Simon Willison sponsors newsletter. When a week has no thin items, Briefing omits that heading. Topic pages do not show it.
 - **Archive** shows an excerpt and a **Read this week** link to `/digest/2026-W40`.
 
@@ -71,6 +71,8 @@ pnpm validate:weeks:self-test
 After `pnpm build`, `pnpm check:reader` reads `dist/` and checks the committed week: file order, Top 5 only, Also seen on Briefing when that week has thin items, no Also seen heading when a week has none, no Also seen on topic pages, archive’s **Read this week** link, and the absence of status chrome. A degraded card is not required in the committed week. When one is present, its summary is the locked sentence. The reader fixture covers that sentence.
 
 ## Deploy on Vercel
+
+The intended public address is https://dans-ai-digest.vercel.app.
 
 This is a static Astro site. Do not add `vercel.json`, a Vercel adapter, or environment variables for the reader.
 

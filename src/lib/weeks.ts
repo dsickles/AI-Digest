@@ -1,14 +1,15 @@
 import { basename } from 'node:path';
 import { isPublishedWeek, readerNow, selectLatestPublished } from './week-rules.mjs';
 
-export const TOPICS = ['edtech', 'business', 'technical'] as const;
+export const TOPICS = ['edtech', 'business', 'technical', 'policy-and-safety'] as const;
 
 export type Topic = (typeof TOPICS)[number];
 
 export const TOPIC_LABELS: Record<Topic, string> = {
-  edtech: 'Edtech',
+  edtech: 'Education',
   business: 'Business',
   technical: 'Technical',
+  'policy-and-safety': 'Policy and Safety',
 };
 
 export const DEGRADED_BODY = "The summary couldn't be generated this week.";
@@ -89,6 +90,9 @@ function assertWeek(value: unknown, filePath: string): Week {
   }
   if (!week.topics || !Array.isArray(week.footer_aside)) {
     throw new Error(`${filePath} is missing topic lists or the footer`);
+  }
+  if (week.topics['policy-and-safety'] === undefined) {
+    week.topics['policy-and-safety'] = [];
   }
   for (const topic of TOPICS) {
     if (!Array.isArray(week.topics[topic])) {
