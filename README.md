@@ -28,7 +28,7 @@ Open [http://localhost:4321](http://localhost:4321). That is the latest week’s
 - **Briefing** shows the synthesis and the Top 5 only.
 - **Edtech**, **Business**, and **Technical** stay in the nav and show that topic’s main list in file order. An empty topic stays on the nav and says so.
 - **Edtech** is empty in the checked-in week and says so. A degraded card, when a week has one, uses exactly `The summary couldn't be generated this week.`
-- **Also seen this week**, under the lists, is the thin footer link with no summary. The checked-in week has one, the Simon Willison sponsors newsletter.
+- **Also seen this week** appears on Briefing only, including an archived briefing. It lists thin items as links with no summary. The checked-in week has one, the Simon Willison sponsors newsletter. When a week has no thin items, Briefing omits that heading. Topic pages do not show it.
 - **Archive** shows an excerpt and a **Read this week** link to `/digest/2026-W40`.
 
 ## Static build
@@ -68,7 +68,7 @@ pnpm validate:weeks:self-test
 
 `pnpm validate:weeks` checks the committed week files and passes a tree that has no report. `pnpm validate:weeks:self-test` does that, then writes a temporary invalid week, expects the checker to reject it, and deletes the temp file. Nothing under `content/` is left invalid.
 
-After `pnpm build`, `pnpm check:reader` reads `dist/` and checks the committed week: file order, Top 5 only, the thin footer item, archive’s **Read this week** link, and the absence of status chrome. A degraded card is not required in the committed week. When one is present, its summary is the locked sentence. The reader fixture covers that sentence.
+After `pnpm build`, `pnpm check:reader` reads `dist/` and checks the committed week: file order, Top 5 only, Also seen on Briefing when that week has thin items, no Also seen heading when a week has none, no Also seen on topic pages, archive’s **Read this week** link, and the absence of status chrome. A degraded card is not required in the committed week. When one is present, its summary is the locked sentence. The reader fixture covers that sentence.
 
 ## Deploy on Vercel
 
