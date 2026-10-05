@@ -5,7 +5,7 @@ import { formatWeekRange, publishedWeeks, synthesisExcerpt, weekPath } from '../
 const weeks = publishedWeeks();
 ---
 
-<Shell title="Dan's Digest — Archive" active="archive" scope="latest">
+<Shell titleParts={["Archive"]} active="archive" scope="latest">
   <h2>Archive</h2>
   {
     weeks.length === 0 ? (
