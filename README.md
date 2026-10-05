@@ -26,8 +26,8 @@ pnpm dev
 Open [http://localhost:4321](http://localhost:4321). That is the latest week’s Briefing. With the checked-in file, the week is **2026-W40**.
 
 - **Briefing** shows the synthesis and the Top 5 only.
-- **Edtech**, **Business**, and **Technical** stay in the nav and show that topic’s main list in file order. An empty topic stays on the nav and says so.
-- **Edtech** is empty in the checked-in week and says so. A degraded card, when a week has one, uses exactly `The summary couldn't be generated this week.`
+- **Education**, **Business**, **Technical**, and **Policy and Safety** stay in the nav and show that topic’s main list in file order. An empty topic stays on the nav and says so.
+- **Education** is empty in the checked-in week and says so. **Policy and Safety** is empty there too. A degraded card, when a week has one, uses exactly `The summary couldn't be generated this week.`
 - **Also seen this week**, under the lists, is the thin footer link with no summary. The checked-in week has one, the Simon Willison sponsors newsletter.
 - **Archive** shows an excerpt and a **Read this week** link to `/digest/2026-W40`.
 
