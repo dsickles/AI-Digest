@@ -51,14 +51,33 @@ h3 {
   line-height: 1.35;
 }
 
-.week-range {
+.week-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.75rem;
   margin: 0.4rem 0 0;
 }
 
+.week-range {
+  margin: 0;
+}
+
 .updated {
-  margin: 0.15rem 0 0;
+  margin: 0;
   color: var(--muted);
   font-size: 0.875rem;
+}
+
+.week-line > a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+
+.week-line > a[aria-current='page'] {
+  font-weight: 650;
+  border-bottom-color: currentColor;
 }
 
 .back {
@@ -69,7 +88,15 @@ h3 {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem 0.85rem;
-  margin: 1.1rem 0 1.75rem;
+  margin: 0;
+}
+
+.nav-briefing {
+  margin: 1.1rem 0 0;
+}
+
+.nav-sections {
+  margin: 0.15rem 0 1.75rem;
 }
 
 .nav a {

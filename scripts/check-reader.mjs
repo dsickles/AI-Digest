@@ -276,6 +276,90 @@ function assertOrder(html, className, cards, label) {
   }
 }
 
+const SECTION_LABELS = ['Business', 'Technical', 'Education', 'Policy and Safety'];
+const SECTION_IDS = ['business', 'technical', 'edtech', 'policy-and-safety'];
+
+function navBlock(html, className) {
+  const pattern = new RegExp(`<nav\\b[^>]*class="[^"]*\\b${className}\\b[^"]*"[^>]*>[\\s\\S]*?</nav>`);
+  return html.match(pattern)?.[0] ?? '';
+}
+
+function linkLabels(block) {
+  return [...block.matchAll(/<a\b[^>]*>([^<]*)<\/a>/g)].map((match) => decode(match[1]).trim());
+}
+
+function linkHrefs(block) {
+  return [...block.matchAll(/<a\b[^>]*href="([^"]*)"[^>]*>/g)].map((match) => match[1]);
+}
+
+function assertReaderChrome(html, label) {
+  const briefing = navBlock(html, 'nav-briefing');
+  const sections = navBlock(html, 'nav-sections');
+  if (!briefing) fail(`${label} is missing the Briefing line`);
+  if (!sections) fail(`${label} is missing the sections row`);
+  const briefingAt = html.indexOf(briefing);
+  const sectionsAt = html.indexOf(sections);
+  if (briefingAt < 0 || sectionsAt < 0 || briefingAt + briefing.length > sectionsAt) {
+    fail(`${label} Briefing is not on its own line above the sections`);
+  }
+  const briefingLabels = linkLabels(briefing);
+  if (briefingLabels.length !== 1 || briefingLabels[0] !== 'Briefing') {
+    fail(`${label} Briefing line reads ${briefingLabels.join(', ') || 'nothing'}`);
+  }
+  const sectionLabels = linkLabels(sections);
+  if (sectionLabels.join('|') !== SECTION_LABELS.join('|')) {
+    fail(`${label} sections are ${sectionLabels.join(', ') || 'missing'}`);
+  }
+  if (sections.includes('>Archive<') || sections.includes('href="/archive"')) {
+    fail(`${label} Archive is in the sections row`);
+  }
+  if (sections.includes('>Edtech<') || sections.includes('>Ed tech<')) {
+    fail(`${label} sections row says Edtech`);
+  }
+  const briefingHref = linkHrefs(briefing)[0];
+  const weekMatch = briefingHref?.match(/^\/digest\/(\d{4}-W\d{2})$/);
+  const expectedHrefs =
+    briefingHref === '/'
+      ? SECTION_IDS.map((id) => `/${id}`)
+      : weekMatch
+        ? SECTION_IDS.map((id) => `/digest/${weekMatch[1]}/${id}`)
+        : null;
+  if (!expectedHrefs) fail(`${label} Briefing link is ${briefingHref ?? 'missing'}`);
+  const hrefs = linkHrefs(sections);
+  if (hrefs.join('|') !== expectedHrefs.join('|')) {
+    fail(`${label} section links are ${hrefs.join(', ')}`);
+  }
+  const mainAt = html.indexOf('<main');
+  const header = mainAt === -1 ? html : html.slice(0, mainAt);
+  if (header.includes('>Edtech<') || header.includes('>Ed tech<')) fail(`${label} shows Edtech`);
+  const weekLine = html.match(/<p class="week-line">[\s\S]*?<\/p>/)?.[0];
+  if (!weekLine) fail(`${label} is missing the week line`);
+  const archiveHrefs = [...html.matchAll(/href="\/archive"/g)];
+  if (archiveHrefs.length !== 1 || !weekLine.includes('href="/archive"') || !weekLine.includes('>Archive<')) {
+    fail(`${label} Archive is not the week-line link to /archive`);
+  }
+  const rangeAt = weekLine.indexOf('class="week-range"');
+  const timeAt = weekLine.indexOf('<time');
+  const updatedText = decode(weekLine.match(/<time\b[^>]*>([^<]*)<\/time>/)?.[1] ?? '').trim();
+  if (rangeAt === -1 || timeAt === -1 || rangeAt > timeAt || !updatedText.startsWith('Updated ')) {
+    fail(`${label} week line should show the week range, then the Updated date`);
+  }
+  const timeEnd = weekLine.indexOf('</time>');
+  if (timeEnd === -1) fail(`${label} Updated date is missing`);
+  const afterTime = weekLine.slice(timeEnd + '</time>'.length);
+  const archiveAt = afterTime.search(/<a\b[^>]*href="\/archive"[^>]*>/);
+  if (archiveAt === -1) fail(`${label} Archive is not to the right of Updated`);
+  const between = decode(afterTime.slice(0, archiveAt)).replace(/&middot;/gi, '·').replace(/<[^>]*>/g, '');
+  if (between.includes(',')) fail(`${label} has a comma between Updated and Archive`);
+  if (!/^[\s·]*$/.test(between)) fail(`${label} puts "${between}" between Updated and Archive`);
+}
+
+function assertBuiltChrome(scope) {
+  for (const file of walk(DIST)) {
+    assertReaderChrome(readFileSync(file, 'utf8'), `${scope} ${file}`);
+  }
+}
+
 const pages = {
   home: readPage('index.html'),
   edtech: readPage('edtech/index.html'),
@@ -328,6 +412,7 @@ for (const html of Object.values(pages)) {
     if (!html.includes(`>${label}<`)) fail(`missing tab ${label}`);
   }
 }
+assertBuiltChrome('reader');
 
 if (!pages.home.includes(`href="/edtech"`) || !pages.home.includes(`href="/policy-and-safety"`)) {
   fail('home nav is missing an Education or Policy and Safety link');
@@ -709,6 +794,7 @@ try {
     if (!olderNav.includes(`href="${href}"`)) fail(`older week tab does not link to ${href}`);
   }
   if (!olderNav.includes('← Latest week')) fail('older week is missing the link back to the latest week');
+  assertBuiltChrome('fixture');
 } finally {
   for (const path of Object.keys(fixtureFiles)) rmSync(path, { force: true });
   rebuild();
@@ -724,5 +810,6 @@ const rebuiltShown = decode(readPage('business/index.html')).split(DEGRADED_BODY
 if (rebuiltShown !== degradedBusiness.length) {
   fail('rebuilt business page does not match the week file degraded cards');
 }
+assertBuiltChrome('rebuilt');
 
 console.log(`reader check passed for ${WEEK_ID}`);

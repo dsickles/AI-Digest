@@ -1,5 +1,5 @@
 ---
-import { latestPath, weekPath, TOPIC_LABELS, TOPICS, type Topic } from '../lib/weeks';
+import { latestPath, weekPath, TOPIC_LABELS, type Topic } from '../lib/weeks';
 
 interface Props {
   active: 'briefing' | Topic | 'archive';
@@ -9,20 +9,24 @@ interface Props {
 
 const { active, scope, weekId } = Astro.props;
 
+// Visible order only. Topic ids and routes stay on the canonical list.
+const sections: Topic[] = ['business', 'technical', 'edtech', 'policy-and-safety'];
+
 function hrefFor(view: 'briefing' | Topic): string {
   if (scope === 'week' && weekId) return weekPath(weekId, view);
   return latestPath(view);
 }
 ---
 
-<nav class="nav" aria-label="Sections">
+<nav class="nav nav-briefing" aria-label="Briefing">
   <a href={hrefFor('briefing')} aria-current={active === 'briefing' ? 'page' : undefined}>Briefing</a>
+</nav>
+<nav class="nav nav-sections" aria-label="Sections">
   {
-    TOPICS.map((topic) => (
+    sections.map((topic) => (
       <a href={hrefFor(topic)} aria-current={active === topic ? 'page' : undefined}>
         {TOPIC_LABELS[topic]}
       </a>
     ))
   }
-  <a href="/archive" aria-current={active === 'archive' ? 'page' : undefined}>Archive</a>
 </nav>
