@@ -239,6 +239,114 @@ function summaries(article) {
   return [...article.matchAll(/<p class="summary">([^<]*)<\/p>/g)].map((match) => decode(match[1]).trim());
 }
 
+let checkedVideos = 0;
+
+function hasClass(attrs, name) {
+  return new RegExp(`\\bclass="[^"]*\\b${name}\\b`).test(attrs);
+}
+
+function publisherMark(meta, id) {
+  const publisherEnd = meta.indexOf('</span>');
+  const timeAt = meta.search(/<time\b/);
+  if (publisherEnd === -1 || timeAt === -1 || timeAt < publisherEnd) {
+    fail(`${id} publisher row is missing the publisher or the date`);
+  }
+  return meta.slice(publisherEnd + '</span>'.length, timeAt);
+}
+
+function visibleMarkText(html) {
+  const stripped = html
+    .replace(/<span class="visually-hidden">[\s\S]*?<\/span>/g, '')
+    .replace(/<svg[\s\S]*?<\/svg>/g, '')
+    .replace(/<([a-zA-Z0-9]+)\b[^>]*\baria-hidden="true"[^>]*>[\s\S]*?<\/\1>/g, '');
+  return decode(stripped.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+}
+
+function accessibleVideoName(mark) {
+  const hidden = mark.match(/<span class="visually-hidden"([^>]*)>([^<]*)<\/span>/);
+  if (hidden && !/\baria-hidden="true"/.test(hidden[1]) && decode(hidden[2]).trim() === 'Video') return true;
+  for (const match of mark.matchAll(/<([a-zA-Z0-9]+)\b([^>]*)>/g)) {
+    if (/\baria-hidden="true"/.test(match[2])) continue;
+    const label = match[2].match(/\baria-label="([^"]*)"/);
+    if (label && decode(label[1]).trim() === 'Video') return true;
+  }
+  return false;
+}
+
+function summaryHidesPlay(article) {
+  const summaryHtml = [...article.matchAll(/<p class="summary">[\s\S]*?<\/p>/g)].map((match) => match[0]).join('');
+  if (summaryHtml.includes('class="play"')) return true;
+  const closed = article
+    .replace(/<p class="summary">[\s\S]*?<\/p>/g, '')
+    .replace(/<details\b[^>]*>[\s\S]*?<\/details>/gi, (block) => {
+      const summary = block.match(/<summary\b[\s\S]*?<\/summary>/i);
+      return summary ? summary[0] : '';
+    });
+  const meta = closed.match(/<p class="meta">[\s\S]*?<\/p>/);
+  return !meta || !meta[0].includes('class="play"');
+}
+
+function assertPlayMark(article, card) {
+  const video = card.media === 'video';
+  const metaMatch = article.match(/<p class="meta">([\s\S]*?)<\/p>/);
+  if (!metaMatch) fail(`${card.id} is missing the publisher row`);
+  const mark = publisherMark(metaMatch[1], card.id);
+  const playSvgs = [...mark.matchAll(/<svg\b([^>]*)>[\s\S]*?<\/svg>/gi)].filter((match) => hasClass(match[1], 'play'));
+  const playElements = [...mark.matchAll(/<([a-zA-Z0-9]+)\b([^>]*)>/g)].filter((match) => hasClass(match[2], 'play'));
+  const chip = /\bvideo\b/i.test(visibleMarkText(mark));
+
+  if (!video) {
+    if (
+      playElements.length > 0 ||
+      chip ||
+      article.includes('class="play"') ||
+      /aria-label="Video"/.test(metaMatch[1]) ||
+      /<span class="visually-hidden">\s*Video\s*<\/span>/.test(metaMatch[1])
+    ) {
+      fail(`${card.id} play icon should be absent`);
+    }
+    return;
+  }
+
+  if (playElements.some((match) => match[1].toLowerCase() !== 'svg') || chip) {
+    fail(`${card.id} play mark is a text chip`);
+  }
+  if (playSvgs.length === 0) {
+    if (article.includes('class="play"')) fail(`${card.id} play icon is hidden when the summary is closed`);
+    fail(`${card.id} play icon missing`);
+  }
+  if (!/currentColor/.test(playSvgs[0][0])) fail(`${card.id} play icon must use currentColor`);
+  if (!accessibleVideoName(mark)) fail(`${card.id} play icon lacks an accessible name`);
+  if (summaryHidesPlay(article)) fail(`${card.id} play icon is hidden when the summary is closed`);
+  checkedVideos += 1;
+}
+
+function assertPlayStyles(html) {
+  const css = [...html.matchAll(/<style>([\s\S]*?)<\/style>/g)].map((match) => match[1]).join('\n');
+  const rule = css.match(/\.play\s*\{([^}]*)\}/);
+  if (!rule) fail('play icon CSS is missing');
+  const body = rule[1];
+  for (const axis of ['width', 'height']) {
+    const value = body.match(new RegExp(`(?:^|;)\\s*${axis}:\\s*([^;]+)`))?.[1]?.trim();
+    const em = value?.match(/^(\d+(?:\.\d+)?)em$/);
+    if (!em) fail(`play icon ${axis} must be sized in em relative to the publisher text, got ${value ?? 'nothing'}`);
+    const size = Number(em[1]);
+    if (size < 0.85 || size > 1.15) fail(`play icon ${axis} is ${value}, expected about 1em`);
+  }
+  const color = body.match(/(?:^|;)\s*color:\s*([^;]+)/)?.[1]?.trim();
+  if (color && color !== 'currentColor' && color !== 'inherit') {
+    fail(`play icon color is ${color}; use currentColor`);
+  }
+  for (const match of css.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+    if (!match[1].includes('.play')) continue;
+    if (/display:\s*none|visibility:\s*hidden|opacity:\s*0(?:\.0+)?(?:;|$)/.test(match[2].trim())) {
+      fail('play icon would be hidden');
+    }
+  }
+  const meta = css.match(/\.meta\s*\{([^}]*)\}/);
+  if (!meta || !/font-size:/.test(meta[1])) fail('publisher row has no font size for the play icon to match');
+}
+
 function assertCard(html, card) {
   const article = extractArticle(html, card.id);
   if (!article.includes(`href="${card.url}"`)) fail(`${card.id} is missing its outbound link`);
@@ -263,9 +371,7 @@ function assertCard(html, card) {
     }
     if (article.includes(card.summary_status)) fail(`${card.id} shows its status name`);
   }
-  const video = card.media === 'video';
-  const hasPlay = article.includes('class="play"');
-  if (video !== hasPlay) fail(`${card.id} play icon ${video ? 'missing' : 'should be absent'}`);
+  assertPlayMark(article, card);
 }
 
 function assertOrder(html, className, cards, label) {
@@ -453,6 +559,8 @@ for (const [name, html] of Object.entries(pages)) {
   if (html.includes(DEGRADED_BODY)) fail(`${name} includes the degraded sentence`);
 }
 
+assertPlayStyles(pages.home);
+
 const homeParts = splitFooter(pages.home);
 assertOrder(homeParts.main, 'card', week.briefing.top, 'briefing');
 if (articleIds(homeParts.main, 'card').length !== week.briefing.top.length) {
@@ -488,8 +596,12 @@ assertTopicOmitsAlsoSeen(pages.digestPolicy, week.footer_aside, 'archived Policy
 
 const digestParts = splitFooter(pages.digest);
 assertOrder(digestParts.main, 'card', week.briefing.top, 'permalink briefing');
+for (const card of week.briefing.top) assertCard(digestParts.main, card);
 assertBriefingAlsoSeen(pages.digest, week.footer_aside, 'current week briefing permalink');
 if (!pages.digestBusiness.includes('aria-current="page"')) fail('business permalink is missing the current tab');
+const digestBusinessParts = splitFooter(pages.digestBusiness);
+for (const card of week.topics.business) assertCard(digestBusinessParts.main, card);
+if (checkedVideos === 0) fail('no video story was checked');
 
 const excerpt = week.briefing.synthesis.trim().match(/^.+?[.!?](?=\s|$)/)?.[0];
 if (!excerpt || !decode(pages.archive).includes(excerpt)) fail('archive is missing the week excerpt');
