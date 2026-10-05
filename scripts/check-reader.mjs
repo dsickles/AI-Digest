@@ -221,9 +221,11 @@ const pages = {
   edtech: readPage('edtech/index.html'),
   business: readPage('business/index.html'),
   technical: readPage('technical/index.html'),
+  policy: readPage('policy-and-safety/index.html'),
   archive: readPage('archive/index.html'),
   digest: readPage(`digest/${WEEK_ID}/index.html`),
   digestBusiness: readPage(`digest/${WEEK_ID}/business/index.html`),
+  digestPolicy: readPage(`digest/${WEEK_ID}/policy-and-safety/index.html`),
 };
 
 const htmlFiles = walk(DIST);
@@ -260,13 +262,26 @@ if (/class="[^"]*(status|banner|notice|pipeline)/i.test(allHtml)) {
   fail('built site contains a status, banner, or notice element');
 }
 
-const tabLabels = ['Briefing', 'Edtech', 'Business', 'Technical', 'Archive'];
+const tabLabels = ['Briefing', 'Education', 'Business', 'Technical', 'Policy and Safety', 'Archive'];
 for (const html of Object.values(pages)) {
   for (const label of tabLabels) {
     if (!html.includes(`>${label}<`)) fail(`missing tab ${label}`);
   }
 }
 
+if (!pages.home.includes(`href="/edtech"`) || !pages.home.includes(`href="/policy-and-safety"`)) {
+  fail('home nav is missing an Education or Policy and Safety link');
+}
+if (pages.home.includes('>Edtech<') || pages.home.includes('>Ed tech<')) {
+  fail('nav still says Edtech');
+}
+if (!pages.edtech.includes('Nothing in Education this week.')) fail('empty Education tab has no empty state');
+if (!pages.policy.includes('Nothing in Policy and Safety this week.')) {
+  fail('empty Policy and Safety tab has no empty state');
+}
+if (!pages.digestPolicy.includes('Nothing in Policy and Safety this week.')) {
+  fail('archived Policy and Safety tab has no empty state');
+}
 if (!pages.home.includes('rel="canonical" href="/digest/2026-W40"')) {
   fail('home canonical should be the week permalink');
 }
@@ -406,6 +421,12 @@ const olderTechnicalThird = fixtureCard(
   'Saved technical third summary from the file.',
   '2026-09-25T15:00:00Z',
 );
+const olderPolicy = fixtureCard(
+  'saved-policy',
+  'policy-and-safety',
+  'Saved policy and safety summary from the file.',
+  '2026-09-25T16:00:00Z',
+);
 const olderWeek = completeWeek(
   '2026-W39',
   '2026-09-20T00:00:00-04:00',
@@ -416,6 +437,7 @@ const olderWeek = completeWeek(
     edtech: [olderEdtech],
     business: [olderBusiness],
     technical: [olderTechnical, olderTechnicalExtra, olderTechnicalThird],
+    'policy-and-safety': [olderPolicy],
   },
 );
 const openWeek = completeWeek(
@@ -466,15 +488,19 @@ try {
   const emptyEdtech = readPage('digest/1999-W01/edtech/index.html');
   const emptyTechnical = readPage('digest/1999-W01/technical/index.html');
   const filledBusiness = readPage('digest/1999-W01/business/index.html');
-  if (!emptyEdtech.includes('Nothing in Edtech this week.')) fail('empty Edtech tab has no empty state');
+  if (!emptyEdtech.includes('Nothing in Education this week.')) fail('empty Education tab has no empty state');
   if (!emptyTechnical.includes('Nothing in Technical this week.')) fail('empty Technical tab has no empty state');
+  const emptyPolicy = readPage('digest/1999-W01/policy-and-safety/index.html');
+  if (!emptyPolicy.includes('Nothing in Policy and Safety this week.')) {
+    fail('empty Policy and Safety tab has no empty state');
+  }
   if (filledBusiness.includes('Nothing in Business this week.')) fail('Business showed an empty state while it had a card');
   if (!filledBusiness.includes('Fixture card')) fail('Business dropped its only card');
   if (!decode(filledBusiness).includes(DEGRADED_BODY)) {
     fail('degraded fixture card did not render the locked sentence');
   }
   if (filledBusiness.includes('api_error')) fail('degraded fixture card shows its status name');
-  for (const html of [emptyEdtech, emptyTechnical, filledBusiness]) {
+  for (const html of [emptyEdtech, emptyTechnical, emptyPolicy, filledBusiness]) {
     for (const label of tabLabels) {
       if (!html.includes(`>${label}<`)) fail(`a zero-item week hid the ${label} tab`);
     }
@@ -521,6 +547,7 @@ try {
   const olderEdtechPage = decode(readPage('digest/2026-W39/edtech/index.html'));
   const olderBusinessPage = decode(readPage('digest/2026-W39/business/index.html'));
   const olderTechnicalPage = decode(readPage('digest/2026-W39/technical/index.html'));
+  const olderPolicyPage = decode(readPage('digest/2026-W39/policy-and-safety/index.html'));
   if (!olderBriefing.includes(OLDER_SYNTHESIS)) fail('older briefing does not render the saved synthesis');
   if (olderBriefing.includes(week.briefing.synthesis)) fail('older briefing picked up the latest week synthesis');
   for (const saved of [
@@ -533,7 +560,7 @@ try {
     if (!olderBriefing.includes(saved.summary)) fail(`older briefing dropped the saved summary for ${saved.id}`);
   }
   if (!olderEdtechPage.includes(olderEdtech.summary) || olderEdtechPage.includes(olderBusiness.summary)) {
-    fail('older Edtech tab did not render the saved topic list');
+    fail('older Education tab did not render the saved topic list');
   }
   if (!olderBusinessPage.includes(olderBusiness.summary) || olderBusinessPage.includes(olderEdtech.summary)) {
     fail('older Business tab did not render the saved topic list');
@@ -541,16 +568,24 @@ try {
   for (const saved of [olderTechnical, olderTechnicalExtra, olderTechnicalThird]) {
     if (!olderTechnicalPage.includes(saved.summary)) fail(`older Technical tab dropped ${saved.id}`);
   }
-  if (olderTechnicalPage.includes(olderBusiness.summary)) {
+  if (olderTechnicalPage.includes(olderBusiness.summary) || olderTechnicalPage.includes(olderPolicy.summary)) {
     fail('older Technical tab included a saved card from another topic');
   }
-  for (const html of [olderBriefing, olderEdtechPage, olderBusinessPage, olderTechnicalPage]) {
+  if (!olderPolicyPage.includes(olderPolicy.summary) || olderPolicyPage.includes(olderTechnical.summary)) {
+    fail('older Policy and Safety tab did not render only its saved card');
+  }
+  for (const html of [olderBriefing, olderEdtechPage, olderBusinessPage, olderTechnicalPage, olderPolicyPage]) {
     for (const label of tabLabels) {
       if (!html.includes(`>${label}<`)) fail(`older week hid the ${label} tab`);
     }
   }
   const olderNav = readPage('digest/2026-W39/index.html');
-  for (const href of ['/digest/2026-W39/edtech', '/digest/2026-W39/business', '/digest/2026-W39/technical']) {
+  for (const href of [
+    '/digest/2026-W39/edtech',
+    '/digest/2026-W39/business',
+    '/digest/2026-W39/technical',
+    '/digest/2026-W39/policy-and-safety',
+  ]) {
     if (!olderNav.includes(`href="${href}"`)) fail(`older week tab does not link to ${href}`);
   }
   if (!olderNav.includes('← Latest week')) fail('older week is missing the link back to the latest week');
