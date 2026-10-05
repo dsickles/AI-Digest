@@ -1,5 +1,8 @@
 import { basename } from 'node:path';
+import { formatDate, formatWeekRange } from './format-date.mjs';
 import { isPublishedWeek, readerNow, selectLatestPublished } from './week-rules.mjs';
+
+export { formatDate, formatWeekRange };
 
 export const TOPICS = ['edtech', 'business', 'technical', 'policy-and-safety'] as const;
 
@@ -132,35 +135,6 @@ export function weekPath(weekId: string, view: 'briefing' | Topic): string {
 export function latestPath(view: 'briefing' | Topic): string {
   if (view === 'briefing') return '/';
   return `/${view}`;
-}
-
-const monthDayYear = new Intl.DateTimeFormat('en-US', {
-  timeZone: TIME_ZONE,
-  month: 'short',
-  day: 'numeric',
-  year: 'numeric',
-});
-
-const monthDay = new Intl.DateTimeFormat('en-US', {
-  timeZone: TIME_ZONE,
-  month: 'short',
-  day: 'numeric',
-});
-
-const yearOnly = new Intl.DateTimeFormat('en-US', {
-  timeZone: TIME_ZONE,
-  year: 'numeric',
-});
-
-export function formatDate(iso: string): string {
-  return monthDayYear.format(new Date(iso));
-}
-
-export function formatWeekRange(weekStart: string, weekEnd: string): string {
-  const startYear = yearOnly.format(new Date(weekStart));
-  const endYear = yearOnly.format(new Date(weekEnd));
-  const startLabel = startYear === endYear ? monthDay.format(new Date(weekStart)) : formatDate(weekStart);
-  return `Week of ${startLabel} – ${formatDate(weekEnd)}`;
 }
 
 export function synthesisExcerpt(synthesis: string): string {
