@@ -175,6 +175,48 @@ function splitFooter(html) {
   return { main: html.slice(0, index), footer: html.slice(index) };
 }
 
+function alsoSeenCount(html) {
+  return {
+    headings: html.match(/Also seen this week/g)?.length ?? 0,
+    sections: html.match(/<aside\b[^>]*\bid="also-seen"/g)?.length ?? 0,
+  };
+}
+
+function assertBriefingAlsoSeen(html, items, label) {
+  const { headings, sections } = alsoSeenCount(html);
+  if (items.length === 0) {
+    if (headings !== 0 || sections !== 0 || html.includes('id="also-seen"')) {
+      fail(`${label} shows Also seen with no thin items`);
+    }
+    return;
+  }
+  if (headings !== 1 || sections !== 1) {
+    fail(`${label} should show Also seen once (heading ${headings}, section ${sections})`);
+  }
+  const parts = splitFooter(html);
+  if (!parts.footer.includes('<h2>Also seen this week</h2>')) {
+    fail(`${label} Also seen heading is missing`);
+  }
+  if (!parts.footer.includes('class="thin"')) fail(`${label} Also seen section is empty`);
+  assertOrder(parts.footer, 'thin', items, `${label} footer`);
+  for (const item of items) {
+    assertCard(parts.footer, item);
+    if (parts.main.includes(`id="${item.id}"`)) fail(`${label} moved thin item ${item.id} into the main list`);
+  }
+}
+
+function assertTopicOmitsAlsoSeen(html, items, label) {
+  const { headings, sections } = alsoSeenCount(html);
+  if (headings !== 0 || sections !== 0 || html.includes('id="also-seen"')) {
+    fail(`${label} shows Also seen`);
+  }
+  for (const item of items) {
+    if (html.includes(`id="${item.id}"`) || decode(html).includes(item.title)) {
+      fail(`${label} placed thin item ${item.id} in the topic list`);
+    }
+  }
+}
+
 function summaries(article) {
   return [...article.matchAll(/<p class="summary">([^<]*)<\/p>/g)].map((match) => decode(match[1]).trim());
 }
@@ -303,16 +345,12 @@ if (articleIds(homeParts.main, 'card').length !== week.briefing.top.length) {
   fail('briefing must show the Top list only');
 }
 for (const card of week.briefing.top) assertCard(homeParts.main, card);
-assertOrder(homeParts.footer, 'thin', week.footer_aside, 'home footer');
-for (const item of week.footer_aside) assertCard(homeParts.footer, item);
+assertBriefingAlsoSeen(pages.home, week.footer_aside, 'current briefing');
 
 const businessParts = splitFooter(pages.business);
 assertOrder(businessParts.main, 'card', week.topics.business, 'business');
 for (const card of week.topics.business) assertCard(businessParts.main, card);
-assertOrder(businessParts.footer, 'thin', week.footer_aside, 'business footer');
-if (week.footer_aside[0] && businessParts.main.includes(week.footer_aside[0].id)) {
-  fail('thin item was placed in the business list');
-}
+assertTopicOmitsAlsoSeen(pages.business, week.footer_aside, 'business');
 const degradedBusiness = week.topics.business.filter((card) => card.summary_status !== 'ok');
 const degradedShown = decode(businessParts.main).split(DEGRADED_BODY).length - 1;
 if (degradedShown !== degradedBusiness.length) {
@@ -324,13 +362,19 @@ if (degradedShown !== degradedBusiness.length) {
 const edtechParts = splitFooter(pages.edtech);
 assertOrder(edtechParts.main, 'card', week.topics.edtech, 'edtech');
 for (const card of week.topics.edtech) assertCard(edtechParts.main, card);
+assertTopicOmitsAlsoSeen(pages.edtech, week.footer_aside, 'Education');
 
 const technicalParts = splitFooter(pages.technical);
 assertOrder(technicalParts.main, 'card', week.topics.technical, 'technical');
 for (const card of week.topics.technical) assertCard(technicalParts.main, card);
+assertTopicOmitsAlsoSeen(pages.technical, week.footer_aside, 'technical');
+assertTopicOmitsAlsoSeen(pages.policy, week.footer_aside, 'Policy and Safety');
+assertTopicOmitsAlsoSeen(pages.digestBusiness, week.footer_aside, 'business permalink');
+assertTopicOmitsAlsoSeen(pages.digestPolicy, week.footer_aside, 'archived Policy and Safety');
 
 const digestParts = splitFooter(pages.digest);
 assertOrder(digestParts.main, 'card', week.briefing.top, 'permalink briefing');
+assertBriefingAlsoSeen(pages.digest, week.footer_aside, 'current week briefing permalink');
 if (!pages.digestBusiness.includes('aria-current="page"')) fail('business permalink is missing the current tab');
 
 const excerpt = week.briefing.synthesis.trim().match(/^.+?[.!?](?=\s|$)/)?.[0];
@@ -421,6 +465,16 @@ const olderTechnicalThird = fixtureCard(
   'Saved technical third summary from the file.',
   '2026-09-25T15:00:00Z',
 );
+const olderThin = {
+  id: 'saved-thin-footer',
+  title: 'Saved thin footer item from the file.',
+  url: 'https://example.com/saved-thin-footer',
+  publisher: { source_id: 'import-ai', name: 'Import AI' },
+  published_at: '2026-09-25T18:00:00Z',
+  category: 'technical',
+  media: 'article',
+  summary_status: 'thin',
+};
 const olderPolicy = fixtureCard(
   'saved-policy',
   'policy-and-safety',
@@ -440,6 +494,7 @@ const olderWeek = completeWeek(
     'policy-and-safety': [olderPolicy],
   },
 );
+olderWeek.footer_aside = [olderThin];
 const openWeek = completeWeek(
   '2026-W41',
   '2026-10-04T00:00:00-04:00',
@@ -543,11 +598,22 @@ try {
     fail('archive is missing the older week range');
   }
 
-  const olderBriefing = decode(readPage('digest/2026-W39/index.html'));
-  const olderEdtechPage = decode(readPage('digest/2026-W39/edtech/index.html'));
-  const olderBusinessPage = decode(readPage('digest/2026-W39/business/index.html'));
-  const olderTechnicalPage = decode(readPage('digest/2026-W39/technical/index.html'));
-  const olderPolicyPage = decode(readPage('digest/2026-W39/policy-and-safety/index.html'));
+  const olderBriefingHtml = readPage('digest/2026-W39/index.html');
+  const olderEdtechHtml = readPage('digest/2026-W39/edtech/index.html');
+  const olderBusinessHtml = readPage('digest/2026-W39/business/index.html');
+  const olderTechnicalHtml = readPage('digest/2026-W39/technical/index.html');
+  const olderPolicyHtml = readPage('digest/2026-W39/policy-and-safety/index.html');
+  assertBriefingAlsoSeen(olderBriefingHtml, [olderThin], 'archived briefing');
+  assertTopicOmitsAlsoSeen(olderEdtechHtml, [olderThin], 'archived Education');
+  assertTopicOmitsAlsoSeen(olderBusinessHtml, [olderThin], 'archived business');
+  assertTopicOmitsAlsoSeen(olderTechnicalHtml, [olderThin], 'archived technical');
+  assertTopicOmitsAlsoSeen(olderPolicyHtml, [olderThin], 'archived Policy and Safety');
+  assertBriefingAlsoSeen(readPage('digest/1999-W01/index.html'), [], 'briefing with no thin items');
+  const olderBriefing = decode(olderBriefingHtml);
+  const olderEdtechPage = decode(olderEdtechHtml);
+  const olderBusinessPage = decode(olderBusinessHtml);
+  const olderTechnicalPage = decode(olderTechnicalHtml);
+  const olderPolicyPage = decode(olderPolicyHtml);
   if (!olderBriefing.includes(OLDER_SYNTHESIS)) fail('older briefing does not render the saved synthesis');
   if (olderBriefing.includes(week.briefing.synthesis)) fail('older briefing picked up the latest week synthesis');
   for (const saved of [

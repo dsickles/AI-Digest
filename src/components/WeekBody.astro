@@ -33,7 +33,7 @@ const topicCards = view === 'briefing' ? [] : week.topics[view];
 }
 
 {
-  week.footer_aside.length > 0 && (
+  view === 'briefing' && week.footer_aside.length > 0 && (
     <aside id="also-seen">
       <h2>Also seen this week</h2>
       <ul class="thin-list">
