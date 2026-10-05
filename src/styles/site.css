@@ -113,6 +113,14 @@ h3 {
   border-bottom-color: currentColor;
 }
 
+.nav-sections a.muted {
+  color: var(--muted);
+}
+
+.nav-sections a.muted[aria-current='page'] {
+  border-bottom-color: var(--text);
+}
+
 a:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;

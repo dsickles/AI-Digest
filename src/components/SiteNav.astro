@@ -1,20 +1,25 @@
 ---
-import { latestPath, weekPath, TOPIC_LABELS, type Topic } from '../lib/weeks';
+import { latestPath, weekPath, TOPIC_LABELS, type Topic, type Week } from '../lib/weeks';
 
 interface Props {
   active: 'briefing' | Topic | 'archive';
   scope: 'latest' | 'week';
-  weekId?: string;
+  week?: Week;
 }
 
-const { active, scope, weekId } = Astro.props;
+const { active, scope, week } = Astro.props;
 
 // Visible order only. Topic ids and routes stay on the canonical list.
 const sections: Topic[] = ['business', 'technical', 'edtech', 'policy-and-safety'];
 
 function hrefFor(view: 'briefing' | Topic): string {
-  if (scope === 'week' && weekId) return weekPath(weekId, view);
+  if (scope === 'week' && week) return weekPath(week.week_id, view);
   return latestPath(view);
+}
+
+function storyCount(topic: Topic): number {
+  const stories = week?.topics[topic];
+  return Array.isArray(stories) ? stories.length : 0;
 }
 ---
 
@@ -23,10 +28,20 @@ function hrefFor(view: 'briefing' | Topic): string {
 </nav>
 <nav class="nav nav-sections" aria-label="Sections">
   {
-    sections.map((topic) => (
-      <a href={hrefFor(topic)} aria-current={active === topic ? 'page' : undefined}>
-        {TOPIC_LABELS[topic]}
-      </a>
-    ))
+    sections.map((topic) => {
+      const label = TOPIC_LABELS[topic];
+      const count = storyCount(topic);
+      const stories = count === 1 ? 'story' : 'stories';
+      return (
+        <a
+          href={hrefFor(topic)}
+          aria-current={active === topic ? 'page' : undefined}
+          aria-label={`${label}, ${count} ${stories}`}
+          class={count === 0 ? 'muted' : undefined}
+        >
+          {label} {count}
+        </a>
+      );
+    })
   }
 </nav>

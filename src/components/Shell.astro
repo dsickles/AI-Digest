@@ -40,7 +40,7 @@ const archiveCurrent = active === 'archive' ? 'page' : undefined;
       <p class="back"><a href="/">← Latest week</a></p>
     )}
   </header>
-  <SiteNav active={active} scope={scope} weekId={week?.week_id} />
+  <SiteNav active={active} scope={scope} week={week} />
   <main>
     <slot />
   </main>

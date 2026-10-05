@@ -8,6 +8,7 @@ import {
   isPublishedWeek,
   isoWeekId,
   newYorkParts,
+  readerNow,
   selectLatestPublished,
 } from '../src/lib/week-rules.mjs';
 
@@ -292,7 +293,98 @@ function linkHrefs(block) {
   return [...block.matchAll(/<a\b[^>]*href="([^"]*)"[^>]*>/g)].map((match) => match[1]);
 }
 
-function assertReaderChrome(html, label) {
+let builtAsOf = readerNow();
+
+function topicCount(doc, id) {
+  const list = doc?.topics?.[id];
+  return Array.isArray(list) ? list.length : 0;
+}
+
+function asideCount(doc, id) {
+  if (!Array.isArray(doc?.footer_aside)) return 0;
+  return doc.footer_aside.filter((card) => card?.category === id).length;
+}
+
+function readWeekDoc(weekId) {
+  const path = `content/digests/${weekId}.json`;
+  if (!existsSync(path)) fail(`missing week ${weekId} while checking section counts`);
+  return JSON.parse(readFileSync(path, 'utf8'));
+}
+
+function weekForChrome(briefingHref) {
+  if (briefingHref === '/') {
+    const docs = readdirSync('content/digests')
+      .filter((name) => name.endsWith('.json'))
+      .map((name) => JSON.parse(readFileSync(join('content/digests', name), 'utf8')));
+    const selected = selectLatestPublished(docs, builtAsOf);
+    if (!selected) fail('section counts have no published week');
+    return selected;
+  }
+  const match = briefingHref?.match(/^\/digest\/(\d{4}-W\d{2})$/);
+  if (!match) return null;
+  return readWeekDoc(match[1]);
+}
+
+function pageTopic(file) {
+  const normalized = String(file).replaceAll('\\', '/');
+  const match = normalized.match(/(?:^|\/)(business|technical|edtech|policy-and-safety)\/index\.html$/);
+  return match?.[1] ?? null;
+}
+
+function sectionAnchors(block) {
+  const anchors = [];
+  for (const match of block.matchAll(/<a\b([^>]*)>([^<]*)<\/a>/g)) {
+    const attrs = match[1];
+    const className = attrs.match(/\bclass="([^"]*)"/)?.[1] ?? '';
+    anchors.push({
+      text: decode(match[2]).replace(/\s+/g, ' ').trim(),
+      href: attrs.match(/\bhref="([^"]*)"/)?.[1] ?? '',
+      current: /\baria-current="page"/.test(attrs),
+      muted: className.split(/\s+/).includes('muted'),
+    });
+  }
+  return anchors;
+}
+
+function assertSectionCounts(html, file, label) {
+  const sections = navBlock(html, 'nav-sections');
+  const briefing = navBlock(html, 'nav-briefing');
+  const anchors = sectionAnchors(sections);
+  if (anchors.length !== SECTION_IDS.length) {
+    fail(`${label} is missing a section story count`);
+  }
+  const doc = weekForChrome(linkHrefs(briefing)[0]);
+  if (!doc) fail(`${label} section counts have no week`);
+  const topicOnPage = pageTopic(file);
+  const rendered = topicOnPage ? articleIds(splitFooter(html).main, 'card').length : null;
+  anchors.forEach((anchor, index) => {
+    const id = SECTION_IDS[index];
+    const name = SECTION_LABELS[index];
+    const parsed = anchor.text.match(/^(Business|Technical|Education|Policy and Safety) (\d+)$/);
+    if (!parsed || parsed[1] !== name) {
+      fail(`${label} ${name} is missing its story count (saw "${anchor.text}")`);
+    }
+    const shown = Number(parsed[2]);
+    const mainFeed = topicCount(doc, id);
+    const aside = asideCount(doc, id);
+    if (aside > 0 && shown === mainFeed + aside) {
+      fail(`${label} ${name} counts Also seen items`);
+    }
+    if (shown !== mainFeed) {
+      fail(`${label} ${name} count is ${shown} but the main feed has ${mainFeed}`);
+    }
+    if (topicOnPage === id && shown !== rendered) {
+      fail(`${label} ${name} count is ${shown} but the page renders ${rendered} main-feed stories`);
+    }
+    if (shown === 0 && !anchor.muted) fail(`${label} zero section ${name} is not muted`);
+    if (shown > 0 && anchor.muted) fail(`${label} ${name} is muted with ${shown} stories`);
+    if (topicOnPage === id && !anchor.current) {
+      fail(`${label} ${shown === 0 ? 'zero ' : ''}${name} lost its active marker`);
+    }
+  });
+}
+
+function assertReaderChrome(html, label, file = '') {
   const briefing = navBlock(html, 'nav-briefing');
   const sections = navBlock(html, 'nav-sections');
   if (!briefing) fail(`${label} is missing the Briefing line`);
@@ -306,9 +398,9 @@ function assertReaderChrome(html, label) {
   if (briefingLabels.length !== 1 || briefingLabels[0] !== 'Briefing') {
     fail(`${label} Briefing line reads ${briefingLabels.join(', ') || 'nothing'}`);
   }
-  const sectionLabels = linkLabels(sections);
+  const sectionLabels = sectionAnchors(sections).map((anchor) => anchor.text.replace(/ \d+$/, ''));
   if (sectionLabels.join('|') !== SECTION_LABELS.join('|')) {
-    fail(`${label} sections are ${sectionLabels.join(', ') || 'missing'}`);
+    fail(`${label} sections are ${sectionAnchors(sections).map((anchor) => anchor.text).join(', ') || 'missing'}`);
   }
   if (sections.includes('>Archive<') || sections.includes('href="/archive"')) {
     fail(`${label} Archive is in the sections row`);
@@ -352,11 +444,12 @@ function assertReaderChrome(html, label) {
   const between = decode(afterTime.slice(0, archiveAt)).replace(/&middot;/gi, '·').replace(/<[^>]*>/g, '');
   if (between.includes(',')) fail(`${label} has a comma between Updated and Archive`);
   if (!/^[\s·]*$/.test(between)) fail(`${label} puts "${between}" between Updated and Archive`);
+  assertSectionCounts(html, file, label);
 }
 
 function assertBuiltChrome(scope) {
   for (const file of walk(DIST)) {
-    assertReaderChrome(readFileSync(file, 'utf8'), `${scope} ${file}`);
+    assertReaderChrome(readFileSync(file, 'utf8'), `${scope} ${file}`, file);
   }
 }
 
@@ -406,9 +499,9 @@ if (/class="[^"]*(status|banner|notice|pipeline)/i.test(allHtml)) {
   fail('built site contains a status, banner, or notice element');
 }
 
-const tabLabels = ['Briefing', 'Education', 'Business', 'Technical', 'Policy and Safety', 'Archive'];
+const fixedTabs = ['Briefing', 'Archive'];
 for (const html of Object.values(pages)) {
-  for (const label of tabLabels) {
+  for (const label of fixedTabs) {
     if (!html.includes(`>${label}<`)) fail(`missing tab ${label}`);
   }
 }
@@ -545,6 +638,13 @@ const fixture = {
 function rebuild(extraEnv = {}) {
   const env = { ...process.env, ...extraEnv };
   if (!Object.hasOwn(extraEnv, 'DIGEST_AS_OF')) delete env.DIGEST_AS_OF;
+  if (typeof env.DIGEST_AS_OF === 'string' && env.DIGEST_AS_OF.length > 0) {
+    const parsed = new Date(env.DIGEST_AS_OF);
+    if (Number.isNaN(parsed.getTime())) fail(`DIGEST_AS_OF is not a time: ${env.DIGEST_AS_OF}`);
+    builtAsOf = parsed;
+  } else {
+    builtAsOf = new Date();
+  }
   const result = spawnSync('pnpm', ['exec', 'astro', 'build'], { stdio: 'inherit', env });
   if (result.status !== 0) fail('astro build failed');
 }
@@ -682,7 +782,7 @@ try {
   }
   if (filledBusiness.includes('api_error')) fail('degraded fixture card shows its status name');
   for (const html of [emptyEdtech, emptyTechnical, emptyPolicy, filledBusiness]) {
-    for (const label of tabLabels) {
+    for (const label of fixedTabs) {
       if (!html.includes(`>${label}<`)) fail(`a zero-item week hid the ${label} tab`);
     }
   }
@@ -780,7 +880,7 @@ try {
     fail(`Policy and Safety date-only card shows ${policyDateOnlyLabel ?? 'nothing'}`);
   }
   for (const html of [olderBriefing, olderEdtechPage, olderBusinessPage, olderTechnicalPage, olderPolicyPage]) {
-    for (const label of tabLabels) {
+    for (const label of fixedTabs) {
       if (!html.includes(`>${label}<`)) fail(`older week hid the ${label} tab`);
     }
   }
