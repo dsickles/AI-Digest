@@ -1,85 +1,110 @@
 # Dan's AI Digest
 
-A static site for Dan's weekly AI digest. The app is [Astro](https://astro.build/) with `output: 'static'`. Weekly files live in `content/digests/`. The site reads those files at build time and renders the latest week whose Saturday 23:59:59 America/New_York has already passed. A later file for a week that is still open, including a half-finished draft, stays off the home page and the archive. No LLM, Gemini, Python, or SQLite runs at build or serve time.
+A **personal weekly AI reading site**: one finished week at a time, with a short Briefing, topic lists you can skim, and an archive of past weeks. Think a quiet newsletter homepage you own, not a firehose and not a SaaS product.
 
-## Prerequisites
+You open the site to read. Editors (or bots) ship each week as a file in this repo. The site builds from those files. It does not fetch the live web, call an LLM, or talk to a database when someone visits.
 
-- [Node.js](https://nodejs.org/) **22.12** or newer
-- [pnpm](https://pnpm.io/) **10** (this repo pins `packageManager` to pnpm 10.33.3)
+**Live site:** https://dans-ai-digest.vercel.app
 
-Enable Corepack if `pnpm` is not already on your PATH:
+## Why it exists
 
-```bash
-corepack enable
-corepack prepare pnpm@10.33.3 --activate
-```
+| Intent | Meaning |
+|--------|---------|
+| One week, done | Sunday through Saturday (America/New_York). Only a finished week appears on the home page. |
+| Briefing first | A short synthesis and a Top 5, not every link in one pile. |
+| Topics for skim | Business, Technical, Education, and Policy and Safety each get their own list. |
+| Thin items aside | Quick mentions live under Also seen this week on Briefing only, not in the main topic lists. |
+| Own the archive | Past weeks stay readable from the Archive control on the week line. |
 
-## Install and start
+## What you get
 
-From the repository root:
+- A **Briefing** page: the week's synthesis and Top 5
+- **Topic tabs** in this order: Business, Technical, Education, Policy and Safety
+- **Also seen this week** on Briefing (including an archived briefing), omitted when that week has nothing thin to show
+- An **Archive** of past weeks, each with a Read this week link
+- Week content checked into git under `content/digests/`
+- A static site anyone can open without an account or PIN
 
-```bash
-pnpm install
-pnpm dev
-```
+## Reading a week
 
-Open [http://localhost:4321](http://localhost:4321). That is the latest week’s Briefing. With the checked-in file, the week is **2026-W40**.
+Open the live site (or your local copy). You land on the latest finished week's Briefing.
 
-- **Briefing** shows the synthesis and the Top 5 only.
-- **Education**, **Business**, **Technical**, and **Policy and Safety** stay in the nav and show that topic’s main list in file order. An empty topic stays on the nav and says so.
-- **Education** is empty in the checked-in week and says so. **Policy and Safety** is empty there too. A degraded card, when a week has one, uses exactly `The summary couldn't be generated this week.`
-- **Also seen this week** appears on Briefing only, including an archived briefing. It lists thin items as links with no summary. The checked-in week has one, the Simon Willison sponsors newsletter. When a week has no thin items, Briefing omits that heading. Topic pages do not show it.
-- **Archive** shows an excerpt and a **Read this week** link to `/digest/2026-W40`.
+- **Read the Briefing.** Synthesis at the top, Top 5 under it. If the week has thin items, Also seen this week lists them as links without summaries.
+- **Skim a topic.** Use Business, Technical, Education, or Policy and Safety. Each page shows that topic's main list in file order. An empty topic still appears and says so.
+- **Open a story.** The title is the link to the article. Where a Summary control exists, it expands or collapses the summary without leaving the page. Top 5 rows stay open. Video items show a play control on the row.
+- **Browse the archive.** Archive sits on the week line next to Updated, not in the topic row. Open a past week with Read this week.
 
-## Static build
+A week that is still open (including a half-finished draft file) stays off the home page and out of the archive until its Saturday 23:59:59 America/New_York has passed.
 
-```bash
-pnpm build
-pnpm preview
-```
+## Try it on your computer
 
-`pnpm build` writes the site to `dist/`. `pnpm preview` serves that folder locally, again at [http://localhost:4321](http://localhost:4321).
+You run a local copy to read the checked-in week the same way the live site does. No account, no PIN, no calendar of your own to connect.
 
-## Layout
+1. Install **Node.js 22.12 or newer** from [nodejs.org](https://nodejs.org). Close and reopen your terminal after the installer finishes.
+2. Check versions: `node -v` should be `v22.12` or higher. This repo uses **pnpm 10**. If `pnpm -v` is missing:
 
-```
-src/pages/          Briefing, topic tabs, week permalinks, archive
-public/             Static assets copied as-is
-content/digests/    Week files, `content/digests/{week_id}.json`
-content/reports/    Optional ops reports, `content/reports/{week_id}.json`
-config/sources.yaml Checked-in source list
-schema/             JSON Schema for week files and optional reports
-```
+   ```bash
+   corepack enable
+   corepack prepare pnpm@10.33.3 --activate
+   ```
 
-`config/sources.yaml` is the source registry. The site does not fetch those sources.
+3. Download the project and open its folder:
 
-## Week files
+   ```bash
+   git clone https://github.com/dsickles/AI-Digest.git
+   cd AI-Digest
+   ```
 
-`content/digests/{week_id}.json` is the week: metadata, Briefing synthesis plus Top 5, per-topic main lists, `main_feed`, and a thin-link `footer_aside`. The schema is `schema/digest.schema.json`. Structural rules that JSON Schema cannot express (the Sunday–Saturday America/New_York window, source ids, and list equality) live in `scripts/validate-weeks.mjs`.
+   You are in the right place when the folder contains `package.json`.
+4. Install and start:
 
-`content/reports/{week_id}.json` is optional. A missing report does not fail the check. When a report is present, `schema/report.schema.json` applies.
+   ```bash
+   pnpm install
+   pnpm dev
+   ```
 
-Run the same checks as schema CI:
+   Leave that terminal open. Open [http://localhost:4321](http://localhost:4321). You should see the latest finished week's Briefing.
+5. Click around using **Reading a week**. Topic tabs and Archive should match the description above.
+6. Optional production-shaped build (still local):
+
+   ```bash
+   pnpm build
+   pnpm preview
+   ```
+
+   Open [http://localhost:4321](http://localhost:4321) again. Same site, served from `dist/`.
+
+## How a week lands in the site
+
+Each week is one JSON file: `content/digests/{week_id}.json` (for example `2026-W40.json`). That file holds the Briefing, Top 5, topic lists, and Also seen links. The schema is `schema/digest.schema.json`. Extra structural checks live in `scripts/validate-weeks.mjs`.
+
+Optional ops notes can sit beside a week as `content/reports/{week_id}.json`. A missing report is fine.
+
+Before you trust a change:
 
 ```bash
 pnpm validate:weeks
 pnpm validate:weeks:self-test
+pnpm build
+pnpm check:reader
 ```
 
-`pnpm validate:weeks` checks the committed week files and passes a tree that has no report. `pnpm validate:weeks:self-test` does that, then writes a temporary invalid week, expects the checker to reject it, and deletes the temp file. Nothing under `content/` is left invalid.
+`pnpm check:reader` reads the built `dist/` folder and checks that Briefing, topics, Also seen rules, and Archive links match the committed week.
 
-After `pnpm build`, `pnpm check:reader` reads `dist/` and checks the committed week: file order, Top 5 only, Also seen on Briefing when that week has thin items, no Also seen heading when a week has none, no Also seen on topic pages, archive’s **Read this week** link, and the absence of status chrome. A degraded card is not required in the committed week. When one is present, its summary is the locked sentence. The reader fixture covers that sentence.
+The checked-in source list is `config/sources.yaml`. The site does not fetch those sources when someone visits; it only renders the week files.
 
 ## Deploy on Vercel
 
-The intended public address is https://dans-ai-digest.vercel.app.
+The public address is https://dans-ai-digest.vercel.app. Do not create or point this project at a different hostname without confirming that URL first.
 
-This is a static Astro site. Do not add `vercel.json`, a Vercel adapter, or environment variables for the reader.
-
-In the Vercel project settings:
+This is a static Astro site. In the Vercel project:
 
 - Framework Preset: **Astro**
 - Output Directory: **`dist`**
-- Build Command: `pnpm build` (the Astro preset’s `astro build` writes the same `dist/` directory)
+- Build Command: `pnpm build`
 
-`astro.config.mjs` sets `output: 'static'`. The preset serves `dist/` as static files.
+Do not add `vercel.json`, a Vercel adapter, or environment variables for reading weeks. The preset serves `dist/` as static files.
+
+## Stack
+
+Astro (static output), week JSON in git, JSON Schema plus `validate:weeks` / `check:reader` scripts. No LLM, Gemini, Python, or SQLite in the site path.
