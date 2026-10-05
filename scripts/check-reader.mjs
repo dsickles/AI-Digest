@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { formatDate } from '../src/lib/format-date.mjs';
 import {
   digestWeekId,
   isCompleteWeek,
@@ -119,7 +120,24 @@ function proveWeekRules() {
   console.log('week rules passed for 2026-W40, Sunday Oct 4, and Wednesday Oct 7');
 }
 
+function proveReaderDates() {
+  const stamp = '2026-10-03T03:00:18Z';
+  const shown = formatDate(stamp);
+  if (shown.includes('Oct 3')) fail(`${stamp} renders as Oct 3`);
+  if (shown !== 'Oct 2, 2026') fail(`${stamp} shows ${shown}`);
+
+  const sameInstant = formatDate('2026-10-03T03:00:18+00:00');
+  if (sameInstant.includes('Oct 3')) fail('2026-10-03T03:00:18+00:00 renders as Oct 3');
+  if (sameInstant !== 'Oct 2, 2026') fail(`2026-10-03T03:00:18+00:00 shows ${sameInstant}`);
+
+  const dateOnly = '2026-10-03';
+  const dateOnlyShown = formatDate(dateOnly);
+  if (dateOnlyShown !== 'Oct 3, 2026') fail(`date-only ${dateOnly} shows ${dateOnlyShown}`);
+  console.log('reader dates passed for 2026-10-03T03:00:18Z and date-only 2026-10-03');
+}
+
 proveWeekRules();
+proveReaderDates();
 
 function decode(value) {
   return value
@@ -274,6 +292,17 @@ if (!pages.business.includes('rel="canonical" href="/digest/2026-W40/business"')
   fail('business canonical should be the week topic permalink');
 }
 if (!pages.home.includes('Week of Sep 27 – Oct 3, 2026')) fail('home is missing the week range');
+
+const easternStamp = '2026-10-03T03:00:18+00:00';
+const easternPattern = easternStamp.replaceAll('+', '\\+');
+const easternLabels = [...allHtml.matchAll(new RegExp(`<time datetime="${easternPattern}">([^<]*)</time>`, 'g'))].map(
+  (match) => decode(match[1]).trim(),
+);
+if (easternLabels.length === 0) fail(`built site is missing ${easternStamp}`);
+for (const label of easternLabels) {
+  if (label.includes('Oct 3')) fail(`${easternStamp} renders as Oct 3`);
+  if (label !== 'Oct 2, 2026') fail(`${easternStamp} shows ${label}`);
+}
 if (!decode(pages.home).includes(week.briefing.synthesis)) fail('briefing is missing the synthesis');
 if (!decode(pages.home).includes('September sponsors-only newsletter')) {
   fail('home is missing the September sponsors footer');
