@@ -142,3 +142,14 @@ sources:
     display_name: AI Alignment Forum
     tag: policy-and-safety
     enabled: true
+  # Thursday Pulse items arrive as only a few hundred characters in the feed, so
+  # they will usually be thin footer links; Tuesday deep dives and Wednesday
+  # podcast posts are full text.
+  - id: pragmatic-engineer
+    type: rss
+    url: https://newsletter.pragmaticengineer.com/feed
+    home_url: https://newsletter.pragmaticengineer.com/
+    display_name: The Pragmatic Engineer (Gergely Orosz)
+    tag: technical
+    ai_only: true
+    enabled: true

@@ -705,7 +705,7 @@ const ORIGINAL_EIGHT = [
   },
 ];
 
-const APPROVED_TEN = [
+const APPROVED_AFTER_EIGHT = [
   {
     id: 'hechinger-report',
     type: 'rss',
@@ -797,6 +797,16 @@ const APPROVED_TEN = [
     tag: 'policy-and-safety',
     enabled: true,
   },
+  {
+    id: 'pragmatic-engineer',
+    type: 'rss',
+    url: 'https://newsletter.pragmaticengineer.com/feed',
+    home_url: 'https://newsletter.pragmaticengineer.com/',
+    display_name: 'The Pragmatic Engineer (Gergely Orosz)',
+    tag: 'technical',
+    ai_only: true,
+    enabled: true,
+  },
 ];
 
 function sourceArticle(sample, id, sourceId, name, category, title, summary) {
@@ -827,12 +837,18 @@ function proveSourceRules(sources, sample) {
     console.error('self-test: the original eight sources changed');
     return false;
   }
-  if (!deepEqual(doc.sources.slice(8), APPROVED_TEN) || doc.sources.length !== 18) {
-    console.error('self-test: approved sources are not the ten Dan listed');
+  if (!deepEqual(doc.sources.slice(8), APPROVED_AFTER_EIGHT) || doc.sources.length !== 19) {
+    console.error('self-test: approved sources do not match the registry after the original eight');
     return false;
   }
-  if (sources.get('educause-review')?.aiOnly !== true || sources.get('education-week')?.aiOnly !== false) {
-    console.error('self-test: AI-only must be set on EDUCAUSE Review and not on Education Week');
+  if (
+    sources.get('educause-review')?.aiOnly !== true ||
+    sources.get('education-week')?.aiOnly !== false ||
+    sources.get('pragmatic-engineer')?.aiOnly !== true
+  ) {
+    console.error(
+      'self-test: AI-only must be set on EDUCAUSE Review and The Pragmatic Engineer, and not on Education Week',
+    );
     return false;
   }
   if (sources.get('ai-alignment-forum')?.tag !== 'policy-and-safety' || sources.get('metr')?.tag !== 'technical') {
