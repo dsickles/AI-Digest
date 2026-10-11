@@ -222,7 +222,6 @@ sources:
     display_name: Schneier on Security
     tag: policy-and-safety
     enabled: true
-  # The feed is excerpt only and needs a page fetch for the body.
   - id: nextgov-fcw
     type: rss
     url: https://www.nextgov.com/rss/artificial-intelligence/
@@ -233,8 +232,8 @@ sources:
   # About 3 posts a day, and the feed is titles only.
   - id: tech-policy-press
     type: rss
-    url: https://techpolicy.press/rss/feed.xml
-    home_url: https://techpolicy.press/
+    url: https://www.techpolicy.press/rss/feed.xml
+    home_url: https://www.techpolicy.press/
     display_name: Tech Policy Press
     tag: policy-and-safety
     ai_only: true
