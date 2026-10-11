@@ -1,13 +1,14 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { formatDate } from '../src/lib/format-date.mjs';
+import { formatDate, formatWeekRange } from '../src/lib/format-date.mjs';
 import {
   digestWeekId,
   isCompleteWeek,
   isPublishedWeek,
   isoWeekId,
   newYorkParts,
+  readerNow,
   selectLatestPublished,
 } from '../src/lib/week-rules.mjs';
 
@@ -223,13 +224,21 @@ function assertBriefingAlsoSeen(html, items, label) {
   }
 }
 
+function cardTitles(html) {
+  return [...html.matchAll(/<h3\b[^>]*class="[^"]*\bcard-title\b[^"]*"[^>]*>([\s\S]*?)<\/h3>/g)].map((match) =>
+    decode(match[1].replace(/<[^>]*>/g, '')).replace(/\s+/g, ' ').trim(),
+  );
+}
+
 function assertTopicOmitsAlsoSeen(html, items, label) {
   const { headings, sections } = alsoSeenCount(html);
   if (headings !== 0 || sections !== 0 || html.includes('id="also-seen"')) {
     fail(`${label} shows Also seen`);
   }
+  const titles = cardTitles(html);
   for (const item of items) {
-    if (html.includes(`id="${item.id}"`) || decode(html).includes(item.title)) {
+    // A summary may name the same story. The thin card itself has this id and heading.
+    if (html.includes(`id="${item.id}"`) || titles.includes(item.title)) {
       fail(`${label} placed thin item ${item.id} in the topic list`);
     }
   }
@@ -360,6 +369,190 @@ function assertBuiltChrome(scope) {
   }
 }
 
+const SECTION_TABS = SECTION_IDS.map((id, index) => ({ id, label: SECTION_LABELS[index] }));
+
+function loadDigestWeeks() {
+  const weeks = [];
+  for (const name of readdirSync('content/digests')) {
+    if (!name.endsWith('.json')) continue;
+    weeks.push(JSON.parse(readFileSync(join('content/digests', name), 'utf8')));
+  }
+  return weeks;
+}
+
+// Topic tabs render topics[id] only. Also seen is footer_aside and stays on Briefing.
+function sectionCards(weekDoc, topicId) {
+  const list = weekDoc.topics?.[topicId];
+  return Array.isArray(list) ? list : [];
+}
+
+function readerFacingText(weeks) {
+  return weeks
+    .flatMap((item) => [
+      item.briefing?.synthesis,
+      ...[...(item.main_feed ?? []), ...(item.footer_aside ?? []), ...(item.briefing?.top ?? [])].flatMap((card) => [
+        card.title,
+        card.summary,
+        card.body,
+        card.publisher?.name,
+      ]),
+    ])
+    .filter((value) => typeof value === 'string')
+    .join('\n');
+}
+
+function emptyMessage(label) {
+  return `Nothing in ${label} this week.`;
+}
+
+function emptyParagraphs(html) {
+  return [...html.matchAll(/<p\b([^>]*)>([\s\S]*?)<\/p>/g)]
+    .filter((match) => {
+      const classMatch = match[1].match(/class="([^"]*)"/);
+      return classMatch && classMatch[1].split(/\s+/).includes('empty');
+    })
+    .map((match) => decode(match[2]).replace(/\s+/g, ' ').trim());
+}
+
+function stylesheetText(html) {
+  const chunks = [...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/g)].map((match) => match[1]);
+  for (const match of html.matchAll(/<link\b[^>]*href="([^"]+\.css)"[^>]*>/g)) {
+    const href = match[1];
+    if (/^https?:/i.test(href)) continue;
+    const path = join(DIST, href.replace(/^\//, ''));
+    if (existsSync(path)) chunks.push(readFileSync(path, 'utf8'));
+  }
+  return chunks.join('\n');
+}
+
+function emptyRuleIsDimmed(html) {
+  return /\.empty\b[^{]*\{[^}]*color:\s*var\(--muted\)/.test(stylesheetText(html));
+}
+
+function assertDimmedEmptyState(html, label, expectEmpty, where) {
+  const message = emptyMessage(label);
+  const paragraphs = emptyParagraphs(html);
+  const hasMessage = decode(html).includes(message);
+  if (expectEmpty) {
+    if (!hasMessage) fail(`${where} empty ${label} tab has no empty state`);
+    if (!paragraphs.includes(message) || !emptyRuleIsDimmed(html)) {
+      fail(`${where} empty ${label} tab is missing the dimmed empty state`);
+    }
+    return;
+  }
+  if (hasMessage || paragraphs.length > 0) fail(`${where} ${label} showed an empty state while it had stories`);
+}
+
+function fromMain(html) {
+  const mainAt = html.indexOf('<main');
+  return mainAt === -1 ? html : html.slice(mainAt);
+}
+
+function sentenceHits(parts) {
+  return parts.reduce((total, part) => {
+    if (typeof part !== 'string' || !part.includes(DEGRADED_BODY)) return total;
+    return total + part.split(DEGRADED_BODY).length - 1;
+  }, 0);
+}
+
+function renderedCopy(cards) {
+  return cards.flatMap((card) => (card.summary_status === 'ok' ? [card.summary] : [card.body]));
+}
+
+function assertDegradedHits(html, parts, label) {
+  const shown = decode(fromMain(html)).split(DEGRADED_BODY).length - 1;
+  const expected = sentenceHits(parts);
+  if (shown !== expected) {
+    fail(`${label} showed the degraded sentence ${shown} times; the file has ${expected}`);
+  }
+}
+
+function assertSectionTab(html, weekDoc, topic, where) {
+  const cards = sectionCards(weekDoc, topic.id);
+  const parts = splitFooter(html);
+  const shown = articleIds(parts.main, 'card');
+  if (shown.length !== cards.length) {
+    fail(
+      `${where} ${topic.label} tab shows ${shown.length} stories; the week file has ${cards.length} (Also seen excluded)`,
+    );
+  }
+  assertOrder(parts.main, 'card', cards, `${where} ${topic.label}`);
+  for (const card of cards) assertCard(parts.main, card);
+  assertTopicOmitsAlsoSeen(html, weekDoc.footer_aside ?? [], `${where} ${topic.label}`);
+  assertDimmedEmptyState(html, topic.label, cards.length === 0, where);
+  assertDegradedHits(html, renderedCopy(cards), `${where} ${topic.label}`);
+}
+
+function assertBriefingTab(html, weekDoc, where) {
+  const cards = weekDoc.briefing.top;
+  const parts = splitFooter(html);
+  const shown = articleIds(parts.main, 'card');
+  if (shown.length !== cards.length) {
+    fail(`${where} briefing shows ${shown.length} stories; the file has ${cards.length}`);
+  }
+  if (!decode(parts.main).includes(`Top ${cards.length} this week`)) {
+    fail(`${where} briefing does not show Top ${cards.length} this week`);
+  }
+  if (!decode(html).includes(weekDoc.briefing.synthesis)) fail(`${where} briefing is missing the synthesis`);
+  assertOrder(parts.main, 'card', cards, `${where} briefing`);
+  for (const card of cards) assertCard(parts.main, card);
+  assertBriefingAlsoSeen(html, weekDoc.footer_aside ?? [], where);
+  assertDegradedHits(html, [weekDoc.briefing.synthesis, ...renderedCopy(cards)], `${where} briefing`);
+}
+
+function findShownCard(weekDoc, predicate) {
+  const pools = [['briefing', weekDoc.briefing.top], ...SECTION_TABS.map((topic) => [topic.id, sectionCards(weekDoc, topic.id)])];
+  for (const [place, cards] of pools) {
+    const card = cards.find(predicate);
+    if (card) return { place, card };
+  }
+  return null;
+}
+
+function assertMediaCase(weekDoc, pageMap, where, required) {
+  const video = findShownCard(weekDoc, (card) => card.media === 'video');
+  const article = findShownCard(weekDoc, (card) => card.media !== 'video');
+  if (!video) {
+    if (required) fail(`${where} is missing a video story for the play icon check`);
+    console.log(`${where} has no video story; play icon stays covered by /digest/${WEEK_ID}/`);
+  } else {
+    assertCard(pageMap[video.place], video.card);
+  }
+  if (!article) {
+    if (required) fail(`${where} is missing an article story for the non-video check`);
+    console.log(`${where} has no article story; non-video card stays covered by /digest/${WEEK_ID}/`);
+  } else {
+    assertCard(pageMap[article.place], article.card);
+  }
+}
+
+function assertWeekReader(weekDoc, pageMap, where, { requireMedia = false, emptyCoverageWeek = null } = {}) {
+  assertBriefingTab(pageMap.briefing, weekDoc, where);
+  for (const topic of SECTION_TABS) assertSectionTab(pageMap[topic.id], weekDoc, topic, where);
+  assertMediaCase(weekDoc, pageMap, where, requireMedia);
+  const counts = SECTION_TABS.map((topic) => `${topic.label} ${sectionCards(weekDoc, topic.id).length}`).join(', ');
+  console.log(`${where} section counts: ${counts}`);
+  const noEmptyTab = SECTION_TABS.every((topic) => sectionCards(weekDoc, topic.id).length > 0);
+  if (!emptyCoverageWeek || !noEmptyTab) return;
+  const covered = SECTION_TABS.filter((topic) => sectionCards(emptyCoverageWeek, topic.id).length === 0).map(
+    (topic) => topic.label,
+  );
+  if (covered.length === 0) {
+    console.log(
+      `${where} has no empty section; empty-state message and dimmed styling stay covered by the empty-topic fixture`,
+    );
+    return;
+  }
+  console.log(
+    `${where} has no empty section; empty-state message and dimmed styling stay covered by /digest/${WEEK_ID}/ (${covered.join(', ')})`,
+  );
+}
+
+function firstSentence(synthesis) {
+  const trimmed = synthesis.trim();
+  return trimmed.match(/^.+?[.!?](?=\s|$)/)?.[0] ?? trimmed;
+}
+
 const pages = {
   home: readPage('index.html'),
   edtech: readPage('edtech/index.html'),
@@ -369,22 +562,17 @@ const pages = {
   archive: readPage('archive/index.html'),
   digest: readPage(`digest/${WEEK_ID}/index.html`),
   digestBusiness: readPage(`digest/${WEEK_ID}/business/index.html`),
+  digestTechnical: readPage(`digest/${WEEK_ID}/technical/index.html`),
+  digestEdtech: readPage(`digest/${WEEK_ID}/edtech/index.html`),
   digestPolicy: readPage(`digest/${WEEK_ID}/policy-and-safety/index.html`),
 };
 
 const htmlFiles = walk(DIST);
 const allHtml = htmlFiles.map((path) => readFileSync(path, 'utf8')).join('\n');
-const readerFacing = [
-  week.briefing.synthesis,
-  ...[...week.main_feed, ...week.footer_aside, ...week.briefing.top].flatMap((card) => [
-    card.title,
-    card.summary,
-    card.body,
-    card.publisher.name,
-  ]),
-]
-  .filter((value) => typeof value === 'string')
-  .join('\n');
+const digestWeeks = loadDigestWeeks();
+const latest = selectLatestPublished(digestWeeks, readerNow());
+if (!latest) fail('no published week to check');
+const readerFacing = readerFacingText(digestWeeks);
 
 for (const banned of [
   'transcript_missing',
@@ -420,20 +608,15 @@ if (!pages.home.includes(`href="/edtech"`) || !pages.home.includes(`href="/polic
 if (pages.home.includes('>Edtech<') || pages.home.includes('>Ed tech<')) {
   fail('nav still says Edtech');
 }
-if (!pages.edtech.includes('Nothing in Education this week.')) fail('empty Education tab has no empty state');
-if (!pages.policy.includes('Nothing in Policy and Safety this week.')) {
-  fail('empty Policy and Safety tab has no empty state');
-}
-if (!pages.digestPolicy.includes('Nothing in Policy and Safety this week.')) {
-  fail('archived Policy and Safety tab has no empty state');
-}
-if (!pages.home.includes('rel="canonical" href="/digest/2026-W40"')) {
+if (!pages.home.includes(`rel="canonical" href="/digest/${latest.week_id}"`)) {
   fail('home canonical should be the week permalink');
 }
-if (!pages.business.includes('rel="canonical" href="/digest/2026-W40/business"')) {
+if (!pages.business.includes(`rel="canonical" href="/digest/${latest.week_id}/business"`)) {
   fail('business canonical should be the week topic permalink');
 }
-if (!pages.home.includes('Week of Sep 27 – Oct 3, 2026')) fail('home is missing the week range');
+if (!pages.home.includes(formatWeekRange(latest.week_start, latest.week_end))) fail('home is missing the week range');
+if (!pages.business.includes('aria-current="page"')) fail('business tab is missing the current tab');
+if (!pages.digestBusiness.includes('aria-current="page"')) fail('business permalink is missing the current tab');
 
 const easternStamp = '2026-10-03T03:00:18+00:00';
 const easternPattern = easternStamp.replaceAll('+', '\\+');
@@ -445,62 +628,47 @@ for (const label of easternLabels) {
   if (label.includes('Oct 3')) fail(`${easternStamp} renders as Oct 3`);
   if (label !== 'Oct 2, 2026') fail(`${easternStamp} shows ${label}`);
 }
-if (!decode(pages.home).includes(week.briefing.synthesis)) fail('briefing is missing the synthesis');
-if (!decode(pages.home).includes('September sponsors-only newsletter')) {
-  fail('home is missing the September sponsors footer');
+
+const latestPages = {
+  briefing: pages.home,
+  business: pages.business,
+  technical: pages.technical,
+  edtech: pages.edtech,
+  'policy-and-safety': pages.policy,
+};
+const archivePages = {
+  briefing: pages.digest,
+  business: pages.digestBusiness,
+  technical: pages.digestTechnical,
+  edtech: pages.digestEdtech,
+  'policy-and-safety': pages.digestPolicy,
+};
+if (latest.week_id !== WEEK_ID) {
+  console.log(`latest published week is ${latest.week_id}; archive checks stay on /digest/${WEEK_ID}/`);
 }
-for (const [name, html] of Object.entries(pages)) {
-  if (html.includes(DEGRADED_BODY)) fail(`${name} includes the degraded sentence`);
+assertWeekReader(latest, latestPages, `latest ${latest.week_id}`, { emptyCoverageWeek: week });
+assertWeekReader(week, archivePages, `archive ${WEEK_ID}`, { requireMedia: true });
+if (!decode(archivePages.briefing).includes('September sponsors-only newsletter')) {
+  fail(`archive ${WEEK_ID} briefing is missing the September sponsors footer`);
+}
+if (!pages.digest.includes('Week of Sep 27 \u2013 Oct 3, 2026')) {
+  fail('archive 2026-W40 is missing the week range');
 }
 
-const homeParts = splitFooter(pages.home);
-assertOrder(homeParts.main, 'card', week.briefing.top, 'briefing');
-if (articleIds(homeParts.main, 'card').length !== week.briefing.top.length) {
-  fail('briefing must show the Top list only');
-}
-for (const card of week.briefing.top) assertCard(homeParts.main, card);
-assertBriefingAlsoSeen(pages.home, week.footer_aside, 'current briefing');
-
-const businessParts = splitFooter(pages.business);
-assertOrder(businessParts.main, 'card', week.topics.business, 'business');
-for (const card of week.topics.business) assertCard(businessParts.main, card);
-assertTopicOmitsAlsoSeen(pages.business, week.footer_aside, 'business');
-const degradedBusiness = week.topics.business.filter((card) => card.summary_status !== 'ok');
-const degradedShown = decode(businessParts.main).split(DEGRADED_BODY).length - 1;
-if (degradedShown !== degradedBusiness.length) {
-  fail(
-    `business page showed the degraded sentence ${degradedShown} times; the file has ${degradedBusiness.length}`,
-  );
-}
-
-const edtechParts = splitFooter(pages.edtech);
-assertOrder(edtechParts.main, 'card', week.topics.edtech, 'edtech');
-for (const card of week.topics.edtech) assertCard(edtechParts.main, card);
-assertTopicOmitsAlsoSeen(pages.edtech, week.footer_aside, 'Education');
-
-const technicalParts = splitFooter(pages.technical);
-assertOrder(technicalParts.main, 'card', week.topics.technical, 'technical');
-for (const card of week.topics.technical) assertCard(technicalParts.main, card);
-assertTopicOmitsAlsoSeen(pages.technical, week.footer_aside, 'technical');
-assertTopicOmitsAlsoSeen(pages.policy, week.footer_aside, 'Policy and Safety');
-assertTopicOmitsAlsoSeen(pages.digestBusiness, week.footer_aside, 'business permalink');
-assertTopicOmitsAlsoSeen(pages.digestPolicy, week.footer_aside, 'archived Policy and Safety');
-
-const digestParts = splitFooter(pages.digest);
-assertOrder(digestParts.main, 'card', week.briefing.top, 'permalink briefing');
-assertBriefingAlsoSeen(pages.digest, week.footer_aside, 'current week briefing permalink');
-if (!pages.digestBusiness.includes('aria-current="page"')) fail('business permalink is missing the current tab');
-
-const excerpt = week.briefing.synthesis.trim().match(/^.+?[.!?](?=\s|$)/)?.[0];
+const excerpt = firstSentence(week.briefing.synthesis);
 if (!excerpt || !decode(pages.archive).includes(excerpt)) fail('archive is missing the week excerpt');
+const latestExcerpt = firstSentence(latest.briefing.synthesis);
+if (!latestExcerpt || !decode(pages.archive).includes(latestExcerpt)) fail('archive is missing the latest week excerpt');
 if (!pages.archive.includes('>Read this week</a>')) fail('archive path must be labeled Read this week');
 if (!pages.archive.includes(`href="/digest/${WEEK_ID}"`)) fail('archive path does not open the week');
+if (!pages.archive.includes(`href="/digest/${latest.week_id}"`)) fail('archive path does not open the latest week');
 if (pages.archive.includes('class="summary"')) fail('archive invented a card summary');
+if (decode(fromMain(pages.archive)).includes(DEGRADED_BODY)) fail('archive includes the degraded sentence');
 
 const thin = week.footer_aside[0];
 if (thin && thin.summary_status !== 'thin') fail('footer item is not thin');
 
-// Throwaway build fixture. Not a sample week: it is deleted, and dist is rebuilt from the real files.
+// Throwaway build fixture. A week file that was already on disk is restored afterward, and dist is rebuilt from the files on disk.
 const fixturePath = 'content/digests/1999-W01.json';
 const fixture = {
   schema_version: 1,
@@ -661,6 +829,11 @@ const fixtureFiles = {
   'content/digests/2020-W01.json': clockWeek,
 };
 
+const originalWeekIds = new Set(loadDigestWeeks().map((item) => item.week_id));
+const fixtureOriginals = new Map();
+for (const path of Object.keys(fixtureFiles)) {
+  if (existsSync(path)) fixtureOriginals.set(path, readFileSync(path));
+}
 for (const [path, doc] of Object.entries(fixtureFiles)) {
   writeFileSync(path, `${JSON.stringify(doc, null, 2)}\n`);
 }
@@ -669,13 +842,11 @@ try {
   const emptyEdtech = readPage('digest/1999-W01/edtech/index.html');
   const emptyTechnical = readPage('digest/1999-W01/technical/index.html');
   const filledBusiness = readPage('digest/1999-W01/business/index.html');
-  if (!emptyEdtech.includes('Nothing in Education this week.')) fail('empty Education tab has no empty state');
-  if (!emptyTechnical.includes('Nothing in Technical this week.')) fail('empty Technical tab has no empty state');
   const emptyPolicy = readPage('digest/1999-W01/policy-and-safety/index.html');
-  if (!emptyPolicy.includes('Nothing in Policy and Safety this week.')) {
-    fail('empty Policy and Safety tab has no empty state');
-  }
-  if (filledBusiness.includes('Nothing in Business this week.')) fail('Business showed an empty state while it had a card');
+  assertDimmedEmptyState(emptyEdtech, 'Education', true, 'fixture');
+  assertDimmedEmptyState(emptyTechnical, 'Technical', true, 'fixture');
+  assertDimmedEmptyState(emptyPolicy, 'Policy and Safety', true, 'fixture');
+  assertDimmedEmptyState(filledBusiness, 'Business', false, 'fixture');
   if (!filledBusiness.includes('Fixture card')) fail('Business dropped its only card');
   if (!decode(filledBusiness).includes(DEGRADED_BODY)) {
     fail('degraded fixture card did not render the locked sentence');
@@ -690,7 +861,7 @@ try {
   if (!homeDuringWeek.includes(week.briefing.synthesis)) {
     fail('the empty fixture replaced the latest week');
   }
-  if (!homeDuringWeek.includes('Week of Sep 27 – Oct 3, 2026')) {
+  if (!homeDuringWeek.includes('Week of Sep 27 \u2013 Oct 3, 2026')) {
     fail('mid-week home left the last published week');
   }
   if (
@@ -720,7 +891,7 @@ try {
   if (!archiveDuringWeek.includes('Saved older week synthesis from the file.')) {
     fail('archive excerpt for the older week does not match the saved file');
   }
-  if (!archiveDuringWeek.includes('Week of Sep 20 – Sep 26, 2026')) {
+  if (!archiveDuringWeek.includes('Week of Sep 20 \u2013 Sep 26, 2026')) {
     fail('archive is missing the older week range');
   }
 
@@ -796,20 +967,31 @@ try {
   if (!olderNav.includes('← Latest week')) fail('older week is missing the link back to the latest week');
   assertBuiltChrome('fixture');
 } finally {
-  for (const path of Object.keys(fixtureFiles)) rmSync(path, { force: true });
+  for (const path of Object.keys(fixtureFiles)) {
+    if (fixtureOriginals.has(path)) writeFileSync(path, fixtureOriginals.get(path));
+    else rmSync(path, { force: true });
+  }
   rebuild();
 }
 
-if (
-  Object.keys(fixtureFiles).some((path) => existsSync(path)) ||
-  ['1999-W01', '2026-W39', '2026-W41', '2027-W01', '2020-W01'].some((id) => existsSync(`dist/digest/${id}`))
-) {
-  fail('throwaway week fixtures were left behind');
+const throwawayIds = ['1999-W01', '2026-W39', '2026-W41', '2027-W01', '2020-W01'];
+const leftoverFiles = Object.keys(fixtureFiles).filter((path) => !fixtureOriginals.has(path) && existsSync(path));
+const leftoverDist = throwawayIds.filter((id) => !originalWeekIds.has(id) && existsSync(`dist/digest/${id}`));
+if (leftoverFiles.length > 0 || leftoverDist.length > 0) fail('throwaway week fixtures were left behind');
+for (const [path, original] of fixtureOriginals) {
+  const restored = existsSync(path) ? readFileSync(path) : null;
+  if (!restored || !restored.equals(original)) fail(`restored ${path} does not match the original bytes`);
 }
-const rebuiltShown = decode(readPage('business/index.html')).split(DEGRADED_BODY).length - 1;
-if (rebuiltShown !== degradedBusiness.length) {
-  fail('rebuilt business page does not match the week file degraded cards');
+const rebuiltLatest = selectLatestPublished(loadDigestWeeks(), readerNow());
+if (!rebuiltLatest) fail('rebuilt site has no published week');
+if (rebuiltLatest.week_id !== latest.week_id) {
+  fail(`rebuilt latest week is ${rebuiltLatest.week_id}; the check started on ${latest.week_id}`);
 }
+assertDegradedHits(
+  readPage('business/index.html'),
+  renderedCopy(sectionCards(rebuiltLatest, 'business')),
+  'rebuilt business',
+);
 assertBuiltChrome('rebuilt');
 
-console.log(`reader check passed for ${WEEK_ID}`);
+console.log(`reader check passed for latest ${latest.week_id} and archive ${WEEK_ID}`);
