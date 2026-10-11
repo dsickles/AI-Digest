@@ -705,7 +705,7 @@ const ORIGINAL_EIGHT = [
   },
 ];
 
-const APPROVED_TEN = [
+const APPROVED_AFTER_EIGHT = [
   {
     id: 'hechinger-report',
     type: 'rss',
@@ -797,6 +797,147 @@ const APPROVED_TEN = [
     tag: 'policy-and-safety',
     enabled: true,
   },
+  {
+    id: 'pragmatic-engineer',
+    type: 'rss',
+    url: 'https://newsletter.pragmaticengineer.com/feed',
+    home_url: 'https://newsletter.pragmaticengineer.com/',
+    display_name: 'The Pragmatic Engineer (Gergely Orosz)',
+    tag: 'technical',
+    ai_only: true,
+    enabled: true,
+  },
+  {
+    id: 'the-74',
+    type: 'rss',
+    url: 'https://www.the74million.org/tag/artificial-intelligence/feed/',
+    home_url: 'https://www.the74million.org/',
+    display_name: 'The 74',
+    tag: 'edtech',
+    enabled: true,
+  },
+  {
+    id: 'edtech-insiders',
+    type: 'rss',
+    url: 'https://edtechinsiders.substack.com/feed',
+    home_url: 'https://edtechinsiders.substack.com/',
+    display_name: 'Edtech Insiders',
+    tag: 'edtech',
+    ai_only: true,
+    enabled: true,
+  },
+  {
+    id: 'educating-ai',
+    type: 'rss',
+    url: 'https://nickpotkalitsky.substack.com/feed',
+    home_url: 'https://nickpotkalitsky.substack.com/',
+    display_name: 'Educating AI (Nick Potkalitsky)',
+    tag: 'edtech',
+    enabled: true,
+  },
+  {
+    id: 'education-disrupted',
+    type: 'rss',
+    url: 'https://stefanbauschard.substack.com/feed',
+    home_url: 'https://stefanbauschard.substack.com/',
+    display_name: 'Education Disrupted (Stefan Bauschard)',
+    tag: 'edtech',
+    ai_only: true,
+    enabled: true,
+  },
+  {
+    id: 'cognitive-resonance',
+    type: 'rss',
+    url: 'https://buildcognitiveresonance.substack.com/feed',
+    home_url: 'https://buildcognitiveresonance.substack.com/',
+    display_name: 'Cognitive Resonance (Benjamin Riley)',
+    tag: 'edtech',
+    ai_only: true,
+    enabled: true,
+  },
+  {
+    id: 'transformer',
+    type: 'rss',
+    url: 'https://www.transformernews.ai/feed',
+    home_url: 'https://www.transformernews.ai/',
+    display_name: 'Transformer (Shakeel Hashim)',
+    tag: 'policy-and-safety',
+    enabled: true,
+  },
+  {
+    id: 'dont-worry-about-the-vase',
+    type: 'rss',
+    url: 'https://thezvi.substack.com/feed',
+    home_url: 'https://thezvi.substack.com/',
+    display_name: "Don't Worry About the Vase (Zvi Mowshowitz)",
+    tag: 'policy-and-safety',
+    ai_only: true,
+    enabled: true,
+  },
+  {
+    id: 'just-security',
+    type: 'rss',
+    url: 'https://www.justsecurity.org/tag/artificial-intelligence/feed/',
+    home_url: 'https://www.justsecurity.org/',
+    display_name: 'Just Security',
+    tag: 'policy-and-safety',
+    enabled: true,
+  },
+  {
+    id: 'schneier-on-security',
+    type: 'rss',
+    url: 'https://www.schneier.com/tag/ai/feed/',
+    home_url: 'https://www.schneier.com/',
+    display_name: 'Schneier on Security',
+    tag: 'policy-and-safety',
+    enabled: true,
+  },
+  {
+    id: 'nextgov-fcw',
+    type: 'rss',
+    url: 'https://www.nextgov.com/rss/artificial-intelligence/',
+    home_url: 'https://www.nextgov.com/',
+    display_name: 'Nextgov/FCW',
+    tag: 'policy-and-safety',
+    enabled: true,
+  },
+  {
+    id: 'tech-policy-press',
+    type: 'rss',
+    url: 'https://www.techpolicy.press/rss/feed.xml',
+    home_url: 'https://www.techpolicy.press/',
+    display_name: 'Tech Policy Press',
+    tag: 'policy-and-safety',
+    ai_only: true,
+    enabled: true,
+  },
+  {
+    id: 'epoch-ai',
+    type: 'rss',
+    url: 'https://epochai.substack.com/feed',
+    home_url: 'https://epochai.substack.com/',
+    display_name: 'Epoch AI',
+    tag: 'technical',
+    enabled: true,
+  },
+  {
+    id: 'latent-space',
+    type: 'rss',
+    url: 'https://www.latent.space/feed',
+    home_url: 'https://www.latent.space/',
+    display_name: 'Latent Space',
+    tag: 'technical',
+    enabled: true,
+  },
+  {
+    id: 'nieman-lab',
+    type: 'rss',
+    url: 'https://www.niemanlab.org/tag/ai/feed/',
+    home_url: 'https://www.niemanlab.org/',
+    display_name: 'Nieman Lab',
+    tag: 'business',
+    enabled: true,
+  },
 ];
 
 function sourceArticle(sample, id, sourceId, name, category, title, summary) {
@@ -827,16 +968,51 @@ function proveSourceRules(sources, sample) {
     console.error('self-test: the original eight sources changed');
     return false;
   }
-  if (!deepEqual(doc.sources.slice(8), APPROVED_TEN) || doc.sources.length !== 18) {
-    console.error('self-test: approved sources are not the ten Dan listed');
+  if (!deepEqual(doc.sources.slice(8), APPROVED_AFTER_EIGHT) || doc.sources.length !== 33) {
+    console.error('self-test: approved sources do not match the registry after the original eight');
     return false;
   }
-  if (sources.get('educause-review')?.aiOnly !== true || sources.get('education-week')?.aiOnly !== false) {
-    console.error('self-test: AI-only must be set on EDUCAUSE Review and not on Education Week');
+  const mustBeAiOnly = [
+    'educause-review',
+    'pragmatic-engineer',
+    'edtech-insiders',
+    'education-disrupted',
+    'cognitive-resonance',
+    'dont-worry-about-the-vase',
+    'tech-policy-press',
+  ];
+  const mustNotBeAiOnly = [
+    'education-week',
+    'the-74',
+    'educating-ai',
+    'transformer',
+    'just-security',
+    'schneier-on-security',
+    'nextgov-fcw',
+    'epoch-ai',
+    'latent-space',
+    'nieman-lab',
+  ];
+  if (
+    mustBeAiOnly.some((id) => sources.get(id)?.aiOnly !== true) ||
+    mustNotBeAiOnly.some((id) => sources.get(id)?.aiOnly !== false)
+  ) {
+    console.error(
+      'self-test: AI-only must be set on EDUCAUSE Review, The Pragmatic Engineer, Edtech Insiders, Education Disrupted, Cognitive Resonance, Don\'t Worry About the Vase, and Tech Policy Press, and not on Education Week or the other new sources',
+    );
     return false;
   }
-  if (sources.get('ai-alignment-forum')?.tag !== 'policy-and-safety' || sources.get('metr')?.tag !== 'technical') {
-    console.error('self-test: METR stays technical and AI Alignment Forum is policy-and-safety');
+  if (
+    sources.get('ai-alignment-forum')?.tag !== 'policy-and-safety' ||
+    sources.get('metr')?.tag !== 'technical' ||
+    sources.get('the-74')?.tag !== 'edtech' ||
+    sources.get('transformer')?.tag !== 'policy-and-safety' ||
+    sources.get('epoch-ai')?.tag !== 'technical' ||
+    sources.get('nieman-lab')?.tag !== 'business'
+  ) {
+    console.error(
+      'self-test: METR stays technical, AI Alignment Forum is policy-and-safety, and the new sources use edtech, Policy and Safety, technical, or business',
+    );
     return false;
   }
   const badTag = structuredClone(doc);
