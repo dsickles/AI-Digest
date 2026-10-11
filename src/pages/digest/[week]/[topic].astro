@@ -4,7 +4,6 @@ import WeekBody from '../../../components/WeekBody.astro';
 import {
   TOPIC_LABELS,
   TOPICS,
-  formatWeekRange,
   isTopic,
   latestWeek,
   loadWeeks,
@@ -34,7 +33,7 @@ if (!topic || !isTopic(topic)) {
 
 const label = TOPIC_LABELS[topic as Topic];
 const latest = latestWeek();
-const titleParts = [label, formatWeekRange(week.week_start, week.week_end)];
+const titleParts = [label];
 ---
 
 <Shell

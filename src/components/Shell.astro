@@ -20,27 +20,32 @@ const archiveCurrent = active === 'archive' ? 'page' : undefined;
 ---
 
 <Base title={title} description={description} canonical={canonical}>
-  <header>
-    <h1><a href="/">{SITE_TITLE}</a></h1>
-    <p class="week-line">
+  <header class="g">
+    <h1 class="mast"><a href="/">{SITE_TITLE}</a></h1>
+    <p class="bar week-line">
       {
         week && (
-          <>
-            <span class="week-range">{formatWeekRange(week.week_start, week.week_end)}</span>
-            <span class="updated">
-              <time datetime={week.generated_at}>Updated {formatDate(week.generated_at)}</time>
-              {' · '}
-            </span>
-          </>
+          <span class="week-range">{formatWeekRange(week.week_start, week.week_end)}</span>
         )
       }
-      <a href="/archive" aria-current={archiveCurrent}>Archive</a>
+      <span class="right">
+        {
+          week && (
+            <time datetime={week.generated_at}>Updated {formatDate(week.generated_at)}</time>
+          )
+        }
+        <a href="/archive" aria-current={archiveCurrent}>Archive</a>
+      </span>
     </p>
-    {showLatestLink && (
-      <p class="back"><a href="/">← Latest week</a></p>
-    )}
+    {
+      showLatestLink && (
+        <p class="back">
+          <a href="/">← Latest week</a>
+        </p>
+      )
+    }
+    <SiteNav active={active} scope={scope} week={week} />
   </header>
-  <SiteNav active={active} scope={scope} weekId={week?.week_id} />
   <main>
     <slot />
   </main>
