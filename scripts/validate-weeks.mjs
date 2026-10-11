@@ -904,8 +904,8 @@ const APPROVED_AFTER_EIGHT = [
   {
     id: 'tech-policy-press',
     type: 'rss',
-    url: 'https://techpolicy.press/rss/feed.xml',
-    home_url: 'https://techpolicy.press/',
+    url: 'https://www.techpolicy.press/rss/feed.xml',
+    home_url: 'https://www.techpolicy.press/',
     display_name: 'Tech Policy Press',
     tag: 'policy-and-safety',
     ai_only: true,
