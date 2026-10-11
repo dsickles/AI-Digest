@@ -8,21 +8,41 @@ interface Props {
 }
 
 const { label, cards } = Astro.props;
+const mid = Math.ceil(cards.length / 2);
+const columns = cards.length <= 1 ? [cards] : [cards.slice(0, mid), cards.slice(mid)];
 ---
 
-<section class="topic" aria-labelledby="topic-heading">
-  <h2 id="topic-heading">{label}</h2>
+<section class="g topic" aria-labelledby="topic-heading">
+  <h2 class="page-title" id="topic-heading">{label}</h2>
   {
     cards.length === 0 ? (
       <p class="empty">Nothing in {label} this week.</p>
     ) : (
-      <ol class="stories">
-        {cards.map((card) => (
-          <li>
-            <Card card={card} />
-          </li>
-        ))}
-      </ol>
+      <div class="rowsets">
+        {columns.map((column, columnIndex) => {
+          const start = columnIndex === 0 ? 1 : mid + 1;
+          return (
+            <ol class="rows" start={start} style={`counter-reset: topic-rank ${start - 1}`}>
+              {column.map((card) => (
+                <li class="row">
+                  <Card card={card} variant="topic" />
+                </li>
+              ))}
+            </ol>
+          );
+        })}
+      </div>
     )
   }
 </section>
+
+<script>
+  const buttons = document.querySelectorAll('.toggle');
+  for (const button of buttons) {
+    button.addEventListener('click', () => {
+      const open = button.getAttribute('aria-expanded') !== 'true';
+      button.setAttribute('aria-expanded', open ? 'true' : 'false');
+      button.closest('.row')?.classList.toggle('open', open);
+    });
+  }
+</script>

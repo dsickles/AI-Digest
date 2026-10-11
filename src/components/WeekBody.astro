@@ -2,7 +2,7 @@
 import Card from './Card.astro';
 import ThinCard from './ThinCard.astro';
 import TopicSection from './TopicSection.astro';
-import { TOPIC_LABELS, type Topic, type Week } from '../lib/weeks';
+import { formatDate, TOPIC_LABELS, type Topic, type Week } from '../lib/weeks';
 
 interface Props {
   week: Week;
@@ -12,37 +12,66 @@ interface Props {
 const { week, view } = Astro.props;
 const topicLabel = view === 'briefing' ? '' : TOPIC_LABELS[view];
 const topicCards = view === 'briefing' ? [] : week.topics[view];
+const topCount = week.briefing.top.length;
+const topLabel = `Top ${topCount} this week`;
 ---
 
 {
   view === 'briefing' ? (
-    <section id="briefing" aria-labelledby="briefing-heading">
-      <p class="synthesis">{week.briefing.synthesis}</p>
-      <h2 id="briefing-heading">Top {week.briefing.top.length} this week</h2>
-      <ol class="stories">
-        {week.briefing.top.map((card) => (
-          <li>
-            <Card card={card} />
-          </li>
-        ))}
-      </ol>
-    </section>
+    <>
+      <section class="g syn" aria-label="This week">
+        <p class="synthesis">{week.briefing.synthesis}</p>
+        <ol class="index" aria-label={topLabel}>
+          {week.briefing.top.map((card, index) => (
+            <li>
+              <span class="k" aria-hidden="true">
+                {index + 1}
+              </span>
+              <span class="it">
+                <a href={`#${card.id}`}>{card.title}</a>
+                <span class="im">
+                  {card.publisher.name}
+                  <span class="sep" aria-hidden="true">
+                    {' '}
+                    ·{' '}
+                  </span>
+                  <time datetime={card.published_at}>{formatDate(card.published_at)}</time>
+                </span>
+              </span>
+            </li>
+          ))}
+        </ol>
+      </section>
+      <section class="top" aria-labelledby="briefing-heading">
+        <h2 class="h2" id="briefing-heading">
+          {topLabel}
+        </h2>
+        <div class="flow">
+          <ol class="stories">
+            {week.briefing.top.map((card, index) => (
+              <li class="story">
+                <Card card={card} variant="top" index={index + 1} />
+              </li>
+            ))}
+          </ol>
+          {week.footer_aside.length > 0 && (
+            <aside id="also-seen" class="also" aria-labelledby="also-heading">
+              <h2 class="h2" id="also-heading">
+                Also seen this week
+              </h2>
+              <ul class="thin-list">
+                {week.footer_aside.map((item) => (
+                  <li class="thin-row">
+                    <ThinCard item={item} />
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          )}
+        </div>
+      </section>
+    </>
   ) : (
     <TopicSection label={topicLabel} cards={topicCards} />
-  )
-}
-
-{
-  view === 'briefing' && week.footer_aside.length > 0 && (
-    <aside id="also-seen">
-      <h2>Also seen this week</h2>
-      <ul class="thin-list">
-        {week.footer_aside.map((item) => (
-          <li>
-            <ThinCard item={item} />
-          </li>
-        ))}
-      </ul>
-    </aside>
   )
 }

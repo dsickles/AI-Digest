@@ -29,17 +29,17 @@ function storyCount(topic: Topic): number {
 <nav class="nav nav-sections" aria-label="Sections">
   {
     sections.map((topic) => {
-      const label = TOPIC_LABELS[topic];
       const count = storyCount(topic);
-      const stories = count === 1 ? 'story' : 'stories';
+      const label = TOPIC_LABELS[topic];
       return (
         <a
           href={hrefFor(topic)}
           aria-current={active === topic ? 'page' : undefined}
-          aria-label={`${label}, ${count} ${stories}`}
-          class={count === 0 ? 'muted' : undefined}
+          aria-label={`${label} ${count}`}
+          class={count === 0 ? 'zero' : undefined}
         >
-          {label} {count}
+          {label}
+          <span class="n">{count}</span>
         </a>
       );
     })

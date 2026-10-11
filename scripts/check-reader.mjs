@@ -15,6 +15,7 @@ import {
 const DEGRADED_BODY = "The summary couldn't be generated this week.";
 const WEEK_ID = '2026-W40';
 const DIST = 'dist';
+let builtAsOf = readerNow();
 
 const week = JSON.parse(readFileSync(`content/digests/${WEEK_ID}.json`, 'utf8'));
 const MIDWEEK = '2026-10-07T15:00:00-04:00';
@@ -213,7 +214,7 @@ function assertBriefingAlsoSeen(html, items, label) {
     fail(`${label} should show Also seen once (heading ${headings}, section ${sections})`);
   }
   const parts = splitFooter(html);
-  if (!parts.footer.includes('<h2>Also seen this week</h2>')) {
+  if (!/<h2\b[^>]*>Also seen this week<\/h2>/.test(parts.footer)) {
     fail(`${label} Also seen heading is missing`);
   }
   if (!parts.footer.includes('class="thin"')) fail(`${label} Also seen section is empty`);
@@ -301,97 +302,6 @@ function linkHrefs(block) {
   return [...block.matchAll(/<a\b[^>]*href="([^"]*)"[^>]*>/g)].map((match) => match[1]);
 }
 
-let builtAsOf = readerNow();
-
-function topicCount(doc, id) {
-  const list = doc?.topics?.[id];
-  return Array.isArray(list) ? list.length : 0;
-}
-
-function asideCount(doc, id) {
-  if (!Array.isArray(doc?.footer_aside)) return 0;
-  return doc.footer_aside.filter((card) => card?.category === id).length;
-}
-
-function readWeekDoc(weekId) {
-  const path = `content/digests/${weekId}.json`;
-  if (!existsSync(path)) fail(`missing week ${weekId} while checking section counts`);
-  return JSON.parse(readFileSync(path, 'utf8'));
-}
-
-function weekForChrome(briefingHref) {
-  if (briefingHref === '/') {
-    const docs = readdirSync('content/digests')
-      .filter((name) => name.endsWith('.json'))
-      .map((name) => JSON.parse(readFileSync(join('content/digests', name), 'utf8')));
-    const selected = selectLatestPublished(docs, builtAsOf);
-    if (!selected) fail('section counts have no published week');
-    return selected;
-  }
-  const match = briefingHref?.match(/^\/digest\/(\d{4}-W\d{2})$/);
-  if (!match) return null;
-  return readWeekDoc(match[1]);
-}
-
-function pageTopic(file) {
-  const normalized = String(file).replaceAll('\\', '/');
-  const match = normalized.match(/(?:^|\/)(business|technical|edtech|policy-and-safety)\/index\.html$/);
-  return match?.[1] ?? null;
-}
-
-function sectionAnchors(block) {
-  const anchors = [];
-  for (const match of block.matchAll(/<a\b([^>]*)>([^<]*)<\/a>/g)) {
-    const attrs = match[1];
-    const className = attrs.match(/\bclass="([^"]*)"/)?.[1] ?? '';
-    anchors.push({
-      text: decode(match[2]).replace(/\s+/g, ' ').trim(),
-      href: attrs.match(/\bhref="([^"]*)"/)?.[1] ?? '',
-      current: /\baria-current="page"/.test(attrs),
-      muted: className.split(/\s+/).includes('muted'),
-    });
-  }
-  return anchors;
-}
-
-function assertSectionCounts(html, file, label) {
-  const sections = navBlock(html, 'nav-sections');
-  const briefing = navBlock(html, 'nav-briefing');
-  const anchors = sectionAnchors(sections);
-  if (anchors.length !== SECTION_IDS.length) {
-    fail(`${label} is missing a section story count`);
-  }
-  const doc = weekForChrome(linkHrefs(briefing)[0]);
-  if (!doc) fail(`${label} section counts have no week`);
-  const topicOnPage = pageTopic(file);
-  const rendered = topicOnPage ? articleIds(splitFooter(html).main, 'card').length : null;
-  anchors.forEach((anchor, index) => {
-    const id = SECTION_IDS[index];
-    const name = SECTION_LABELS[index];
-    const parsed = anchor.text.match(/^(Business|Technical|Education|Policy and Safety) (\d+)$/);
-    if (!parsed || parsed[1] !== name) {
-      fail(`${label} ${name} is missing its story count (saw "${anchor.text}")`);
-    }
-    const shown = Number(parsed[2]);
-    const mainFeed = topicCount(doc, id);
-    const aside = asideCount(doc, id);
-    if (aside > 0 && shown === mainFeed + aside) {
-      fail(`${label} ${name} counts Also seen items`);
-    }
-    if (shown !== mainFeed) {
-      fail(`${label} ${name} count is ${shown} but the main feed has ${mainFeed}`);
-    }
-    if (topicOnPage === id && shown !== rendered) {
-      fail(`${label} ${name} count is ${shown} but the page renders ${rendered} main-feed stories`);
-    }
-    if (shown === 0 && !anchor.muted) fail(`${label} zero section ${name} is not muted`);
-    if (shown > 0 && anchor.muted) fail(`${label} ${name} is muted with ${shown} stories`);
-    if (topicOnPage === id && !anchor.current) {
-      fail(`${label} ${shown === 0 ? 'zero ' : ''}${name} lost its active marker`);
-    }
-  });
-}
-
 function assertReaderChrome(html, label, file = '') {
   const briefing = navBlock(html, 'nav-briefing');
   const sections = navBlock(html, 'nav-sections');
@@ -406,9 +316,9 @@ function assertReaderChrome(html, label, file = '') {
   if (briefingLabels.length !== 1 || briefingLabels[0] !== 'Briefing') {
     fail(`${label} Briefing line reads ${briefingLabels.join(', ') || 'nothing'}`);
   }
-  const sectionLabels = sectionAnchors(sections).map((anchor) => anchor.text.replace(/ \d+$/, ''));
+  const sectionLabels = sectionAnchors(sections).map((anchor) => anchor.label);
   if (sectionLabels.join('|') !== SECTION_LABELS.join('|')) {
-    fail(`${label} sections are ${sectionAnchors(sections).map((anchor) => anchor.text).join(', ') || 'missing'}`);
+    fail(`${label} sections are ${sectionAnchors(sections).map((anchor) => `${anchor.label} ${anchor.count ?? ''}`).join(', ') || 'missing'}`);
   }
   if (sections.includes('>Archive<') || sections.includes('href="/archive"')) {
     fail(`${label} Archive is in the sections row`);
@@ -432,7 +342,8 @@ function assertReaderChrome(html, label, file = '') {
   const mainAt = html.indexOf('<main');
   const header = mainAt === -1 ? html : html.slice(0, mainAt);
   if (header.includes('>Edtech<') || header.includes('>Ed tech<')) fail(`${label} shows Edtech`);
-  const weekLine = html.match(/<p class="week-line">[\s\S]*?<\/p>/)?.[0];
+  if (header.includes('\u2014')) fail(`${label} header copy contains an em dash`);
+  const weekLine = html.match(/<p\b[^>]*class="[^"]*\bweek-line\b[^"]*"[^>]*>[\s\S]*?<\/p>/)?.[0];
   if (!weekLine) fail(`${label} is missing the week line`);
   const archiveHrefs = [...html.matchAll(/href="\/archive"/g)];
   if (archiveHrefs.length !== 1 || !weekLine.includes('href="/archive"') || !weekLine.includes('>Archive<')) {
@@ -453,10 +364,14 @@ function assertReaderChrome(html, label, file = '') {
   if (between.includes(',')) fail(`${label} has a comma between Updated and Archive`);
   if (!/^[\s·]*$/.test(between)) fail(`${label} puts "${between}" between Updated and Archive`);
   assertSectionCounts(html, file, label);
+  assertTitle(html, file, label);
 }
 
 function assertBuiltChrome(scope) {
-  for (const file of walk(DIST)) {
+  const files = walk(DIST);
+  if (files.length === 0) fail(`${scope} produced no HTML`);
+  assertProgramCss(readFileSync(files[0], 'utf8'), scope);
+  for (const file of files) {
     assertReaderChrome(readFileSync(file, 'utf8'), `${scope} ${file}`, file);
   }
 }
@@ -518,7 +433,316 @@ function stylesheetText(html) {
 }
 
 function emptyRuleIsDimmed(html) {
-  return /\.empty\b[^{]*\{[^}]*color:\s*var\(--muted\)/.test(stylesheetText(html));
+  const css = stylesheetText(html).replace(/\/\*[\s\S]*?\*\//g, '');
+  return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].some((match) => {
+    const selectors = match[1].split(',').map((selector) => selector.trim());
+    return selectors.length === 1 && selectors[0] === '.empty' && /color:\s*var\(--ink-3\)/.test(match[2]);
+  });
+}
+
+function compactCss(css) {
+  let out = '';
+  let quote = '';
+  const stripped = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  for (let index = 0; index < stripped.length; index += 1) {
+    const ch = stripped[index];
+    if (quote) {
+      out += ch;
+      if (ch === quote && stripped[index - 1] !== '\\') quote = '';
+      continue;
+    }
+    if (ch === '"' || ch === "'") {
+      quote = ch;
+      out += ch;
+      continue;
+    }
+    if (/\s/.test(ch)) continue;
+    out += ch;
+  }
+  return out;
+}
+
+function ruleBody(css, selector) {
+  const forms = [
+    selector,
+    selector.replace(/::/g, ':'),
+    selector.replace(/"/g, ''),
+    selector.replace(/::/g, ':').replace(/"/g, ''),
+  ];
+  const haystacks = [css, css.replace(/"/g, '')];
+  for (const haystack of haystacks) {
+    for (const form of forms) {
+      const needle = `${form.replace(/\s+/g, '')}{`;
+      let from = 0;
+      while (from < haystack.length) {
+        const start = haystack.indexOf(needle, from);
+        if (start === -1) break;
+        const prev = start === 0 ? '{' : haystack[start - 1];
+        if (start === 0 || prev === '{' || prev === '}' || prev === ',') {
+          const open = start + needle.length - 1;
+          return haystack.slice(open + 1, haystack.indexOf('}', open));
+        }
+        from = start + needle.length;
+      }
+    }
+  }
+  return '';
+}
+
+function mediaBody(css, query) {
+  const queries = Array.isArray(query) ? query : [query];
+  for (const item of queries) {
+    const token = `@media(${item.replace(/\s+/g, '')})`;
+    const start = css.indexOf(token);
+    if (start === -1) continue;
+    const open = css.indexOf('{', start);
+    let depth = 0;
+    for (let index = open; index < css.length; index += 1) {
+      if (css[index] === '{') depth += 1;
+      else if (css[index] === '}') {
+        depth -= 1;
+        if (depth === 0) return css.slice(open + 1, index);
+      }
+    }
+  }
+  return '';
+}
+
+function pageTopic(file) {
+  const normalized = String(file).replaceAll('\\', '/');
+  const match = normalized.match(/(?:^|\/)(business|technical|edtech|policy-and-safety)\/index\.html$/);
+  return match?.[1] ?? null;
+}
+
+function pageTitle(html) {
+  return decode(html.match(/<title>([\s\S]*?)<\/title>/)?.[1] ?? '').replace(/\s+/g, ' ').trim();
+}
+
+function topicCount(doc, id) {
+  const list = doc?.topics?.[id];
+  return Array.isArray(list) ? list.length : 0;
+}
+
+function asideCount(doc, id) {
+  if (!Array.isArray(doc?.footer_aside)) return 0;
+  return doc.footer_aside.filter((card) => card?.category === id).length;
+}
+
+function readWeekDoc(weekId) {
+  const path = `content/digests/${weekId}.json`;
+  if (!existsSync(path)) fail(`missing week ${weekId} while checking section counts`);
+  return JSON.parse(readFileSync(path, 'utf8'));
+}
+
+function weekForChrome(briefingHref) {
+  if (briefingHref === '/') {
+    const docs = readdirSync('content/digests')
+      .filter((name) => name.endsWith('.json'))
+      .map((name) => JSON.parse(readFileSync(join('content/digests', name), 'utf8')));
+    const selected = selectLatestPublished(docs, builtAsOf);
+    if (!selected) fail('section counts have no published week');
+    return selected;
+  }
+  const match = briefingHref?.match(/^\/digest\/(\d{4}-W\d{2})$/);
+  if (!match) return null;
+  return readWeekDoc(match[1]);
+}
+
+function sectionAnchors(block) {
+  const anchors = [];
+  for (const match of block.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)) {
+    const attrs = match[1];
+    const inner = match[2];
+    const className = attrs.match(/\bclass="([^"]*)"/)?.[1] ?? '';
+    const count = inner.match(/<span\b[^>]*\bclass="[^"]*\bn\b[^"]*"[^>]*>(\d+)<\/span>/);
+    anchors.push({
+      label: decode(inner.replace(/<span\b[\s\S]*<\/span>/g, '')).replace(/\s+/g, ' ').trim(),
+      count: count ? Number(count[1]) : null,
+      href: attrs.match(/\bhref="([^"]*)"/)?.[1] ?? '',
+      current: /\baria-current="page"/.test(attrs),
+      zero: className.split(/\s+/).includes('zero'),
+    });
+  }
+  return anchors;
+}
+
+function assertSectionCounts(html, file, label) {
+  const sections = navBlock(html, 'nav-sections');
+  const briefing = navBlock(html, 'nav-briefing');
+  const anchors = sectionAnchors(sections);
+  if (anchors.length !== SECTION_IDS.length) fail(`${label} is missing a section story count`);
+  const doc = weekForChrome(linkHrefs(briefing)[0]);
+  if (!doc) fail(`${label} section counts have no week`);
+  const topicOnPage = pageTopic(file);
+  const rendered = topicOnPage ? articleIds(splitFooter(html).main, 'card').length : null;
+  anchors.forEach((anchor, index) => {
+    const id = SECTION_IDS[index];
+    const name = SECTION_LABELS[index];
+    if (anchor.label !== name || anchor.count === null) {
+      fail(`${label} ${name} is missing its story count`);
+    }
+    const mainFeed = topicCount(doc, id);
+    const aside = asideCount(doc, id);
+    if (aside > 0 && anchor.count === mainFeed + aside) fail(`${label} ${name} counts Also seen items`);
+    if (anchor.count !== mainFeed) {
+      fail(`${label} ${name} count is ${anchor.count} but the main feed has ${mainFeed}`);
+    }
+    if (topicOnPage === id && anchor.count !== rendered) {
+      fail(`${label} ${name} count is ${anchor.count} but the page renders ${rendered} main-feed stories`);
+    }
+    if (anchor.count === 0 && !anchor.zero) fail(`${label} zero section ${name} is not muted`);
+    if (anchor.count > 0 && anchor.zero) fail(`${label} ${name} is muted with ${anchor.count} stories`);
+    if (topicOnPage === id && !anchor.current) {
+      fail(`${label} ${anchor.count === 0 ? 'zero ' : ''}${name} lost its active marker`);
+    }
+    if (anchor.href !== linkHrefs(sections)[index]) fail(`${label} ${name} count sits on the wrong link`);
+  });
+}
+
+function assertTitle(html, file, label) {
+  const title = pageTitle(html);
+  const topic = pageTopic(file);
+  const normalized = String(file).replaceAll('\\', '/');
+  if (topic) {
+    const name = SECTION_LABELS[SECTION_IDS.indexOf(topic)];
+    if (title !== `Dan's AI Digest: ${name}`) fail(`${label} title is "${title}"`);
+    return;
+  }
+  if (/(?:^|\/)archive\/index\.html$/.test(normalized)) {
+    if (title !== "Dan's AI Digest: Archive") fail(`${label} title is "${title}"`);
+    return;
+  }
+  if (title !== "Dan's AI Digest") fail(`${label} title is "${title}"`);
+}
+
+function assertTopicRanks(html, cards, label) {
+  const main = splitFooter(html).main;
+  const opens = [...main.matchAll(/<ol\b([^>]*\bclass="[^"]*\brows\b[^"]*"[^>]*)>/g)];
+  if (cards.length === 0) {
+    if (opens.length !== 0) fail(`${label} empty topic rendered a ranked list`);
+    return;
+  }
+  const expected = cards.length === 1 ? 1 : 2;
+  if (opens.length !== expected) fail(`${label} has ${opens.length} topic lists; expected ${expected}`);
+  const starts = opens.map((match) => Number(match[1].match(/\bstart="(\d+)"/)?.[1] ?? '1'));
+  const mid = Math.ceil(cards.length / 2);
+  if (starts[0] !== 1) fail(`${label} first topic list starts at ${starts[0]}`);
+  if (expected === 2 && starts[1] !== mid + 1) {
+    fail(`${label} second topic list starts at ${starts[1]}; expected ${mid + 1}`);
+  }
+  if (expected === 2) {
+    const reset = opens[1][1].match(/counter-reset:\s*topic-rank\s+(\d+)/);
+    if (!reset || Number(reset[1]) !== mid) fail(`${label} rank does not continue across the two lists`);
+  }
+  const ids = opens.flatMap((match) => {
+    const list = main.slice(match.index).match(/<ol\b[^>]*>[\s\S]*?<\/ol>/);
+    return list ? articleIds(list[0], 'card') : [];
+  });
+  if (ids.join(',') !== cards.map((card) => card.id).join(',')) {
+    fail(`${label} topic list order is ${ids.join(', ') || 'empty'}`);
+  }
+  cards.forEach((card, index) => {
+    const article = extractArticle(main, card.id);
+    const meta = article.match(/<p\b[^>]*\bclass="[^"]*\bmeta\b[^"]*"[^>]*>([\s\S]*?)<\/p>/);
+    if (!meta || !meta[0].includes(`datetime="${card.published_at}"`)) {
+      fail(`${label} ${card.id} date is not on the meta line`);
+    }
+    if (/<time\b[^>]*class="[^"]*\bd\b/.test(article)) fail(`${label} ${card.id} still parks the date in the margin`);
+    const toggle = article.match(/<button\b([^>]*)>([\s\S]*?)<\/button>/);
+    if (!toggle) fail(`${label} ${card.id} is missing the Summary control`);
+    const buttonText = decode(toggle[2].replace(/<[^>]*>/g, '')).replace(/\s+/g, ' ').trim();
+    if (buttonText !== 'Summary') fail(`${label} ${card.id} Summary control reads "${buttonText}"`);
+    if (!/\baria-expanded="false"/.test(toggle[1])) fail(`${label} ${card.id} Summary control does not start closed`);
+    const controls = toggle[1].match(/\baria-controls="([^"]*)"/)?.[1];
+    if (!controls || !article.includes(`id="${controls}"`)) {
+      fail(`${label} ${card.id} Summary control does not point at its summary`);
+    }
+    if (!/viewBox="0 0 10 10"/.test(toggle[2]) || !/stroke-linecap="round"/.test(toggle[2])) {
+      fail(`${label} ${card.id} Summary chevron is missing`);
+    }
+    if (article.includes('class="num"')) fail(`${label} ${card.id} uses a Top 5 numeral`);
+    if (ids[index] !== card.id) fail(`${label} rank ${index + 1} is not ${card.id}`);
+  });
+}
+
+function assertProgramCss(html, label) {
+  const css = compactCss(stylesheetText(html));
+  for (const token of [
+    '--ground:#08090a',
+    '--ink:#f2f3f4',
+    '--ink-2:#c3c7cb',
+    '--ink-3:#8f949a',
+    '--mute:#777b82',
+    '--rule:#202225',
+    '--rule-strong:#34373b',
+    '--signal:#ff4b2b',
+  ]) {
+    if (!css.includes(token)) fail(`${label} design token ${token} is missing`);
+  }
+  if (!css.includes('--sans:"Host Grotesk","Helvetica Neue",Arial,sans-serif')) {
+    fail(`${label} is missing Host Grotesk`);
+  }
+  if (!ruleBody(css, 'body').includes('font-family:var(--sans)')) fail(`${label} body is not Host Grotesk`);
+  const mast = ruleBody(css, '.mast');
+  if (!mast.includes('font-weight:700') || !mast.includes('font-size:clamp(38px,7vw,104px)')) {
+    fail(`${label} masthead is not Host Grotesk 700 at the program size`);
+  }
+  const numeral = ruleBody(css, '.num');
+  if (!numeral.includes('color:var(--signal)') || !numeral.includes('font-size:88px')) {
+    fail(`${label} Top 5 numeral is not the vermilion program figure`);
+  }
+  const indexNumeral = ruleBody(css, '.index .k');
+  if (!indexNumeral.includes('color:var(--signal)')) fail(`${label} index numeral is not vermilion`);
+  const rank = ruleBody(css, '.row::before');
+  if (!rank.includes('content:counter(topic-rank)') || !rank.includes('color:var(--ink-3)')) {
+    fail(`${label} topic rank is not the grey list position`);
+  }
+  if (rank.includes('var(--signal)') || rank.includes('decimal-leading-zero')) {
+    fail(`${label} topic rank uses vermilion or zero padding`);
+  }
+  const rowsets = ruleBody(css, '.rowsets');
+  if (!rowsets.includes('grid-template-columns:repeat(2,minmax(0,1fr))')) {
+    fail(`${label} topic page is not two side-by-side lists`);
+  }
+  const flow = ruleBody(css, '.flow');
+  if (!flow.includes('columns:2') || !flow.includes('column-gap:48px')) {
+    fail(`${label} Top 5 does not flow in two columns`);
+  }
+  const bar = ruleBody(css, '.bar');
+  if (!bar.includes('border-top:1pxsolidvar(--rule-strong)')) fail(`${label} masthead hairline is missing`);
+  if (!ruleBody(css, '.row').includes('border-bottom:1pxsolidvar(--rule)')) {
+    fail(`${label} topic rows are missing hairlines`);
+  }
+  const chevron = ruleBody(css, '.toggle[aria-expanded="true"] svg');
+  if (!chevron.includes('transform:rotate(180deg)') || !chevron.includes('color:var(--signal)')) {
+    fail(`${label} open Summary chevron does not turn up in vermilion`);
+  }
+  if (!ruleBody(css, '.summary-panel').includes('grid-template-rows:0fr')) {
+    fail(`${label} Summary does not collapse under its title`);
+  }
+  const tablet = mediaBody(css, ['max-width:1080px', 'width<=1080px']);
+  if (!tablet.includes('.flow{columns:1}') || !tablet.includes('.rowsets{grid-template-columns:1fr}')) {
+    fail(`${label} mid-width layout does not drop to one column`);
+  }
+  if (!tablet.includes('grid-column:1/-1')) fail(`${label} index does not drop below the synthesis`);
+  const play = ruleBody(css, '.play');
+  if (!play.includes('width:1.1em') || !play.includes('height:1.1em') || !play.includes('color:var(--ink-2)')) {
+    fail(`${label} play icon is not the 1.1em ink mark`);
+  }
+  const motion = mediaBody(css, 'prefers-reduced-motion:reduce');
+  if (!motion.includes('transition:none!important')) fail(`${label} reduced motion still animates`);
+  const zero = ruleBody(css, '.nav a.zero[aria-current="page"]');
+  if (!zero.includes('border-bottom-color:var(--signal)')) {
+    fail(`${label} zero-count current section loses the active underline`);
+  }
+  const bare = css.replace(/"/g, '');
+  if (!bare.includes('.nava.zero[aria-current=page],.nava.zero[aria-current=page].n{color:var(--mute)}')) {
+    fail(`${label} zero-count current section does not stay muted`);
+  }
+  if (/\bblue\b/i.test(stylesheetText(html)) || stylesheetText(html).includes('#7eb6ff')) {
+    fail(`${label} stylesheet uses blue`);
+  }
+  if (!html.includes('Host+Grotesk')) fail(`${label} does not load Host Grotesk`);
 }
 
 function assertDimmedEmptyState(html, label, expectEmpty, where) {
@@ -570,6 +794,7 @@ function assertSectionTab(html, weekDoc, topic, where) {
   }
   assertOrder(parts.main, 'card', cards, `${where} ${topic.label}`);
   for (const card of cards) assertCard(parts.main, card);
+  assertTopicRanks(html, cards, `${where} ${topic.label}`);
   assertTopicOmitsAlsoSeen(html, weekDoc.footer_aside ?? [], `${where} ${topic.label}`);
   assertDimmedEmptyState(html, topic.label, cards.length === 0, where);
   assertDegradedHits(html, renderedCopy(cards), `${where} ${topic.label}`);
@@ -582,9 +807,19 @@ function assertBriefingTab(html, weekDoc, where) {
   if (shown.length !== cards.length) {
     fail(`${where} briefing shows ${shown.length} stories; the file has ${cards.length}`);
   }
-  if (!decode(parts.main).includes(`Top ${cards.length} this week`)) {
-    fail(`${where} briefing does not show Top ${cards.length} this week`);
+  const topLabel = `Top ${cards.length} this week`;
+  if (!decode(parts.main).includes(topLabel)) {
+    fail(`${where} briefing does not show ${topLabel}`);
   }
+  if (!html.includes('aria-label="This week"')) fail(`${where} briefing is missing the synthesis region`);
+  if (!html.includes(`aria-label="${topLabel}"`)) fail(`${where} index is missing its label`);
+  cards.forEach((card, index) => {
+    if (!html.includes(`href="#${card.id}"`)) fail(`${where} index does not link ${card.id}`);
+    const article = extractArticle(parts.main, card.id);
+    if (!new RegExp(`class="num"[^>]*>\\s*${index + 1}\\s*<`).test(article)) {
+      fail(`${where} ${card.id} rank numeral is not ${index + 1}`);
+    }
+  });
   if (!decode(html).includes(weekDoc.briefing.synthesis)) fail(`${where} briefing is missing the synthesis`);
   assertOrder(parts.main, 'card', cards, `${where} briefing`);
   for (const card of cards) assertCard(parts.main, card);
@@ -691,6 +926,9 @@ for (const html of Object.values(pages)) {
   for (const label of fixedTabs) {
     if (!html.includes(`>${label}<`)) fail(`missing tab ${label}`);
   }
+}
+if (!allHtml.includes('r="6.25"') || !allHtml.includes('stroke-width="1.25"')) {
+  fail('play icon SVG no longer matches the existing PlayIcon');
 }
 assertBuiltChrome('reader');
 
@@ -805,9 +1043,9 @@ const fixture = {
 function rebuild(extraEnv = {}) {
   const env = { ...process.env, ...extraEnv };
   if (!Object.hasOwn(extraEnv, 'DIGEST_AS_OF')) delete env.DIGEST_AS_OF;
-  if (typeof env.DIGEST_AS_OF === 'string' && env.DIGEST_AS_OF.length > 0) {
-    const parsed = new Date(env.DIGEST_AS_OF);
-    if (Number.isNaN(parsed.getTime())) fail(`DIGEST_AS_OF is not a time: ${env.DIGEST_AS_OF}`);
+  if (typeof extraEnv.DIGEST_AS_OF === 'string' && extraEnv.DIGEST_AS_OF.length > 0) {
+    const parsed = new Date(extraEnv.DIGEST_AS_OF);
+    if (Number.isNaN(parsed.getTime())) fail(`DIGEST_AS_OF is not a time: ${extraEnv.DIGEST_AS_OF}`);
     builtAsOf = parsed;
   } else {
     builtAsOf = new Date();
