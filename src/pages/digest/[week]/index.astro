@@ -1,7 +1,7 @@
 ---
 import Shell from '../../../components/Shell.astro';
 import WeekBody from '../../../components/WeekBody.astro';
-import { formatWeekRange, latestWeek, loadWeeks, synthesisExcerpt, type Week } from '../../../lib/weeks';
+import { latestWeek, loadWeeks, synthesisExcerpt, type Week } from '../../../lib/weeks';
 
 export function getStaticPaths() {
   return loadWeeks().map((week) => ({
@@ -16,11 +16,9 @@ interface Props {
 
 const { week } = Astro.props;
 const latest = latestWeek();
-const titleParts = [formatWeekRange(week.week_start, week.week_end)];
 ---
 
 <Shell
-  titleParts={titleParts}
   description={synthesisExcerpt(week.briefing.synthesis)}
   week={week}
   active="briefing"
