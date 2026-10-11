@@ -224,13 +224,21 @@ function assertBriefingAlsoSeen(html, items, label) {
   }
 }
 
+function cardTitles(html) {
+  return [...html.matchAll(/<h3\b[^>]*class="[^"]*\bcard-title\b[^"]*"[^>]*>([\s\S]*?)<\/h3>/g)].map((match) =>
+    decode(match[1].replace(/<[^>]*>/g, '')).replace(/\s+/g, ' ').trim(),
+  );
+}
+
 function assertTopicOmitsAlsoSeen(html, items, label) {
   const { headings, sections } = alsoSeenCount(html);
   if (headings !== 0 || sections !== 0 || html.includes('id="also-seen"')) {
     fail(`${label} shows Also seen`);
   }
+  const titles = cardTitles(html);
   for (const item of items) {
-    if (html.includes(`id="${item.id}"`) || decode(html).includes(item.title)) {
+    // A summary may name the same story. The thin card itself has this id and heading.
+    if (html.includes(`id="${item.id}"`) || titles.includes(item.title)) {
       fail(`${label} placed thin item ${item.id} in the topic list`);
     }
   }
@@ -406,32 +414,23 @@ function emptyParagraphs(html) {
     .map((match) => decode(match[2]).replace(/\s+/g, ' ').trim());
 }
 
+function emptyRuleIsDimmed(html) {
+  const css = [...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/g)].map((match) => match[1]).join('\n');
+  return /\.empty\b[^{]*\{[^}]*color:\s*var\(--muted\)/.test(css);
+}
+
 function assertDimmedEmptyState(html, label, expectEmpty, where) {
   const message = emptyMessage(label);
   const paragraphs = emptyParagraphs(html);
   const hasMessage = decode(html).includes(message);
   if (expectEmpty) {
     if (!hasMessage) fail(`${where} empty ${label} tab has no empty state`);
-    if (!paragraphs.includes(message)) fail(`${where} empty ${label} tab is missing the dimmed empty state`);
+    if (!paragraphs.includes(message) || !emptyRuleIsDimmed(html)) {
+      fail(`${where} empty ${label} tab is missing the dimmed empty state`);
+    }
     return;
   }
   if (hasMessage || paragraphs.length > 0) fail(`${where} ${label} showed an empty state while it had stories`);
-}
-
-function assertBuiltEmptyStyle() {
-  const css = [];
-  function walkCss(dir) {
-    for (const name of readdirSync(dir)) {
-      const path = join(dir, name);
-      if (statSync(path).isDirectory()) walkCss(path);
-      else if (name.endsWith('.css')) css.push(readFileSync(path, 'utf8'));
-    }
-  }
-  walkCss(DIST);
-  const bundled = css.join('\n');
-  if (!/\.empty\b[^{]*\{[^}]*color:\s*var\(--muted\)/.test(bundled)) {
-    fail('empty state is not dimmed with the muted color');
-  }
 }
 
 function fromMain(html) {
@@ -590,7 +589,6 @@ for (const html of Object.values(pages)) {
   }
 }
 assertBuiltChrome('reader');
-assertBuiltEmptyStyle();
 
 if (!pages.home.includes(`href="/edtech"`) || !pages.home.includes(`href="/policy-and-safety"`)) {
   fail('home nav is missing an Education or Policy and Safety link');
