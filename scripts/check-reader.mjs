@@ -414,9 +414,19 @@ function emptyParagraphs(html) {
     .map((match) => decode(match[2]).replace(/\s+/g, ' ').trim());
 }
 
+function stylesheetText(html) {
+  const chunks = [...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/g)].map((match) => match[1]);
+  for (const match of html.matchAll(/<link\b[^>]*href="([^"]+\.css)"[^>]*>/g)) {
+    const href = match[1];
+    if (/^https?:/i.test(href)) continue;
+    const path = join(DIST, href.replace(/^\//, ''));
+    if (existsSync(path)) chunks.push(readFileSync(path, 'utf8'));
+  }
+  return chunks.join('\n');
+}
+
 function emptyRuleIsDimmed(html) {
-  const css = [...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/g)].map((match) => match[1]).join('\n');
-  return /\.empty\b[^{]*\{[^}]*color:\s*var\(--muted\)/.test(css);
+  return /\.empty\b[^{]*\{[^}]*color:\s*var\(--muted\)/.test(stylesheetText(html));
 }
 
 function assertDimmedEmptyState(html, label, expectEmpty, where) {
@@ -516,24 +526,26 @@ function assertMediaCase(weekDoc, pageMap, where, required) {
   }
 }
 
-function assertWeekReader(weekDoc, pageMap, where, logIfNoEmpty) {
+function assertWeekReader(weekDoc, pageMap, where, { requireMedia = false, emptyCoverageWeek = null } = {}) {
   assertBriefingTab(pageMap.briefing, weekDoc, where);
   for (const topic of SECTION_TABS) assertSectionTab(pageMap[topic.id], weekDoc, topic, where);
-  assertMediaCase(weekDoc, pageMap, where, !logIfNoEmpty);
+  assertMediaCase(weekDoc, pageMap, where, requireMedia);
   const counts = SECTION_TABS.map((topic) => `${topic.label} ${sectionCards(weekDoc, topic.id).length}`).join(', ');
   console.log(`${where} section counts: ${counts}`);
-  if (logIfNoEmpty && SECTION_TABS.every((topic) => sectionCards(weekDoc, topic.id).length > 0)) {
-    const covered = SECTION_TABS.filter((topic) => sectionCards(week, topic.id).length === 0).map((topic) => topic.label);
-    if (covered.length === 0) {
-      console.log(
-        `${where} has no empty section; empty-state message and dimmed styling stay covered by the empty-topic fixture`,
-      );
-    } else {
-      console.log(
-        `${where} has no empty section; empty-state message and dimmed styling stay covered by /digest/${WEEK_ID}/ (${covered.join(', ')})`,
-      );
-    }
+  const noEmptyTab = SECTION_TABS.every((topic) => sectionCards(weekDoc, topic.id).length > 0);
+  if (!emptyCoverageWeek || !noEmptyTab) return;
+  const covered = SECTION_TABS.filter((topic) => sectionCards(emptyCoverageWeek, topic.id).length === 0).map(
+    (topic) => topic.label,
+  );
+  if (covered.length === 0) {
+    console.log(
+      `${where} has no empty section; empty-state message and dimmed styling stay covered by the empty-topic fixture`,
+    );
+    return;
   }
+  console.log(
+    `${where} has no empty section; empty-state message and dimmed styling stay covered by /digest/${WEEK_ID}/ (${covered.join(', ')})`,
+  );
 }
 
 function firstSentence(synthesis) {
@@ -634,10 +646,13 @@ const archivePages = {
 if (latest.week_id !== WEEK_ID) {
   console.log(`latest published week is ${latest.week_id}; archive checks stay on /digest/${WEEK_ID}/`);
 }
-assertWeekReader(latest, latestPages, `latest ${latest.week_id}`, true);
-assertWeekReader(week, archivePages, `archive ${WEEK_ID}`, false);
+assertWeekReader(latest, latestPages, `latest ${latest.week_id}`, { emptyCoverageWeek: week });
+assertWeekReader(week, archivePages, `archive ${WEEK_ID}`, { requireMedia: true });
 if (!decode(archivePages.briefing).includes('September sponsors-only newsletter')) {
   fail(`archive ${WEEK_ID} briefing is missing the September sponsors footer`);
+}
+if (!pages.digest.includes('Week of Sep 27 \u2013 Oct 3, 2026')) {
+  fail('archive 2026-W40 is missing the week range');
 }
 
 const excerpt = firstSentence(week.briefing.synthesis);
@@ -648,6 +663,7 @@ if (!pages.archive.includes('>Read this week</a>')) fail('archive path must be l
 if (!pages.archive.includes(`href="/digest/${WEEK_ID}"`)) fail('archive path does not open the week');
 if (!pages.archive.includes(`href="/digest/${latest.week_id}"`)) fail('archive path does not open the latest week');
 if (pages.archive.includes('class="summary"')) fail('archive invented a card summary');
+if (decode(fromMain(pages.archive)).includes(DEGRADED_BODY)) fail('archive includes the degraded sentence');
 
 const thin = week.footer_aside[0];
 if (thin && thin.summary_status !== 'thin') fail('footer item is not thin');
@@ -845,7 +861,7 @@ try {
   if (!homeDuringWeek.includes(week.briefing.synthesis)) {
     fail('the empty fixture replaced the latest week');
   }
-  if (!homeDuringWeek.includes(formatWeekRange(week.week_start, week.week_end))) {
+  if (!homeDuringWeek.includes('Week of Sep 27 \u2013 Oct 3, 2026')) {
     fail('mid-week home left the last published week');
   }
   if (
@@ -875,7 +891,7 @@ try {
   if (!archiveDuringWeek.includes('Saved older week synthesis from the file.')) {
     fail('archive excerpt for the older week does not match the saved file');
   }
-  if (!archiveDuringWeek.includes(formatWeekRange(olderWeek.week_start, olderWeek.week_end))) {
+  if (!archiveDuringWeek.includes('Week of Sep 20 \u2013 Sep 26, 2026')) {
     fail('archive is missing the older week range');
   }
 
@@ -962,6 +978,10 @@ const throwawayIds = ['1999-W01', '2026-W39', '2026-W41', '2027-W01', '2020-W01'
 const leftoverFiles = Object.keys(fixtureFiles).filter((path) => !fixtureOriginals.has(path) && existsSync(path));
 const leftoverDist = throwawayIds.filter((id) => !originalWeekIds.has(id) && existsSync(`dist/digest/${id}`));
 if (leftoverFiles.length > 0 || leftoverDist.length > 0) fail('throwaway week fixtures were left behind');
+for (const [path, original] of fixtureOriginals) {
+  const restored = existsSync(path) ? readFileSync(path) : null;
+  if (!restored || !restored.equals(original)) fail(`restored ${path} does not match the original bytes`);
+}
 const rebuiltLatest = selectLatestPublished(loadDigestWeeks(), readerNow());
 if (!rebuiltLatest) fail('rebuilt site has no published week');
 if (rebuiltLatest.week_id !== latest.week_id) {
