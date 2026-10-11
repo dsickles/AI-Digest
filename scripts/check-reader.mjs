@@ -743,6 +743,46 @@ function assertProgramCss(html, label) {
     fail(`${label} stylesheet uses blue`);
   }
   if (!html.includes('Host+Grotesk')) fail(`${label} does not load Host Grotesk`);
+  assertPhoneCss(css, label);
+}
+
+function assertPhoneCss(css, label) {
+  const phone = mediaBody(css, ['max-width:720px', 'width<=720px']);
+  if (!phone) fail(`${label} phone layout is missing`);
+  const mast = ruleBody(phone, '.mast');
+  if (!mast.includes('font-size:clamp(30px,10.4vw,52px)') || !mast.includes('white-space:nowrap')) {
+    fail(`${label} masthead does not stay on one line at phone width`);
+  }
+  if (!ruleBody(phone, '.bar').includes('display:block')) {
+    fail(`${label} week line does not move onto its own line at phone width`);
+  }
+  if (!ruleBody(phone, '.bar .right').includes('margin-top:2px')) {
+    fail(`${label} Updated and Archive do not sit on the line under the week`);
+  }
+  if (!ruleBody(phone, '.nav-sections').includes('grid-template-columns:1fr')) {
+    fail(`${label} sections do not stack at phone width`);
+  }
+  if (!ruleBody(phone, '.row').includes('grid-template-columns:36pxminmax(0,1fr)')) {
+    fail(`${label} topic rank is not in the 36px margin`);
+  }
+  if (!ruleBody(phone, '.num').includes('font-size:48px')) {
+    fail(`${label} Top 5 numeral is not 48px at phone width`);
+  }
+  const indexMeta = ruleBody(phone, '.index .im');
+  if (!indexMeta.includes('display:none')) fail(`${label} phone index still shows publisher and date`);
+  if (!ruleBody(phone, '.page-title').includes('font-size:40px')) {
+    fail(`${label} phone topic title is not 40px`);
+  }
+  const phoneToggle = ruleBody(phone, '.row .toggle');
+  if (!phoneToggle.includes('grid-row:2')) {
+    fail(`${label} Summary control does not drop under the title at phone width`);
+  }
+  if (
+    !phoneToggle.includes('padding:var(--s2)var(--s2)var(--s2)0') ||
+    !phoneToggle.includes('margin-bottom:calc(-1*var(--s2))')
+  ) {
+    fail(`${label} Summary control tap target is shorter than the reference padding`);
+  }
 }
 
 function assertDimmedEmptyState(html, label, expectEmpty, where) {
