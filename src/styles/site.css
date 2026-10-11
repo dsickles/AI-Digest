@@ -793,8 +793,9 @@ main > .page-title {
   .row .toggle {
     grid-row: 2;
     justify-self: start;
-    margin-top: var(--s2);
-    padding: 0;
+    margin-top: 0;
+    margin-bottom: calc(-1 * var(--s2));
+    padding: var(--s2) var(--s2) var(--s2) 0;
   }
 
   .row .summary-panel {

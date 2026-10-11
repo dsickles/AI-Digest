@@ -773,8 +773,15 @@ function assertPhoneCss(css, label) {
   if (!ruleBody(phone, '.page-title').includes('font-size:40px')) {
     fail(`${label} phone topic title is not 40px`);
   }
-  if (!ruleBody(phone, '.row .toggle').includes('grid-row:2')) {
+  const phoneToggle = ruleBody(phone, '.row .toggle');
+  if (!phoneToggle.includes('grid-row:2')) {
     fail(`${label} Summary control does not drop under the title at phone width`);
+  }
+  if (
+    !phoneToggle.includes('padding:var(--s2)var(--s2)var(--s2)0') ||
+    !phoneToggle.includes('margin-bottom:calc(-1*var(--s2))')
+  ) {
+    fail(`${label} Summary control tap target is shorter than the reference padding`);
   }
 }
 
