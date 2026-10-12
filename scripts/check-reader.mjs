@@ -12,7 +12,7 @@ import {
   selectLatestPublished,
 } from '../src/lib/week-rules.mjs';
 import { storyPlacementErrors } from '../src/lib/story-groups.mjs';
-import { alsoSeenFillerKind, SECTION_LABELS, visibleAlsoSeen } from '../src/lib/also-seen.mjs';
+import { alsoSeenFillerKind, SECTION_LABELS as ALSO_SEEN_SECTION_LABELS, visibleAlsoSeen } from '../src/lib/also-seen.mjs';
 
 const DEGRADED_BODY = "The summary couldn't be generated this week.";
 const WEEK_ID = '2026-W40';
@@ -235,7 +235,7 @@ function assertBriefingAlsoSeen(html, items, label) {
     assertCard(parts.footer, item);
     const article = extractArticle(parts.footer, item.id);
     const shown = sectionLabelText(article);
-    const expected = SECTION_LABELS[item.category];
+    const expected = ALSO_SEEN_SECTION_LABELS[item.category];
     if (shown !== expected) fail(`${label} ${item.id} section label is "${shown || 'missing'}"`);
     if (parts.main.includes(`id="${item.id}"`)) fail(`${label} moved thin item ${item.id} into the main list`);
   }
@@ -804,7 +804,7 @@ function assertProgramCss(html, label) {
     !sectionLabel.includes('font-family:var(--sans)') ||
     !sectionLabel.includes('font-size:12px') ||
     !sectionLabel.includes('font-weight:600') ||
-    !sectionLabel.includes('letter-spacing:0.08em') ||
+    !(sectionLabel.includes('letter-spacing:0.08em') || sectionLabel.includes('letter-spacing:.08em')) ||
     !sectionLabel.includes('text-transform:uppercase') ||
     !sectionLabel.includes('color:var(--ink-3)')
   ) {
