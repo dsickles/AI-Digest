@@ -853,13 +853,23 @@ function assertProgramCss(html, label) {
     topPlace.includes('grid-area:2/5/auto/13');
   if (!topRight) fail(`${label} Top 5 is not the right two thirds under the lead`);
   if (css.includes('stories-rest')) fail(`${label} Top 5 stories can leave the right column`);
+  if (!ruleBody(css, '.syn > .themes-col').includes('align-self:start')) {
+    fail(`${label} themes column cannot end above the Top 5`);
+  }
   const numberCol = ruleBody(css, '.syn > .themes-col.has-number');
-  if (!numberCol.includes('align-self:stretch') || !numberCol.includes('flex-direction:column')) {
-    fail(`${label} Number of the week does not fill the space under the themes`);
+  if (numberCol.includes('align-self:stretch') || numberCol.includes('flex-direction:column')) {
+    fail(`${label} Number of the week stretches the themes column to the Top 5`);
   }
   const notw = ruleBody(css, '.notw');
-  if (!notw.includes('margin-top:auto') || !notw.includes('border-top:1pxsolidvar(--rule-strong)')) {
-    fail(`${label} Number of the week does not sit at the bottom of the themes column`);
+  if (
+    notw.includes('margin-top:auto') ||
+    notw.includes('margin-top:var(--s6)') ||
+    css.includes('margin-top:auto')
+  ) {
+    fail(`${label} Number of the week is pinned to the bottom of the themes column`);
+  }
+  if (!ruleBody(css, '.theme').includes('padding:var(--s2)0') || !notw.includes('padding-top:var(--s2)')) {
+    fail(`${label} Number of the week does not follow the last theme with the theme-row gap`);
   }
   const fig = ruleBody(css, '.notw-fig');
   if (!fig.includes('color:var(--signal)') || !fig.includes('font-size:88px') || !fig.includes('font-weight:700')) {
@@ -918,8 +928,9 @@ function assertProgramCss(html, label) {
   if (!ruleBody(tablet, '.notw-fig').includes('font-size:64px')) {
     fail(`${label} Number of the week value is not 64px on a narrow window`);
   }
-  if (!ruleBody(tablet, '.notw').includes('margin-top:var(--s6)')) {
-    fail(`${label} Number of the week does not follow the themes on a narrow window`);
+  const narrowNotw = ruleBody(tablet, '.notw');
+  if (narrowNotw.includes('margin-top:auto') || narrowNotw.includes('margin-top:var(--s6)')) {
+    fail(`${label} Number of the week is pushed away from the themes on a narrow window`);
   }
   if (tablet.includes('.index')) fail(`${label} narrow window still styles the Top 5 index`);
   const play = ruleBody(css, '.play');
@@ -982,6 +993,9 @@ function assertPhoneCss(css, label) {
   }
   if (!ruleBody(phone, '.num').includes('font-size:48px')) {
     fail(`${label} Top 5 numeral is not 48px at phone width`);
+  }
+  if (!ruleBody(phone, '.theme').includes('padding:6px0') || !ruleBody(phone, '.notw').includes('padding-top:6px')) {
+    fail(`${label} Number of the week gap does not match theme rows at phone width`);
   }
   if (phone.includes('.index')) fail(`${label} phone still styles the Top 5 index`);
   if (!ruleBody(phone, '.page-title').includes('font-size:40px')) {
@@ -1183,7 +1197,7 @@ function assertNumberOfWeek(html, weekDoc, where) {
   const notwAt = html.indexOf('class="notw"');
   const topCol = html.indexOf('class="top top-col"');
   if (themesAt < 0 || notwAt < themesAt || topCol < 0 || notwAt > topCol) {
-    fail(`${where} Number of the week is not at the bottom of the themes column`);
+    fail(`${where} Number of the week does not follow the themes`);
   }
 }
 

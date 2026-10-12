@@ -237,20 +237,8 @@ a:hover {
   margin-top: var(--s5);
 }
 
-.syn > .themes-col.has-number {
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-}
-
-.syn > .themes-col.has-number > .themes {
-  margin-bottom: var(--s6);
-}
-
 .notw {
-  margin-top: auto;
   padding-top: var(--s2);
-  border-top: 1px solid var(--rule-strong);
 }
 
 .notw-label {
@@ -781,14 +769,6 @@ main > .page-title {
     margin-top: var(--s6);
   }
 
-  .syn > .themes-col.has-number > .themes {
-    margin-bottom: 0;
-  }
-
-  .notw {
-    margin-top: var(--s6);
-  }
-
   .notw-fig {
     font-size: 64px;
   }
@@ -867,6 +847,10 @@ main > .page-title {
     grid-template-columns: minmax(0, 1fr);
     row-gap: 2px;
     padding: 6px 0;
+  }
+
+  .notw {
+    padding-top: 6px;
   }
 
   .theme-label {
