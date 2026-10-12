@@ -66,70 +66,50 @@ function storyHref(card: MainCard): string {
 
 {
   view === 'briefing' ? (
-    <>
+    hasScan ? (
       <section class="g syn" aria-label="This week">
-        {hasScan ? (
-          <>
-            <p class="lead">{week.briefing.lead}</p>
-            <ol class="themes">
-              {themes.map((theme) => {
-                const cards = theme.story_ids.flatMap((id) => {
-                  const card = mainById.get(id);
-                  return card ? [card] : [];
-                });
-                return (
-                  <li class="theme">
-                    <p class="theme-label">{theme.label}</p>
-                    <p class="theme-sentence">{theme.sentence}</p>
-                    {cards.length > 0 && (
-                      <p class="theme-links">
-                        {cards.map((card, index) => (
-                          <>
-                            {index > 0 && (
-                              <span class="sep" aria-hidden="true">
-                                {' '}
-                                ·{' '}
-                              </span>
-                            )}
-                            <a href={storyHref(card)}>
-                              {linkLabel(card, cards)}
-                              <span class="visually-hidden"> {card.title}</span>
-                            </a>
-                          </>
-                        ))}
-                      </p>
-                    )}
-                  </li>
-                );
-              })}
-            </ol>
-            <div class="briefing-full">
-              <button class="toggle" type="button" aria-expanded="false" aria-controls="full-briefing">
-                Read the full briefing
-                <svg viewBox="0 0 10 10" aria-hidden="true" focusable="false">
-                  <path
-                    d="M1.75 3.25 5 6.75 8.25 3.25"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                </svg>
-              </button>
-              <div class="summary-panel" id="full-briefing">
-                <p class="summary">{week.briefing.synthesis}</p>
-              </div>
-            </div>
-          </>
-        ) : (
-          <p class="synthesis">{week.briefing.synthesis}</p>
-        )}
-      </section>
-      <section class="top" aria-labelledby="briefing-heading">
-        <h2 class="h2" id="briefing-heading">
-          {topLabel}
-        </h2>
-        <div class="flow">
+        <p class="lead">{week.briefing.lead}</p>
+        <section class="themes-col" aria-labelledby="themes-heading">
+          <h2 class="h2" id="themes-heading">
+            This week's themes
+          </h2>
+          <ol class="themes">
+            {themes.map((theme) => {
+              const cards = theme.story_ids.flatMap((id) => {
+                const card = mainById.get(id);
+                return card ? [card] : [];
+              });
+              return (
+                <li class="theme">
+                  <p class="theme-label">{theme.label}</p>
+                  <p class="theme-sentence">{theme.sentence}</p>
+                  {cards.length > 0 && (
+                    <p class="theme-links">
+                      {cards.map((card, index) => (
+                        <>
+                          {index > 0 && (
+                            <span class="sep" aria-hidden="true">
+                              {' '}
+                              ·{' '}
+                            </span>
+                          )}
+                          <a href={storyHref(card)}>
+                            {linkLabel(card, cards)}
+                            <span class="visually-hidden"> {card.title}</span>
+                          </a>
+                        </>
+                      ))}
+                    </p>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+        <section class="top top-col" aria-labelledby="briefing-heading">
+          <h2 class="h2" id="briefing-heading">
+            {topLabel}
+          </h2>
           <ol class="stories">
             {topCards.map((card, index) => (
               <li class="story">
@@ -137,21 +117,131 @@ function storyHref(card: MainCard): string {
               </li>
             ))}
           </ol>
-        </div>
+        </section>
       </section>
-    </>
+    ) : (
+      <>
+        <section class="g syn" aria-label="This week">
+          <p class="synthesis">{week.briefing.synthesis}</p>
+        </section>
+        <section class="top" aria-labelledby="briefing-heading">
+          <h2 class="h2" id="briefing-heading">
+            {topLabel}
+          </h2>
+          <div class="flow">
+            <ol class="stories">
+              {topCards.map((card, index) => (
+                <li class="story">
+                  <Card card={card} variant="top" index={index + 1} />
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      </>
+    )
   ) : (
     <TopicSection label={topicLabel} cards={topicCards} alsoSeen={topicAlsoSeen} />
   )
 }
 
 <script>
-  const buttons = document.querySelectorAll('.briefing-full .toggle');
-  for (const button of buttons) {
-    button.addEventListener('click', () => {
-      const open = button.getAttribute('aria-expanded') !== 'true';
-      button.setAttribute('aria-expanded', open ? 'true' : 'false');
-      button.closest('.briefing-full')?.classList.toggle('open', open);
-    });
+  // Keep the desktop columns from leaving a blank taller than about 80px.
+  const MAX_BAND = 56;
+  const STACK_AT = 1080;
+
+  function storiesOf(list) {
+    return [...list.querySelectorAll(':scope > .story')];
+  }
+
+  function clearBands(list) {
+    if (!list) return;
+    list.style.gap = '';
+    for (const item of list.children) item.style.paddingBottom = '';
+  }
+
+  function capacity(count) {
+    if (count <= 0) return 0;
+    return count * MAX_BAND;
+  }
+
+  function canAbsorb(diff, themeCount, storyCount) {
+    if (Math.abs(diff) <= 80) return true;
+    if (diff > 0) return diff <= capacity(themeCount);
+    return -diff <= capacity(storyCount);
+  }
+
+  function absorb(list, amount) {
+    const items = [...list.children];
+    if (items.length === 0 || amount <= 1) return;
+    let remaining = amount;
+    if (items.length > 1) {
+      const slots = items.length - 1;
+      const per = Math.min(MAX_BAND, remaining / slots);
+      list.style.gap = `${per}px`;
+      remaining -= per * slots;
+    }
+    if (remaining > 1) {
+      const pad = Math.min(MAX_BAND, remaining);
+      const current = Number.parseFloat(getComputedStyle(items[items.length - 1]).paddingBottom) || 0;
+      items[items.length - 1].style.paddingBottom = `${current + pad}px`;
+    }
+  }
+
+  function balance() {
+    const syn = document.querySelector('.syn');
+    const themesCol = syn?.querySelector('.themes-col');
+    const topCol = syn?.querySelector('.top-col');
+    const themes = themesCol?.querySelector('.themes');
+    const side = topCol?.querySelector('.stories');
+    if (!syn || !themesCol || !topCol || !themes || !side) return;
+
+    const stories = [...storiesOf(side), ...storiesOf(syn.querySelector('.stories-rest') ?? document.createElement('ol'))];
+    clearBands(themes);
+    clearBands(side);
+
+    const place = (count) => {
+      let rest = syn.querySelector('.stories-rest');
+      stories.forEach((story, index) => {
+        const target = index < count ? side : rest;
+        if (index >= count && !rest) {
+          rest = document.createElement('ol');
+          rest.className = 'stories stories-rest';
+          rest.setAttribute('aria-labelledby', 'briefing-heading');
+          syn.appendChild(rest);
+        }
+        const home = index < count ? side : rest;
+        if (story.parentElement !== home) home.appendChild(story);
+      });
+      if (rest && rest.childElementCount === 0) rest.remove();
+    };
+
+    const diffNow = () => topCol.getBoundingClientRect().bottom - themesCol.getBoundingClientRect().bottom;
+
+    if (window.innerWidth <= STACK_AT) {
+      place(stories.length);
+      return;
+    }
+
+    let chosen = stories.length;
+    for (let count = stories.length; count >= 1; count -= 1) {
+      place(count);
+      const diff = diffNow();
+      if (canAbsorb(diff, themes.children.length, side.children.length) || count === 1) {
+        chosen = count;
+        if (canAbsorb(diff, themes.children.length, side.children.length)) break;
+      }
+    }
+    place(chosen);
+    const diff = diffNow();
+    if (diff > 80) absorb(themes, diff);
+    else if (diff < -80) absorb(side, -diff);
+  }
+
+  if (document.querySelector('.themes-col')) {
+    const run = () => balance();
+    run();
+    if (document.fonts?.ready) document.fonts.ready.then(run);
+    window.addEventListener('resize', run);
   }
 </script>

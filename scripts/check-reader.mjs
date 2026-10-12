@@ -378,6 +378,12 @@ function assertReaderChrome(html, label, file = '') {
   if (archiveHrefs.length !== 1 || !weekLine.includes('href="/archive"') || !weekLine.includes('>Archive<')) {
     fail(`${label} Archive is not the week-line link to /archive`);
   }
+  const rangeText = decode(weekLine.match(/class="week-range"[^>]*>([\s\S]*?)<\//)?.[1] ?? '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (/\bWeek\s+\d+\b/i.test(rangeText) || /\bW\d{2}\b/.test(rangeText)) {
+    fail(`${label} shows a week number`);
+  }
   const rangeAt = weekLine.indexOf('class="week-range"');
   const timeAt = weekLine.indexOf('<time');
   const updatedText = decode(weekLine.match(/<time\b[^>]*>([^<]*)<\/time>/)?.[1] ?? '').trim();
@@ -735,15 +741,19 @@ function assertProgramCss(html, label) {
   }
   if (css.includes('.index')) fail(`${label} Top 5 index styles are still present`);
   const leadPlace = ruleBody(css, '.syn > .lead');
-  const leadBesideThemes =
-    leadPlace.includes('grid-column:1/9') || leadPlace.includes('grid-area:1/1/auto/9');
-  if (!leadBesideThemes) fail(`${label} lead line is not in the left columns`);
-  const themePlace = ruleBody(css, '.syn > .themes');
-  const themesBesideLead =
-    (themePlace.includes('grid-column:9/13') && themePlace.includes('grid-row:1')) ||
-    themePlace.includes('grid-area:1/9/auto/13') ||
-    themePlace.includes('grid-area:1/9/span2/13');
-  if (!themesBesideLead) fail(`${label} theme rows do not sit beside the lead`);
+  const leadSpans = leadPlace.includes('grid-column:1/-1') || leadPlace.includes('grid-area:1/1/auto/-1');
+  if (!leadSpans) fail(`${label} lead does not span the page above the columns`);
+  const themePlace = ruleBody(css, '.syn > .themes-col');
+  const themesLeft =
+    (themePlace.includes('grid-column:1/5') && themePlace.includes('grid-row:2')) ||
+    themePlace.includes('grid-area:2/1/auto/5');
+  if (!themesLeft) fail(`${label} themes are not the left third under the lead`);
+  const topPlace = ruleBody(css, '.syn > .top');
+  const topRight =
+    (topPlace.includes('grid-column:5/13') && topPlace.includes('grid-row:2')) ||
+    topPlace.includes('grid-area:2/5/auto/13');
+  if (!topRight) fail(`${label} Top 5 is not the right two thirds under the lead`);
+  if (css.includes('.briefing-full')) fail(`${label} full briefing toggle styles are still present`);
   const storyBox = ruleBody(css, '.story');
   if (!storyBox.includes('break-inside:avoid') || !storyBox.includes('list-style:none')) {
     fail(`${label} a Top 5 story can split across columns or show a list marker beside the numeral`);
@@ -780,10 +790,11 @@ function assertProgramCss(html, label) {
     fail(`${label} mid-width layout does not drop to one column`);
   }
   const themesStack =
-    tablet.includes('.syn>.themes') &&
-    ((tablet.includes('grid-column:1/-1') && tablet.includes('grid-row:auto')) ||
-      tablet.includes('grid-area:auto/1/auto/-1'));
-  if (!themesStack) fail(`${label} theme rows do not drop under the lead on a narrow window`);
+    tablet.includes('.syn>.themes-col') &&
+    tablet.includes('.syn>.top') &&
+    (tablet.includes('grid-area:auto/1/auto/-1') ||
+      (tablet.includes('grid-column:1/-1') && tablet.includes('grid-row:auto')));
+  if (!themesStack) fail(`${label} themes and Top 5 do not stack under the lead on a narrow window`);
   if (tablet.includes('.index')) fail(`${label} narrow window still styles the Top 5 index`);
   const play = ruleBody(css, '.play');
   if (!play.includes('width:1.1em') || !play.includes('height:1.1em') || !play.includes('color:var(--ink-2)')) {
@@ -860,10 +871,7 @@ function assertPhoneCss(css, label) {
   ) {
     fail(`${label} Summary control tap target is shorter than the reference padding`);
   }
-  const briefingToggle = ruleBody(phone, '.briefing-full .toggle');
-  if (!briefingToggle.includes('min-height:34px') || !briefingToggle.includes('padding:var(--s2)var(--s2)var(--s2)0')) {
-    fail(`${label} Read the full briefing tap target is shorter than 34px`);
-  }
+  if (phone.includes('.briefing-full')) fail(`${label} phone still styles the full briefing toggle`);
   const alsoRow = ruleBody(css, '.topic > .also');
   if (!alsoRow.includes('grid-column:1/-1')) {
     fail(`${label} Also seen does not span the topic tab`);
@@ -925,6 +933,28 @@ function assertSectionTab(html, weekDoc, topic, where) {
   assertDegradedHits(html, renderedCopy(cards), `${where} ${topic.label}`);
 }
 
+function sentenceParts(text) {
+  const trimmed = String(text ?? '').trim();
+  if (!trimmed) return null;
+  const parts = [];
+  let start = 0;
+  for (let index = 0; index < trimmed.length; index += 1) {
+    const mark = trimmed[index];
+    if (mark !== '.' && mark !== '!' && mark !== '?') continue;
+    const next = trimmed[index + 1];
+    if (next !== undefined && !/\s/.test(next)) continue;
+    const sentence = trimmed.slice(start, index + 1).trim();
+    if (!sentence || sentence === '.' || sentence === '!' || sentence === '?') return null;
+    parts.push(sentence);
+    let end = index + 1;
+    while (end < trimmed.length && /\s/.test(trimmed[end])) end += 1;
+    start = end;
+    index = end - 1;
+  }
+  if (start < trimmed.length) return null;
+  return parts;
+}
+
 function themeHref(weekDoc, id) {
   if ((weekDoc.briefing.top ?? []).some((card) => card.id === id)) return `#${id}`;
   const card = (weekDoc.main_feed ?? []).find((item) => item.id === id);
@@ -935,18 +965,36 @@ function themeHref(weekDoc, id) {
 function assertBriefingScan(html, weekDoc, where) {
   const themes = weekDoc.briefing.themes;
   const hasScan = typeof weekDoc.briefing.lead === 'string' && Array.isArray(themes) && themes.length > 0;
+  if (html.includes('Read the full briefing') || html.includes('briefing-full')) {
+    fail(`${where} still has the full briefing toggle`);
+  }
+  if (weekDoc.week_id >= '2026-W41' && !hasScan) {
+    fail(`${where} is missing the lead and exactly 5 themes`);
+  }
   if (!hasScan) {
-    if (html.includes('Read the full briefing')) fail(`${where} shows Read the full briefing without theme data`);
-    if (html.includes('class="lead"') || html.includes('class="theme"')) {
+    if (html.includes('class="lead"') || html.includes('class="theme"') || html.includes("This week's themes")) {
       fail(`${where} shows a lead line or theme row without theme data`);
     }
     if (!html.includes('class="synthesis"')) fail(`${where} briefing dropped the synthesis paragraph`);
+    if (!decode(html).includes(weekDoc.briefing.synthesis)) fail(`${where} briefing is missing the synthesis`);
     return;
   }
-  if (themes.length < 4 || themes.length > 6) fail(`${where} has ${themes.length} themes; expected 4 to 6`);
+  if (themes.length !== 5) fail(`${where} has ${themes.length} themes; expected exactly 5`);
+  const leadSentences = sentenceParts(weekDoc.briefing.lead);
+  if (!leadSentences || leadSentences.length < 1 || leadSentences.length > 3) {
+    fail(`${where} lead must be 1 to 3 sentences`);
+  }
   const lead = html.match(/<p class="lead">([\s\S]*?)<\/p>/);
   if (!lead || decode(lead[1]).trim() !== weekDoc.briefing.lead) fail(`${where} lead line does not match the week file`);
   if (html.includes('class="synthesis"')) fail(`${where} still shows the synthesis as the open paragraph`);
+  if (decode(html).includes(weekDoc.briefing.synthesis)) fail(`${where} still shows the full briefing paragraph`);
+  const headingAt = html.indexOf('id="themes-heading"');
+  const listAt = html.indexOf('<ol class="themes"');
+  if (headingAt < 0 || listAt < 0 || headingAt > listAt || !decode(html).includes("This week's themes")) {
+    fail(`${where} is missing the themes header above the rows`);
+  }
+  const topAt = html.indexOf('id="briefing-heading"');
+  if (topAt < 0 || listAt > topAt) fail(`${where} themes do not come before the Top 5`);
   const rows = [...html.matchAll(/<li class="theme">([\s\S]*?)<\/li>/g)];
   if (rows.length !== themes.length) fail(`${where} shows ${rows.length} theme rows; the file has ${themes.length}`);
   themes.forEach((theme, index) => {
@@ -965,24 +1013,6 @@ function assertBriefingScan(html, weekDoc, where) {
       }
     }
   });
-  const button = html.match(/<button\b([^>]*)>([\s\S]*?)<\/button>/);
-  if (!button) fail(`${where} is missing Read the full briefing`);
-  const buttonText = decode(button[2].replace(/<[^>]*>/g, '')).replace(/\s+/g, ' ').trim();
-  if (buttonText !== 'Read the full briefing') fail(`${where} briefing toggle reads "${buttonText}"`);
-  if (!/\baria-expanded="false"/.test(button[1])) fail(`${where} Read the full briefing does not start closed`);
-  if (/\bclass="briefing-full open"/.test(html)) fail(`${where} full briefing starts open`);
-  const controls = button[1].match(/\baria-controls="([^"]*)"/)?.[1];
-  if (!controls) fail(`${where} Read the full briefing is missing aria-controls`);
-  const panel = html.match(new RegExp(`<div class="summary-panel" id="${controls}">([\\s\\S]*?)</div>`));
-  if (!panel || !decode(panel[1]).includes(weekDoc.briefing.synthesis)) {
-    fail(`${where} full briefing toggle does not hold the synthesis`);
-  }
-  if (!/viewBox="0 0 10 10"/.test(button[2]) || !/stroke-linecap="round"/.test(button[2])) {
-    fail(`${where} Read the full briefing chevron does not match Summary`);
-  }
-  if (!button[2].includes('M1.75 3.25 5 6.75 8.25 3.25')) {
-    fail(`${where} Read the full briefing chevron does not point down`);
-  }
 }
 
 function visibleCopy(html) {
@@ -1040,12 +1070,16 @@ function assertBriefingTab(html, weekDoc, where) {
     const article = extractArticle(parts.main, card.id);
     assertStoryNumber(article, card, index + 1, where);
   });
-  if (!decode(html).includes(weekDoc.briefing.synthesis)) fail(`${where} briefing is missing the synthesis`);
+  const hasScan = typeof weekDoc.briefing.lead === 'string' && Array.isArray(weekDoc.briefing.themes) && weekDoc.briefing.themes.length > 0;
   assertBriefingScan(html, weekDoc, where);
   assertOrder(parts.main, 'card', cards, `${where} briefing`);
   for (const card of cards) assertCard(parts.main, card);
   assertBriefingOmitsAlsoSeen(html, where);
-  assertDegradedHits(html, [weekDoc.briefing.synthesis, ...renderedCopy(cards)], `${where} briefing`);
+  assertDegradedHits(
+    html,
+    hasScan ? renderedCopy(cards) : [weekDoc.briefing.synthesis, ...renderedCopy(cards)],
+    `${where} briefing`,
+  );
 }
 
 function findShownCard(weekDoc, predicate) {

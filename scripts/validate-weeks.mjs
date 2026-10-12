@@ -422,10 +422,31 @@ function wordCount(text) {
     .filter(Boolean).length;
 }
 
-function isOneSentence(text) {
+function sentenceParts(text) {
   const trimmed = String(text ?? '').trim();
-  const match = trimmed.match(/^.+?[.!?](?=\s|$)/);
-  return Boolean(match) && match[0].length === trimmed.length;
+  if (!trimmed) return null;
+  const parts = [];
+  let start = 0;
+  for (let index = 0; index < trimmed.length; index += 1) {
+    const mark = trimmed[index];
+    if (mark !== '.' && mark !== '!' && mark !== '?') continue;
+    const next = trimmed[index + 1];
+    if (next !== undefined && !/\s/.test(next)) continue;
+    const sentence = trimmed.slice(start, index + 1).trim();
+    if (!sentence || sentence === '.' || sentence === '!' || sentence === '?') return null;
+    parts.push(sentence);
+    let end = index + 1;
+    while (end < trimmed.length && /\s/.test(trimmed[end])) end += 1;
+    start = end;
+    index = end - 1;
+  }
+  if (start < trimmed.length) return null;
+  return parts;
+}
+
+function isOneSentence(text) {
+  const parts = sentenceParts(text);
+  return Boolean(parts) && parts.length === 1;
 }
 
 function storyKeys(card) {
@@ -449,21 +470,22 @@ function validateBriefingScan(doc) {
   const hasThemes = Object.hasOwn(briefing, 'themes');
   const required = typeof doc.week_id === 'string' && doc.week_id >= THEME_WEEK;
   if (required && (!hasLead || !hasThemes)) {
-    errors.push('briefing must include a lead line and 4 to 6 themes from 2026-W41 on');
+    errors.push('briefing must include a lead of 1 to 3 sentences and exactly 5 themes from 2026-W41 on');
   } else if (hasLead !== hasThemes) {
     errors.push('briefing lead and themes must be set together');
   }
   if (!hasLead && !hasThemes) return errors;
 
-  if (typeof briefing.lead !== 'string' || !isOneSentence(briefing.lead)) {
-    errors.push('briefing lead must be one sentence');
+  const leadSentences = typeof briefing.lead === 'string' ? sentenceParts(briefing.lead) : null;
+  if (!leadSentences || leadSentences.length < 1 || leadSentences.length > 3) {
+    errors.push('briefing lead must be 1 to 3 sentences');
   } else if (DASH.test(briefing.lead)) {
     errors.push('briefing lead must not use an em dash or an en dash');
   }
 
   const themes = Array.isArray(briefing.themes) ? briefing.themes : [];
-  if (themes.length < 4 || themes.length > 6) {
-    errors.push('briefing must include 4 to 6 themes');
+  if (themes.length !== 5) {
+    errors.push('briefing must include exactly 5 themes');
   }
   const mainById = new Map((doc.main_feed ?? []).filter((card) => card && typeof card === 'object').map((card) => [card.id, card]));
   themes.forEach((theme, index) => {
@@ -528,6 +550,8 @@ function briefingFileErrors() {
     ['story_ids', 'config/briefing.md must tell ingest to link themes by story id'],
     ['merged main item', 'config/briefing.md must tell ingest to link the merged main item'],
     ['2026-W40', 'config/briefing.md must keep weeks before 2026-W41, including 2026-W40, valid without a lead or themes'],
+    ['exactly 5', 'config/briefing.md must tell ingest to write exactly 5 themes'],
+    ['1 to 3', 'config/briefing.md must tell ingest the lead is 1 to 3 sentences'],
   ];
   for (const [needle, message] of required) {
     if (!text.includes(needle)) return [message];
@@ -963,7 +987,7 @@ function rubricWeek() {
     briefing: {
       synthesis: 'Eight items from one source still fit, because there is no per-source cap.',
       lead: 'Eight included items from one source still fit in a single week.',
-      themes: [1, 2, 3, 4].map((n) => ({
+      themes: [1, 2, 3, 4, 5].map((n) => ({
         label: `Theme ${n}`,
         sentence: themeSentence(),
         story_ids: [`rubric-item-${n}`],
@@ -1301,7 +1325,7 @@ function proveBriefing(sources) {
     !expectRubricFailure(
       sources,
       missing,
-      'lead line and 4 to 6 themes',
+      'exactly 5 themes',
       'rubric week without a lead line or themes',
     )
   ) {
@@ -1356,9 +1380,35 @@ function proveBriefing(sources) {
     return false;
   }
 
+  const threeSentences = rubricWeek();
+  threeSentences.briefing.lead = 'One sentence here. Two sentences here. Three sentences here.';
+  const threeErrors = validateDigestDocument(threeSentences, '2026-W41.json', sources);
+  if (threeErrors.length !== 0) {
+    console.error('self-test: a lead of 3 sentences must pass');
+    for (const error of threeErrors) console.error(`- ${error}`);
+    return false;
+  }
+  console.log('self-test PASS lead of 3 sentences');
+
+  const fourSentences = rubricWeek();
+  fourSentences.briefing.lead = 'One sentence here. Two sentences here. Three sentences here. Four sentences here.';
+  if (!expectRubricFailure(sources, fourSentences, '1 to 3 sentences', 'lead of 4 sentences')) return false;
+
+  const dashedLead = rubricWeek();
+  dashedLead.briefing.lead = 'Agents moved \u2013 and the week kept going.';
+  if (!expectRubricFailure(sources, dashedLead, 'em dash or an en dash', 'lead with an en dash')) return false;
+
   const few = rubricWeek();
-  few.briefing.themes = few.briefing.themes.slice(0, 3);
-  if (!expectRubricFailure(sources, few, 'fewer than 4', 'fewer than 4 themes')) return false;
+  few.briefing.themes = few.briefing.themes.slice(0, 4);
+  if (!expectRubricFailure(sources, few, 'fewer than 5', 'fewer than 5 themes')) return false;
+
+  const extra = rubricWeek();
+  extra.briefing.themes.push({
+    label: 'Theme 6',
+    sentence: themeSentence(),
+    story_ids: ['rubric-item-6'],
+  });
+  if (!expectRubricFailure(sources, extra, 'more than 5', 'more than 5 themes')) return false;
 
   const w40 = JSON.parse(readFileSync(join(ROOT, 'content', 'digests', '2026-W40.json'), 'utf8'));
   if (Object.hasOwn(w40.briefing, 'lead') || Object.hasOwn(w40.briefing, 'themes')) {
@@ -1385,10 +1435,10 @@ function proveBriefing(sources) {
   const themeIds = (w41.briefing.themes ?? []).flatMap((theme) => theme.story_ids ?? []);
   const w41Scan =
     typeof w41.briefing.lead === 'string' &&
-    isOneSentence(w41.briefing.lead) &&
+    (sentenceParts(w41.briefing.lead)?.length ?? 0) >= 1 &&
+    (sentenceParts(w41.briefing.lead)?.length ?? 0) <= 3 &&
     Array.isArray(w41.briefing.themes) &&
-    w41.briefing.themes.length >= 4 &&
-    w41.briefing.themes.length <= 6 &&
+    w41.briefing.themes.length === 5 &&
     research &&
     research.story_ids.includes(mathId) &&
     research.story_ids.every((id) => !absorbed.includes(id)) &&
