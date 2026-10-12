@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dans-digest.local/schema/digest.schema.json",
   "title": "Dan's Digest week file",
-  "description": "Pre-partitioned week file for content/digests/{week_id}.json. Briefing is synthesis plus Top 5 full cards. From 2026-W41 on, briefing also has a lead of 1 to 3 sentences and exactly 5 themes. Each theme has a short label, one sentence of 25 to 35 words, and story_ids for the merged main items. Earlier weeks omit lead and themes. topics.* are the per-topic main lists. main_feed is those lists concatenated (edtech, business, technical, policy-and-safety). footer_aside is thin link-only cards. excluded holds items that failed the inclusion rubric and is not rendered. From 2026-W41 on, every card has included and include_reason. Earlier weeks may omit both. A story with several included sources is one card: also_covered lists the other sources, and number_note records a key number they disagree on. Earlier weeks omit both. There is no per-source cap. The site renders the briefing, topic, and footer lists as written, skipping any card marked included false. topics.policy-and-safety may be omitted and then counts as empty. From 2026-W41 on, every main item has a one-sentence takeaway saying why it matters, and each ok summary is at most 60 words. Thin items omit takeaway. Earlier weeks omit takeaway and may keep a longer summary.",
+  "description": "Pre-partitioned week file for content/digests/{week_id}.json. Briefing is synthesis plus Top 5 full cards. From 2026-W41 on, briefing also has a lead of 1 to 3 sentences and exactly 5 themes. Each theme has a short label, one sentence of 25 to 35 words, and story_ids for the merged main items. Earlier weeks omit lead and themes. From 2026-W42 on, briefing also has number_of_week: a short value, one plain-English sentence on what was measured, one plain-English sentence on why it matters, and story_id for an item in the week. 2026-W41 and earlier may omit number_of_week. topics.* are the per-topic main lists. main_feed is those lists concatenated (edtech, business, technical, policy-and-safety). footer_aside is thin link-only cards. excluded holds items that failed the inclusion rubric and is not rendered. From 2026-W41 on, every card has included and include_reason. Earlier weeks may omit both. A story with several included sources is one card: also_covered lists the other sources, and number_note records a key number they disagree on. Earlier weeks omit both. There is no per-source cap. The site renders the briefing, topic, and footer lists as written, skipping any card marked included false. topics.policy-and-safety may be omitted and then counts as empty. From 2026-W41 on, every main item has a one-sentence takeaway saying why it matters, and each ok summary is at most 60 words. Thin items omit takeaway. Earlier weeks omit takeaway and may keep a longer summary.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -349,6 +349,35 @@
         }
       ]
     },
+    "numberOfWeek": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "what", "why", "story_id"],
+      "properties": {
+        "value": {
+          "description": "Short figure, for example 15%. Not a sentence.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 24,
+          "pattern": "^[^\\r\\n]*\\S[^\\r\\n]*$"
+        },
+        "what": {
+          "description": "One plain-English sentence on what was measured.",
+          "type": "string",
+          "minLength": 1
+        },
+        "why": {
+          "description": "One plain-English sentence on why it matters to a non-expert.",
+          "type": "string",
+          "minLength": 1
+        },
+        "story_id": {
+          "description": "Item id in this week. The Briefing links that story.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
     "briefing": {
       "type": "object",
       "additionalProperties": false,
@@ -371,6 +400,10 @@
           "items": {
             "$ref": "#/$defs/theme"
           }
+        },
+        "number_of_week": {
+          "description": "One figure for the week. Required from 2026-W42 on. 2026-W41 and earlier may omit it.",
+          "$ref": "#/$defs/numberOfWeek"
         },
         "top": {
           "description": "Briefing Top N. N is 5. Full cards only, not every card in the week.",

@@ -3,6 +3,7 @@ import Card from './Card.astro';
 import TopicSection from './TopicSection.astro';
 import {
   alsoSeenItems,
+  formatDate,
   shownBriefingCards,
   shownTopicCards,
   TOPIC_LABELS,
@@ -32,6 +33,9 @@ const hasScan =
   themes.length > 0;
 const mainById = new Map((week.main_feed ?? []).map((card) => [card.id, card]));
 const topIds = new Set(topCards.map((card) => card.id));
+const numberOfWeek = week.briefing.number_of_week;
+const numberCard = numberOfWeek ? mainById.get(numberOfWeek.story_id) : undefined;
+const showNumber = Boolean(hasScan && numberOfWeek && numberCard);
 
 function publisherShort(name: string): string {
   return name.split(' (')[0].trim();
@@ -69,7 +73,7 @@ function storyHref(card: MainCard): string {
     hasScan ? (
       <section class="g syn" aria-label="This week">
         <p class="lead">{week.briefing.lead}</p>
-        <section class="themes-col" aria-labelledby="themes-heading">
+        <section class={showNumber ? 'themes-col has-number' : 'themes-col'} aria-labelledby="themes-heading">
           <h2 class="h2" id="themes-heading">
             This week's themes
           </h2>
@@ -105,6 +109,29 @@ function storyHref(card: MainCard): string {
               );
             })}
           </ol>
+          {showNumber && numberOfWeek && numberCard && (
+            <section class="notw" aria-labelledby="notw-heading">
+              <h2 class="notw-label" id="notw-heading">
+                Number of the week
+              </h2>
+              <p class="notw-fig">{numberOfWeek.value}</p>
+              <p class="notw-text">{numberOfWeek.what}</p>
+              <p class="notw-text">{numberOfWeek.why}</p>
+              <p class="notw-src">
+                <a href={storyHref(numberCard)}>{numberCard.publisher.name}</a>
+                <span class="sep" aria-hidden="true">
+                  {' '}
+                  ·{' '}
+                </span>
+                {numberCard.title}
+                <span class="sep" aria-hidden="true">
+                  {' '}
+                  ·{' '}
+                </span>
+                <time datetime={numberCard.published_at}>{formatDate(numberCard.published_at)}</time>
+              </p>
+            </section>
+          )}
         </section>
         <section class="top top-col" aria-labelledby="briefing-heading">
           <h2 class="h2" id="briefing-heading">

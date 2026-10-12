@@ -17,6 +17,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const RUBRIC_PATH = join(ROOT, 'config', 'inclusion-rubric.md');
 const GROUPING_PATH = join(ROOT, 'config', 'story-grouping.md');
 const BRIEFING_PATH = join(ROOT, 'config', 'briefing.md');
+const NUMBER_PATH = join(ROOT, 'config', 'number-of-week.md');
 const TAKEAWAY_PATH = join(ROOT, 'config', 'takeaway.md');
 const DIGEST_SCHEMA_PATH = join(ROOT, 'schema', 'digest.schema.json');
 const REPORT_SCHEMA_PATH = join(ROOT, 'schema', 'report.schema.json');
@@ -315,6 +316,7 @@ function validateDigestDocument(doc, filename, sources) {
   errors.push(...validateRubric(doc));
   errors.push(...validateGrouping(doc, sources));
   errors.push(...validateBriefingScan(doc));
+  errors.push(...validateNumberOfWeek(doc));
   errors.push(...validateTakeaways(doc));
   errors.push(...alsoSeenFillerErrors(doc));
   return errors;
@@ -415,6 +417,7 @@ function validateReportDocument(doc, filename) {
 }
 
 const THEME_WEEK = '2026-W41';
+const NUMBER_WEEK = '2026-W42';
 const DASH = /[\u2013\u2014]/;
 
 function wordCount(text) {
@@ -540,6 +543,75 @@ function validateBriefingScan(doc) {
     }
   });
   return errors;
+}
+
+function validateNumberOfWeek(doc) {
+  const errors = [];
+  const briefing = doc?.briefing;
+  if (!briefing || typeof briefing !== 'object') return errors;
+  const hasNumber = Object.hasOwn(briefing, 'number_of_week');
+  const required = typeof doc.week_id === 'string' && doc.week_id >= NUMBER_WEEK;
+  if (required && !hasNumber) {
+    errors.push('briefing must include number_of_week from 2026-W42 on');
+    return errors;
+  }
+  if (!hasNumber) return errors;
+
+  const number = briefing.number_of_week;
+  if (!number || typeof number !== 'object') {
+    errors.push('number_of_week must include value, what, why, and story_id');
+    return errors;
+  }
+  const value = number.value;
+  if (typeof value !== 'string' || value.trim().length === 0 || value.length > 24 || /[\r\n]/.test(value)) {
+    errors.push('number_of_week value must be a short figure');
+  } else if (DASH.test(value)) {
+    errors.push('number_of_week value must not use an em dash or an en dash');
+  }
+  errors.push(...numberLineErrors(number.what, 'number_of_week what'));
+  errors.push(...numberLineErrors(number.why, 'number_of_week why'));
+  const ids = new Set(
+    (Array.isArray(doc.main_feed) ? doc.main_feed : [])
+      .filter((card) => card && typeof card === 'object')
+      .map((card) => card.id),
+  );
+  if (typeof number.story_id !== 'string' || !ids.has(number.story_id)) {
+    errors.push('number_of_week story_id must match an item id in the week');
+  }
+  return errors;
+}
+
+function numberLineErrors(text, where) {
+  if (typeof text !== 'string' || !isOneSentence(text) || /[\r\n]/.test(text)) {
+    return [`${where} must be one sentence`];
+  }
+  if (DASH.test(text)) return [`${where} must not use an em dash or an en dash`];
+  return [];
+}
+
+function numberOfWeekFileErrors() {
+  if (!existsSync(NUMBER_PATH)) return ['config/number-of-week.md is missing'];
+  const text = readFileSync(NUMBER_PATH, 'utf8');
+  const required = [
+    ['in-window', 'config/number-of-week.md must say candidate numbers come from the week\'s in-window pieces'],
+    ['changes the picture', 'config/number-of-week.md must score whether a number changes the picture'],
+    ['firsthand', 'config/number-of-week.md must score whether a number is firsthand'],
+    ['compare against', 'config/number-of-week.md must score whether a number has something to compare against'],
+    ['money, schools, safety, jobs, or policy', 'config/number-of-week.md must score whether a number is about something real'],
+    ['new this week', 'config/number-of-week.md must score whether a number is new this week and will still matter'],
+    ['number_of_week', 'config/number-of-week.md must tell Swartz how to write number_of_week'],
+    ['value', 'config/number-of-week.md must tell Swartz how to write value'],
+    ['what', 'config/number-of-week.md must tell Swartz how to write what'],
+    ['why', 'config/number-of-week.md must tell Swartz how to write why'],
+    ['story_id', 'config/number-of-week.md must tell Swartz how to write story_id'],
+    ['2026-W42', 'config/number-of-week.md must require number_of_week from 2026-W42 on'],
+    ['2026-W41', 'config/number-of-week.md must keep 2026-W41 valid without number_of_week'],
+    ['2026-W40', 'config/number-of-week.md must keep weeks before 2026-W42, including 2026-W40, valid without number_of_week'],
+  ];
+  for (const [needle, message] of required) {
+    if (!text.includes(needle)) return [message];
+  }
+  return [];
 }
 
 const SUMMARY_WORD_CAP = 60;
@@ -668,7 +740,7 @@ function groupingFileErrors() {
 export function validateArchive(contentDir, sources) {
   const digestPaths = jsonFiles(join(contentDir, 'digests'));
   const reportPaths = jsonFiles(join(contentDir, 'reports'));
-  const errors = [...rubricFileErrors(), ...groupingFileErrors(), ...briefingFileErrors(), ...takeawayFileErrors()];
+  const errors = [...rubricFileErrors(), ...groupingFileErrors(), ...briefingFileErrors(), ...takeawayFileErrors(), ...numberOfWeekFileErrors()];
 
   if (digestPaths.length === 0) {
     errors.push(`${contentDir}/digests has no week json files`);
@@ -1526,6 +1598,111 @@ function proveBriefing(sources) {
     return false;
   }
   console.log('self-test PASS 2026-W41 themes link merged stories');
+
+  if (Object.hasOwn(w40.briefing, 'number_of_week')) {
+    console.error('self-test: 2026-W40 must omit number_of_week');
+    return false;
+  }
+  console.log('self-test PASS 2026-W40 without a number of the week');
+
+  const w41Number = {
+    value: '15%',
+    what: 'Epoch AI asked top AI systems to rediscover a recent research breakthrough on their own, and they captured only 15% of the improvement the human researchers got.',
+    why: "AI isn't close to doing AI research without people, which is the leap labs are betting on.",
+    story_id: 'epoch-ai-can-ai-automate-ai-r-d-yet',
+  };
+  const w41HasNumber =
+    JSON.stringify(w41.briefing.number_of_week) === JSON.stringify(w41Number) &&
+    (w41.main_feed ?? []).some((card) => card.id === w41Number.story_id);
+  if (!w41HasNumber) {
+    console.error('self-test: 2026-W41 number of the week must be the 15% Epoch example');
+    console.error(JSON.stringify(w41.briefing.number_of_week, null, 2));
+    return false;
+  }
+  const w41NumberErrors = validateDigestDocument(w41, '2026-W41.json', sources);
+  if (w41NumberErrors.length !== 0) {
+    console.error('self-test: 2026-W41 with number_of_week must pass');
+    for (const error of w41NumberErrors) console.error(`- ${error}`);
+    return false;
+  }
+  console.log('self-test PASS 2026-W41 number of the week');
+
+  const w41Optional = structuredClone(w41);
+  delete w41Optional.briefing.number_of_week;
+  const w41OptionalErrors = validateDigestDocument(w41Optional, '2026-W41.json', sources);
+  if (w41OptionalErrors.length !== 0) {
+    console.error('self-test: 2026-W41 without number_of_week must pass');
+    for (const error of w41OptionalErrors) console.error(`- ${error}`);
+    return false;
+  }
+  console.log('self-test PASS 2026-W41 stays valid without a number of the week');
+
+  const week42 = rubricWeek();
+  week42.week_id = '2026-W42';
+  week42.week_start = '2026-10-11T00:00:00-04:00';
+  week42.week_end = '2026-10-17T23:59:59-04:00';
+  const inWindow = '2026-10-12T15:00:00-04:00';
+  for (const card of [...week42.main_feed, ...week42.footer_aside, ...week42.excluded]) card.published_at = inWindow;
+  if (
+    !expectRubricFailure(
+      sources,
+      week42,
+      'number_of_week from 2026-W42',
+      '2026-W42 without a number of the week',
+    )
+  ) {
+    return false;
+  }
+
+  const numbered = structuredClone(week42);
+  numbered.briefing.number_of_week = { ...w41Number, story_id: 'rubric-item-1' };
+  const numberedErrors = validateDigestDocument(numbered, '2026-W42.json', sources);
+  if (numberedErrors.length !== 0) {
+    console.error('self-test: 2026-W42 with a number of the week must pass');
+    for (const error of numberedErrors) console.error(`- ${error}`);
+    return false;
+  }
+  console.log('self-test PASS 2026-W42 number of the week');
+
+  const missingNumberStory = structuredClone(numbered);
+  missingNumberStory.briefing.number_of_week.story_id = 'not-a-real-item';
+  if (
+    !expectRubricFailure(
+      sources,
+      missingNumberStory,
+      'must match an item id in the week',
+      'number of the week story that is not in the week',
+    )
+  ) {
+    return false;
+  }
+
+  const twoSentencesNumber = structuredClone(numbered);
+  twoSentencesNumber.briefing.number_of_week.what = 'This is one sentence. This is a second sentence.';
+  if (
+    !expectRubricFailure(
+      sources,
+      twoSentencesNumber,
+      'number_of_week what must be one sentence',
+      'number of the week what line that is two sentences',
+    )
+  ) {
+    return false;
+  }
+
+  const dashedWhy = structuredClone(numbered);
+  dashedWhy.briefing.number_of_week.why = 'It matters \u2013 and it will keep mattering.';
+  if (
+    !expectRubricFailure(
+      sources,
+      dashedWhy,
+      'em dash or an en dash',
+      'number of the week why line with an en dash',
+    )
+  ) {
+    return false;
+  }
+
   return true;
 }
 

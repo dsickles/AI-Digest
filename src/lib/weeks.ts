@@ -79,6 +79,13 @@ export interface BriefingTheme {
   story_ids: string[];
 }
 
+export interface NumberOfWeek {
+  value: string;
+  what: string;
+  why: string;
+  story_id: string;
+}
+
 export interface Week {
   schema_version: 1;
   week_id: string;
@@ -90,6 +97,7 @@ export interface Week {
     synthesis: string;
     lead?: string;
     themes?: BriefingTheme[];
+    number_of_week?: NumberOfWeek;
     top: MainCard[];
   };
   topics: Record<Topic, MainCard[]>;

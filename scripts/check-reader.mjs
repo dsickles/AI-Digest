@@ -853,6 +853,26 @@ function assertProgramCss(html, label) {
     topPlace.includes('grid-area:2/5/auto/13');
   if (!topRight) fail(`${label} Top 5 is not the right two thirds under the lead`);
   if (css.includes('stories-rest')) fail(`${label} Top 5 stories can leave the right column`);
+  const numberCol = ruleBody(css, '.syn > .themes-col.has-number');
+  if (!numberCol.includes('align-self:stretch') || !numberCol.includes('flex-direction:column')) {
+    fail(`${label} Number of the week does not fill the space under the themes`);
+  }
+  const notw = ruleBody(css, '.notw');
+  if (!notw.includes('margin-top:auto') || !notw.includes('border-top:1pxsolidvar(--rule-strong)')) {
+    fail(`${label} Number of the week does not sit at the bottom of the themes column`);
+  }
+  const fig = ruleBody(css, '.notw-fig');
+  if (!fig.includes('color:var(--signal)') || !fig.includes('font-size:88px') || !fig.includes('font-weight:700')) {
+    fail(`${label} Number of the week value is not the large vermilion figure`);
+  }
+  const numberLabel = ruleBody(css, '.notw-label');
+  if (
+    !numberLabel.includes('font-size:12px') ||
+    !numberLabel.includes('text-transform:uppercase') ||
+    !numberLabel.includes('color:var(--ink-3)')
+  ) {
+    fail(`${label} Number of the week label is not the grey uppercase program label`);
+  }
   if (css.includes('.briefing-full')) fail(`${label} full briefing toggle styles are still present`);
   const storyBox = ruleBody(css, '.story');
   if (!storyBox.includes('break-inside:avoid') || !storyBox.includes('list-style:none')) {
@@ -895,6 +915,12 @@ function assertProgramCss(html, label) {
     (tablet.includes('grid-area:auto/1/auto/-1') ||
       (tablet.includes('grid-column:1/-1') && tablet.includes('grid-row:auto')));
   if (!themesStack) fail(`${label} themes and Top 5 do not stack under the lead on a narrow window`);
+  if (!ruleBody(tablet, '.notw-fig').includes('font-size:64px')) {
+    fail(`${label} Number of the week value is not 64px on a narrow window`);
+  }
+  if (!ruleBody(tablet, '.notw').includes('margin-top:var(--s6)')) {
+    fail(`${label} Number of the week does not follow the themes on a narrow window`);
+  }
   if (tablet.includes('.index')) fail(`${label} narrow window still styles the Top 5 index`);
   const play = ruleBody(css, '.play');
   if (!play.includes('width:1.1em') || !play.includes('height:1.1em') || !play.includes('color:var(--ink-2)')) {
@@ -1077,6 +1103,7 @@ function assertBriefingScan(html, weekDoc, where) {
     }
     if (!html.includes('class="synthesis"')) fail(`${where} briefing dropped the synthesis paragraph`);
     if (!decode(html).includes(weekDoc.briefing.synthesis)) fail(`${where} briefing is missing the synthesis`);
+    assertNumberOfWeek(html, weekDoc, where);
     return;
   }
   if (themes.length !== 5) fail(`${where} has ${themes.length} themes; expected exactly 5`);
@@ -1120,6 +1147,44 @@ function assertBriefingScan(html, weekDoc, where) {
       }
     }
   });
+  assertNumberOfWeek(html, weekDoc, where);
+}
+
+function assertNumberOfWeek(html, weekDoc, where) {
+  const number = weekDoc.briefing?.number_of_week;
+  const hasSlot = html.includes('class="notw"') || html.includes('Number of the week');
+  if (!number) {
+    if (hasSlot) fail(`${where} shows a Number of the week slot the file does not have`);
+    return;
+  }
+  const slot = html.match(/<section class="notw"[\s\S]*?<\/section>/);
+  if (!slot) fail(`${where} is missing the Number of the week`);
+  const block = slot[0];
+  if (!decode(block).includes('Number of the week')) fail(`${where} Number of the week is missing its label`);
+  const fig = block.match(/<p class="notw-fig">([\s\S]*?)<\/p>/);
+  if (!fig || decode(fig[1]).trim() !== number.value) fail(`${where} Number of the week value does not match the file`);
+  const lines = [...block.matchAll(/<p class="notw-text">([\s\S]*?)<\/p>/g)].map((match) => decode(match[1]).trim());
+  if (lines.length !== 2 || lines[0] !== number.what || lines[1] !== number.why) {
+    fail(`${where} Number of the week what and why lines do not match the file`);
+  }
+  const card = (weekDoc.main_feed ?? []).find((item) => item.id === number.story_id);
+  if (!card) fail(`${where} Number of the week does not point at an item in the week`);
+  const href = themeHref(weekDoc, number.story_id);
+  const links = [...block.matchAll(/<a href="([^"]*)">([\s\S]*?)<\/a>/g)];
+  if (links.length !== 1 || links[0][1] !== href || decode(links[0][2]).trim() !== card.publisher.name) {
+    fail(`${where} Number of the week source link is not the story`);
+  }
+  const src = decode(block.match(/<p class="notw-src">([\s\S]*?)<\/p>/)?.[1] ?? '');
+  if (!src.includes(card.title)) fail(`${where} Number of the week source line is missing the story`);
+  if (!block.includes(`datetime="${card.published_at}"`)) {
+    fail(`${where} Number of the week source line is missing the date`);
+  }
+  const themesAt = html.indexOf('class="themes-col has-number"');
+  const notwAt = html.indexOf('class="notw"');
+  const topCol = html.indexOf('class="top top-col"');
+  if (themesAt < 0 || notwAt < themesAt || topCol < 0 || notwAt > topCol) {
+    fail(`${where} Number of the week is not at the bottom of the themes column`);
+  }
 }
 
 function visibleCopy(html) {
@@ -1134,7 +1199,7 @@ function assertNoTopIndex(html, cards, where) {
   if (html.includes('class="index"')) fail(`${where} still shows the Top 5 index`);
   if (/class="k"/.test(html)) fail(`${where} still shows an index numeral`);
   if (/aria-label="Top \d+ this week"/.test(html)) fail(`${where} still labels a Top 5 index`);
-  const copy = visibleCopy(html);
+  const copy = visibleCopy(html.replace(/<section class="notw"[\s\S]*?<\/section>/g, ' '));
   for (const card of cards) {
     const hits = copy.split(card.title).length - 1;
     if (hits !== 1) fail(`${where} shows "${card.title}" ${hits} times`);
