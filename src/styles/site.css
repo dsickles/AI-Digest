@@ -321,8 +321,6 @@ a:hover {
   column-fill: balance;
 }
 
-.flow .also,
-.flow .thin-row,
 .flow .story .main {
   break-inside: avoid;
 }
