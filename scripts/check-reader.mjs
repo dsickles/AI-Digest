@@ -11,6 +11,7 @@ import {
   readerNow,
   selectLatestPublished,
 } from '../src/lib/week-rules.mjs';
+import { storyPlacementErrors } from '../src/lib/story-groups.mjs';
 
 const DEGRADED_BODY = "The summary couldn't be generated this week.";
 const WEEK_ID = '2026-W40';
@@ -276,6 +277,31 @@ function assertCard(html, card) {
   const video = card.media === 'video';
   const hasPlay = article.includes('class="play"');
   if (video !== hasPlay) fail(`${card.id} play icon ${video ? 'missing' : 'should be absent'}`);
+  assertCoverage(article, card);
+}
+
+function assertCoverage(article, card) {
+  const decoded = decode(article);
+  const links = Array.isArray(card.also_covered) ? card.also_covered : [];
+  if (card.number_note) {
+    if (!article.includes('class="number-note"') || !decoded.includes(card.number_note)) {
+      fail(`${card.id} is missing its number disagreement note`);
+    }
+  } else if (article.includes('class="number-note"')) {
+    fail(`${card.id} shows a number note the file does not have`);
+  }
+  if (links.length === 0) {
+    if (decoded.includes('Also covered by')) fail(`${card.id} shows Also covered by with no other sources`);
+    return;
+  }
+  if (!decoded.includes('Also covered by')) fail(`${card.id} is missing Also covered by`);
+  for (const link of links) {
+    if (!article.includes(`href="${link.url}"`)) fail(`${card.id} is missing also covered link ${link.url}`);
+    if (!article.includes('target="_blank"') || !article.includes('rel="noopener noreferrer"')) {
+      fail(`${card.id} also covered link is missing target or rel`);
+    }
+    if (!decoded.includes(link.publisher.name)) fail(`${card.id} also covered link is missing ${link.publisher.name}`);
+  }
 }
 
 function assertOrder(html, className, cards, label) {
@@ -414,7 +440,9 @@ function readerFacingText(weeks) {
         card.title,
         card.summary,
         card.body,
+        card.number_note,
         card.publisher?.name,
+        ...(card.also_covered ?? []).flatMap((link) => [link.title, link.publisher?.name]),
       ]),
     ])
     .filter((value) => typeof value === 'string')
@@ -951,11 +979,56 @@ function assertRubric(weekDoc, pageMap, where) {
   if (!videoArticle.includes('class="play"')) fail(`${thinVideo.id} thin video is missing its play icon`);
 }
 
+function assertStoryGroups(weekDoc, pageMap, where) {
+  if (weekDoc.week_id !== '2026-W41') return;
+  const mathId = 'dont-worry-about-the-vase-new-math-from-openai';
+  const claytonId = 'nextgov-fcw-experts-hope-new-ai-czars-leadership-can-move-the-needle-on-regulation';
+  const math = (weekDoc.main_feed ?? []).find((card) => card.id === mathId);
+  const clayton = (weekDoc.main_feed ?? []).find((card) => card.id === claytonId);
+  if (!math || (math.also_covered ?? []).length !== 3) fail(`${where} OpenAI math release is not one item with three other sources`);
+  if (!clayton || (clayton.also_covered ?? []).length !== 1) {
+    fail(`${where} Jay Clayton appointment is not one item with its other source`);
+  }
+  if (!String(math.number_note).includes('722') || !String(math.number_note).includes('719')) {
+    fail(`${where} math item must note 722 and 719`);
+  }
+  const policy = pageMap['policy-and-safety'];
+  const briefing = pageMap.briefing;
+  if (!policy || !briefing) fail(`${where} is missing Briefing or Policy and Safety HTML`);
+  const policyMath = policy.match(new RegExp(`id="${mathId}"`, 'g'))?.length ?? 0;
+  const policyClayton = policy.match(new RegExp(`id="${claytonId}"`, 'g'))?.length ?? 0;
+  if (policyMath !== 1) fail(`${where} math item appears ${policyMath} times on Policy and Safety`);
+  if (policyClayton !== 1) fail(`${where} Clayton item appears ${policyClayton} times on Policy and Safety`);
+  if (briefing.includes(`id="${mathId}"`) || briefing.includes(`id="${claytonId}"`)) {
+    fail(`${where} duplicated a grouped story onto Briefing`);
+  }
+  const absorbed = [
+    'education-disrupted-ai-is-inventing-new-math-it-has-722-papers-to-show-for-it',
+    'last-week-in-ai-last-week-in-ai-346-719-math-manuscripts-2-western-open-models-1-more-safety-resignation',
+    'dont-worry-about-the-vase-ai-189-new-math',
+    'tech-policy-press-an-ai-accord-a-new-czar-and-an-autonomous-warfare-command',
+  ];
+  for (const id of absorbed) {
+    if (policy.includes(`id="${id}"`) || briefing.includes(`id="${id}"`)) fail(`${where} still renders ${id} as its own item`);
+  }
+  const mathArticle = extractArticle(policy, mathId);
+  const claytonArticle = extractArticle(policy, claytonId);
+  if (!decode(mathArticle).includes('Also covered by') || !decode(claytonArticle).includes('Also covered by')) {
+    fail(`${where} grouped items are missing Also covered by`);
+  }
+  if (!decode(mathArticle).includes(math.number_note)) fail(`${where} Policy and Safety drops the 722 vs 719 note`);
+  if (!decode(briefing).includes('722') || !decode(briefing).includes('719')) {
+    fail(`${where} Briefing drops the 722 vs 719 note`);
+  }
+}
+
 function assertWeekReader(weekDoc, pageMap, where, { requireMedia = false, emptyCoverageWeek = null } = {}) {
   assertBriefingTab(pageMap.briefing, weekDoc, where);
   for (const topic of SECTION_TABS) assertSectionTab(pageMap[topic.id], weekDoc, topic, where);
   assertRubric(weekDoc, pageMap, where);
+  assertStoryGroups(weekDoc, pageMap, where);
   assertMediaCase(weekDoc, pageMap, where, requireMedia);
+  for (const error of storyPlacementErrors(weekDoc)) fail(`${where} ${error}`);
   const counts = SECTION_TABS.map((topic) => `${topic.label} ${sectionCards(weekDoc, topic.id).length}`).join(', ');
   console.log(`${where} section counts: ${counts}`);
   const noEmptyTab = SECTION_TABS.every((topic) => sectionCards(weekDoc, topic.id).length > 0);
@@ -1076,6 +1149,22 @@ if (latest.week_id !== WEEK_ID) {
   console.log(`latest published week is ${latest.week_id}; archive checks stay on /digest/${WEEK_ID}/`);
 }
 assertWeekReader(latest, latestPages, `latest ${latest.week_id}`, { emptyCoverageWeek: week });
+const groupedWeek = digestWeeks.find((item) => item.week_id === '2026-W41');
+if (!groupedWeek) fail('missing 2026-W41');
+if (latest.week_id !== '2026-W41') {
+  assertWeekReader(
+    groupedWeek,
+    {
+      briefing: readPage('digest/2026-W41/index.html'),
+      business: readPage('digest/2026-W41/business/index.html'),
+      technical: readPage('digest/2026-W41/technical/index.html'),
+      edtech: readPage('digest/2026-W41/edtech/index.html'),
+      'policy-and-safety': readPage('digest/2026-W41/policy-and-safety/index.html'),
+    },
+    'week 2026-W41',
+    { emptyCoverageWeek: week },
+  );
+}
 assertWeekReader(week, archivePages, `archive ${WEEK_ID}`, { requireMedia: true });
 if (!decode(archivePages.briefing).includes('September sponsors-only newsletter')) {
   fail(`archive ${WEEK_ID} briefing is missing the September sponsors footer`);

@@ -29,7 +29,18 @@ export interface InclusionFields {
   include_reason?: string;
 }
 
-export interface MainCard extends InclusionFields {
+export interface CoverageLink {
+  title: string;
+  url: string;
+  publisher: Publisher;
+}
+
+export interface GroupingFields {
+  also_covered?: CoverageLink[];
+  number_note?: string;
+}
+
+export interface MainCard extends InclusionFields, GroupingFields {
   id: string;
   title: string;
   url: string;
@@ -49,7 +60,7 @@ export interface MainCard extends InclusionFields {
   body?: string;
 }
 
-export interface ThinCard extends InclusionFields {
+export interface ThinCard extends InclusionFields, GroupingFields {
   id: string;
   title: string;
   url: string;

@@ -82,6 +82,8 @@ What gets into a week is decided before the file is written. The rules Dan can e
 
 From `2026-W41` on, every item has `included` (`true` or `false`) and a one-line `include_reason`. Items that fail the rubric are listed in `excluded` and are not rendered. They do not count toward the section tabs. Thin items, including a video whose summary was written only from the description, stay in Also seen on Briefing. `2026-W40` and earlier weeks omit these fields and stay valid.
 
+Items about the same story are one item, even when the URLs differ. Ingest follows `config/story-grouping.md`. The strongest source is the main link. The other sources show on that item as "Also covered by" links with publisher names. When those sources disagree on a key number, the item says so (for example "722 per Education Disrupted, 719 per Last Week in AI"). A story does not appear both as a main item and as an Also seen link. `2026-W40` omits `also_covered` and `number_note` and stays valid.
+
 Optional ops notes can sit beside a week as `content/reports/{week_id}.json`. A missing report is fine.
 
 Before you trust a change:

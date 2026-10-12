@@ -378,6 +378,26 @@ a:hover {
   font-weight: 500;
 }
 
+.number-note,
+.also-covered {
+  margin-top: var(--s2);
+  max-width: 72ch;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 400;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.also-covered {
+  color: var(--ink-3);
+}
+
+.also-covered a {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
 .play {
   width: 1.1em;
   height: 1.1em;
@@ -411,7 +431,9 @@ a:hover {
 }
 
 .thin h3,
-.thin .meta {
+.thin .meta,
+.thin .number-note,
+.thin .also-covered {
   grid-column: 2;
   min-width: 0;
 }
@@ -760,7 +782,9 @@ main > .page-title {
   }
 
   .thin h3,
-  .thin .meta {
+  .thin .meta,
+  .thin .number-note,
+  .thin .also-covered {
     grid-column: 1 / -1;
   }
 
