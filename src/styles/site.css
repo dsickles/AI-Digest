@@ -321,8 +321,6 @@ a:hover {
   column-fill: balance;
 }
 
-.flow .also,
-.flow .thin-row,
 .flow .story .main {
   break-inside: avoid;
 }
@@ -446,8 +444,21 @@ a:hover {
   max-width: 72ch;
 }
 
-.also {
-  padding-top: var(--s4);
+.topic > .also {
+  grid-column: 1 / -1;
+  margin-top: var(--s6);
+  padding-top: 0;
+}
+
+.also-label {
+  margin: 0 0 var(--s3);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--ink-3);
 }
 
 .thin-row {
@@ -455,18 +466,8 @@ a:hover {
 }
 
 .thin {
-  display: grid;
-  grid-template-columns: 76px minmax(0, 1fr);
   padding: var(--s2) 0;
   border-bottom: 1px solid var(--rule);
-}
-
-.thin h3,
-.thin .meta,
-.thin .number-note,
-.thin .also-covered {
-  grid-column: 2;
-  min-width: 0;
 }
 
 .thin h3 {
@@ -816,20 +817,8 @@ main > .page-title {
     line-height: 1.05;
   }
 
-  .also {
-    margin-top: var(--s6);
-    padding-top: 0;
-  }
-
-  .thin {
-    grid-template-columns: 36px minmax(0, 1fr);
-  }
-
-  .thin h3,
-  .thin .meta,
-  .thin .number-note,
-  .thin .also-covered {
-    grid-column: 1 / -1;
+  .topic > .also {
+    margin-top: var(--s5);
   }
 
   .topic {

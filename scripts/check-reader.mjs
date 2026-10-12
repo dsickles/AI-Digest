@@ -12,6 +12,7 @@ import {
   selectLatestPublished,
 } from '../src/lib/week-rules.mjs';
 import { storyPlacementErrors } from '../src/lib/story-groups.mjs';
+import { alsoSeenFillerKind, visibleAlsoSeen } from '../src/lib/also-seen.mjs';
 
 const DEGRADED_BODY = "The summary couldn't be generated this week.";
 const WEEK_ID = '2026-W40';
@@ -196,32 +197,44 @@ function splitFooter(html) {
   return { main: html.slice(0, index), footer: html.slice(index) };
 }
 
-function alsoSeenCount(html) {
-  return {
-    headings: html.match(/Also seen this week/g)?.length ?? 0,
-    sections: html.match(/<aside\b[^>]*\bid="also-seen"/g)?.length ?? 0,
-  };
+function alsoSeenBlock(html) {
+  return html.match(/<aside\b[^>]*\bid="also-seen"[^>]*>[\s\S]*?<\/aside>/)?.[0] ?? '';
 }
 
-function assertBriefingAlsoSeen(html, items, label) {
-  const { headings, sections } = alsoSeenCount(html);
+function assertBriefingOmitsAlsoSeen(html, label) {
+  if (html.includes('id="also-seen"') || html.includes('class="also-label"') || /\bAlso seen\b/.test(decode(html))) {
+    fail(`${label} shows Also seen`);
+  }
+}
+
+function assertTopicAlsoSeen(html, items, label) {
+  const block = alsoSeenBlock(html);
+  const headings = html.match(/class="also-label"/g)?.length ?? 0;
   if (items.length === 0) {
-    if (headings !== 0 || sections !== 0 || html.includes('id="also-seen"')) {
+    if (block || headings !== 0 || html.includes('id="also-seen"') || /\bAlso seen\b/.test(decode(html))) {
       fail(`${label} shows Also seen with no thin items`);
     }
     return;
   }
-  if (headings !== 1 || sections !== 1) {
-    fail(`${label} should show Also seen once (heading ${headings}, section ${sections})`);
+  if (headings !== 1 || !block) fail(`${label} should show Also seen once`);
+  if (!/<h2\b[^>]*class="also-label"[^>]*>\s*Also seen\s*<\/h2>/.test(block)) {
+    fail(`${label} Also seen label is missing`);
   }
   const parts = splitFooter(html);
-  if (!/<h2\b[^>]*>Also seen this week<\/h2>/.test(parts.footer)) {
-    fail(`${label} Also seen heading is missing`);
+  const mainIds = articleIds(parts.main, 'card');
+  const lastMain = mainIds.length === 0 ? -1 : html.indexOf(`id="${mainIds[mainIds.length - 1]}"`);
+  const asideAt = html.indexOf('id="also-seen"');
+  if (lastMain !== -1 && asideAt < lastMain) fail(`${label} Also seen is not at the bottom`);
+  assertOrder(block, 'thin', items, `${label} Also seen`);
+  for (const title of cardTitles(block)) {
+    if (alsoSeenFillerKind({ title })) fail(`${label} Also seen includes ${title}`);
   }
-  if (!parts.footer.includes('class="thin"')) fail(`${label} Also seen section is empty`);
-  assertOrder(parts.footer, 'thin', items, `${label} footer`);
   for (const item of items) {
-    assertCard(parts.footer, item);
+    if (alsoSeenFillerKind(item)) fail(`${label} Also seen includes ${item.title}`);
+    assertCard(block, item);
+    const article = extractArticle(block, item.id);
+    if (article.includes('section-label')) fail(`${label} ${item.id} still has a section label`);
+    if (article.includes('class="summary"')) fail(`${label} ${item.id} thin link shows a summary`);
     if (parts.main.includes(`id="${item.id}"`)) fail(`${label} moved thin item ${item.id} into the main list`);
   }
 }
@@ -232,18 +245,8 @@ function cardTitles(html) {
   );
 }
 
-function assertTopicOmitsAlsoSeen(html, items, label) {
-  const { headings, sections } = alsoSeenCount(html);
-  if (headings !== 0 || sections !== 0 || html.includes('id="also-seen"')) {
-    fail(`${label} shows Also seen`);
-  }
-  const titles = cardTitles(html);
-  for (const item of items) {
-    // A summary may name the same story. The thin card itself has this id and heading.
-    if (html.includes(`id="${item.id}"`) || titles.includes(item.title)) {
-      fail(`${label} placed thin item ${item.id} in the topic list`);
-    }
-  }
+function topicAlsoSeen(weekDoc, topicId) {
+  return footerCards(weekDoc).filter((card) => card?.category === topicId);
 }
 
 function summaries(article) {
@@ -422,11 +425,11 @@ function briefingCards(weekDoc) {
 }
 
 function footerCards(weekDoc) {
-  return (weekDoc.footer_aside ?? []).filter((card) => card?.included !== false);
+  return visibleAlsoSeen(weekDoc.footer_aside);
 }
 
-// Topic tabs render included topic cards only. Excluded cards and thin cards stay off the count.
-// Also seen is footer_aside and stays on Briefing.
+// Topic tabs render included topic cards only. The tab number counts those main items.
+// Thin Also seen links stay off the number.
 function sectionCards(weekDoc, topicId) {
   const list = weekDoc.topics?.[topicId];
   return Array.isArray(list) ? list.filter(isShownStory) : [];
@@ -800,6 +803,24 @@ function assertProgramCss(html, label) {
     fail(`${label} stylesheet uses blue`);
   }
   if (!html.includes('Host+Grotesk')) fail(`${label} does not load Host Grotesk`);
+  const sectionLabel = ruleBody(css, '.also-label');
+  if (
+    !sectionLabel.includes('font-family:var(--sans)') ||
+    !sectionLabel.includes('font-size:12px') ||
+    !sectionLabel.includes('font-weight:600') ||
+    !(sectionLabel.includes('letter-spacing:0.08em') || sectionLabel.includes('letter-spacing:.08em')) ||
+    !sectionLabel.includes('text-transform:uppercase') ||
+    !sectionLabel.includes('color:var(--ink-3)')
+  ) {
+    fail(`${label} Also seen section label is not the grey uppercase program label`);
+  }
+  if (
+    sectionLabel.includes('background') ||
+    sectionLabel.includes('var(--signal)') ||
+    sectionLabel.includes('border-radius')
+  ) {
+    fail(`${label} Also seen section label is a colored chip`);
+  }
   assertPhoneCss(css, label);
 }
 
@@ -842,6 +863,10 @@ function assertPhoneCss(css, label) {
   const briefingToggle = ruleBody(phone, '.briefing-full .toggle');
   if (!briefingToggle.includes('min-height:34px') || !briefingToggle.includes('padding:var(--s2)var(--s2)var(--s2)0')) {
     fail(`${label} Read the full briefing tap target is shorter than 34px`);
+  }
+  const alsoRow = ruleBody(css, '.topic > .also');
+  if (!alsoRow.includes('grid-column:1/-1')) {
+    fail(`${label} Also seen does not span the topic tab`);
   }
 }
 
@@ -889,13 +914,13 @@ function assertSectionTab(html, weekDoc, topic, where) {
   const shown = articleIds(parts.main, 'card');
   if (shown.length !== cards.length) {
     fail(
-      `${where} ${topic.label} tab shows ${shown.length} stories; the week file has ${cards.length} (Also seen excluded)`,
+      `${where} ${topic.label} tab shows ${shown.length} main stories; the week file has ${cards.length}`,
     );
   }
   assertOrder(parts.main, 'card', cards, `${where} ${topic.label}`);
   for (const card of cards) assertCard(parts.main, card);
   assertTopicRanks(html, cards, `${where} ${topic.label}`);
-  assertTopicOmitsAlsoSeen(html, footerCards(weekDoc), `${where} ${topic.label}`);
+  assertTopicAlsoSeen(html, topicAlsoSeen(weekDoc, topic.id), `${where} ${topic.label}`);
   assertDimmedEmptyState(html, topic.label, cards.length === 0, where);
   assertDegradedHits(html, renderedCopy(cards), `${where} ${topic.label}`);
 }
@@ -1019,7 +1044,7 @@ function assertBriefingTab(html, weekDoc, where) {
   assertBriefingScan(html, weekDoc, where);
   assertOrder(parts.main, 'card', cards, `${where} briefing`);
   for (const card of cards) assertCard(parts.main, card);
-  assertBriefingAlsoSeen(html, footerCards(weekDoc), where);
+  assertBriefingOmitsAlsoSeen(html, where);
   assertDegradedHits(html, [weekDoc.briefing.synthesis, ...renderedCopy(cards)], `${where} briefing`);
 }
 
@@ -1074,10 +1099,12 @@ function assertRubric(weekDoc, pageMap, where) {
   }
   for (const card of footerCards(weekDoc)) {
     if (card.summary_status !== 'thin') fail(`${where} Also seen item ${card.id} is not thin`);
-    const article = extractArticle(pageMap.briefing, card.id);
-    if (article.includes('class="summary"')) fail(`${where} thin item ${card.id} shows a summary on Briefing`);
+    if (pageMap.briefing.includes(`id="${card.id}"`)) fail(`${where} thin item ${card.id} is still on Briefing`);
+    const article = extractArticle(pageMap[card.category], card.id);
+    if (article.includes('class="summary"')) fail(`${where} thin item ${card.id} shows a summary`);
+    if (article.includes('section-label')) fail(`${where} ${card.id} still has a section label`);
     for (const topic of SECTION_TABS) {
-      if (pageMap[topic.id].includes(`id="${card.id}"`)) {
+      if (topic.id !== card.category && pageMap[topic.id].includes(`id="${card.id}"`)) {
         fail(`${where} thin item ${card.id} appears on ${topic.label}`);
       }
     }
@@ -1090,9 +1117,12 @@ function assertRubric(weekDoc, pageMap, where) {
   ]) {
     if (!excluded.some((card) => card.title === title)) fail(`2026-W41 did not exclude ${title}`);
   }
-  const thinVideo = footerCards(weekDoc).find((card) => card.media === 'video');
+  const thinItems = footerCards(weekDoc);
+  const thinVideo = thinItems.find((card) => card.media === 'video');
+  const thinArticle = thinItems.find((card) => card.media !== 'video');
+  if (!thinArticle) fail('2026-W41 Also seen is missing a thin article link');
   if (!thinVideo) fail('2026-W41 did not mark a description-only video as a thin Also seen link');
-  const videoArticle = extractArticle(pageMap.briefing, thinVideo.id);
+  const videoArticle = extractArticle(pageMap[thinVideo.category], thinVideo.id);
   if (!videoArticle.includes('class="play"')) fail(`${thinVideo.id} thin video is missing its play icon`);
 }
 
@@ -1139,9 +1169,35 @@ function assertStoryGroups(weekDoc, pageMap, where) {
   }
 }
 
+function assertItemSetPreserved(weekDoc, pageMap, where) {
+  const thin = footerCards(weekDoc);
+  const mains = SECTION_TABS.flatMap((topic) => sectionCards(weekDoc, topic.id));
+  const ids = new Set();
+  for (const card of [...mains, ...thin]) {
+    if (ids.has(card.id)) fail(`${where} repeats ${card.id}`);
+    ids.add(card.id);
+    if (!pageMap[card.category]?.includes(`id="${card.id}"`)) fail(`${where} dropped ${card.id}`);
+  }
+  for (const card of briefingCards(weekDoc)) {
+    if (!pageMap[card.category]?.includes(`id="${card.id}"`)) {
+      fail(`${where} Top 5 item ${card.id} is missing from its topic tab`);
+    }
+  }
+  let rendered = 0;
+  for (const topic of SECTION_TABS) {
+    const html = pageMap[topic.id];
+    rendered += articleIds(splitFooter(html).main, 'card').length;
+    rendered += articleIds(splitFooter(html).footer, 'thin').length;
+  }
+  if (rendered !== mains.length + thin.length) {
+    fail(`${where} renders ${rendered} topic items; the file has ${mains.length + thin.length}`);
+  }
+}
+
 function assertWeekReader(weekDoc, pageMap, where, { requireMedia = false, emptyCoverageWeek = null } = {}) {
   assertBriefingTab(pageMap.briefing, weekDoc, where);
   for (const topic of SECTION_TABS) assertSectionTab(pageMap[topic.id], weekDoc, topic, where);
+  assertItemSetPreserved(weekDoc, pageMap, where);
   assertRubric(weekDoc, pageMap, where);
   assertStoryGroups(weekDoc, pageMap, where);
   assertMediaCase(weekDoc, pageMap, where, requireMedia);
@@ -1283,8 +1339,11 @@ if (latest.week_id !== '2026-W41') {
   );
 }
 assertWeekReader(week, archivePages, `archive ${WEEK_ID}`, { requireMedia: true });
-if (!decode(archivePages.briefing).includes('September sponsors-only newsletter')) {
-  fail(`archive ${WEEK_ID} briefing is missing the September sponsors footer`);
+if (!decode(archivePages.technical).includes('September sponsors-only newsletter')) {
+  fail(`archive ${WEEK_ID} technical tab is missing the September sponsors footer`);
+}
+if (decode(archivePages.briefing).includes('September sponsors-only newsletter')) {
+  fail(`archive ${WEEK_ID} briefing still lists the September sponsors footer`);
 }
 if (!pages.digest.includes('Week of Sep 27 \u2013 Oct 3, 2026')) {
   fail('archive 2026-W40 is missing the week range');
@@ -1449,6 +1508,60 @@ const olderThinVideo = {
   included: true,
   include_reason: 'Thin: the summary only restates the video description.',
 };
+function savedThin(id, title, category, publishedAt) {
+  return {
+    id,
+    title,
+    url: `https://example.com/${id}`,
+    publisher: { source_id: 'import-ai', name: 'Import AI' },
+    published_at: publishedAt,
+    category,
+    media: 'article',
+    summary_status: 'thin',
+  };
+}
+const olderEducationThin = savedThin(
+  'saved-education-thin',
+  'Saved education thin link from the file.',
+  'edtech',
+  '2026-09-25T18:10:00Z',
+);
+const olderBusinessThin = savedThin(
+  'saved-business-thin',
+  'Saved business thin link from the file.',
+  'business',
+  '2026-09-25T18:20:00Z',
+);
+const olderPolicyThin = savedThin(
+  'saved-policy-thin',
+  'Saved policy thin link from the file.',
+  'policy-and-safety',
+  '2026-09-25T18:30:00Z',
+);
+const fillerVersionBump = savedThin(
+  'filler-version-bump',
+  'llm-mistral 0.16',
+  'technical',
+  '2026-09-25T18:40:00Z',
+);
+fillerVersionBump.included = true;
+fillerVersionBump.include_reason = 'Thin: the feed had no article body, so this stays a link in Also seen.';
+const fillerLetterVersion = savedThin(
+  'filler-letter-version',
+  'datasette-atom 0.11a0',
+  'technical',
+  '2026-09-25T18:50:00Z',
+);
+fillerLetterVersion.included = true;
+fillerLetterVersion.include_reason = 'Excluded: minor version release (datasette-atom 0.11a0).';
+const fillerQuote = savedThin(
+  'filler-quote-only',
+  'Quoting Carson Gross',
+  'technical',
+  '2026-09-25T18:55:00Z',
+);
+fillerQuote.included = true;
+fillerQuote.include_reason = 'Excluded: a quote with no commentary.';
 const olderWeek = completeWeek(
   '2026-W39',
   '2026-09-20T00:00:00-04:00',
@@ -1462,7 +1575,16 @@ const olderWeek = completeWeek(
     'policy-and-safety': [olderPolicy, policyEastern, policyDateOnly],
   },
 );
-olderWeek.footer_aside = [olderThin, olderThinVideo];
+olderWeek.footer_aside = [
+  olderThin,
+  fillerVersionBump,
+  olderEducationThin,
+  fillerQuote,
+  olderThinVideo,
+  olderBusinessThin,
+  fillerLetterVersion,
+  olderPolicyThin,
+];
 const openWeek = completeWeek(
   '2026-W41',
   '2026-10-04T00:00:00-04:00',
@@ -1574,19 +1696,40 @@ try {
   const olderBusinessHtml = readPage('digest/2026-W39/business/index.html');
   const olderTechnicalHtml = readPage('digest/2026-W39/technical/index.html');
   const olderPolicyHtml = readPage('digest/2026-W39/policy-and-safety/index.html');
-  const archivedThin = [olderThin, olderThinVideo];
-  assertBriefingAlsoSeen(olderBriefingHtml, archivedThin, 'archived briefing');
-  assertTopicOmitsAlsoSeen(olderEdtechHtml, archivedThin, 'archived Education');
-  assertTopicOmitsAlsoSeen(olderBusinessHtml, archivedThin, 'archived business');
-  assertTopicOmitsAlsoSeen(olderTechnicalHtml, archivedThin, 'archived technical');
-  assertTopicOmitsAlsoSeen(olderPolicyHtml, archivedThin, 'archived Policy and Safety');
+  const archivedThin = visibleAlsoSeen(olderWeek.footer_aside);
+  if (
+    archivedThin.length !== 5 ||
+    !archivedThin.some((card) => card.id === 'saved-thin-video') ||
+    !archivedThin.some((card) => card.category === 'business') ||
+    !archivedThin.some((card) => card.category === 'edtech') ||
+    !archivedThin.some((card) => card.category === 'policy-and-safety')
+  ) {
+    fail('archived Also seen fixture dropped a thin link');
+  }
+  assertBriefingOmitsAlsoSeen(olderBriefingHtml, 'archived briefing');
+  const archivedPages = [olderBriefingHtml, olderEdtechHtml, olderBusinessHtml, olderTechnicalHtml, olderPolicyHtml];
+  for (const filler of [fillerVersionBump, fillerLetterVersion, fillerQuote]) {
+    if (archivedPages.some((html) => html.includes(`id="${filler.id}"`) || cardTitles(html).includes(filler.title))) {
+      fail(`archived week rendered filler ${filler.title}`);
+    }
+  }
+  assertTopicAlsoSeen(olderEdtechHtml, topicAlsoSeen(olderWeek, 'edtech'), 'archived Education');
+  assertTopicAlsoSeen(olderBusinessHtml, topicAlsoSeen(olderWeek, 'business'), 'archived business');
+  assertTopicAlsoSeen(olderTechnicalHtml, topicAlsoSeen(olderWeek, 'technical'), 'archived technical');
+  assertTopicAlsoSeen(olderPolicyHtml, topicAlsoSeen(olderWeek, 'policy-and-safety'), 'archived Policy and Safety');
   if (olderTechnicalHtml.includes('id="excluded-noise"') || decode(olderTechnicalHtml).includes('Excluded noise must not render.')) {
     fail('archived technical rendered an excluded item');
   }
   if (olderTechnicalHtml.includes('id="misplaced-thin"')) {
     fail('archived technical rendered a thin item in the topic list');
   }
-  assertBriefingAlsoSeen(readPage('digest/1999-W01/index.html'), [], 'briefing with no thin items');
+  assertBriefingOmitsAlsoSeen(readPage('digest/1999-W01/index.html'), 'Briefing has no Also seen');
+  assertTopicAlsoSeen(
+    readPage('digest/1999-W01/business/index.html'),
+    [],
+    'Also seen is omitted when a tab has no thin items',
+  );
+  assertTopicAlsoSeen(readPage('digest/1999-W01/edtech/index.html'), [], 'Also seen is omitted on an empty tab');
   const olderBriefing = decode(olderBriefingHtml);
   const olderEdtechPage = decode(olderEdtechHtml);
   const olderBusinessPage = decode(olderBusinessHtml);

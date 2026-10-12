@@ -1,4 +1,5 @@
 import { basename } from 'node:path';
+import { visibleAlsoSeen } from './also-seen.mjs';
 import { formatDate, formatWeekRange } from './format-date.mjs';
 import { isPublishedWeek, readerNow, selectLatestPublished } from './week-rules.mjs';
 
@@ -188,5 +189,5 @@ export function shownTopicCards(week: Week, topic: Topic): MainCard[] {
 }
 
 export function alsoSeenItems(week: Week): ThinCard[] {
-  return (week.footer_aside ?? []).filter((card) => card.included !== false);
+  return visibleAlsoSeen(week.footer_aside) as ThinCard[];
 }

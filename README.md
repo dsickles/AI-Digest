@@ -13,14 +13,14 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 | One week, done | Sunday through Saturday (America/New_York). Only a finished week appears on the home page. |
 | Briefing first | A one-line lead, short theme rows, and a Top 5. The full synthesis stays one toggle away. |
 | Topics for skim | Business, Technical, Education, and Policy and Safety each get their own list. |
-| Thin items aside | Quick mentions live under Also seen this week on Briefing only, not in the main topic lists. |
+| Thin items | Quick mentions live under Also seen at the bottom of their topic tab, not in the main list and not on Briefing. |
 | Own the archive | Past weeks stay readable from the Archive control on the week line. |
 
 ## What you get
 
 - A **Briefing** page: a one-line lead, theme rows linked to the week's stories, and a Top 5. "Read the full briefing" opens the synthesis. A week with no theme data still shows that paragraph.
 - **Topic tabs** in this order: Business, Technical, Education, Policy and Safety
-- **Also seen this week** on Briefing (including an archived briefing), omitted when that week has nothing thin to show
+- **Also seen** at the bottom of a topic tab that has thin links, including on an archived week. A tab with no thin items leaves that section off. Briefing does not list them.
 - An **Archive** of past weeks, each with a Read this week link
 - Week content checked into git under `content/digests/`
 - A static site anyone can open without an account or PIN
@@ -29,8 +29,8 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 
 Open the live site (or your local copy). You land on the latest finished week's Briefing.
 
-- **Read the Briefing.** A one-line lead and the theme rows come first. "Read the full briefing" opens the full synthesis. Top 5 sits under that. If the week has thin items, Also seen this week lists them as links without summaries. An older week with no theme data shows the synthesis paragraph instead.
-- **Skim a topic.** Use Business, Technical, Education, or Policy and Safety. Each page shows that topic's main list in file order. An empty topic still appears and says so.
+- **Read the Briefing.** A one-line lead and the theme rows come first. "Read the full briefing" opens the full synthesis. Top 5 sits under that. An older week with no theme data shows the synthesis paragraph instead.
+- **Skim a topic.** Use Business, Technical, Education, or Policy and Safety. Each page shows that topic's main list in file order. Thin links, when that topic has them, sit at the bottom under Also seen. An empty topic still appears and says so. The tab count is the main list only.
 - **Open a story.** The title is the link to the article. Where a Summary control exists, it expands or collapses the summary without leaving the page. Top 5 rows stay open. Video items show a play control on the row.
 - **Browse the archive.** Archive sits on the week line next to Updated, not in the topic row. Open a past week with Read this week.
 
@@ -80,7 +80,7 @@ Each week is one JSON file: `content/digests/{week_id}.json` (for example `2026-
 
 What gets into a week is decided before the file is written. The rules Dan can edit are in `config/inclusion-rubric.md`. Ingest should read that file. There is no cap on how many items can come from one source.
 
-From `2026-W41` on, every item has `included` (`true` or `false`) and a one-line `include_reason`. Items that fail the rubric are listed in `excluded` and are not rendered. They do not count toward the section tabs. Thin items, including a video whose summary was written only from the description, stay in Also seen on Briefing. `2026-W40` and earlier weeks omit these fields and stay valid.
+From `2026-W41` on, every item has `included` (`true` or `false`) and a one-line `include_reason`. Items that fail the rubric are listed in `excluded` and are not rendered. They do not count toward the section tabs. Thin items, including a video whose summary was written only from the description, render as Also seen links at the bottom of their topic tab. Those links do not count toward the section tabs either. `2026-W40` and earlier weeks omit these fields and stay valid.
 
 Items about the same story are one item, even when the URLs differ. Ingest follows `config/story-grouping.md`. The strongest source is the main link. The other sources show on that item as "Also covered by" links with publisher names. When those sources disagree on a key number, the item says so (for example "722 per Education Disrupted, 719 per Last Week in AI"). A story does not appear both as a main item and as an Also seen link. `2026-W40` omits `also_covered` and `number_note` and stays valid.
 
