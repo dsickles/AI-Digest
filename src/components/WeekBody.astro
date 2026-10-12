@@ -4,7 +4,6 @@ import ThinCard from './ThinCard.astro';
 import TopicSection from './TopicSection.astro';
 import {
   alsoSeenItems,
-  formatDate,
   shownBriefingCards,
   shownTopicCards,
   TOPIC_LABELS,
@@ -126,26 +125,6 @@ function storyHref(card: MainCard): string {
         ) : (
           <p class="synthesis">{week.briefing.synthesis}</p>
         )}
-        <ol class="index" aria-label={topLabel}>
-          {topCards.map((card, index) => (
-            <li>
-              <span class="k" aria-hidden="true">
-                {index + 1}
-              </span>
-              <span class="it">
-                <a href={`#${card.id}`}>{card.title}</a>
-                <span class="im">
-                  {card.publisher.name}
-                  <span class="sep" aria-hidden="true">
-                    {' '}
-                    ·{' '}
-                  </span>
-                  <time datetime={card.published_at}>{formatDate(card.published_at)}</time>
-                </span>
-              </span>
-            </li>
-          ))}
-        </ol>
       </section>
       <section class="top" aria-labelledby="briefing-heading">
         <h2 class="h2" id="briefing-heading">
