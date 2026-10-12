@@ -421,11 +421,13 @@ function assertReaderChrome(html, label, file = '') {
   const timeEnd = weekLine.indexOf('</time>');
   if (timeEnd === -1) fail(`${label} Updated date is missing`);
   const afterTime = weekLine.slice(timeEnd + '</time>'.length);
+  const sourcesAt = afterTime.search(/<a\b[^>]*href="\/sources"[^>]*>/);
   const archiveAt = afterTime.search(/<a\b[^>]*href="\/archive"[^>]*>/);
-  if (archiveAt === -1) fail(`${label} Archive is not to the right of Updated`);
-  const between = decode(afterTime.slice(0, archiveAt)).replace(/&middot;/gi, '·').replace(/<[^>]*>/g, '');
-  if (between.includes(',')) fail(`${label} has a comma between Updated and Archive`);
-  if (!/^[\s·]*$/.test(between)) fail(`${label} puts "${between}" between Updated and Archive`);
+  if (sourcesAt === -1) fail(`${label} Sources is not to the right of Updated`);
+  if (archiveAt === -1 || archiveAt < sourcesAt) fail(`${label} Archive is not the far-right week-line link`);
+  const between = decode(afterTime.slice(0, sourcesAt)).replace(/&middot;/gi, '·').replace(/<[^>]*>/g, '');
+  if (between.includes(',')) fail(`${label} has a comma between Updated and Sources`);
+  if (!/^[\s·]*$/.test(between)) fail(`${label} puts "${between}" between Updated and Sources`);
   assertSourceLinks(html, file, label);
   assertSectionCounts(html, file, label);
   assertTitle(html, file, label);
@@ -882,13 +884,15 @@ function assertSourceLinks(html, file, label) {
   const archiveAt = weekLine.search(/<a\b[^>]*href="\/archive"/);
   const sourcesAt = weekLine.search(/<a\b[^>]*href="\/sources"/);
   if (sourcesAt === -1 || !weekLine.includes('>Sources<')) fail(`${label} week line is missing the Sources link`);
-  if (archiveAt === -1 || sourcesAt < archiveAt) fail(`${label} Sources is not next to Archive`);
-  const archiveLabelAt = weekLine.indexOf('>Archive</a>');
-  if (archiveLabelAt === -1 || archiveLabelAt > sourcesAt) fail(`${label} Archive label is missing before Sources`);
-  const betweenLinks = decode(weekLine.slice(archiveLabelAt + '>Archive</a>'.length, sourcesAt))
+  if (archiveAt === -1 || archiveAt < sourcesAt) fail(`${label} Archive is not to the right of Sources`);
+  const sourcesLabelAt = weekLine.indexOf('>Sources</a>');
+  if (sourcesLabelAt === -1 || sourcesLabelAt > archiveAt) fail(`${label} Sources label is missing before Archive`);
+  const betweenLinks = decode(weekLine.slice(sourcesLabelAt + '>Sources</a>'.length, archiveAt))
     .replace(/&middot;/gi, '·')
     .replace(/<[^>]*>/g, '');
-  if (!/^[\s·]*$/.test(betweenLinks)) fail(`${label} puts "${betweenLinks}" between Archive and Sources`);
+  if (!/^[\s·]*$/.test(betweenLinks)) fail(`${label} puts "${betweenLinks}" between Sources and Archive`);
+  const weekHrefs = [...weekLine.matchAll(/\bhref="([^"]*)"/g)].map((match) => match[1]);
+  if (weekHrefs.at(-1) !== '/archive') fail(`${label} Archive is not the far-right week-line link`);
   const onSources = /(?:^|\/)sources\/index\.html$/.test(String(file).replaceAll('\\', '/'));
   const sourcesLink = weekLine.match(/<a\b[^>]*href="\/sources"[^>]*>/)?.[0] ?? '';
   if (onSources && !/aria-current="page"/.test(sourcesLink)) fail(`${label} Sources link is not current`);

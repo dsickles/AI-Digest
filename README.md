@@ -20,7 +20,7 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 
 - A **Briefing** page: a lead of one to three sentences, then the Number of the week, then This week's themes (always five) in the left column, with the Top 5 in the wider right column. The number sits in that left column, under the lead and above the themes. On a phone: lead, number, themes, Top 5.
 - **Topic tabs**: Business, Technical, Education, Policy and Safety. Each ends with Also seen when that topic has thin items.
-- A **Sources** page at `/sources`, linked from the week line (Archive · Sources) and the footer (Every source we read (33)).
+- A **Sources** page at `/sources`, linked from the week line (Sources · Archive) and the footer (Every source we read (33)).
 - An **Archive** of past weeks, each with a Read this week link. Weeks from before the redesign still show their briefing paragraph.
 - A site icon for browser tabs and the phone home screen.
 - Week content checked into git under `content/digests/`
@@ -33,8 +33,8 @@ Open the live site (or your local copy). You land on the latest finished week's 
 - **Read the Briefing.** The lead sums up the week. The Number of the week is one figure with what was measured, why it matters, and a link to its story. Each theme is one sentence with links to the stories behind it. The Top 5 sits beside them. On a phone the order is lead, number, themes, Top 5. A week from before the redesign shows its briefing paragraph instead.
 - **Skim a topic.** Use Business, Technical, Education, or Policy and Safety. Each page shows that topic's main list in file order. Thin links, when that topic has them, sit at the bottom under Also seen. An empty topic still appears and says so. The tab count is the main list only.
 - **Open a story.** The title is the link to the article. A one-line takeaway under the title says why it matters, and it stays visible while Summary is closed. Where a Summary control exists, it expands or collapses the shorter summary without leaving the page. Top 5 rows stay open, with the takeaway above the summary. Video items show a play control on the row.
-- **Browse the archive.** Archive sits on the week line next to Updated, not in the topic row. Open a past week with Read this week.
-- **See every source.** Sources sits on that same week line (Archive · Sources), and the footer of every page says Every source we read (33). The list is the feeds the digest reads, not a count of this week's items.
+- **Browse the archive.** Archive is the far-right link on the week line, after Sources, and it is not in the topic row. Open a past week with Read this week.
+- **See every source.** Sources sits on that same week line, between Updated and Archive, and the footer of every page says Every source we read (33). The list is the feeds the digest reads, not a count of this week's items.
 
 A week that is still open (including a half-finished draft file) stays off the home page and out of the archive until its Saturday 23:59:59 America/New_York has passed.
 
