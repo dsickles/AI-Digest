@@ -611,6 +611,43 @@ function compactCss(css) {
   return out;
 }
 
+function classRuleBodies(css, className) {
+  const bodies = [];
+  const needle = `.${className}`;
+  let from = 0;
+  while (from < css.length) {
+    const start = css.indexOf(needle, from);
+    if (start === -1) break;
+    const after = css[start + needle.length] ?? '';
+    if (/[A-Za-z0-9_-]/.test(after)) {
+      from = start + needle.length;
+      continue;
+    }
+    const open = css.indexOf('{', start);
+    if (open === -1) break;
+    if (css.slice(start, open).includes('}')) {
+      from = start + needle.length;
+      continue;
+    }
+    let depth = 0;
+    let close = -1;
+    for (let index = open; index < css.length; index += 1) {
+      if (css[index] === '{') depth += 1;
+      else if (css[index] === '}') {
+        depth -= 1;
+        if (depth === 0) {
+          close = index;
+          break;
+        }
+      }
+    }
+    if (close === -1) break;
+    bodies.push(css.slice(open + 1, close));
+    from = close + 1;
+  }
+  return bodies;
+}
+
 function ruleBody(css, selector) {
   const forms = [
     selector,
@@ -868,7 +905,12 @@ function assertProgramCss(html, label) {
   if (!besideTop) {
     fail(`${label} Top 5 does not stay in the right column beside the Number of the week`);
   }
-  if (css.includes('margin-top:auto') || ruleBody(css, '.left-col > .notw').includes('margin-top:auto')) {
+  const notwTop = ruleBody(css, '.left-col > .notw');
+  if (!notwTop.includes('border-top:1pxsolidvar(--rule-strong)')) {
+    fail(`${label} Number of the week is missing the strong rule above it`);
+  }
+  const placementRules = [...classRuleBodies(css, 'notw'), ...classRuleBodies(css, 'themes-col')];
+  if (placementRules.some((body) => body.includes('margin-top:auto'))) {
     fail(`${label} Number of the week is pinned to the bottom of the themes column`);
   }
   const leadUnderNumber = ruleBody(css, '.left-col > .lead');
@@ -935,7 +977,7 @@ function assertProgramCss(html, label) {
   }
   const narrowTop = ruleBody(tablet, '.syn:has(> .left-col) > .top');
   const narrowStacks = narrowTop.includes('grid-row:auto') || narrowTop.includes('grid-area:auto/1/auto/-1');
-  if (narrowTop.includes('margin-top:auto') || !narrowStacks) {
+  if (!narrowStacks) {
     fail(`${label} Number of the week stays beside the Top 5 on a narrow window`);
   }
   if (tablet.includes('.index')) fail(`${label} narrow window still styles the Top 5 index`);
