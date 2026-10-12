@@ -229,7 +229,11 @@ a:hover {
   text-wrap: pretty;
 }
 
-.syn > .themes-col {
+.brief-flow {
+  display: contents;
+}
+
+.syn > .left-col {
   grid-column: 1 / 5;
   grid-row: 2;
   align-self: start;
@@ -237,18 +241,19 @@ a:hover {
   margin-top: var(--s5);
 }
 
-.syn > .themes-col.has-number {
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
+.left-col > .themes-col {
+  margin-top: var(--s5);
 }
 
-.syn > .themes-col.has-number > .themes {
-  margin-bottom: var(--s6);
+.brief-flow > .themes-col {
+  grid-column: 1 / 5;
+  grid-row: 2;
+  align-self: start;
+  min-width: 0;
+  margin-top: var(--s5);
 }
 
-.notw {
-  margin-top: auto;
+.left-col > .notw {
   padding-top: var(--s2);
   border-top: 1px solid var(--rule-strong);
 }
@@ -767,25 +772,20 @@ main > .page-title {
 @media (max-width: 1080px) {
   .syn > .synthesis,
   .syn > .lead,
-  .syn > .themes-col,
+  .brief-flow > .themes-col,
+  .syn > .left-col,
   .syn > .top {
     grid-column: 1 / -1;
     grid-row: auto;
   }
 
-  .syn > .themes-col {
+  .brief-flow > .themes-col,
+  .syn > .left-col,
+  .left-col > .themes-col {
     margin-top: var(--s5);
   }
 
   .syn > .top {
-    margin-top: var(--s6);
-  }
-
-  .syn > .themes-col.has-number > .themes {
-    margin-bottom: 0;
-  }
-
-  .notw {
     margin-top: var(--s6);
   }
 

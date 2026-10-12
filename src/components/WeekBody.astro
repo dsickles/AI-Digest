@@ -73,42 +73,7 @@ function storyHref(card: MainCard): string {
     hasScan ? (
       <section class="g syn" aria-label="This week">
         <p class="lead">{week.briefing.lead}</p>
-        <section class={showNumber ? 'themes-col has-number' : 'themes-col'} aria-labelledby="themes-heading">
-          <h2 class="h2" id="themes-heading">
-            This week's themes
-          </h2>
-          <ol class="themes">
-            {themes.map((theme) => {
-              const cards = theme.story_ids.flatMap((id) => {
-                const card = mainById.get(id);
-                return card ? [card] : [];
-              });
-              return (
-                <li class="theme">
-                  <p class="theme-label">{theme.label}</p>
-                  <p class="theme-sentence">{theme.sentence}</p>
-                  {cards.length > 0 && (
-                    <p class="theme-links">
-                      {cards.map((card, index) => (
-                        <>
-                          {index > 0 && (
-                            <span class="sep" aria-hidden="true">
-                              {' '}
-                              ·{' '}
-                            </span>
-                          )}
-                          <a href={storyHref(card)}>
-                            {linkLabel(card, cards)}
-                            <span class="visually-hidden"> {card.title}</span>
-                          </a>
-                        </>
-                      ))}
-                    </p>
-                  )}
-                </li>
-              );
-            })}
-          </ol>
+        <div class={showNumber ? 'left-col' : 'brief-flow'}>
           {showNumber && numberOfWeek && numberCard && (
             <section class="notw" aria-labelledby="notw-heading">
               <h2 class="notw-label" id="notw-heading">
@@ -132,7 +97,44 @@ function storyHref(card: MainCard): string {
               </p>
             </section>
           )}
-        </section>
+          <section class="themes-col" aria-labelledby="themes-heading">
+            <h2 class="h2" id="themes-heading">
+              This week's themes
+            </h2>
+            <ol class="themes">
+              {themes.map((theme) => {
+                const cards = theme.story_ids.flatMap((id) => {
+                  const card = mainById.get(id);
+                  return card ? [card] : [];
+                });
+                return (
+                  <li class="theme">
+                    <p class="theme-label">{theme.label}</p>
+                    <p class="theme-sentence">{theme.sentence}</p>
+                    {cards.length > 0 && (
+                      <p class="theme-links">
+                        {cards.map((card, index) => (
+                          <>
+                            {index > 0 && (
+                              <span class="sep" aria-hidden="true">
+                                {' '}
+                                ·{' '}
+                              </span>
+                            )}
+                            <a href={storyHref(card)}>
+                              {linkLabel(card, cards)}
+                              <span class="visually-hidden"> {card.title}</span>
+                            </a>
+                          </>
+                        ))}
+                      </p>
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        </div>
         <section class="top top-col" aria-labelledby="briefing-heading">
           <h2 class="h2" id="briefing-heading">
             {topLabel}

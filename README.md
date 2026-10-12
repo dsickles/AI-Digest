@@ -18,7 +18,7 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 
 ## What you get
 
-- A **Briefing** page: a lead of 1 to 3 sentences, exactly five theme rows under "This week's themes", and a Top 5. On a wide screen the themes sit in the left third and every Top 5 story stays in the right two thirds. When the week has a Number of the week, that figure sits at the bottom of the themes column. A week with no theme data still shows the synthesis paragraph. A week with no number shows no empty slot.
+- A **Briefing** page: a lead of 1 to 3 sentences, exactly five theme rows under "This week's themes", and a Top 5. On a wide screen the themes sit in the left third and every Top 5 story stays in the right two thirds. When the week has a Number of the week, that figure sits in the left column under the lead and above This week's themes. The Top 5 stays in the right column. A week with no theme data still shows the synthesis paragraph. A week with no number shows no empty slot.
 - **Topic tabs** in this order: Business, Technical, Education, Policy and Safety
 - **Also seen** at the bottom of a topic tab that has thin links, including on an archived week. A tab with no thin items leaves that section off. Briefing does not list them.
 - An **Archive** of past weeks, each with a Read this week link
@@ -29,7 +29,7 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 
 Open the live site (or your local copy). You land on the latest finished week's Briefing.
 
-- **Read the Briefing.** The lead comes first, then "This week's themes" and the Top 5. On a wide screen those two sit side by side, every Top 5 story stays in the right column, and the Number of the week fills the space under the themes. On a phone the order is lead, themes, Number of the week, Top 5. An older week with no theme data shows the synthesis paragraph instead. A week with no number leaves that slot out.
+- **Read the Briefing.** The lead comes first, then "This week's themes" and the Top 5. On a wide screen those two sit side by side and every Top 5 story stays in the right column. When the week has a Number of the week, that figure sits under the lead and above the themes. On a phone the order is lead, Number of the week, themes, Top 5. An older week with no theme data shows the synthesis paragraph instead. A week with no number leaves that slot out.
 - **Skim a topic.** Use Business, Technical, Education, or Policy and Safety. Each page shows that topic's main list in file order. Thin links, when that topic has them, sit at the bottom under Also seen. An empty topic still appears and says so. The tab count is the main list only.
 - **Open a story.** The title is the link to the article. A one-line takeaway under the title says why it matters, and it stays visible while Summary is closed. Where a Summary control exists, it expands or collapses the shorter summary without leaving the page. Top 5 rows stay open, with the takeaway above the summary. Video items show a play control on the row.
 - **Browse the archive.** Archive sits on the week line next to Updated, not in the topic row. Open a past week with Read this week.
@@ -86,7 +86,7 @@ Items about the same story are one item, even when the URLs differ. Ingest follo
 
 From `2026-W41` on, the Briefing also carries `lead` (1 to 3 sentences) and `themes` (exactly 5 rows). Each theme has a short `label`, one `sentence` of 25 to 35 words, and `story_ids` pointing at the merged main items. Ingest follows `config/briefing.md`. The page does not render the synthesis paragraph. `2026-W40` omits `lead` and `themes` and the page keeps that paragraph. The archive excerpt still uses the first sentence of `synthesis`.
 
-From `2026-W42` on, the Briefing also carries `number_of_week`: a short `value`, one plain-English `what` sentence, one plain-English `why` sentence, and a `story_id` for an item in the week. Swartz follows `config/number-of-week.md`. The page shows the value, then those two sentences, then a link to that story, at the bottom of the themes column. `2026-W41` and earlier, including `2026-W40`, stay valid without the field and show no empty slot.
+From `2026-W42` on, the Briefing also carries `number_of_week`: a short `value`, one plain-English `what` sentence, one plain-English `why` sentence, and a `story_id` for an item in the week. Swartz follows `config/number-of-week.md`. The page shows the value, then those two sentences, then a link to that story, in the left column under the lead and above the themes. On a phone the order is lead, Number of the week, themes, Top 5. `2026-W41` and earlier, including `2026-W40`, stay valid without the field and show no empty slot.
 
 From `2026-W41` on, every main item also has a `takeaway`: one sentence on why it matters, not a restatement of the title. The page shows that line under the title and meta line, on Top 5 and on every topic page, including while Summary is closed. An opened summary is 60 words or fewer. Ingest follows `config/takeaway.md`. Thin Also seen items omit `takeaway`. `2026-W40` omits it, can keep a longer summary, and still renders.
 
