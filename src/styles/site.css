@@ -407,6 +407,16 @@ a:hover {
   font-weight: 500;
 }
 
+.takeaway {
+  margin-top: var(--s2);
+  max-width: 72ch;
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: 400;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+
 .number-note,
 .also-covered {
   margin-top: var(--s2);
@@ -562,6 +572,11 @@ main > .page-title {
 
 .row .meta {
   margin-top: var(--s1);
+}
+
+.row .takeaway {
+  font-size: 15px;
+  line-height: 1.4;
 }
 
 .row .toggle {

@@ -14,7 +14,9 @@ export function mentionsAi(text) {
 }
 
 export function cardText(card) {
-  return [card?.title, card?.summary, card?.body].filter((part) => typeof part === 'string' && part.length > 0).join('\n');
+  return [card?.title, card?.takeaway, card?.summary, card?.body]
+    .filter((part) => typeof part === 'string' && part.length > 0)
+    .join('\n');
 }
 
 function isHttps(url) {

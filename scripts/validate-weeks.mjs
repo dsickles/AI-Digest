@@ -17,6 +17,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const RUBRIC_PATH = join(ROOT, 'config', 'inclusion-rubric.md');
 const GROUPING_PATH = join(ROOT, 'config', 'story-grouping.md');
 const BRIEFING_PATH = join(ROOT, 'config', 'briefing.md');
+const TAKEAWAY_PATH = join(ROOT, 'config', 'takeaway.md');
 const DIGEST_SCHEMA_PATH = join(ROOT, 'schema', 'digest.schema.json');
 const REPORT_SCHEMA_PATH = join(ROOT, 'schema', 'report.schema.json');
 const SOURCES_PATH = join(ROOT, 'config', 'sources.yaml');
@@ -314,6 +315,7 @@ function validateDigestDocument(doc, filename, sources) {
   errors.push(...validateRubric(doc));
   errors.push(...validateGrouping(doc, sources));
   errors.push(...validateBriefingScan(doc));
+  errors.push(...validateTakeaways(doc));
   errors.push(...alsoSeenFillerErrors(doc));
   return errors;
 }
@@ -518,6 +520,78 @@ function validateBriefingScan(doc) {
   return errors;
 }
 
+const SUMMARY_WORD_CAP = 60;
+
+function plainWords(text) {
+  return String(text ?? '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
+function restatesTitle(title, takeaway) {
+  const left = plainWords(title);
+  const right = plainWords(takeaway);
+  if (!left || !right) return false;
+  if (left === right) return true;
+  return left.length >= 12 && right.includes(left);
+}
+
+function takeawayShapeErrors(card, where) {
+  const errors = [];
+  const takeaway = card?.takeaway;
+  if (typeof takeaway !== 'string' || !isOneSentence(takeaway)) {
+    errors.push(`${where} takeaway must be one sentence`);
+    return errors;
+  }
+  if (DASH.test(takeaway)) errors.push(`${where} takeaway must not use an em dash or an en dash`);
+  if (restatesTitle(card.title, takeaway)) errors.push(`${where} takeaway must not restate the title`);
+  return errors;
+}
+
+function validateTakeaways(doc) {
+  const errors = [];
+  const required = typeof doc?.week_id === 'string' && doc.week_id >= THEME_WEEK;
+  for (const card of doc?.main_feed ?? []) {
+    if (!card || typeof card !== 'object') continue;
+    const where = card.id || 'main item';
+    if (Object.hasOwn(card, 'takeaway')) errors.push(...takeawayShapeErrors(card, where));
+    else if (required) errors.push(`${where} must include a one-sentence takeaway`);
+    if (required && card.summary_status === 'ok' && typeof card.summary === 'string') {
+      if (wordCount(card.summary) > SUMMARY_WORD_CAP) {
+        errors.push(`${where} summary must be 60 words or fewer`);
+      }
+      if (DASH.test(card.summary)) errors.push(`${where} summary must not use an em dash or an en dash`);
+    }
+  }
+  for (const card of doc?.footer_aside ?? []) {
+    if (card && typeof card === 'object' && Object.hasOwn(card, 'takeaway')) {
+      errors.push(`${card.id || 'Also seen item'} Also seen items do not take a takeaway`);
+    }
+  }
+  return errors;
+}
+
+function takeawayFileErrors() {
+  if (!existsSync(TAKEAWAY_PATH)) return ['config/takeaway.md is missing'];
+  const text = readFileSync(TAKEAWAY_PATH, 'utf8');
+  const required = [
+    ['takeaway', 'config/takeaway.md must tell ingest how to write the takeaway'],
+    ['why it matters', 'config/takeaway.md must say the takeaway says why it matters'],
+    ['one sentence', 'config/takeaway.md must say the takeaway is one sentence'],
+    ['restate the title', 'config/takeaway.md must say the takeaway does not restate the title'],
+    ['60 words', 'config/takeaway.md must say an ok summary is at most 60 words'],
+    ['2026-W41', 'config/takeaway.md must require takeaways from 2026-W41 on'],
+    ['2026-W40', 'config/takeaway.md must keep weeks before 2026-W41, including 2026-W40, valid without a takeaway'],
+    ['Also seen', 'config/takeaway.md must say Also seen items omit the takeaway'],
+  ];
+  for (const [needle, message] of required) {
+    if (!text.includes(needle)) return [message];
+  }
+  return [];
+}
+
 function briefingFileErrors() {
   if (!existsSync(BRIEFING_PATH)) return ['config/briefing.md is missing'];
   const text = readFileSync(BRIEFING_PATH, 'utf8');
@@ -570,7 +644,7 @@ function groupingFileErrors() {
 export function validateArchive(contentDir, sources) {
   const digestPaths = jsonFiles(join(contentDir, 'digests'));
   const reportPaths = jsonFiles(join(contentDir, 'reports'));
-  const errors = [...rubricFileErrors(), ...groupingFileErrors(), ...briefingFileErrors()];
+  const errors = [...rubricFileErrors(), ...groupingFileErrors(), ...briefingFileErrors(), ...takeawayFileErrors()];
 
   if (digestPaths.length === 0) {
     errors.push(`${contentDir}/digests has no week json files`);
@@ -893,6 +967,7 @@ function runSelfTest(sources) {
   if (!proveInclusion(sources, sample)) return false;
   if (!proveGrouping(sources)) return false;
   if (!proveBriefing(sources)) return false;
+  if (!proveTakeaways(sources, sample)) return false;
   if (!proveSourceRules(sources, sample)) return false;
 
   console.log('self-test PASS');
@@ -925,6 +1000,7 @@ function rubricCard(id, title) {
     media: 'article',
     summary_status: 'ok',
     summary: `${title} is a real note about AI tooling.`,
+    takeaway: 'This launch matters because it changes how teams use AI tooling.',
     included: true,
     include_reason: 'New: a launch worth a full card.',
   };
@@ -1899,6 +1975,121 @@ function proveSourceRules(sources, sample) {
     }
   }
   console.log('self-test PASS assigned sections and EDUCAUSE AI-only rule');
+  return true;
+}
+
+function replaceCard(doc, id, mutate) {
+  const lists = [
+    doc.main_feed,
+    doc.briefing?.top,
+    ...Object.values(doc.topics ?? {}),
+    doc.excluded,
+    doc.footer_aside,
+  ];
+  for (const list of lists) {
+    if (!Array.isArray(list)) continue;
+    for (const card of list) {
+      if (card && card.id === id) mutate(card);
+    }
+  }
+}
+
+function proveTakeaways(sources, sample) {
+  const fileErrors = takeawayFileErrors();
+  if (fileErrors.length !== 0) {
+    console.error('self-test: takeaway rules file failed');
+    for (const error of fileErrors) console.error(`- ${error}`);
+    return false;
+  }
+  console.log('self-test PASS takeaway rules file');
+
+  const open = rubricWeek();
+  const openErrors = validateDigestDocument(open, '2026-W41.json', sources);
+  if (openErrors.length !== 0) {
+    console.error('self-test: a rubric week with takeaways and short summaries must pass');
+    for (const error of openErrors) console.error(`- ${error}`);
+    return false;
+  }
+  console.log('self-test PASS takeaway on every main item');
+
+  const missing = rubricWeek();
+  replaceCard(missing, 'rubric-item-1', (card) => {
+    delete card.takeaway;
+  });
+  if (!expectRubricFailure(sources, missing, 'one-sentence takeaway', 'main item with no takeaway')) return false;
+
+  const long = rubricWeek();
+  const longSummary = Array.from({ length: 61 }, (_, index) => `alpha${index + 1}`).join(' ');
+  replaceCard(long, 'rubric-item-1', (card) => {
+    card.summary = longSummary;
+  });
+  if (!expectRubricFailure(sources, long, '60 words or fewer', 'summary longer than 60 words')) return false;
+
+  const restated = rubricWeek();
+  replaceCard(restated, 'rubric-item-1', (card) => {
+    card.takeaway = `${card.title}.`;
+  });
+  if (!expectRubricFailure(sources, restated, 'must not restate the title', 'takeaway that restates the title')) {
+    return false;
+  }
+
+  const twoSentences = rubricWeek();
+  replaceCard(twoSentences, 'rubric-item-1', (card) => {
+    card.takeaway = 'This launch matters today. A second sentence should not be in the takeaway.';
+  });
+  if (!expectRubricFailure(sources, twoSentences, 'must be one sentence', 'takeaway that is two sentences')) {
+    return false;
+  }
+
+  const dashed = rubricWeek();
+  replaceCard(dashed, 'rubric-item-1', (card) => {
+    card.takeaway = 'This launch matters because the cost is higher \u2013 and still climbing today.';
+  });
+  if (!expectRubricFailure(sources, dashed, 'em dash or an en dash', 'takeaway that uses an en dash')) return false;
+
+  const thin = rubricWeek();
+  thin.footer_aside[0].takeaway = 'This thin link should not grow a takeaway line at all.';
+  if (!expectRubricFailure(sources, thin, 'additional properties', 'Also seen item with a takeaway')) return false;
+
+  const olderErrors = validateDigestDocument(sample, '2026-W40.json', sources);
+  const longOlder = (sample.main_feed ?? []).filter(
+    (card) => card.summary_status === 'ok' && wordCount(card.summary) > SUMMARY_WORD_CAP,
+  );
+  const olderTakeaway = (sample.main_feed ?? []).some((card) => Object.hasOwn(card, 'takeaway'));
+  if (olderErrors.length !== 0 || longOlder.length === 0 || olderTakeaway) {
+    console.error('self-test: 2026-W40 must stay valid without takeaways and with summaries over 60 words');
+    for (const error of olderErrors) console.error(`- ${error}`);
+    return false;
+  }
+  console.log('self-test PASS 2026-W40 omits takeaway and keeps longer summaries');
+
+  const w41Path = join(ROOT, 'content', 'digests', '2026-W41.json');
+  const w41 = JSON.parse(readFileSync(w41Path, 'utf8'));
+  const main = Array.isArray(w41.main_feed) ? w41.main_feed : [];
+  const badTakeaway = main.filter(
+    (card) => typeof card.takeaway !== 'string' || !isOneSentence(card.takeaway) || restatesTitle(card.title, card.takeaway),
+  );
+  const badSummary = main.filter(
+    (card) => card.summary_status === 'ok' && (wordCount(card.summary) > SUMMARY_WORD_CAP || DASH.test(card.summary)),
+  );
+  const thinTakeaway = (w41.footer_aside ?? []).filter((card) => card && Object.hasOwn(card, 'takeaway'));
+  if (main.length === 0 || badTakeaway.length !== 0 || badSummary.length !== 0 || thinTakeaway.length !== 0) {
+    console.error('self-test: 2026-W41 main items need a takeaway and a summary of 60 words or fewer');
+    console.error(
+      JSON.stringify(
+        {
+          main: main.length,
+          badTakeaway: badTakeaway.map((card) => card.id),
+          badSummary: badSummary.map((card) => card.id),
+          thinTakeaway: thinTakeaway.map((card) => card.id),
+        },
+        null,
+        2,
+      ),
+    );
+    return false;
+  }
+  console.log(`self-test PASS 2026-W41 takeaways on ${main.length} main items`);
   return true;
 }
 
