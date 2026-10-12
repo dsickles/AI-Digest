@@ -24,7 +24,12 @@ export interface Publisher {
   name: string;
 }
 
-export interface MainCard {
+export interface InclusionFields {
+  included?: boolean;
+  include_reason?: string;
+}
+
+export interface MainCard extends InclusionFields {
   id: string;
   title: string;
   url: string;
@@ -44,14 +49,14 @@ export interface MainCard {
   body?: string;
 }
 
-export interface ThinCard {
+export interface ThinCard extends InclusionFields {
   id: string;
   title: string;
   url: string;
   publisher: Publisher;
   published_at: string;
   category: Topic;
-  media: 'article';
+  media: 'article' | 'video';
   summary_status: 'thin';
 }
 
@@ -69,6 +74,7 @@ export interface Week {
   topics: Record<Topic, MainCard[]>;
   main_feed: MainCard[];
   footer_aside: ThinCard[];
+  excluded?: Array<MainCard | ThinCard>;
 }
 
 type WeekModule = { default: Week };
@@ -93,6 +99,9 @@ function assertWeek(value: unknown, filePath: string): Week {
   }
   if (!week.topics || !Array.isArray(week.footer_aside)) {
     throw new Error(`${filePath} is missing topic lists or the footer`);
+  }
+  if (week.excluded !== undefined && !Array.isArray(week.excluded)) {
+    throw new Error(`${filePath} excluded must be a list`);
   }
   if (week.topics['policy-and-safety'] === undefined) {
     week.topics['policy-and-safety'] = [];
@@ -145,4 +154,20 @@ export function synthesisExcerpt(synthesis: string): string {
 
 export function isTopic(value: string): value is Topic {
   return (TOPICS as readonly string[]).includes(value);
+}
+
+function shownCard(card: { included?: boolean; summary_status?: string }): boolean {
+  return card.included !== false && card.summary_status !== 'thin';
+}
+
+export function shownBriefingCards(week: Week): MainCard[] {
+  return week.briefing.top.filter(shownCard);
+}
+
+export function shownTopicCards(week: Week, topic: Topic): MainCard[] {
+  return (week.topics[topic] ?? []).filter(shownCard);
+}
+
+export function alsoSeenItems(week: Week): ThinCard[] {
+  return (week.footer_aside ?? []).filter((card) => card.included !== false);
 }

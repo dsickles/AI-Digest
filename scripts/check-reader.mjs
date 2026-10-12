@@ -387,10 +387,23 @@ function loadDigestWeeks() {
   return weeks;
 }
 
-// Topic tabs render topics[id] only. Also seen is footer_aside and stays on Briefing.
+function isShownStory(card) {
+  return card?.included !== false && card?.summary_status !== 'thin';
+}
+
+function briefingCards(weekDoc) {
+  return (weekDoc.briefing?.top ?? []).filter(isShownStory);
+}
+
+function footerCards(weekDoc) {
+  return (weekDoc.footer_aside ?? []).filter((card) => card?.included !== false);
+}
+
+// Topic tabs render included topic cards only. Excluded cards and thin cards stay off the count.
+// Also seen is footer_aside and stays on Briefing.
 function sectionCards(weekDoc, topicId) {
   const list = weekDoc.topics?.[topicId];
-  return Array.isArray(list) ? list : [];
+  return Array.isArray(list) ? list.filter(isShownStory) : [];
 }
 
 function readerFacingText(weeks) {
@@ -519,13 +532,11 @@ function pageTitle(html) {
 }
 
 function topicCount(doc, id) {
-  const list = doc?.topics?.[id];
-  return Array.isArray(list) ? list.length : 0;
+  return sectionCards(doc, id).length;
 }
 
 function asideCount(doc, id) {
-  if (!Array.isArray(doc?.footer_aside)) return 0;
-  return doc.footer_aside.filter((card) => card?.category === id).length;
+  return footerCards(doc).filter((card) => card?.category === id).length;
 }
 
 function readWeekDoc(weekId) {
@@ -835,13 +846,13 @@ function assertSectionTab(html, weekDoc, topic, where) {
   assertOrder(parts.main, 'card', cards, `${where} ${topic.label}`);
   for (const card of cards) assertCard(parts.main, card);
   assertTopicRanks(html, cards, `${where} ${topic.label}`);
-  assertTopicOmitsAlsoSeen(html, weekDoc.footer_aside ?? [], `${where} ${topic.label}`);
+  assertTopicOmitsAlsoSeen(html, footerCards(weekDoc), `${where} ${topic.label}`);
   assertDimmedEmptyState(html, topic.label, cards.length === 0, where);
   assertDegradedHits(html, renderedCopy(cards), `${where} ${topic.label}`);
 }
 
 function assertBriefingTab(html, weekDoc, where) {
-  const cards = weekDoc.briefing.top;
+  const cards = briefingCards(weekDoc);
   const parts = splitFooter(html);
   const shown = articleIds(parts.main, 'card');
   if (shown.length !== cards.length) {
@@ -863,12 +874,12 @@ function assertBriefingTab(html, weekDoc, where) {
   if (!decode(html).includes(weekDoc.briefing.synthesis)) fail(`${where} briefing is missing the synthesis`);
   assertOrder(parts.main, 'card', cards, `${where} briefing`);
   for (const card of cards) assertCard(parts.main, card);
-  assertBriefingAlsoSeen(html, weekDoc.footer_aside ?? [], where);
+  assertBriefingAlsoSeen(html, footerCards(weekDoc), where);
   assertDegradedHits(html, [weekDoc.briefing.synthesis, ...renderedCopy(cards)], `${where} briefing`);
 }
 
 function findShownCard(weekDoc, predicate) {
-  const pools = [['briefing', weekDoc.briefing.top], ...SECTION_TABS.map((topic) => [topic.id, sectionCards(weekDoc, topic.id)])];
+  const pools = [['briefing', briefingCards(weekDoc)], ...SECTION_TABS.map((topic) => [topic.id, sectionCards(weekDoc, topic.id)])];
   for (const [place, cards] of pools) {
     const card = cards.find(predicate);
     if (card) return { place, card };
@@ -893,9 +904,57 @@ function assertMediaCase(weekDoc, pageMap, where, required) {
   }
 }
 
+function assertRubric(weekDoc, pageMap, where) {
+  const rendered = [...briefingCards(weekDoc), ...SECTION_TABS.flatMap((topic) => sectionCards(weekDoc, topic.id)), ...footerCards(weekDoc)];
+  const excluded = Array.isArray(weekDoc.excluded) ? weekDoc.excluded : [];
+  const usesRubric = weekDoc.week_id >= '2026-W41' || rendered.some((card) => Object.hasOwn(card, 'include_reason')) || excluded.length > 0;
+  if (!usesRubric) return;
+  if (weekDoc.week_id >= '2026-W41' && !Array.isArray(weekDoc.excluded)) {
+    fail(`${where} is missing the excluded list`);
+  }
+  for (const card of [...rendered, ...excluded]) {
+    if (typeof card.included !== 'boolean') fail(`${where} ${card.id} is missing included`);
+    if (typeof card.include_reason !== 'string' || card.include_reason.trim().length === 0 || /[\r\n]/.test(card.include_reason)) {
+      fail(`${where} ${card.id} is missing a one-line include_reason`);
+    }
+  }
+  for (const card of rendered) {
+    if (card.included !== true) fail(`${where} rendered ${card.id} but included is not true`);
+  }
+  const html = Object.values(pageMap).join('\n');
+  for (const card of excluded) {
+    if (card.included !== false) fail(`${where} ${card.id} is in excluded but included is not false`);
+    if (html.includes(`id="${card.id}"`)) fail(`${where} rendered excluded item ${card.id}`);
+    if (cardTitles(html).includes(card.title)) fail(`${where} shows the excluded title ${card.title}`);
+  }
+  for (const card of footerCards(weekDoc)) {
+    if (card.summary_status !== 'thin') fail(`${where} Also seen item ${card.id} is not thin`);
+    const article = extractArticle(pageMap.briefing, card.id);
+    if (article.includes('class="summary"')) fail(`${where} thin item ${card.id} shows a summary on Briefing`);
+    for (const topic of SECTION_TABS) {
+      if (pageMap[topic.id].includes(`id="${card.id}"`)) {
+        fail(`${where} thin item ${card.id} appears on ${topic.label}`);
+      }
+    }
+  }
+  if (weekDoc.week_id !== '2026-W41') return;
+  for (const title of [
+    'AI Benchmarks are dead #AI #benchmarks #Google #Gemini #AInews',
+    'llm-mistral 0.16',
+    'Quoting Carson Gross',
+  ]) {
+    if (!excluded.some((card) => card.title === title)) fail(`2026-W41 did not exclude ${title}`);
+  }
+  const thinVideo = footerCards(weekDoc).find((card) => card.media === 'video');
+  if (!thinVideo) fail('2026-W41 did not mark a description-only video as a thin Also seen link');
+  const videoArticle = extractArticle(pageMap.briefing, thinVideo.id);
+  if (!videoArticle.includes('class="play"')) fail(`${thinVideo.id} thin video is missing its play icon`);
+}
+
 function assertWeekReader(weekDoc, pageMap, where, { requireMedia = false, emptyCoverageWeek = null } = {}) {
   assertBriefingTab(pageMap.briefing, weekDoc, where);
   for (const topic of SECTION_TABS) assertSectionTab(pageMap[topic.id], weekDoc, topic, where);
+  assertRubric(weekDoc, pageMap, where);
   assertMediaCase(weekDoc, pageMap, where, requireMedia);
   const counts = SECTION_TABS.map((topic) => `${topic.label} ${sectionCards(weekDoc, topic.id).length}`).join(', ');
   console.log(`${where} section counts: ${counts}`);
@@ -1152,6 +1211,38 @@ const policyDateOnly = fixtureCard(
   'Policy date-only summary from the file.',
   '2026-10-03',
 );
+const excludedNoise = fixtureCard(
+  'excluded-noise',
+  'technical',
+  'Excluded noise must not render.',
+  '2026-09-24T12:00:00Z',
+);
+excludedNoise.included = false;
+excludedNoise.include_reason = 'Excluded: fixture noise.';
+const misplacedThin = {
+  id: 'misplaced-thin',
+  title: 'Misplaced thin item from the file.',
+  url: 'https://example.com/misplaced-thin',
+  publisher: { source_id: 'import-ai', name: 'Import AI' },
+  published_at: '2026-09-25T17:00:00Z',
+  category: 'technical',
+  media: 'article',
+  summary_status: 'thin',
+  included: true,
+  include_reason: 'Thin: this fixture must stay off the topic page.',
+};
+const olderThinVideo = {
+  id: 'saved-thin-video',
+  title: 'Saved thin video from the file.',
+  url: 'https://www.youtube.com/shorts/saved-thin-video',
+  publisher: { source_id: 'how-i-ai', name: 'How I AI' },
+  published_at: '2026-09-25T19:00:00Z',
+  category: 'technical',
+  media: 'video',
+  summary_status: 'thin',
+  included: true,
+  include_reason: 'Thin: the summary only restates the video description.',
+};
 const olderWeek = completeWeek(
   '2026-W39',
   '2026-09-20T00:00:00-04:00',
@@ -1161,11 +1252,11 @@ const olderWeek = completeWeek(
   {
     edtech: [olderEdtech],
     business: [olderBusiness],
-    technical: [olderTechnical, olderTechnicalExtra, olderTechnicalThird],
+    technical: [olderTechnical, excludedNoise, olderTechnicalExtra, misplacedThin, olderTechnicalThird],
     'policy-and-safety': [olderPolicy, policyEastern, policyDateOnly],
   },
 );
-olderWeek.footer_aside = [olderThin];
+olderWeek.footer_aside = [olderThin, olderThinVideo];
 const openWeek = completeWeek(
   '2026-W41',
   '2026-10-04T00:00:00-04:00',
@@ -1277,11 +1368,18 @@ try {
   const olderBusinessHtml = readPage('digest/2026-W39/business/index.html');
   const olderTechnicalHtml = readPage('digest/2026-W39/technical/index.html');
   const olderPolicyHtml = readPage('digest/2026-W39/policy-and-safety/index.html');
-  assertBriefingAlsoSeen(olderBriefingHtml, [olderThin], 'archived briefing');
-  assertTopicOmitsAlsoSeen(olderEdtechHtml, [olderThin], 'archived Education');
-  assertTopicOmitsAlsoSeen(olderBusinessHtml, [olderThin], 'archived business');
-  assertTopicOmitsAlsoSeen(olderTechnicalHtml, [olderThin], 'archived technical');
-  assertTopicOmitsAlsoSeen(olderPolicyHtml, [olderThin], 'archived Policy and Safety');
+  const archivedThin = [olderThin, olderThinVideo];
+  assertBriefingAlsoSeen(olderBriefingHtml, archivedThin, 'archived briefing');
+  assertTopicOmitsAlsoSeen(olderEdtechHtml, archivedThin, 'archived Education');
+  assertTopicOmitsAlsoSeen(olderBusinessHtml, archivedThin, 'archived business');
+  assertTopicOmitsAlsoSeen(olderTechnicalHtml, archivedThin, 'archived technical');
+  assertTopicOmitsAlsoSeen(olderPolicyHtml, archivedThin, 'archived Policy and Safety');
+  if (olderTechnicalHtml.includes('id="excluded-noise"') || decode(olderTechnicalHtml).includes('Excluded noise must not render.')) {
+    fail('archived technical rendered an excluded item');
+  }
+  if (olderTechnicalHtml.includes('id="misplaced-thin"')) {
+    fail('archived technical rendered a thin item in the topic list');
+  }
   assertBriefingAlsoSeen(readPage('digest/1999-W01/index.html'), [], 'briefing with no thin items');
   const olderBriefing = decode(olderBriefingHtml);
   const olderEdtechPage = decode(olderEdtechHtml);

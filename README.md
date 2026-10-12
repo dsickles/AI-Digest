@@ -78,6 +78,10 @@ You run a local copy to read the checked-in week the same way the live site does
 
 Each week is one JSON file: `content/digests/{week_id}.json` (for example `2026-W40.json`). That file holds the Briefing, Top 5, topic lists, and Also seen links. The schema is `schema/digest.schema.json`. Extra structural checks live in `scripts/validate-weeks.mjs`.
 
+What gets into a week is decided before the file is written. The rules Dan can edit are in `config/inclusion-rubric.md`. Ingest should read that file. There is no cap on how many items can come from one source.
+
+From `2026-W41` on, every item has `included` (`true` or `false`) and a one-line `include_reason`. Items that fail the rubric are listed in `excluded` and are not rendered. They do not count toward the section tabs. Thin items, including a video whose summary was written only from the description, stay in Also seen on Briefing. `2026-W40` and earlier weeks omit these fields and stay valid.
+
 Optional ops notes can sit beside a week as `content/reports/{week_id}.json`. A missing report is fine.
 
 Before you trust a change:

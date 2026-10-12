@@ -12,6 +12,7 @@ import { sourcePlacementErrors, validateSourcesDocument } from '../src/lib/sourc
 export { isoWeekId };
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const RUBRIC_PATH = join(ROOT, 'config', 'inclusion-rubric.md');
 const DIGEST_SCHEMA_PATH = join(ROOT, 'schema', 'digest.schema.json');
 const REPORT_SCHEMA_PATH = join(ROOT, 'schema', 'report.schema.json');
 const SOURCES_PATH = join(ROOT, 'config', 'sources.yaml');
@@ -216,8 +217,8 @@ function validateCardIdentity(card, sources, where) {
   if (source.type === 'rss' && card.media !== 'article') {
     errors.push(`${where} RSS sources use media "article"`);
   }
-  if (card.summary_status === 'thin' && source.type !== 'rss') {
-    errors.push(`${where} thin cards are RSS-only`);
+  if (card.summary_status === 'thin' && source.type !== 'rss' && source.type !== 'youtube') {
+    errors.push(`${where} thin cards are RSS links or description-only videos`);
   }
   if (card.summary_status === 'transcript_missing' && source.type !== 'youtube') {
     errors.push(`${where} transcript_missing is a YouTube in-place status`);
@@ -288,9 +289,17 @@ function validateDigestDocument(doc, filename, sources) {
     if ('summary' in card || 'body' in card) errors.push(`${card.id} footer cards are link-only`);
   }
 
+  const excluded = Array.isArray(doc.excluded) ? doc.excluded : [];
+  for (const card of excluded) {
+    if (!card || typeof card !== 'object') continue;
+    if (seen.has(card.id)) errors.push(`duplicate card id ${card.id}`);
+    seen.add(card.id);
+    if (card.included !== false) errors.push(`${card.id} excluded items must set included to false`);
+  }
+
   const startMs = Date.parse(doc.week_start);
   const endMs = Date.parse(doc.week_end);
-  for (const card of [...doc.main_feed, ...doc.footer_aside]) {
+  for (const card of [...doc.main_feed, ...doc.footer_aside, ...excluded]) {
     const publishedMs = Date.parse(card.published_at);
     if (Number.isNaN(publishedMs) || publishedMs < startMs || publishedMs > endMs) {
       errors.push(`${card.id} published_at is outside the week window`);
@@ -298,6 +307,59 @@ function validateDigestDocument(doc, filename, sources) {
     errors.push(...validateCardIdentity(card, sources, card.id));
   }
 
+  errors.push(...validateRubric(doc));
+  return errors;
+}
+
+const RUBRIC_WEEK = '2026-W41';
+
+function rubricApplies(doc) {
+  return typeof doc.week_id === 'string' && doc.week_id >= RUBRIC_WEEK;
+}
+
+function reasonErrors(card, where, required) {
+  const errors = [];
+  const hasIncluded = !!card && Object.hasOwn(card, 'included');
+  const hasReason = !!card && Object.hasOwn(card, 'include_reason');
+  if (required && (!hasIncluded || !hasReason)) {
+    errors.push(`${where} must record included and a one-line include_reason`);
+    return errors;
+  }
+  if (hasIncluded !== hasReason) {
+    errors.push(`${where} must set included and include_reason together`);
+    return errors;
+  }
+  if (!hasReason) return errors;
+  const reason = card.include_reason;
+  if (typeof reason !== 'string' || reason.trim().length === 0 || /[\r\n]/.test(reason) || reason.length > 240) {
+    errors.push(`${where} include_reason must be one non-empty line of at most 240 characters`);
+  }
+  if (typeof card.included !== 'boolean') errors.push(`${where} included must be true or false`);
+  return errors;
+}
+
+function validateRubric(doc) {
+  const errors = [];
+  const required = rubricApplies(doc);
+  if (required && !Array.isArray(doc.excluded)) {
+    errors.push('excluded must be a list from 2026-W41 on, even when nothing was excluded');
+  }
+  const rendered = [...doc.main_feed, ...doc.footer_aside, ...doc.briefing.top];
+  for (const card of rendered) {
+    errors.push(...reasonErrors(card, card.id, required));
+    if (card.included === false) {
+      errors.push(`${card.id} is excluded and must live in excluded, not in a rendered list`);
+    } else if (required && card.included !== true) {
+      errors.push(`${card.id} must set included to true`);
+    }
+    if (card.summary_status === 'thin' && !doc.footer_aside.includes(card)) {
+      errors.push(`${card.id} thin items belong in footer_aside and Also seen, not on Briefing or a topic page`);
+    }
+  }
+  for (const card of Array.isArray(doc.excluded) ? doc.excluded : []) {
+    if (!card || typeof card !== 'object') continue;
+    errors.push(...reasonErrors(card, card.id, true));
+  }
   return errors;
 }
 
@@ -307,10 +369,22 @@ function validateReportDocument(doc, filename) {
   return [];
 }
 
+function rubricFileErrors() {
+  if (!existsSync(RUBRIC_PATH)) return ['config/inclusion-rubric.md is missing'];
+  const text = readFileSync(RUBRIC_PATH, 'utf8');
+  if (!text.includes('include_reason') || !text.includes('excluded')) {
+    return ['config/inclusion-rubric.md must tell ingest about include_reason and excluded'];
+  }
+  if (!/per-source/i.test(text)) {
+    return ['config/inclusion-rubric.md must say there is no per-source cap'];
+  }
+  return [];
+}
+
 export function validateArchive(contentDir, sources) {
   const digestPaths = jsonFiles(join(contentDir, 'digests'));
   const reportPaths = jsonFiles(join(contentDir, 'reports'));
-  const errors = [];
+  const errors = [...rubricFileErrors()];
 
   if (digestPaths.length === 0) {
     errors.push(`${contentDir}/digests has no week json files`);
@@ -630,9 +704,144 @@ function runSelfTest(sources) {
     rmSync(goodDir, { recursive: true, force: true });
   }
 
+  if (!proveInclusion(sources, sample)) return false;
   if (!proveSourceRules(sources, sample)) return false;
 
   console.log('self-test PASS');
+  return true;
+}
+
+function rubricCard(id, title) {
+  return {
+    id,
+    title,
+    url: `https://simonwillison.net/2026/Oct/6/${id}/`,
+    publisher: { source_id: 'simon-willison', name: 'Simon Willison' },
+    published_at: '2026-10-06T15:00:00-04:00',
+    category: 'technical',
+    media: 'article',
+    summary_status: 'ok',
+    summary: `${title} is a real note about AI tooling.`,
+    included: true,
+    include_reason: 'New: a launch worth a full card.',
+  };
+}
+
+function rubricWeek() {
+  const cards = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => rubricCard(`rubric-item-${n}`, `Rubric item ${n}`));
+  const excluded = {
+    ...rubricCard('rubric-minor-release', 'llm-example 0.2'),
+    included: false,
+    include_reason: 'Excluded: minor version release.',
+  };
+  const thinVideo = {
+    id: 'rubric-thin-video',
+    title: 'Description only video',
+    url: 'https://www.youtube.com/shorts/rubric-thin-video',
+    publisher: { source_id: 'how-i-ai', name: 'How I AI' },
+    published_at: '2026-10-06T16:00:00-04:00',
+    category: 'technical',
+    media: 'video',
+    summary_status: 'thin',
+    included: true,
+    include_reason: 'Thin: the summary only restates the video description, so this stays a link in Also seen.',
+  };
+  return {
+    schema_version: 1,
+    week_id: '2026-W41',
+    timezone: 'America/New_York',
+    week_start: '2026-10-04T00:00:00-04:00',
+    week_end: '2026-10-10T23:59:59-04:00',
+    generated_at: '2026-10-11T15:00:00Z',
+    briefing: {
+      synthesis: 'Eight items from one source still fit, because there is no per-source cap.',
+      top: cards.slice(0, 5),
+    },
+    topics: { edtech: [], business: [], technical: cards },
+    main_feed: cards,
+    footer_aside: [thinVideo],
+    excluded: [excluded],
+  };
+}
+
+function expectRubricFailure(sources, doc, needle, name) {
+  const errors = validateDigestDocument(doc, `${doc.week_id}.json`, sources);
+  if (!errors.some((error) => error.includes(needle))) {
+    console.error(`self-test: ${name} was not rejected`);
+    for (const error of errors) console.error(`- ${error}`);
+    return false;
+  }
+  console.log(`self-test PASS ${name}`);
+  return true;
+}
+
+function proveInclusion(sources, sample) {
+  const open = rubricWeek();
+  const openErrors = validateDigestDocument(open, '2026-W41.json', sources);
+  if (openErrors.length !== 0) {
+    console.error('self-test: a rubric week with many items from one source must pass');
+    for (const error of openErrors) console.error(`- ${error}`);
+    return false;
+  }
+  console.log('self-test PASS rubric week with no per-source cap');
+
+  const missingList = rubricWeek();
+  delete missingList.excluded;
+  if (!expectRubricFailure(sources, missingList, 'excluded must be a list', 'rubric week without excluded')) {
+    return false;
+  }
+
+  const missingReason = rubricWeek();
+  delete missingReason.topics.technical[0].include_reason;
+  delete missingReason.main_feed[0].include_reason;
+  delete missingReason.briefing.top[0].include_reason;
+  if (!expectRubricFailure(sources, missingReason, 'include_reason', 'rendered item with no reason')) {
+    return false;
+  }
+
+  const placedWrong = rubricWeek();
+  const banned = placedWrong.excluded[0];
+  placedWrong.topics.technical.push(banned);
+  placedWrong.main_feed = concatTopics(placedWrong);
+  if (
+    !expectRubricFailure(
+      sources,
+      placedWrong,
+      'must live in excluded',
+      'excluded item copied into a topic list',
+    )
+  ) {
+    return false;
+  }
+
+  const halfField = structuredClone(sample);
+  const target = halfField.main_feed[0];
+  target.included = true;
+  for (const list of Object.values(halfField.topics)) {
+    const match = Array.isArray(list) ? list.find((card) => card.id === target.id) : undefined;
+    if (match) match.included = true;
+  }
+  const topMatch = halfField.briefing.top.find((card) => card.id === target.id);
+  if (topMatch) topMatch.included = true;
+  if (!expectRubricFailure(sources, halfField, 'include_reason', 'included without a reason on an older week')) {
+    return false;
+  }
+
+  const w41Path = join(ROOT, 'content', 'digests', '2026-W41.json');
+  if (!existsSync(w41Path)) {
+    console.error('self-test: 2026-W41.json is missing');
+    return false;
+  }
+  const committed = JSON.parse(readFileSync(w41Path, 'utf8'));
+  const stripped = structuredClone(committed);
+  if (!Array.isArray(stripped.excluded) || stripped.excluded.length === 0) {
+    console.error('self-test: 2026-W41 must record excluded items');
+    return false;
+  }
+  delete stripped.excluded[0].include_reason;
+  if (!expectRubricFailure(sources, stripped, 'include_reason', '2026-W41 excluded item with no reason')) {
+    return false;
+  }
   return true;
 }
 

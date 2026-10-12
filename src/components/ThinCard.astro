@@ -1,4 +1,5 @@
 ---
+import PlayIcon from './PlayIcon.astro';
 import { formatDate, type ThinCard } from '../lib/weeks';
 
 interface Props {
@@ -6,6 +7,7 @@ interface Props {
 }
 
 const { item } = Astro.props;
+const video = item.media === 'video';
 ---
 
 <article class="thin" id={item.id}>
@@ -14,6 +16,14 @@ const { item } = Astro.props;
   </h3>
   <p class="meta">
     <span class="publisher">{item.publisher.name}</span>
+    {
+      video && (
+        <>
+          <PlayIcon />
+          <span class="visually-hidden">Video</span>
+        </>
+      )
+    }
     <span aria-hidden="true">·</span>
     <time datetime={item.published_at}>{formatDate(item.published_at)}</time>
   </p>

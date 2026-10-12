@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dans-digest.local/schema/digest.schema.json",
   "title": "Dan's Digest week file",
-  "description": "Pre-partitioned week file for content/digests/{week_id}.json. Briefing is synthesis plus Top 5 full cards. topics.* are the per-topic main lists. main_feed is those lists concatenated (edtech, business, technical, policy-and-safety). footer_aside is thin link-only cards. The site renders these lists as written. topics.policy-and-safety may be omitted and then counts as empty.",
+  "description": "Pre-partitioned week file for content/digests/{week_id}.json. Briefing is synthesis plus Top 5 full cards. topics.* are the per-topic main lists. main_feed is those lists concatenated (edtech, business, technical, policy-and-safety). footer_aside is thin link-only cards. excluded holds items that failed the inclusion rubric and is not rendered. From 2026-W41 on, every card has included and include_reason. Earlier weeks may omit both. There is no per-source cap. The site renders the briefing, topic, and footer lists as written, skipping any card marked included false. topics.policy-and-safety may be omitted and then counts as empty.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -57,10 +57,17 @@
       }
     },
     "footer_aside": {
-      "description": "Thin RSS links only. No summary body.",
+      "description": "Thin links only. No summary body. RSS articles and description-only videos both belong here.",
       "type": "array",
       "items": {
         "$ref": "#/$defs/thinCard"
+      }
+    },
+    "excluded": {
+      "description": "Items that failed the inclusion rubric. Not rendered. Required from 2026-W41 on, including when the list is empty. Earlier weeks omit it.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/excludedCard"
       }
     }
   },
@@ -137,6 +144,13 @@
         },
         "body": {
           "const": "The summary couldn't be generated this week."
+        },
+        "included": {
+          "description": "False means the item failed the rubric. Omitted on weeks before 2026-W41.",
+          "type": "boolean"
+        },
+        "include_reason": {
+          "$ref": "#/$defs/includeReason"
         }
       },
       "allOf": [
@@ -218,12 +232,44 @@
           "enum": ["edtech", "business", "technical", "policy-and-safety"]
         },
         "media": {
-          "const": "article"
+          "description": "article for a thin feed link. video when the summary was written only from a video description.",
+          "enum": ["article", "video"]
         },
         "summary_status": {
           "const": "thin"
+        },
+        "included": {
+          "type": "boolean"
+        },
+        "include_reason": {
+          "$ref": "#/$defs/includeReason"
         }
       }
+    },
+    "includeReason": {
+      "description": "One line saying why the item was included or excluded.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^[^\\r\\n]*\\S[^\\r\\n]*$"
+    },
+    "excludedCard": {
+      "allOf": [
+        {
+          "oneOf": [
+            { "$ref": "#/$defs/mainCard" },
+            { "$ref": "#/$defs/thinCard" }
+          ]
+        },
+        {
+          "type": "object",
+          "required": ["included", "include_reason"],
+          "properties": {
+            "included": { "const": false },
+            "include_reason": { "$ref": "#/$defs/includeReason" }
+          }
+        }
+      ]
     },
     "briefing": {
       "type": "object",
