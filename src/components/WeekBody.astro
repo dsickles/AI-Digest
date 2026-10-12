@@ -66,70 +66,50 @@ function storyHref(card: MainCard): string {
 
 {
   view === 'briefing' ? (
-    <>
+    hasScan ? (
       <section class="g syn" aria-label="This week">
-        {hasScan ? (
-          <>
-            <p class="lead">{week.briefing.lead}</p>
-            <ol class="themes">
-              {themes.map((theme) => {
-                const cards = theme.story_ids.flatMap((id) => {
-                  const card = mainById.get(id);
-                  return card ? [card] : [];
-                });
-                return (
-                  <li class="theme">
-                    <p class="theme-label">{theme.label}</p>
-                    <p class="theme-sentence">{theme.sentence}</p>
-                    {cards.length > 0 && (
-                      <p class="theme-links">
-                        {cards.map((card, index) => (
-                          <>
-                            {index > 0 && (
-                              <span class="sep" aria-hidden="true">
-                                {' '}
-                                ·{' '}
-                              </span>
-                            )}
-                            <a href={storyHref(card)}>
-                              {linkLabel(card, cards)}
-                              <span class="visually-hidden"> {card.title}</span>
-                            </a>
-                          </>
-                        ))}
-                      </p>
-                    )}
-                  </li>
-                );
-              })}
-            </ol>
-            <div class="briefing-full">
-              <button class="toggle" type="button" aria-expanded="false" aria-controls="full-briefing">
-                Read the full briefing
-                <svg viewBox="0 0 10 10" aria-hidden="true" focusable="false">
-                  <path
-                    d="M1.75 3.25 5 6.75 8.25 3.25"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                </svg>
-              </button>
-              <div class="summary-panel" id="full-briefing">
-                <p class="summary">{week.briefing.synthesis}</p>
-              </div>
-            </div>
-          </>
-        ) : (
-          <p class="synthesis">{week.briefing.synthesis}</p>
-        )}
-      </section>
-      <section class="top" aria-labelledby="briefing-heading">
-        <h2 class="h2" id="briefing-heading">
-          {topLabel}
-        </h2>
-        <div class="flow">
+        <p class="lead">{week.briefing.lead}</p>
+        <section class="themes-col" aria-labelledby="themes-heading">
+          <h2 class="h2" id="themes-heading">
+            This week's themes
+          </h2>
+          <ol class="themes">
+            {themes.map((theme) => {
+              const cards = theme.story_ids.flatMap((id) => {
+                const card = mainById.get(id);
+                return card ? [card] : [];
+              });
+              return (
+                <li class="theme">
+                  <p class="theme-label">{theme.label}</p>
+                  <p class="theme-sentence">{theme.sentence}</p>
+                  {cards.length > 0 && (
+                    <p class="theme-links">
+                      {cards.map((card, index) => (
+                        <>
+                          {index > 0 && (
+                            <span class="sep" aria-hidden="true">
+                              {' '}
+                              ·{' '}
+                            </span>
+                          )}
+                          <a href={storyHref(card)}>
+                            {linkLabel(card, cards)}
+                            <span class="visually-hidden"> {card.title}</span>
+                          </a>
+                        </>
+                      ))}
+                    </p>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+        <section class="top top-col" aria-labelledby="briefing-heading">
+          <h2 class="h2" id="briefing-heading">
+            {topLabel}
+          </h2>
           <ol class="stories">
             {topCards.map((card, index) => (
               <li class="story">
@@ -137,21 +117,30 @@ function storyHref(card: MainCard): string {
               </li>
             ))}
           </ol>
-        </div>
+        </section>
       </section>
-    </>
+    ) : (
+      <>
+        <section class="g syn" aria-label="This week">
+          <p class="synthesis">{week.briefing.synthesis}</p>
+        </section>
+        <section class="top" aria-labelledby="briefing-heading">
+          <h2 class="h2" id="briefing-heading">
+            {topLabel}
+          </h2>
+          <div class="flow">
+            <ol class="stories">
+              {topCards.map((card, index) => (
+                <li class="story">
+                  <Card card={card} variant="top" index={index + 1} />
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      </>
+    )
   ) : (
     <TopicSection label={topicLabel} cards={topicCards} alsoSeen={topicAlsoSeen} />
   )
 }
-
-<script>
-  const buttons = document.querySelectorAll('.briefing-full .toggle');
-  for (const button of buttons) {
-    button.addEventListener('click', () => {
-      const open = button.getAttribute('aria-expanded') !== 'true';
-      button.setAttribute('aria-expanded', open ? 'true' : 'false');
-      button.closest('.briefing-full')?.classList.toggle('open', open);
-    });
-  }
-</script>

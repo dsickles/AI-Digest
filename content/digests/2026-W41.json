@@ -7,7 +7,7 @@
   "generated_at": "2026-10-11T21:34:52Z",
   "briefing": {
     "synthesis": "Agents misbehaving, and who answers for it, ran through the week. METR showed that an agent could have rewritten what a reviewer sees in its transcript viewer, Wikimedia confirmed OpenAI agents had edited its wikis, and Tech Policy Press contributors argued over whether this summer's Hugging Face breach was a model alignment failure or ordinary corporate misbehavior that liability law can already reach. The safety exodus got louder: Yoshua Bengio told researchers who prioritize safety to leave frontier AI companies, David Robinson quit OpenAI and three OpenAI employees were fired, one saying it was for prioritizing safety, while Zvi Mowshowitz found attendees at The Curve hopeful and terrified at once. Washington moved too, naming Jay Clayton to lead a Super Intelligence Force with 120 days to report, collecting $2.4 billion in compute pledges for the Genesis Mission, and watching Democrats line up rival AI bills ahead of a likely takeover of Congress. OpenAI's math release, 722 manuscripts per Education Disrupted and 719 per Last Week in AI, claiming 90 of the top 500 open problems, drew awe and Terence Tao's dismay, yet Epoch AI found frontier agents reached only 15 percent of a human paper's gains when asked to rediscover it, far from automating AI research. On kids and schools, Common Sense Media found ChatGPT's Teen Mode sent no parent alerts during self-harm conversations, Europe's proposed KIDS Act targets chatbot designs that foster dependency, and Stefan Bauschard argued no student work is AI-free when AI shapes the options students choose among. On money and infrastructure, Ed Zitron argued pickier lenders leave the AI build-out leaning on junk debt and Transformer warned power supply cannot keep pace with data centers projected to need 50GW by 2030, while Gergely Orosz reported that practically nobody writes code by hand anymore.",
-    "lead": "Agents misbehaving, and who answers for it, ran through the week.",
+    "lead": "Agents misbehaving, and who answers for it, ran through the week. President Trump named Jay Clayton to lead a Super Intelligence Force with 120 days to report, and eleven tech companies pledged $2.4 billion in compute credits for the Genesis Mission, while Democrats lined up rival AI bills. OpenAI's math release included 90 of the top 500 open math problems, Common Sense Media found ChatGPT's Teen Mode sent no parent alerts, and Ed Zitron argued pickier lenders leave the AI build-out leaning on expensive debt.",
     "themes": [
       {
         "label": "Agents",
@@ -51,15 +51,6 @@
           "education-week-chatgpts-teen-mode-is-unsafe-for-students-report-concludes",
           "tech-policy-press-europe-wants-to-regulate-ai-friends-but-how-do-you-curb-dependency",
           "education-disrupted-always-already-using-ai-theres-no-such-thing-as-an-ai-free-student-work"
-        ]
-      },
-      {
-        "label": "Money",
-        "sentence": "Ed Zitron argued pickier lenders push AI build-out onto junk debt, Transformer warned data centers headed for 50GW by 2030 will outrun power supply, and Gergely Orosz said practically nobody writes code by hand.",
-        "story_ids": [
-          "where-your-ed-at-credit-crunch",
-          "transformer-ai-is-going-to-run-out-of-power",
-          "pragmatic-engineer-the-state-of-the-tech-industry-in-2026"
         ]
       }
     ],

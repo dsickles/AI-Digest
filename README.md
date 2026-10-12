@@ -11,14 +11,14 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 | Intent | Meaning |
 |--------|---------|
 | One week, done | Sunday through Saturday (America/New_York). Only a finished week appears on the home page. |
-| Briefing first | A one-line lead, short theme rows, and a Top 5. The full synthesis stays one toggle away. |
+| Briefing first | A short lead, five theme rows, and a Top 5. |
 | Topics for skim | Business, Technical, Education, and Policy and Safety each get their own list. |
 | Thin items | Quick mentions live under Also seen at the bottom of their topic tab, not in the main list and not on Briefing. |
 | Own the archive | Past weeks stay readable from the Archive control on the week line. |
 
 ## What you get
 
-- A **Briefing** page: a one-line lead, theme rows linked to the week's stories, and a Top 5. "Read the full briefing" opens the synthesis. A week with no theme data still shows that paragraph.
+- A **Briefing** page: a lead of 1 to 3 sentences, exactly five theme rows under "This week's themes", and a Top 5. On a wide screen the themes sit in the left third and every Top 5 story stays in the right two thirds. A week with no theme data still shows the synthesis paragraph.
 - **Topic tabs** in this order: Business, Technical, Education, Policy and Safety
 - **Also seen** at the bottom of a topic tab that has thin links, including on an archived week. A tab with no thin items leaves that section off. Briefing does not list them.
 - An **Archive** of past weeks, each with a Read this week link
@@ -29,7 +29,7 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 
 Open the live site (or your local copy). You land on the latest finished week's Briefing.
 
-- **Read the Briefing.** A one-line lead and the theme rows come first. "Read the full briefing" opens the full synthesis. Top 5 sits under that. An older week with no theme data shows the synthesis paragraph instead.
+- **Read the Briefing.** The lead comes first, then "This week's themes" and the Top 5. On a wide screen those two sit side by side, and every Top 5 story stays in the right column. On a phone the order is lead, themes, Top 5. An older week with no theme data shows the synthesis paragraph instead.
 - **Skim a topic.** Use Business, Technical, Education, or Policy and Safety. Each page shows that topic's main list in file order. Thin links, when that topic has them, sit at the bottom under Also seen. An empty topic still appears and says so. The tab count is the main list only.
 - **Open a story.** The title is the link to the article. A one-line takeaway under the title says why it matters, and it stays visible while Summary is closed. Where a Summary control exists, it expands or collapses the shorter summary without leaving the page. Top 5 rows stay open, with the takeaway above the summary. Video items show a play control on the row.
 - **Browse the archive.** Archive sits on the week line next to Updated, not in the topic row. Open a past week with Read this week.
@@ -84,7 +84,7 @@ From `2026-W41` on, every item has `included` (`true` or `false`) and a one-line
 
 Items about the same story are one item, even when the URLs differ. Ingest follows `config/story-grouping.md`. The strongest source is the main link. The other sources show on that item as "Also covered by" links with publisher names. When those sources disagree on a key number, the item says so (for example "722 per Education Disrupted, 719 per Last Week in AI"). A story does not appear both as a main item and as an Also seen link. `2026-W40` omits `also_covered` and `number_note` and stays valid.
 
-From `2026-W41` on, the Briefing also carries `lead` (one sentence) and `themes` (4 to 6 rows). Each theme has a short `label`, one `sentence` of 25 to 35 words, and `story_ids` pointing at the merged main items. Ingest follows `config/briefing.md`. `2026-W40` omits `lead` and `themes` and the page keeps the synthesis paragraph.
+From `2026-W41` on, the Briefing also carries `lead` (1 to 3 sentences) and `themes` (exactly 5 rows). Each theme has a short `label`, one `sentence` of 25 to 35 words, and `story_ids` pointing at the merged main items. Ingest follows `config/briefing.md`. The page does not render the synthesis paragraph. `2026-W40` omits `lead` and `themes` and the page keeps that paragraph. The archive excerpt still uses the first sentence of `synthesis`.
 
 From `2026-W41` on, every main item also has a `takeaway`: one sentence on why it matters, not a restatement of the title. The page shows that line under the title and meta line, on Top 5 and on every topic page, including while Summary is closed. An opened summary is 60 words or fewer. Ingest follows `config/takeaway.md`. Thin Also seen items omit `takeaway`. `2026-W40` omits it, can keep a longer summary, and still renders.
 
