@@ -58,6 +58,7 @@ export interface MainCard extends InclusionFields, GroupingFields {
     | 'transcript_missing'
     | 'deferred_budget';
   summary?: string;
+  takeaway?: string;
   body?: string;
 }
 

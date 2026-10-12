@@ -34,6 +34,7 @@ const summaryId = `summary-${card.id}`;
       <span class="sep" aria-hidden="true">·</span>
       <time datetime={card.published_at}>{formatDate(card.published_at)}</time>
     </p>
+    {card.takeaway && <p class="takeaway">{card.takeaway}</p>}
     <CoverageNotes links={card.also_covered} numberNote={card.number_note} />
   </div>
   {

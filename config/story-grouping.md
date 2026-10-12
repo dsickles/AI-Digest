@@ -14,7 +14,7 @@ Each group is one item. The main link is the strongest source:
 2. A piece about that story beats a roundup that mentions the story among others.
 3. When several pieces are about the story, pick the one that states the key facts, including where the accounts disagree.
 
-The main item keeps that source's title, url, publisher, category, summary, and `include_reason`. It is listed in one section only.
+The main item keeps that source's title, url, publisher, category, summary, `takeaway`, and `include_reason`. It is listed in one section only.
 
 ## Also covered by
 

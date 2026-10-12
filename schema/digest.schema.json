@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dans-digest.local/schema/digest.schema.json",
   "title": "Dan's Digest week file",
-  "description": "Pre-partitioned week file for content/digests/{week_id}.json. Briefing is synthesis plus Top 5 full cards. From 2026-W41 on, briefing also has a lead of 1 to 3 sentences and exactly 5 themes. Each theme has a short label, one sentence of 25 to 35 words, and story_ids for the merged main items. Earlier weeks omit lead and themes. topics.* are the per-topic main lists. main_feed is those lists concatenated (edtech, business, technical, policy-and-safety). footer_aside is thin link-only cards. excluded holds items that failed the inclusion rubric and is not rendered. From 2026-W41 on, every card has included and include_reason. Earlier weeks may omit both. A story with several included sources is one card: also_covered lists the other sources, and number_note records a key number they disagree on. Earlier weeks omit both. There is no per-source cap. The site renders the briefing, topic, and footer lists as written, skipping any card marked included false. topics.policy-and-safety may be omitted and then counts as empty.",
+  "description": "Pre-partitioned week file for content/digests/{week_id}.json. Briefing is synthesis plus Top 5 full cards. From 2026-W41 on, briefing also has a lead of 1 to 3 sentences and exactly 5 themes. Each theme has a short label, one sentence of 25 to 35 words, and story_ids for the merged main items. Earlier weeks omit lead and themes. topics.* are the per-topic main lists. main_feed is those lists concatenated (edtech, business, technical, policy-and-safety). footer_aside is thin link-only cards. excluded holds items that failed the inclusion rubric and is not rendered. From 2026-W41 on, every card has included and include_reason. Earlier weeks may omit both. A story with several included sources is one card: also_covered lists the other sources, and number_note records a key number they disagree on. Earlier weeks omit both. There is no per-source cap. The site renders the briefing, topic, and footer lists as written, skipping any card marked included false. topics.policy-and-safety may be omitted and then counts as empty. From 2026-W41 on, every main item has a one-sentence takeaway saying why it matters, and each ok summary is at most 60 words. Thin items omit takeaway. Earlier weeks omit takeaway and may keep a longer summary.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -167,6 +167,11 @@
           ]
         },
         "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "takeaway": {
+          "description": "One sentence saying why this item matters. It does not restate the title. Required on main items from 2026-W41 on. Omit it on thin items and on weeks before 2026-W41. validate:weeks checks the sentence, the title rule, and that ok summaries from 2026-W41 on are at most 60 words.",
           "type": "string",
           "minLength": 1
         },
