@@ -34,8 +34,8 @@ Open the live site (or your local copy). You land on the latest finished week's 
 - **Read the Briefing.** The lead comes first, then "This week's themes" and the Top 5. On a wide screen those two sit side by side and every Top 5 story stays in the right column. When the week has a Number of the week, that figure sits under the lead and above the themes. On a phone the order is lead, Number of the week, themes, Top 5. An older week with no theme data shows the synthesis paragraph instead. A week with no number leaves that slot out.
 - **Skim a topic.** Use Business, Technical, Education, or Policy and Safety. Each page shows that topic's main list in file order. Thin links, when that topic has them, sit at the bottom under Also seen. An empty topic still appears and says so. The tab count is the main list only.
 - **Open a story.** The title is the link to the article. A one-line takeaway under the title says why it matters, and it stays visible while Summary is closed. Where a Summary control exists, it expands or collapses the shorter summary without leaving the page. Top 5 rows stay open, with the takeaway above the summary. Video items show a play control on the row.
-- **Browse the archive.** Archive sits on the week line next to Updated, not in the topic row. Open a past week with Read this week.
-- **See every source.** Sources sits on that same week line, and the footer of every page links to it. The list is the feeds the digest reads, not a count of this week's items.
+- **Browse the archive.** Archive is the far-right link on the week line, after Sources, and it is not in the topic row. Open a past week with Read this week.
+- **See every source.** Sources sits on that same week line, between Updated and Archive, and the footer of every page links to it. The list is the feeds the digest reads, not a count of this week's items.
 
 A week that is still open (including a half-finished draft file) stays off the home page and out of the archive until its Saturday 23:59:59 America/New_York has passed.
 
