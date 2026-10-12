@@ -215,26 +215,11 @@ a:hover {
   text-wrap: pretty;
 }
 
-.brief-flow {
-  display: contents;
-}
-
-.syn > .left-col {
-  grid-column: 1 / 5;
-  grid-row: 1;
-  align-self: start;
-  min-width: 0;
-}
-
-.brief-flow > .lead {
+.syn > .lead {
   grid-column: 1 / -1;
   grid-row: 1;
   align-self: start;
   min-width: 0;
-}
-
-.brief-flow > .lead,
-.left-col > .lead {
   margin: 0;
   font-size: 23px;
   line-height: 1.45;
@@ -244,7 +229,18 @@ a:hover {
   text-wrap: pretty;
 }
 
-.left-col > .lead,
+.brief-flow {
+  display: contents;
+}
+
+.syn > .left-col {
+  grid-column: 1 / 5;
+  grid-row: 2;
+  align-self: start;
+  min-width: 0;
+  margin-top: var(--s5);
+}
+
 .left-col > .themes-col {
   margin-top: var(--s5);
 }
@@ -312,12 +308,6 @@ a:hover {
   align-self: start;
   min-width: 0;
   margin-top: var(--s5);
-}
-
-.syn:has(> .left-col) > .top {
-  grid-column: 5 / 13;
-  grid-row: 1;
-  margin-top: 0;
 }
 
 .themes,
@@ -781,22 +771,21 @@ main > .page-title {
 
 @media (max-width: 1080px) {
   .syn > .synthesis,
-  .brief-flow > .lead,
+  .syn > .lead,
   .brief-flow > .themes-col,
   .syn > .left-col,
-  .syn > .top,
-  .syn:has(> .left-col) > .top {
+  .syn > .top {
     grid-column: 1 / -1;
     grid-row: auto;
   }
 
   .brief-flow > .themes-col,
+  .syn > .left-col,
   .left-col > .themes-col {
     margin-top: var(--s5);
   }
 
-  .syn > .top,
-  .syn:has(> .left-col) > .top {
+  .syn > .top {
     margin-top: var(--s6);
   }
 
@@ -869,8 +858,7 @@ main > .page-title {
   }
 
   .syn > .synthesis,
-  .brief-flow > .lead,
-  .left-col > .lead {
+  .syn > .lead {
     font-size: 19px;
     line-height: 1.48;
   }

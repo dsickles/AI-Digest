@@ -876,7 +876,7 @@ function assertProgramCss(html, label) {
     fail(`${label} Top 5 numeral is not the vermilion program figure`);
   }
   if (css.includes('.index')) fail(`${label} Top 5 index styles are still present`);
-  const leadPlace = ruleBody(css, '.brief-flow > .lead');
+  const leadPlace = ruleBody(css, '.syn > .lead');
   const leadSpans = leadPlace.includes('grid-column:1/-1') || leadPlace.includes('grid-area:1/1/auto/-1');
   if (!leadSpans) fail(`${label} lead does not span the page above the columns`);
   const themePlace = ruleBody(css, '.brief-flow > .themes-col');
@@ -894,16 +894,14 @@ function assertProgramCss(html, label) {
     fail(`${label} themes column cannot end above the Top 5`);
   }
   const leftCol = ruleBody(css, '.syn > .left-col');
-  const leftTop =
-    (leftCol.includes('grid-column:1/5') && leftCol.includes('grid-row:1')) || leftCol.includes('grid-area:1/1/auto/5');
-  if (!leftTop || !leftCol.includes('align-self:start')) {
-    fail(`${label} Number of the week is not at the top of the left column`);
+  const underLead =
+    (leftCol.includes('grid-column:1/5') && leftCol.includes('grid-row:2')) || leftCol.includes('grid-area:2/1/auto/5');
+  if (!underLead || !leftCol.includes('align-self:start')) {
+    fail(`${label} Number of the week is not under the lead in the left column`);
   }
   const beside = ruleBody(css, '.syn:has(> .left-col) > .top');
-  const besideTop =
-    (beside.includes('grid-column:5/13') && beside.includes('grid-row:1')) || beside.includes('grid-area:1/5/auto/13');
-  if (!besideTop) {
-    fail(`${label} Top 5 does not stay in the right column beside the Number of the week`);
+  if (beside.includes('grid-row:1') || beside.includes('grid-area:1/5/auto/13')) {
+    fail(`${label} Top 5 starts above the lead beside the Number of the week`);
   }
   const notwTop = ruleBody(css, '.left-col > .notw');
   if (!notwTop.includes('border-top:1pxsolidvar(--rule-strong)')) {
@@ -912,10 +910,6 @@ function assertProgramCss(html, label) {
   const placementRules = [...classRuleBodies(css, 'notw'), ...classRuleBodies(css, 'themes-col')];
   if (placementRules.some((body) => body.includes('margin-top:auto'))) {
     fail(`${label} Number of the week is pinned to the bottom of the themes column`);
-  }
-  const leadUnderNumber = ruleBody(css, '.left-col > .lead');
-  if (leadUnderNumber.includes('grid-column:1/-1')) {
-    fail(`${label} lead spans the page when a Number of the week is present`);
   }
   const fig = ruleBody(css, '.notw-fig');
   if (!fig.includes('color:var(--signal)') || !fig.includes('font-size:88px') || !fig.includes('font-weight:700')) {
@@ -966,6 +960,7 @@ function assertProgramCss(html, label) {
     fail(`${label} mid-width layout does not drop to one column`);
   }
   const themesStack =
+    tablet.includes('.syn>.lead') &&
     tablet.includes('.brief-flow>.themes-col') &&
     tablet.includes('.syn>.left-col') &&
     tablet.includes('.syn>.top') &&
@@ -974,11 +969,6 @@ function assertProgramCss(html, label) {
   if (!themesStack) fail(`${label} themes and Top 5 do not stack on a narrow window`);
   if (!ruleBody(tablet, '.notw-fig').includes('font-size:64px')) {
     fail(`${label} Number of the week value is not 64px on a narrow window`);
-  }
-  const narrowTop = ruleBody(tablet, '.syn:has(> .left-col) > .top');
-  const narrowStacks = narrowTop.includes('grid-row:auto') || narrowTop.includes('grid-area:auto/1/auto/-1');
-  if (!narrowStacks) {
-    fail(`${label} Number of the week stays beside the Top 5 on a narrow window`);
   }
   if (tablet.includes('.index')) fail(`${label} narrow window still styles the Top 5 index`);
   const play = ruleBody(css, '.play');
@@ -1042,8 +1032,8 @@ function assertPhoneCss(css, label) {
   if (!ruleBody(phone, '.num').includes('font-size:48px')) {
     fail(`${label} Top 5 numeral is not 48px at phone width`);
   }
-  if (!ruleBody(phone, '.left-col > .lead').includes('font-size:19px')) {
-    fail(`${label} lead under the Number of the week stays at desktop size on a phone`);
+  if (!ruleBody(phone, '.syn > .lead').includes('font-size:19px')) {
+    fail(`${label} lead stays at desktop size on a phone`);
   }
   if (phone.includes('.index')) fail(`${label} phone still styles the Top 5 index`);
   if (!ruleBody(phone, '.page-title').includes('font-size:40px')) {
@@ -1246,8 +1236,8 @@ function assertNumberOfWeek(html, weekDoc, where) {
   const leadAt = html.indexOf('class="lead"');
   const themesAt = html.indexOf('class="themes-col"');
   const topCol = html.indexOf('class="top top-col"');
-  if (leftAt < 0 || notwAt < leftAt || leadAt < notwAt || themesAt < leadAt || topCol < themesAt) {
-    fail(`${where} Number of the week is not first in the Briefing, above the lead and the themes`);
+  if (leadAt < 0 || leftAt < leadAt || notwAt < leftAt || themesAt < notwAt || topCol < themesAt) {
+    fail(`${where} Number of the week is not under the lead and above the themes`);
   }
 }
 

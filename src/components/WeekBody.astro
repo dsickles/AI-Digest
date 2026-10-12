@@ -72,6 +72,7 @@ function storyHref(card: MainCard): string {
   view === 'briefing' ? (
     hasScan ? (
       <section class="g syn" aria-label="This week">
+        <p class="lead">{week.briefing.lead}</p>
         <div class={showNumber ? 'left-col' : 'brief-flow'}>
           {showNumber && numberOfWeek && numberCard && (
             <section class="notw" aria-labelledby="notw-heading">
@@ -96,7 +97,6 @@ function storyHref(card: MainCard): string {
               </p>
             </section>
           )}
-          <p class="lead">{week.briefing.lead}</p>
           <section class="themes-col" aria-labelledby="themes-heading">
             <h2 class="h2" id="themes-heading">
               This week's themes
