@@ -1,5 +1,5 @@
 ---
-import { latestPath, weekPath, TOPIC_LABELS, type Topic, type Week } from '../lib/weeks';
+import { latestPath, shownTopicCards, weekPath, TOPIC_LABELS, type Topic, type Week } from '../lib/weeks';
 
 interface Props {
   active: 'briefing' | Topic | 'archive';
@@ -18,8 +18,8 @@ function hrefFor(view: 'briefing' | Topic): string {
 }
 
 function storyCount(topic: Topic): number {
-  const stories = week?.topics[topic];
-  return Array.isArray(stories) ? stories.length : 0;
+  if (!week) return 0;
+  return shownTopicCards(week, topic).length;
 }
 ---
 

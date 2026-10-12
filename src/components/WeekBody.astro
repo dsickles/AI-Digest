@@ -2,7 +2,7 @@
 import Card from './Card.astro';
 import ThinCard from './ThinCard.astro';
 import TopicSection from './TopicSection.astro';
-import { formatDate, TOPIC_LABELS, type Topic, type Week } from '../lib/weeks';
+import { alsoSeenItems, formatDate, shownBriefingCards, shownTopicCards, TOPIC_LABELS, type Topic, type Week } from '../lib/weeks';
 
 interface Props {
   week: Week;
@@ -11,8 +11,10 @@ interface Props {
 
 const { week, view } = Astro.props;
 const topicLabel = view === 'briefing' ? '' : TOPIC_LABELS[view];
-const topicCards = view === 'briefing' ? [] : week.topics[view];
-const topCount = week.briefing.top.length;
+const topicCards = view === 'briefing' ? [] : shownTopicCards(week, view);
+const topCards = shownBriefingCards(week);
+const footerItems = alsoSeenItems(week);
+const topCount = topCards.length;
 const topLabel = `Top ${topCount} this week`;
 ---
 
@@ -22,7 +24,7 @@ const topLabel = `Top ${topCount} this week`;
       <section class="g syn" aria-label="This week">
         <p class="synthesis">{week.briefing.synthesis}</p>
         <ol class="index" aria-label={topLabel}>
-          {week.briefing.top.map((card, index) => (
+          {topCards.map((card, index) => (
             <li>
               <span class="k" aria-hidden="true">
                 {index + 1}
@@ -48,19 +50,19 @@ const topLabel = `Top ${topCount} this week`;
         </h2>
         <div class="flow">
           <ol class="stories">
-            {week.briefing.top.map((card, index) => (
+            {topCards.map((card, index) => (
               <li class="story">
                 <Card card={card} variant="top" index={index + 1} />
               </li>
             ))}
           </ol>
-          {week.footer_aside.length > 0 && (
+          {footerItems.length > 0 && (
             <aside id="also-seen" class="also" aria-labelledby="also-heading">
               <h2 class="h2" id="also-heading">
                 Also seen this week
               </h2>
               <ul class="thin-list">
-                {week.footer_aside.map((item) => (
+                {footerItems.map((item) => (
                   <li class="thin-row">
                     <ThinCard item={item} />
                   </li>
