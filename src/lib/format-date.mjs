@@ -40,13 +40,12 @@ export function formatWeekRange(weekStart, weekEnd) {
   return `Week of ${startLabel} – ${formatDate(weekEnd)}`;
 }
 
-// Same month and day labels as the week line. "to" joins them so this sentence
-// does not add a dash. 2026-W41 is shown as W41.
-export function formatSourceCountNote(weekStart, weekEnd, weekId) {
+// Month and day labels from the current week. "to" joins them so this sentence
+// does not add a dash. A week that crosses a year includes the year.
+export function formatSourceCountSubline(weekStart, weekEnd) {
   const startYear = yearOnly.format(readerInstant(weekStart));
   const endYear = yearOnly.format(readerInstant(weekEnd));
   const startLabel = startYear === endYear ? monthDay.format(readerInstant(weekStart)) : formatDate(weekStart);
-  const id = String(weekId);
-  const label = /^\d{4}-W\d{2}$/.test(id) ? id.slice(5) : id;
-  return `Counts from the week of ${startLabel} to ${formatDate(weekEnd)} (${label})`;
+  const endLabel = startYear === endYear ? monthDay.format(readerInstant(weekEnd)) : formatDate(weekEnd);
+  return `Counts show items each source contributed this week (${startLabel} to ${endLabel}).`;
 }

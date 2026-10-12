@@ -62,41 +62,52 @@ export function loadSourceIndex(path = SOURCES_PATH) {
   return indexSources(doc);
 }
 
-function citeSource(counts, seen, sourceId, url) {
-  if (typeof sourceId !== 'string' || sourceId.length === 0) return;
-  const key = `${sourceId}\n${typeof url === 'string' ? url : ''}`;
-  if (seen.has(key)) return;
-  seen.add(key);
-  counts.set(sourceId, (counts.get(sourceId) ?? 0) + 1);
+export function sourceWeekCountLabel(count) {
+  return count > 0 ? `${count} this week` : 'None this week';
 }
 
-// Items cited from each source in one week file. A story that also appears in
-// the Top 5 or main_feed counts once. An also_covered link counts for its own
-// publisher. Excluded items are left out.
-export function countSourceReferences(week) {
+function firstString(...values) {
+  return values.find((value) => typeof value === 'string' && value.length > 0) ?? '';
+}
+
+function matchSourceItem(item, byId, byFeed, byName) {
+  const publisher = item?.publisher && typeof item.publisher === 'object' ? item.publisher : {};
+  const sourceId = firstString(publisher.source_id);
+  if (sourceId && (byId.size === 0 || byId.has(sourceId))) return sourceId;
+  const feed = firstString(item?.feed_url, publisher.feed_url);
+  if (feed && byFeed.has(feed)) return byFeed.get(feed);
+  const name = firstString(publisher.name).toLocaleLowerCase('en');
+  if (name && byName.has(name)) return byName.get(name);
+  return '';
+}
+
+// Items in the four section lists, plus Also seen, matched to enabled sources.
+// A source counts in every section where one of its items appears. Top 5 and
+// main_feed repeat those items, so they are not counted again. Excluded items
+// and also_covered links stay out.
+export function countSourceReferences(week, sources = []) {
   const counts = new Map();
+  const byId = new Map();
+  const byFeed = new Map();
+  const byName = new Map();
+  for (const source of sources) {
+    if (!source || typeof source.id !== 'string' || source.id.length === 0) continue;
+    byId.set(source.id, source.id);
+    for (const feed of [source.url, source.channel_url, source.feedUrl]) {
+      if (typeof feed === 'string' && feed.length > 0) byFeed.set(feed, source.id);
+    }
+    const name = firstString(source.display_name, source.name).toLocaleLowerCase('en');
+    if (name) byName.set(name, source.id);
+  }
   if (!week || typeof week !== 'object') return counts;
-  const seenItems = new Set();
-  const seenCitations = new Set();
-  const lists = [
-    week.briefing?.top,
-    ...Object.values(week.topics ?? {}),
-    week.main_feed,
-    week.footer_aside,
-  ];
+  const lists = SOURCE_SECTIONS.map((section) => week.topics?.[section.id]);
+  lists.push(week.footer_aside);
   for (const list of lists) {
     if (!Array.isArray(list)) continue;
-    for (const card of list) {
-      if (!card || typeof card !== 'object') continue;
-      if (typeof card.id === 'string') {
-        if (seenItems.has(card.id)) continue;
-        seenItems.add(card.id);
-      }
-      citeSource(counts, seenCitations, card.publisher?.source_id, card.url);
-      if (!Array.isArray(card.also_covered)) continue;
-      for (const extra of card.also_covered) {
-        citeSource(counts, seenCitations, extra?.publisher?.source_id, extra?.url);
-      }
+    for (const item of list) {
+      const id = matchSourceItem(item, byId, byFeed, byName);
+      if (!id) continue;
+      counts.set(id, (counts.get(id) ?? 0) + 1);
     }
   }
   return counts;
