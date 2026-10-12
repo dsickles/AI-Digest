@@ -15,6 +15,7 @@ import {
 import { storyPlacementErrors } from '../src/lib/story-groups.mjs';
 import { alsoSeenFillerKind, visibleAlsoSeen } from '../src/lib/also-seen.mjs';
 import {
+  compareSourceNames,
   countSourceReferences,
   indexSources,
   loadSourceIndex,
@@ -849,6 +850,30 @@ function assertSourceRules() {
         enabled: true,
       },
       {
+        id: 'metr',
+        type: 'rss',
+        url: 'https://metr.example/feed',
+        display_name: 'METR',
+        tag: 'technical',
+        enabled: true,
+      },
+      {
+        id: 'pragmatic',
+        type: 'rss',
+        url: 'https://pragmatic.example/feed',
+        display_name: 'The Pragmatic Engineer (Gergely Orosz)',
+        tag: 'technical',
+        enabled: true,
+      },
+      {
+        id: 'simon',
+        type: 'rss',
+        url: 'https://simon.example/feed',
+        display_name: 'Simon Willison',
+        tag: 'technical',
+        enabled: true,
+      },
+      {
         id: 'the-sample',
         type: 'rss',
         url: 'https://sample.example/feed',
@@ -875,11 +900,16 @@ function assertSourceRules() {
       },
     ],
   });
-  if (indexed.total !== 5 || indexed.sources.some((source) => source.name === 'Hidden Feed')) {
+  if (indexed.total !== 8 || indexed.sources.some((source) => source.name === 'Hidden Feed')) {
     fail('disabled source was listed');
   }
   const order = indexed.sections.map((section) => `${section.label}:${section.sources.map((source) => source.name).join(',')}`);
-  const expectedOrder = ['Business:Zed', 'Technical:Alpha', 'Education:Education Week,The 74', 'Policy and Safety:Policy Desk'];
+  const expectedOrder = [
+    'Business:Zed',
+    'Technical:Alpha,METR,The Pragmatic Engineer (Gergely Orosz),Simon Willison',
+    'Education:The 74,Education Week',
+    'Policy and Safety:Policy Desk',
+  ];
   if (order.join('|') !== expectedOrder.join('|')) fail(`source section order is ${order.join(' | ')}`);
   const catalog = [
     { id: 'alpha-desk', display_name: 'Alpha', url: 'https://alpha.example/feed' },
@@ -1006,7 +1036,7 @@ function assertSourcesIndex(html, label) {
   const expectedSections = SECTION_IDS.map((id, position) => {
     const sources = enabled
       .filter((source) => source.tag === id)
-      .sort((left, right) => left.display_name.localeCompare(right.display_name, 'en', { sensitivity: 'base', numeric: true }));
+      .sort((left, right) => compareSourceNames(left.display_name, right.display_name));
     return { id, label: SECTION_LABELS[position], sources };
   }).filter((section) => section.sources.length > 0);
   const mid = Math.ceil(expectedSections.length / 2);
@@ -1311,6 +1341,22 @@ function assertSourcesCss(css, label) {
   const cols = ruleBody(css, '.source-cols');
   if (!cols.includes('display:grid') || !cols.includes('grid-template-columns:repeat(2,minmax(0,1fr))')) {
     fail(`${label} sources page is not a two-column grid`);
+  }
+  if (!cols.includes('column-gap:var(--gut)')) {
+    fail(`${label} source columns do not use the 24px gutter`);
+  }
+  const current = ruleBody(css, '.bar a[aria-current="page"]') || ruleBody(css, '.bar a[aria-current=page]');
+  if (
+    !current.includes('text-decoration:underline') ||
+    !current.includes('text-decoration-color:var(--signal)') ||
+    !current.includes('text-decoration-thickness:2px') ||
+    !(current.includes('text-underline-offset:.3em') || current.includes('text-underline-offset:0.3em')) ||
+    current.includes('border-bottom')
+  ) {
+    fail(`${label} Sources current mark is not the mock underline`);
+  }
+  if (ruleBody(css, '.sources-note').includes('max-width')) {
+    fail(`${label} week note is width-capped`);
   }
   const row = ruleBody(css, '.source-row');
   if (!row.includes('min-height:44px')) fail(`${label} source rows are shorter than 44px`);

@@ -13,7 +13,18 @@ export const SOURCE_SECTIONS = [
 
 const SOURCES_PATH = join(process.cwd(), 'config', 'sources.yaml');
 
+// The mock files a leading "The" under the following word: "The 74" with the
+// numbers, "The Pragmatic Engineer" with P. The compare stays case-insensitive.
+function sourceSortKey(name) {
+  return String(name).replace(/^the\s+/i, '');
+}
+
 export function compareSourceNames(left, right) {
+  const byKey = sourceSortKey(left).localeCompare(sourceSortKey(right), 'en', {
+    sensitivity: 'base',
+    numeric: true,
+  });
+  if (byKey !== 0) return byKey;
   return left.localeCompare(right, 'en', { sensitivity: 'base', numeric: true });
 }
 

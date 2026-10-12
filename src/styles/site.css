@@ -129,8 +129,11 @@ a:hover {
 }
 
 .bar a[aria-current="page"] {
-  padding-bottom: 4px;
-  border-bottom: 2px solid var(--signal);
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--signal);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
 }
 
 .back {
@@ -726,7 +729,6 @@ main > .page-title {
 
 .sources-note {
   margin: 0;
-  max-width: 28em;
   font-size: 17px;
   line-height: 1.4;
   font-weight: 400;
@@ -737,7 +739,7 @@ main > .page-title {
 .source-cols {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 48px;
+  column-gap: var(--gut);
   align-items: start;
   margin-top: var(--s5);
 }
@@ -896,7 +898,7 @@ main > .page-title {
 
   .source-cols {
     grid-template-columns: 1fr;
-    column-gap: 48px;
+    column-gap: var(--gut);
   }
 
   .rows + .rows {

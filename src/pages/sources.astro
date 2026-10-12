@@ -37,8 +37,7 @@ const columns = [index.sections.slice(0, mid), index.sections.slice(mid)].filter
               aria-labelledby={`source-section-${section.id}`}
             >
               <h2 class="source-section-title" id={`source-section-${section.id}`}>
-                {section.label}{' '}
-                <span class="n">{section.count}</span>
+                {section.label}<span class="n">{section.count}</span>
               </h2>
               <ul class="source-list">
                 {section.sources.map((source) => {
