@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { formatDate, formatWeekRange } from '../src/lib/format-date.mjs';
@@ -396,12 +397,84 @@ function assertReaderChrome(html, label, file = '') {
   assertTitle(html, file, label);
 }
 
+const ICON_SHA256 = {
+  'favicon.svg': '66b0d4fe033afd2160dea476be35c10424d8f6d5bec9edbecacf3626e5ded6f3',
+  'favicon-32.png': '6abed1b8715d817ee214cab76db3b4732de94000f090bc9170f71487160488f3',
+  'favicon-16.png': 'fa9146ee507c367ef046f8e978ef0cedcb46e3e59904e255a10a422254d9a830',
+  'apple-touch-icon.png': 'af3f6e6e141281216972964be3f592bff1217f5c917111e39f6b6098e514cb26',
+  'icon-512.png': '17371d042f1a311b555b644e7be696a26329e41c491e0ea7010cb402973229e3',
+};
+
+const ICON_HEAD = [
+  '<link rel="icon" type="image/svg+xml" href="/favicon.svg"',
+  '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"',
+  '<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png"',
+  '<link rel="apple-touch-icon" href="/apple-touch-icon.png"',
+  '<link rel="manifest" href="/site.webmanifest"',
+  '<meta name="theme-color" content="#08090a"',
+];
+
+const STALE_ICONS = ['favicon.ico', 'favicon.png'];
+let iconFilesLogged = false;
+
+function sha256File(path) {
+  return createHash('sha256').update(readFileSync(path)).digest('hex');
+}
+
+function assertIconFiles() {
+  for (const [name, expected] of Object.entries(ICON_SHA256)) {
+    const path = join('public', name);
+    if (!existsSync(path)) fail(`missing ${path}`);
+    const actual = sha256File(path);
+    if (actual !== expected) fail(`${path} sha256 is ${actual}; expected the approved asset`);
+    const distPath = join(DIST, name);
+    if (!existsSync(distPath)) fail(`missing ${distPath}`);
+    const built = sha256File(distPath);
+    if (built !== expected) fail(`${distPath} sha256 is ${built}; expected the approved asset`);
+  }
+  for (const name of STALE_ICONS) {
+    if (existsSync(join('public', name)) || existsSync(join(DIST, name))) fail(`old icon file ${name} is still present`);
+  }
+  const manifestPath = 'public/site.webmanifest';
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  if (manifest.name !== "Dan's AI Digest" || manifest.short_name !== 'AI Digest') {
+    fail('site.webmanifest name or short_name is wrong');
+  }
+  if (manifest.background_color !== '#08090a' || manifest.theme_color !== '#08090a') {
+    fail('site.webmanifest colors are not #08090a');
+  }
+  const icons = Array.isArray(manifest.icons) ? manifest.icons : [];
+  const icon512 = icons.find((icon) => icon.src === '/icon-512.png' && icon.sizes === '512x512');
+  const icon180 = icons.find((icon) => icon.src === '/apple-touch-icon.png' && icon.sizes === '180x180');
+  if (!icon512 || !icon180) fail('site.webmanifest is missing the 512 or 180 icon');
+  const distManifest = join(DIST, 'site.webmanifest');
+  if (!existsSync(distManifest) || !readFileSync(distManifest).equals(readFileSync(manifestPath))) {
+    fail('built site.webmanifest does not match public/site.webmanifest');
+  }
+  if (!iconFilesLogged) {
+    console.log('site icon files match the approved sha256 hashes');
+    iconFilesLogged = true;
+  }
+}
+
+function assertIconHead(html, label) {
+  const head = html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/)?.[1];
+  if (!head) fail(`${label} is missing a head`);
+  for (const tag of ICON_HEAD) {
+    if (!head.includes(tag)) fail(`${label} head is missing ${tag}`);
+  }
+  if (/favicon\.ico|rel="shortcut icon"/i.test(head)) fail(`${label} still has an old favicon tag`);
+}
+
 function assertBuiltChrome(scope) {
   const files = walk(DIST);
   if (files.length === 0) fail(`${scope} produced no HTML`);
+  assertIconFiles();
   assertProgramCss(readFileSync(files[0], 'utf8'), scope);
   for (const file of files) {
-    assertReaderChrome(readFileSync(file, 'utf8'), `${scope} ${file}`, file);
+    const html = readFileSync(file, 'utf8');
+    assertIconHead(html, `${scope} ${file}`);
+    assertReaderChrome(html, `${scope} ${file}`, file);
   }
 }
 
