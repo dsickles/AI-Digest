@@ -31,7 +31,7 @@ Open the live site (or your local copy). You land on the latest finished week's 
 
 - **Read the Briefing.** A one-line lead and the theme rows come first. "Read the full briefing" opens the full synthesis. Top 5 sits under that. An older week with no theme data shows the synthesis paragraph instead.
 - **Skim a topic.** Use Business, Technical, Education, or Policy and Safety. Each page shows that topic's main list in file order. Thin links, when that topic has them, sit at the bottom under Also seen. An empty topic still appears and says so. The tab count is the main list only.
-- **Open a story.** The title is the link to the article. Where a Summary control exists, it expands or collapses the summary without leaving the page. Top 5 rows stay open. Video items show a play control on the row.
+- **Open a story.** The title is the link to the article. A one-line takeaway under the title says why it matters, and it stays visible while Summary is closed. Where a Summary control exists, it expands or collapses the shorter summary without leaving the page. Top 5 rows stay open, with the takeaway above the summary. Video items show a play control on the row.
 - **Browse the archive.** Archive sits on the week line next to Updated, not in the topic row. Open a past week with Read this week.
 
 A week that is still open (including a half-finished draft file) stays off the home page and out of the archive until its Saturday 23:59:59 America/New_York has passed.
@@ -86,6 +86,8 @@ Items about the same story are one item, even when the URLs differ. Ingest follo
 
 From `2026-W41` on, the Briefing also carries `lead` (one sentence) and `themes` (4 to 6 rows). Each theme has a short `label`, one `sentence` of 25 to 35 words, and `story_ids` pointing at the merged main items. Ingest follows `config/briefing.md`. `2026-W40` omits `lead` and `themes` and the page keeps the synthesis paragraph.
 
+From `2026-W41` on, every main item also has a `takeaway`: one sentence on why it matters, not a restatement of the title. The page shows that line under the title and meta line, on Top 5 and on every topic page, including while Summary is closed. An opened summary is 60 words or fewer. Ingest follows `config/takeaway.md`. Thin Also seen items omit `takeaway`. `2026-W40` omits it, can keep a longer summary, and still renders.
+
 Optional ops notes can sit beside a week as `content/reports/{week_id}.json`. A missing report is fine.
 
 Before you trust a change:
@@ -97,7 +99,7 @@ pnpm build
 pnpm check:reader
 ```
 
-`pnpm check:reader` reads the built `dist/` folder and checks that Briefing, topics, Also seen rules, and Archive links match the committed week.
+`pnpm check:reader` reads the built `dist/` folder and checks that Briefing, topics, takeaways, Also seen rules, and Archive links match the committed week.
 
 The checked-in source list is `config/sources.yaml`. The site does not fetch those sources when someone visits; it only renders the week files.
 

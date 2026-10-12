@@ -282,6 +282,31 @@ function assertCard(html, card) {
   const hasPlay = article.includes('class="play"');
   if (video !== hasPlay) fail(`${card.id} play icon ${video ? 'missing' : 'should be absent'}`);
   assertCoverage(article, card);
+  assertTakeaway(article, card);
+}
+
+function assertTakeaway(article, card) {
+  const markers = [...article.matchAll(/<p class="takeaway">([\s\S]*?)<\/p>/g)];
+  if (card.summary_status === 'thin' || typeof card.takeaway !== 'string') {
+    if (markers.length !== 0) fail(`${card.id} shows a takeaway the file does not have`);
+    return;
+  }
+  if (markers.length !== 1) fail(`${card.id} takeaway is missing`);
+  const shown = decode(markers[0][1]).replace(/\s+/g, ' ').trim();
+  const expected = card.takeaway.replace(/\s+/g, ' ').trim();
+  if (shown !== expected) fail(`${card.id} takeaway does not match the file`);
+  const takeawayAt = markers[0].index ?? article.indexOf(markers[0][0]);
+  const metaAt = article.search(/<p\b[^>]*\bclass="[^"]*\bmeta\b/);
+  if (metaAt === -1 || takeawayAt < metaAt) fail(`${card.id} takeaway is not under the meta line`);
+  const panelAt = article.search(/<div class="summary-panel"/);
+  const summaryAt = article.search(/<p class="summary">/);
+  const boundary = [panelAt, summaryAt].filter((index) => index !== -1).sort((a, b) => a - b)[0];
+  if (boundary !== undefined && takeawayAt > boundary) {
+    fail(`${card.id} takeaway is not visible while Summary is closed`);
+  }
+  if (panelAt !== -1 && article.slice(panelAt).includes('class="takeaway"')) {
+    fail(`${card.id} takeaway is inside the summary panel`);
+  }
 }
 
 function assertCoverage(article, card) {
@@ -514,6 +539,7 @@ function readerFacingText(weeks) {
       item.briefing?.synthesis,
       ...[...(item.main_feed ?? []), ...(item.footer_aside ?? []), ...(item.briefing?.top ?? [])].flatMap((card) => [
         card.title,
+        card.takeaway,
         card.summary,
         card.body,
         card.number_note,
@@ -1267,12 +1293,33 @@ function assertItemSetPreserved(weekDoc, pageMap, where) {
   }
 }
 
+function assertTakeawayCoverage(weekDoc, pageMap, where) {
+  const main = [
+    ...briefingCards(weekDoc),
+    ...SECTION_TABS.flatMap((topic) => sectionCards(weekDoc, topic.id)),
+  ];
+  const required = weekDoc.week_id >= '2026-W41';
+  for (const card of main) {
+    if (required && (typeof card.takeaway !== 'string' || card.takeaway.trim().length === 0)) {
+      fail(`${where} ${card.id} is missing a takeaway`);
+    }
+  }
+  for (const card of weekDoc.footer_aside ?? []) {
+    if (card && Object.hasOwn(card, 'takeaway')) fail(`${where} Also seen item ${card.id} has a takeaway`);
+  }
+  if (!required && main.every((card) => typeof card.takeaway !== 'string')) {
+    const html = Object.values(pageMap).join('\n');
+    if (html.includes('class="takeaway"')) fail(`${where} invented a takeaway for a week that has none`);
+  }
+}
+
 function assertWeekReader(weekDoc, pageMap, where, { requireMedia = false, emptyCoverageWeek = null } = {}) {
   assertBriefingTab(pageMap.briefing, weekDoc, where);
   for (const topic of SECTION_TABS) assertSectionTab(pageMap[topic.id], weekDoc, topic, where);
   assertItemSetPreserved(weekDoc, pageMap, where);
   assertRubric(weekDoc, pageMap, where);
   assertStoryGroups(weekDoc, pageMap, where);
+  assertTakeawayCoverage(weekDoc, pageMap, where);
   assertMediaCase(weekDoc, pageMap, where, requireMedia);
   for (const error of storyPlacementErrors(weekDoc)) fail(`${where} ${error}`);
   const counts = SECTION_TABS.map((topic) => `${topic.label} ${sectionCards(weekDoc, topic.id).length}`).join(', ');
