@@ -20,7 +20,7 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 
 - A **Briefing** page: a lead of one to three sentences, then the Number of the week, then This week's themes (always five) in the left column, with the Top 5 in the wider right column. The number sits in that left column, under the lead and above the themes. On a phone: lead, number, themes, Top 5.
 - **Topic tabs**: Business, Technical, Education, Policy and Safety. Each ends with Also seen when that topic has thin items.
-- A **Sources** page at `/sources`, linked from the week line (Sources · Archive). Each row shows "N this week" or "None this week", and a note under the heading names the week.
+- A **Sources** page at `/sources`, linked from the week line (Sources · Archive). The heading is Sources (33). A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week".
 - An **Archive** of past weeks, each with a Read this week link. Weeks from before the redesign still show their briefing paragraph.
 - A site icon for browser tabs and the phone home screen.
 - Week content checked into git under `content/digests/`
@@ -34,7 +34,7 @@ Open the live site (or your local copy). You land on the latest finished week's 
 - **Skim a topic.** Use Business, Technical, Education, or Policy and Safety. Each page shows that topic's main list in file order. Thin links, when that topic has them, sit at the bottom under Also seen. An empty topic still appears and says so. The tab count is the main list only.
 - **Open a story.** The title is the link to the article. A one-line takeaway under the title says why it matters, and it stays visible while Summary is closed. Where a Summary control exists, it expands or collapses the shorter summary without leaving the page. Top 5 rows stay open, with the takeaway above the summary. Video items show a play control on the row.
 - **Browse the archive.** Archive is the far-right link on the week line, after Sources, and it is not in the topic row. Open a past week with Read this week.
-- **See every source.** Sources sits on the week line (Sources · Archive), between Updated and Archive. Each row shows "N this week" or "None this week", and a note under the heading names the week.
+- **See every source.** The week line reads Updated · Sources · Archive. The heading is Sources (33). A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week".
 
 A week that is still open (including a half-finished draft file) stays off the home page and out of the archive until its Saturday 23:59:59 America/New_York has passed.
 
@@ -103,9 +103,9 @@ pnpm build
 pnpm check:reader
 ```
 
-`pnpm check:reader` reads the built `dist/` folder and checks that Briefing, topics, takeaways, the Number of the week, Also seen rules, Archive links, and the Sources page match the committed week and `config/sources.yaml`.
+`pnpm check:reader` reads the built `dist/` folder and checks that Briefing, topics, takeaways, the Number of the week, Also seen rules, Archive links, and the Sources page (heading count, week note, and each source's count) match the committed week and `config/sources.yaml`.
 
-The Sources page reads `config/sources.yaml` at build time, so adding or removing a source there updates the page on the next build. Today it lists 33: Business 8, Technical 9, Education 9, Policy and Safety 7. The heading is Sources (33), and a note under it names the week. Each row shows "N this week" or "None this week". Counts come from the current week file, so a row that says "None this week" had nothing that made the cut that week. The site does not fetch those sources when someone visits; it only renders the week files.
+The Sources page reads `config/sources.yaml` at build time, so adding or removing a source there updates the page on the next build. Today it lists 33: Business 8, Technical 9, Education 9, Policy and Safety 7. The heading is Sources (33). A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week". Within a section, names are sorted alphabetically, and a leading "The" is ignored. Counts come from the current week file, so a row that says "None this week" had nothing that made the cut that week. The site does not fetch those sources when someone visits; it only renders the week files.
 
 ## What makes the cut
 
