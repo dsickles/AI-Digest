@@ -14,6 +14,8 @@ import {
 } from '../src/lib/week-rules.mjs';
 import { storyPlacementErrors } from '../src/lib/story-groups.mjs';
 import { alsoSeenFillerKind, visibleAlsoSeen } from '../src/lib/also-seen.mjs';
+import { indexSources, loadSourceIndex, sourceHomeUrl } from '../src/lib/sources.mjs';
+import { parse as parseYaml } from 'yaml';
 
 const DEGRADED_BODY = "The summary couldn't be generated this week.";
 const WEEK_ID = '2026-W40';
@@ -424,6 +426,7 @@ function assertReaderChrome(html, label, file = '') {
   const between = decode(afterTime.slice(0, archiveAt)).replace(/&middot;/gi, '·').replace(/<[^>]*>/g, '');
   if (between.includes(',')) fail(`${label} has a comma between Updated and Archive`);
   if (!/^[\s·]*$/.test(between)) fail(`${label} puts "${between}" between Updated and Archive`);
+  assertSourceLinks(html, file, label);
   assertSectionCounts(html, file, label);
   assertTitle(html, file, label);
 }
@@ -506,6 +509,9 @@ function assertBuiltChrome(scope) {
     const html = readFileSync(file, 'utf8');
     assertIconHead(html, `${scope} ${file}`);
     assertReaderChrome(html, `${scope} ${file}`, file);
+    if (/(?:^|\/)sources\/index\.html$/.test(String(file).replaceAll('\\', '/'))) {
+      assertSourcesIndex(html, `${scope} ${file}`);
+    }
   }
 }
 
@@ -746,6 +752,202 @@ function assertSectionCounts(html, file, label) {
   });
 }
 
+function enabledSourcesFromYaml() {
+  const doc = parseYaml(readFileSync('config/sources.yaml', 'utf8'));
+  if (!doc || !Array.isArray(doc.sources)) fail('config/sources.yaml has no sources list');
+  return doc.sources.filter((source) => source && source.enabled === true);
+}
+
+function assertSourceRules() {
+  const feedOnly = sourceHomeUrl({ type: 'rss', url: 'https://simonwillison.net/atom/everything/' });
+  if (feedOnly !== 'https://simonwillison.net/') fail(`feed URL home is ${feedOnly}`);
+  const explicit = sourceHomeUrl({
+    type: 'rss',
+    url: 'https://example.com/tag/ai/feed/',
+    home_url: 'https://example.com/blog/',
+  });
+  if (explicit !== 'https://example.com/blog/') fail('home_url was not kept');
+  const channel = sourceHomeUrl({
+    type: 'youtube',
+    channel_id: 'UCRYY7IEbkHLH_ScJCu9eWDQ',
+    channel_url: 'https://www.youtube.com/@howiaipodcast',
+  });
+  if (channel !== 'https://www.youtube.com/@howiaipodcast') fail('youtube channel page was not used');
+  const channelId = sourceHomeUrl({ type: 'youtube', channel_id: 'UCRYY7IEbkHLH_ScJCu9eWDQ' });
+  if (channelId !== 'https://www.youtube.com/channel/UCRYY7IEbkHLH_ScJCu9eWDQ') {
+    fail(`youtube channel id home is ${channelId}`);
+  }
+  const indexed = indexSources({
+    sources: [
+      {
+        id: 'hidden-feed',
+        type: 'rss',
+        url: 'https://hidden.example/feed',
+        display_name: 'Hidden Feed',
+        tag: 'business',
+        enabled: false,
+      },
+      {
+        id: 'zed-desk',
+        type: 'rss',
+        url: 'https://zed.example/feed',
+        display_name: 'Zed',
+        tag: 'business',
+        enabled: true,
+      },
+      {
+        id: 'alpha-desk',
+        type: 'rss',
+        url: 'https://alpha.example/feed',
+        display_name: 'Alpha',
+        tag: 'technical',
+        enabled: true,
+      },
+      {
+        id: 'the-sample',
+        type: 'rss',
+        url: 'https://sample.example/feed',
+        display_name: 'The 74',
+        tag: 'edtech',
+        enabled: true,
+      },
+      {
+        id: 'education-sample',
+        type: 'rss',
+        url: 'https://education.example/feed',
+        display_name: 'Education Week',
+        tag: 'edtech',
+        enabled: true,
+      },
+      {
+        id: 'policy-desk',
+        type: 'rss',
+        url: 'https://policy.example/rss',
+        home_url: 'https://policy.example/',
+        display_name: 'Policy Desk',
+        tag: 'policy-and-safety',
+        enabled: true,
+      },
+    ],
+  });
+  if (indexed.total !== 5 || indexed.sources.some((source) => source.name === 'Hidden Feed')) {
+    fail('disabled source was listed');
+  }
+  const order = indexed.sections.map((section) => `${section.label}:${section.sources.map((source) => source.name).join(',')}`);
+  const expectedOrder = ['Business:Zed', 'Technical:Alpha', 'Education:Education Week,The 74', 'Policy and Safety:Policy Desk'];
+  if (order.join('|') !== expectedOrder.join('|')) fail(`source section order is ${order.join(' | ')}`);
+  console.log('source index rules passed');
+}
+
+function assertSourceLinks(html, file, label) {
+  const weekLine = html.match(/<p\b[^>]*class="[^"]*\bweek-line\b[^"]*"[^>]*>[\s\S]*?<\/p>/)?.[0];
+  if (!weekLine) fail(`${label} is missing the week line`);
+  const archiveAt = weekLine.search(/<a\b[^>]*href="\/archive"/);
+  const sourcesAt = weekLine.search(/<a\b[^>]*href="\/sources"/);
+  if (sourcesAt === -1 || !weekLine.includes('>Sources<')) fail(`${label} week line is missing the Sources link`);
+  if (archiveAt === -1 || sourcesAt < archiveAt) fail(`${label} Sources is not next to Archive`);
+  const archiveLabelAt = weekLine.indexOf('>Archive</a>');
+  if (archiveLabelAt === -1 || archiveLabelAt > sourcesAt) fail(`${label} Archive label is missing before Sources`);
+  const betweenLinks = decode(weekLine.slice(archiveLabelAt + '>Archive</a>'.length, sourcesAt))
+    .replace(/&middot;/gi, '·')
+    .replace(/<[^>]*>/g, '');
+  if (!/^[\s·]*$/.test(betweenLinks)) fail(`${label} puts "${betweenLinks}" between Archive and Sources`);
+  const onSources = /(?:^|\/)sources\/index\.html$/.test(String(file).replaceAll('\\', '/'));
+  const sourcesLink = weekLine.match(/<a\b[^>]*href="\/sources"[^>]*>/)?.[0] ?? '';
+  if (onSources && !/aria-current="page"/.test(sourcesLink)) fail(`${label} Sources link is not current`);
+  if (!onSources && /aria-current="page"/.test(sourcesLink)) fail(`${label} Sources link is current off the sources page`);
+  const briefing = navBlock(html, 'nav-briefing');
+  const sections = navBlock(html, 'nav-sections');
+  if (briefing.includes('href="/sources"') || sections.includes('href="/sources"') || sections.includes('>Sources<')) {
+    fail(`${label} Sources is a nav tab`);
+  }
+  const footers = [...html.matchAll(/<footer\b[^>]*class="[^"]*\bsite-foot\b[^"]*"[^>]*>([\s\S]*?)<\/footer>/g)];
+  if (footers.length !== 1) fail(`${label} is missing the sources footer`);
+  const footerText = decode(footers[0][0]).replace(/\s+/g, ' ');
+  const expected = `Every source we read (${enabledSourcesFromYaml().length})`;
+  if (!footers[0][0].includes('href="/sources"') || !footerText.includes(expected)) {
+    fail(`${label} footer does not link to every source (${expected})`);
+  }
+}
+
+function sourceRows(sectionHtml) {
+  return [...sectionHtml.matchAll(/<li\b[^>]*class="[^"]*\bsource-row\b[^"]*"[^>]*>([\s\S]*?)<\/li>/g)].map(
+    (match) => match[1],
+  );
+}
+
+function assertSourcesIndex(html, label) {
+  const enabled = enabledSourcesFromYaml();
+  const index = loadSourceIndex();
+  if (index.total !== enabled.length) fail(`source index lists ${index.total} but the file has ${enabled.length}`);
+  const mainMatch = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/);
+  if (!mainMatch) fail(`${label} is missing main`);
+  const main = mainMatch[1];
+  const decoded = decode(main).replace(/\s+/g, ' ');
+  const lede = `All ${enabled.length} feeds the digest reads, by section.`;
+  if (!decoded.includes(lede)) fail(`${label} lede does not match the source file`);
+  if (!main.includes('>Sources<')) fail(`${label} is missing the Sources heading`);
+  if (/\bthis week\b/i.test(decoded) || /\bcontribut/i.test(decoded)) {
+    fail(`${label} shows a weekly count or contribution data`);
+  }
+  const columns = [...main.matchAll(/<div class="source-col">([\s\S]*?)<\/div>/g)].map((match) => match[1]);
+  const expectedSections = SECTION_IDS.map((id, position) => {
+    const sources = enabled
+      .filter((source) => source.tag === id)
+      .sort((left, right) => left.display_name.localeCompare(right.display_name, 'en', { sensitivity: 'base', numeric: true }));
+    return { id, label: SECTION_LABELS[position], sources };
+  }).filter((section) => section.sources.length > 0);
+  const mid = Math.ceil(expectedSections.length / 2);
+  const expectedColumns = [expectedSections.slice(0, mid), expectedSections.slice(mid)].filter((column) => column.length > 0);
+  if (columns.length !== expectedColumns.length) fail(`${label} has ${columns.length} source columns`);
+  const renderedNames = [];
+  expectedColumns.forEach((expectedColumn, columnIndex) => {
+    const sections = [
+      ...columns[columnIndex].matchAll(/<section\b([^>]*)>([\s\S]*?)<\/section>/g),
+    ];
+    if (sections.length !== expectedColumn.length) {
+      fail(`${label} column ${columnIndex + 1} has ${sections.length} sections`);
+    }
+    expectedColumn.forEach((expected, sectionIndex) => {
+      const attrs = sections[sectionIndex][1];
+      const block = sections[sectionIndex][2];
+      if (!attrs.includes(`data-section="${expected.id}"`)) {
+        fail(`${label} ${expected.label} is not in its column`);
+      }
+      const heading = decode(block.match(/<h3\b[^>]*>([\s\S]*?)<\/h3>/)?.[1] ?? '')
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (heading !== `${expected.label} ${expected.sources.length}`) {
+        fail(`${label} ${expected.label} heading is "${heading}"`);
+      }
+      const rows = sourceRows(block);
+      if (rows.length !== expected.sources.length) {
+        fail(`${label} ${expected.label} lists ${rows.length} sources`);
+      }
+      expected.sources.forEach((source, rowIndex) => {
+        const row = rows[rowIndex];
+        const name = decode(row.match(/<a\b[^>]*>([\s\S]*?)<\/a>/)?.[1] ?? '').replace(/\s+/g, ' ').trim();
+        const href = row.match(/\bhref="([^"]*)"/)?.[1] ?? '';
+        const type = decode(row.match(/class="[^"]*\bsource-type\b[^"]*"[^>]*>([\s\S]*?)</)?.[1] ?? '')
+          .replace(/\s+/g, ' ')
+          .trim();
+        const rowText = decode(row.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
+        if (name !== source.display_name) fail(`${label} ${expected.label} row ${rowIndex + 1} is ${name}`);
+        if (href !== sourceHomeUrl(source)) fail(`${label} ${name} links to ${href || 'nothing'}`);
+        if (type !== (source.type === 'youtube' ? 'YouTube' : 'RSS')) fail(`${label} ${name} type is ${type}`);
+        if (rowText !== `${source.display_name} ${type}`) fail(`${label} ${name} row reads "${rowText}"`);
+        renderedNames.push(source.display_name);
+      });
+    });
+  });
+  if (renderedNames.length !== enabled.length) fail(`${label} renders ${renderedNames.length} sources`);
+  for (const source of enabled) {
+    if (!renderedNames.includes(source.display_name)) fail(`${label} is missing ${source.display_name}`);
+  }
+  console.log(`sources page lists ${enabled.length} feeds from config/sources.yaml`);
+}
+
 function assertTitle(html, file, label) {
   const title = pageTitle(html);
   const topic = pageTopic(file);
@@ -757,6 +959,10 @@ function assertTitle(html, file, label) {
   }
   if (/(?:^|\/)archive\/index\.html$/.test(normalized)) {
     if (title !== "Dan's AI Digest: Archive") fail(`${label} title is "${title}"`);
+    return;
+  }
+  if (/(?:^|\/)sources\/index\.html$/.test(normalized)) {
+    if (title !== "Dan's AI Digest: Sources") fail(`${label} title is "${title}"`);
     return;
   }
   if (title !== "Dan's AI Digest") fail(`${label} title is "${title}"`);
@@ -958,7 +1164,33 @@ function assertProgramCss(html, label) {
   ) {
     fail(`${label} Also seen section label is a colored chip`);
   }
+  assertSourcesCss(css, label);
   assertPhoneCss(css, label);
+}
+
+function assertSourcesCss(css, label) {
+  const cols = ruleBody(css, '.source-cols');
+  if (!cols.includes('display:grid') || !cols.includes('grid-template-columns:repeat(2,minmax(0,1fr))')) {
+    fail(`${label} sources page is not a two-column grid`);
+  }
+  const row = ruleBody(css, '.source-row');
+  if (!row.includes('min-height:44px')) fail(`${label} source rows are shorter than 44px`);
+  const vermilion =
+    css.includes('.source-rowa:hover,.source-rowa:focus-visible{color:var(--signal)}') ||
+    (ruleBody(css, '.source-row a:hover').includes('color:var(--signal)') &&
+      ruleBody(css, '.source-row a:focus-visible').includes('color:var(--signal)'));
+  if (!vermilion) fail(`${label} source links do not turn vermilion on hover and focus`);
+  const phone = mediaBody(css, ['max-width:720px', 'width<=720px']);
+  if (!ruleBody(phone, '.source-cols').includes('grid-template-columns:1fr')) {
+    fail(`${label} sources page does not use one column on a phone`);
+  }
+  if (!ruleBody(phone, '.source-row').includes('min-height:44px')) {
+    fail(`${label} phone source rows are shorter than 44px`);
+  }
+  const narrow = mediaBody(css, ['max-width:1080px', 'width<=1080px']);
+  if (!ruleBody(narrow, '.source-cols').includes('grid-template-columns:1fr')) {
+    fail(`${label} sources page stays two columns on a narrow window`);
+  }
 }
 
 function assertPhoneCss(css, label) {
@@ -1502,6 +1734,7 @@ for (const html of Object.values(pages)) {
 if (!allHtml.includes('r="6.25"') || !allHtml.includes('stroke-width="1.25"')) {
   fail('play icon SVG no longer matches the existing PlayIcon');
 }
+assertSourceRules();
 assertBuiltChrome('reader');
 
 if (!pages.home.includes(`href="/edtech"`) || !pages.home.includes(`href="/policy-and-safety"`)) {
