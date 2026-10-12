@@ -237,6 +237,66 @@ a:hover {
   margin-top: var(--s5);
 }
 
+.syn > .themes-col.has-number {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+}
+
+.syn > .themes-col.has-number > .themes {
+  margin-bottom: var(--s6);
+}
+
+.notw {
+  margin-top: auto;
+  padding-top: var(--s2);
+  border-top: 1px solid var(--rule-strong);
+}
+
+.notw-label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.notw-fig {
+  margin: var(--s3) 0 0 -0.04em;
+  font-weight: 700;
+  font-size: 88px;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  color: var(--signal);
+}
+
+.notw-text {
+  margin-top: var(--s3);
+  font-size: 16px;
+  line-height: 1.45;
+  font-weight: 400;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.notw-text + .notw-text {
+  margin-top: var(--s2);
+}
+
+.notw-src {
+  margin-top: var(--s2);
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--ink-3);
+}
+
+.notw-src a {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
 .syn > .top {
   grid-column: 5 / 13;
   grid-row: 2;
@@ -719,6 +779,18 @@ main > .page-title {
 
   .syn > .top {
     margin-top: var(--s6);
+  }
+
+  .syn > .themes-col.has-number > .themes {
+    margin-bottom: 0;
+  }
+
+  .notw {
+    margin-top: var(--s6);
+  }
+
+  .notw-fig {
+    font-size: 64px;
   }
 
   .flow {

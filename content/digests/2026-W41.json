@@ -54,6 +54,12 @@
         ]
       }
     ],
+    "number_of_week": {
+      "value": "15%",
+      "what": "Epoch AI asked top AI systems to rediscover a recent research breakthrough on their own, and they captured only 15% of the improvement the human researchers got.",
+      "why": "AI isn't close to doing AI research without people, which is the leap labs are betting on.",
+      "story_id": "epoch-ai-can-ai-automate-ai-r-d-yet"
+    },
     "top": [
       {
         "id": "metr-ai-systems-could-cover-up-misbehavior",
