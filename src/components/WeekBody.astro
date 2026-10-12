@@ -1,6 +1,5 @@
 ---
 import Card from './Card.astro';
-import ThinCard from './ThinCard.astro';
 import TopicSection from './TopicSection.astro';
 import {
   alsoSeenItems,
@@ -23,7 +22,7 @@ const { week, view } = Astro.props;
 const topicLabel = view === 'briefing' ? '' : TOPIC_LABELS[view];
 const topicCards = view === 'briefing' ? [] : shownTopicCards(week, view);
 const topCards = shownBriefingCards(week);
-const footerItems = alsoSeenItems(week);
+const topicAlsoSeen = view === 'briefing' ? [] : alsoSeenItems(week).filter((item) => item.category === view);
 const topCount = topCards.length;
 const topLabel = `Top ${topCount} this week`;
 const themes = week.briefing.themes ?? [];
@@ -159,25 +158,11 @@ function storyHref(card: MainCard): string {
               </li>
             ))}
           </ol>
-          {footerItems.length > 0 && (
-            <aside id="also-seen" class="also" aria-labelledby="also-heading">
-              <h2 class="h2" id="also-heading">
-                Also seen this week
-              </h2>
-              <ul class="thin-list">
-                {footerItems.map((item) => (
-                  <li class="thin-row">
-                    <ThinCard item={item} />
-                  </li>
-                ))}
-              </ul>
-            </aside>
-          )}
         </div>
       </section>
     </>
   ) : (
-    <TopicSection label={topicLabel} cards={topicCards} />
+    <TopicSection label={topicLabel} cards={topicCards} alsoSeen={topicAlsoSeen} />
   )
 }
 

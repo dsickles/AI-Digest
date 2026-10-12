@@ -20,7 +20,7 @@ Version bumps and quote-only posts are excluded. They do not appear in Also seen
 
 ## Thin summaries
 
-Summaries written only from a video description are marked thin. They appear as links under Also seen this week, on Briefing only. They are not full cards on Briefing or on a topic page.
+Summaries written only from a video description are marked thin. They appear as links under Also seen at the bottom of their topic tab. They are not full cards on Briefing or in a topic's main list.
 
 A feed item with no article body is the same kind of link.
 

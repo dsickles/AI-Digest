@@ -1,5 +1,5 @@
-// Also seen is the thin-link list on Briefing. Version bumps and quote-only
-// posts stay out, even when a later week file puts them in footer_aside.
+// Also seen is the thin-link list at the bottom of a topic tab. Version bumps
+// and quote-only posts stay out, even when a later week file puts them in footer_aside.
 
 const VERSION_REASON =
   /\b(?:minor version|version release|version bump|minor release|minor alpha|alpha release|patch release)\b/i;

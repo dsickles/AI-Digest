@@ -495,33 +495,14 @@ a:hover {
   max-width: 72ch;
 }
 
-.also {
-  padding-top: var(--s4);
+.topic > .also {
+  grid-column: 1 / -1;
+  margin-top: var(--s6);
+  padding-top: 0;
 }
 
-.thin-row {
-  break-inside: avoid;
-}
-
-.thin {
-  display: grid;
-  grid-template-columns: 76px minmax(0, 1fr);
-  padding: var(--s2) 0;
-  border-bottom: 1px solid var(--rule);
-}
-
-.thin h3,
-.thin .meta,
-.thin .number-note,
-.thin .also-covered {
-  grid-column: 2;
-  min-width: 0;
-}
-
-.thin .section-label {
-  grid-column: 2;
-  min-width: 0;
-  margin: 0 0 2px;
+.also-label {
+  margin: 0 0 var(--s3);
   font-family: var(--sans);
   font-size: 12px;
   font-weight: 600;
@@ -529,6 +510,15 @@ a:hover {
   line-height: 1.4;
   text-transform: uppercase;
   color: var(--ink-3);
+}
+
+.thin-row {
+  break-inside: avoid;
+}
+
+.thin {
+  padding: var(--s2) 0;
+  border-bottom: 1px solid var(--rule);
 }
 
 .thin h3 {
@@ -897,21 +887,8 @@ main > .page-title {
     line-height: 1.05;
   }
 
-  .also {
-    margin-top: var(--s6);
-    padding-top: 0;
-  }
-
-  .thin {
-    grid-template-columns: 36px minmax(0, 1fr);
-  }
-
-  .thin h3,
-  .thin .meta,
-  .thin .number-note,
-  .thin .also-covered,
-  .thin .section-label {
-    grid-column: 1 / -1;
+  .topic > .also {
+    margin-top: var(--s5);
   }
 
   .topic {

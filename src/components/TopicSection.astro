@@ -1,13 +1,15 @@
 ---
 import Card from './Card.astro';
-import type { MainCard } from '../lib/weeks';
+import ThinCard from './ThinCard.astro';
+import type { MainCard, ThinCard as ThinItem } from '../lib/weeks';
 
 interface Props {
   label: string;
   cards: MainCard[];
+  alsoSeen?: ThinItem[];
 }
 
-const { label, cards } = Astro.props;
+const { label, cards, alsoSeen = [] } = Astro.props;
 const mid = Math.ceil(cards.length / 2);
 const columns = cards.length <= 1 ? [cards] : [cards.slice(0, mid), cards.slice(mid)];
 ---
@@ -32,6 +34,22 @@ const columns = cards.length <= 1 ? [cards] : [cards.slice(0, mid), cards.slice(
           );
         })}
       </div>
+    )
+  }
+  {
+    alsoSeen.length > 0 && (
+      <aside id="also-seen" class="also" aria-labelledby="also-heading">
+        <h2 class="also-label" id="also-heading">
+          Also seen
+        </h2>
+        <ul class="thin-list">
+          {alsoSeen.map((item) => (
+            <li class="thin-row">
+              <ThinCard item={item} />
+            </li>
+          ))}
+        </ul>
+      </aside>
     )
   }
 </section>
