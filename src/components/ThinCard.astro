@@ -1,4 +1,5 @@
 ---
+import CoverageNotes from './CoverageNotes.astro';
 import PlayIcon from './PlayIcon.astro';
 import { formatDate, type ThinCard } from '../lib/weeks';
 
@@ -27,4 +28,5 @@ const video = item.media === 'video';
     <span aria-hidden="true">·</span>
     <time datetime={item.published_at}>{formatDate(item.published_at)}</time>
   </p>
+  <CoverageNotes links={item.also_covered} numberNote={item.number_note} />
 </article>

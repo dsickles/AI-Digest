@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dans-digest.local/schema/digest.schema.json",
   "title": "Dan's Digest week file",
-  "description": "Pre-partitioned week file for content/digests/{week_id}.json. Briefing is synthesis plus Top 5 full cards. topics.* are the per-topic main lists. main_feed is those lists concatenated (edtech, business, technical, policy-and-safety). footer_aside is thin link-only cards. excluded holds items that failed the inclusion rubric and is not rendered. From 2026-W41 on, every card has included and include_reason. Earlier weeks may omit both. There is no per-source cap. The site renders the briefing, topic, and footer lists as written, skipping any card marked included false. topics.policy-and-safety may be omitted and then counts as empty.",
+  "description": "Pre-partitioned week file for content/digests/{week_id}.json. Briefing is synthesis plus Top 5 full cards. topics.* are the per-topic main lists. main_feed is those lists concatenated (edtech, business, technical, policy-and-safety). footer_aside is thin link-only cards. excluded holds items that failed the inclusion rubric and is not rendered. From 2026-W41 on, every card has included and include_reason. Earlier weeks may omit both. A story with several included sources is one card: also_covered lists the other sources, and number_note records a key number they disagree on. Earlier weeks omit both. There is no per-source cap. The site renders the briefing, topic, and footer lists as written, skipping any card marked included false. topics.policy-and-safety may be omitted and then counts as empty.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -151,6 +151,12 @@
         },
         "include_reason": {
           "$ref": "#/$defs/includeReason"
+        },
+        "also_covered": {
+          "$ref": "#/$defs/alsoCovered"
+        },
+        "number_note": {
+          "$ref": "#/$defs/numberNote"
         }
       },
       "allOf": [
@@ -243,8 +249,47 @@
         },
         "include_reason": {
           "$ref": "#/$defs/includeReason"
+        },
+        "also_covered": {
+          "$ref": "#/$defs/alsoCovered"
+        },
+        "number_note": {
+          "$ref": "#/$defs/numberNote"
         }
       }
+    },
+    "coverageLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "url", "publisher"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "publisher": {
+          "$ref": "#/$defs/publisher"
+        }
+      }
+    },
+    "alsoCovered": {
+      "description": "Other included sources for this same story. The card is the strongest source. Omit when the story has one source. Weeks before 2026-W41 omit it.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/coverageLink"
+      }
+    },
+    "numberNote": {
+      "description": "One line naming a key number each source reported, when those numbers disagree. Example: 722 per Education Disrupted, 719 per Last Week in AI.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 400,
+      "pattern": "^[^\\r\\n]*\\S[^\\r\\n]*$"
     },
     "includeReason": {
       "description": "One line saying why the item was included or excluded.",

@@ -43,3 +43,7 @@ Put excluded items only in `excluded`. Set `included` to `false`. Keep the rest 
 `excluded` is required from `2026-W41` on, even when nothing was excluded. `main_feed` stays the concatenation of the topic lists. Each `briefing.top` card must match the same id in `main_feed`, including `included` and `include_reason`.
 
 Do not cap how many items a source can contribute. Do not drop a later item because that source already has one.
+
+## Same story, several sources
+
+Grouping is a separate step from this rubric. Read `config/story-grouping.md`. Include or exclude each item first. Then group the included items that are the same story. Grouping does not put an excluded item back on the page.

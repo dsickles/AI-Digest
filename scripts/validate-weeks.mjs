@@ -8,11 +8,13 @@ import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import { digestWeekId, isoWeekId, newYorkParts } from '../src/lib/week-rules.mjs';
 import { sourcePlacementErrors, validateSourcesDocument } from '../src/lib/source-rules.mjs';
+import { numberNoteErrors, storyPlacementErrors } from '../src/lib/story-groups.mjs';
 
 export { isoWeekId };
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const RUBRIC_PATH = join(ROOT, 'config', 'inclusion-rubric.md');
+const GROUPING_PATH = join(ROOT, 'config', 'story-grouping.md');
 const DIGEST_SCHEMA_PATH = join(ROOT, 'schema', 'digest.schema.json');
 const REPORT_SCHEMA_PATH = join(ROOT, 'schema', 'report.schema.json');
 const SOURCES_PATH = join(ROOT, 'config', 'sources.yaml');
@@ -308,6 +310,43 @@ function validateDigestDocument(doc, filename, sources) {
   }
 
   errors.push(...validateRubric(doc));
+  errors.push(...validateGrouping(doc, sources));
+  return errors;
+}
+
+function validateCoverageLink(link, sources, where) {
+  const errors = [];
+  if (!link || typeof link !== 'object') {
+    errors.push(`${where} also covered link is missing`);
+    return errors;
+  }
+  if (!isHttps(link.url)) errors.push(`${where} also covered url must be https`);
+  if (isBannedHost(link.url) || isBannedPublisher(link.publisher?.source_id, link.publisher?.name)) {
+    errors.push(`${where} also covered link must be a named-author source, not Reddit or Hacker News`);
+  }
+  const source = sources.get(link.publisher?.source_id);
+  if (!source) {
+    errors.push(`${where} also covered source_id ${link.publisher?.source_id} is not in config/sources.yaml`);
+  } else if (link.publisher.name !== source.name) {
+    errors.push(`${where} also covered publisher name must be ${JSON.stringify(source.name)}`);
+  }
+  if (typeof link.title !== 'string' || link.title.trim().length === 0) {
+    errors.push(`${where} also covered link is missing a title`);
+  }
+  return errors;
+}
+
+function validateGrouping(doc, sources) {
+  const errors = [...storyPlacementErrors(doc)];
+  const cards = [...doc.main_feed, ...doc.footer_aside, ...(Array.isArray(doc.excluded) ? doc.excluded : [])];
+  for (const card of cards) {
+    if (!card || typeof card !== 'object') continue;
+    errors.push(...numberNoteErrors(card));
+    if (!Array.isArray(card.also_covered)) continue;
+    card.also_covered.forEach((link, index) => {
+      errors.push(...validateCoverageLink(link, sources, `${card.id} also covered ${index + 1}`));
+    });
+  }
   return errors;
 }
 
@@ -378,13 +417,33 @@ function rubricFileErrors() {
   if (!/per-source/i.test(text)) {
     return ['config/inclusion-rubric.md must say there is no per-source cap'];
   }
+  if (!text.includes('story-grouping.md')) {
+    return ['config/inclusion-rubric.md must point ingest at config/story-grouping.md'];
+  }
+  return [];
+}
+
+function groupingFileErrors() {
+  if (!existsSync(GROUPING_PATH)) return ['config/story-grouping.md is missing'];
+  const text = readFileSync(GROUPING_PATH, 'utf8');
+  const required = [
+    ['same story', 'config/story-grouping.md must say ingest groups the same story, not only the same URL'],
+    ['strongest source', 'config/story-grouping.md must say how to pick the strongest source'],
+    ['Also covered by', 'config/story-grouping.md must tell ingest to list the other sources as Also covered by'],
+    ['number_note', 'config/story-grouping.md must tell ingest how to write number_note when a key number disagrees'],
+    ['Also seen', 'config/story-grouping.md must say an item cannot be both a main item and an Also seen link'],
+    ['2026-W40', 'config/story-grouping.md must keep weeks before 2026-W41, including 2026-W40, valid without grouping fields'],
+  ];
+  for (const [needle, message] of required) {
+    if (!text.includes(needle)) return [message];
+  }
   return [];
 }
 
 export function validateArchive(contentDir, sources) {
   const digestPaths = jsonFiles(join(contentDir, 'digests'));
   const reportPaths = jsonFiles(join(contentDir, 'reports'));
-  const errors = [...rubricFileErrors()];
+  const errors = [...rubricFileErrors(), ...groupingFileErrors()];
 
   if (digestPaths.length === 0) {
     errors.push(`${contentDir}/digests has no week json files`);
@@ -705,6 +764,7 @@ function runSelfTest(sources) {
   }
 
   if (!proveInclusion(sources, sample)) return false;
+  if (!proveGrouping(sources)) return false;
   if (!proveSourceRules(sources, sample)) return false;
 
   console.log('self-test PASS');
@@ -842,6 +902,141 @@ function proveInclusion(sources, sample) {
   if (!expectRubricFailure(sources, stripped, 'include_reason', '2026-W41 excluded item with no reason')) {
     return false;
   }
+  return true;
+}
+
+function proveGrouping(sources) {
+  const grouped = rubricWeek();
+  const primary = grouped.topics.technical[0];
+  primary.also_covered = [
+    {
+      title: 'Import AI on the same launch',
+      url: 'https://importai.substack.com/p/rubric-same-launch',
+      publisher: { source_id: 'import-ai', name: 'Import AI' },
+    },
+  ];
+  primary.number_note = '8 per Simon Willison, 3 per Import AI';
+  const groupedErrors = validateDigestDocument(grouped, '2026-W41.json', sources);
+  if (groupedErrors.length !== 0) {
+    console.error('self-test: a grouped story with a number note must pass');
+    for (const error of groupedErrors) console.error(`- ${error}`);
+    return false;
+  }
+  console.log('self-test PASS grouped story with a number note');
+
+  const silent = rubricWeek();
+  silent.topics.technical[0].number_note = '8 per Simon Willison, 3 per Import AI';
+  if (!expectRubricFailure(sources, silent, 'number_note needs at least one also covered source', 'number note without also covered')) {
+    return false;
+  }
+
+  const oneName = rubricWeek();
+  oneName.topics.technical[0].also_covered = [
+    {
+      title: 'Import AI on the same launch',
+      url: 'https://importai.substack.com/p/rubric-same-launch',
+      publisher: { source_id: 'import-ai', name: 'Import AI' },
+    },
+  ];
+  oneName.topics.technical[0].number_note = '8 per Simon Willison';
+  if (
+    !expectRubricFailure(
+      sources,
+      oneName,
+      'number_note must name at least two publishers',
+      'number note that names one publisher',
+    )
+  ) {
+    return false;
+  }
+
+  const seenTwice = rubricWeek();
+  seenTwice.footer_aside[0].url = `${seenTwice.main_feed[0].url}?utm_source=digest`;
+  if (
+    !expectRubricFailure(
+      sources,
+      seenTwice,
+      'appears both as a main item and as an Also seen link',
+      'main url repeated under Also seen',
+    )
+  ) {
+    return false;
+  }
+
+  const coveredAndSeen = rubricWeek();
+  const coveredUrl = 'https://importai.substack.com/p/rubric-same-launch';
+  coveredAndSeen.topics.technical[0].also_covered = [
+    {
+      title: 'Import AI on the same launch',
+      url: coveredUrl,
+      publisher: { source_id: 'import-ai', name: 'Import AI' },
+    },
+  ];
+  coveredAndSeen.footer_aside[0].url = coveredUrl;
+  if (
+    !expectRubricFailure(
+      sources,
+      coveredAndSeen,
+      'appears both as a main item and as an Also seen link',
+      'also covered url still listed under Also seen',
+    )
+  ) {
+    return false;
+  }
+
+  const w41Path = join(ROOT, 'content', 'digests', '2026-W41.json');
+  const w41 = JSON.parse(readFileSync(w41Path, 'utf8'));
+  const mathId = 'dont-worry-about-the-vase-new-math-from-openai';
+  const claytonId = 'nextgov-fcw-experts-hope-new-ai-czars-leadership-can-move-the-needle-on-regulation';
+  const math = w41.main_feed.find((card) => card.id === mathId);
+  const clayton = w41.main_feed.find((card) => card.id === claytonId);
+  const mathUrls = [
+    'https://stefanbauschard.substack.com/p/ai-is-inventing-new-math-it-has-722',
+    'https://lastweekin.ai/p/last-week-in-ai-346-719-math-manuscripts',
+    'https://thezvi.substack.com/p/ai-189-new-math',
+  ];
+  const claytonUrls = ['https://www.techpolicy.press/an-ai-accord-a-new-czar-and-an-autonomous-warfare-command/'];
+  const renderedUrls = new Set([...w41.main_feed, ...w41.footer_aside].map((card) => card.url));
+  const topIds = [
+    'metr-ai-systems-could-cover-up-misbehavior',
+    'transformer-bengio-if-you-prioritize-safety-leave-frontier-ai-companies',
+    'epoch-ai-can-ai-automate-ai-r-d-yet',
+    'where-your-ed-at-credit-crunch',
+    'education-week-chatgpts-teen-mode-is-unsafe-for-students-report-concludes',
+  ];
+  const absorbed = [
+    'education-disrupted-ai-is-inventing-new-math-it-has-722-papers-to-show-for-it',
+    'last-week-in-ai-last-week-in-ai-346-719-math-manuscripts-2-western-open-models-1-more-safety-resignation',
+    'dont-worry-about-the-vase-ai-189-new-math',
+    'tech-policy-press-an-ai-accord-a-new-czar-and-an-autonomous-warfare-command',
+  ];
+  const renderedIds = new Set([...w41.main_feed, ...w41.footer_aside].map((card) => card.id));
+  const mathCovered = (math?.also_covered ?? []).map((link) => link.url);
+  const claytonCovered = (clayton?.also_covered ?? []).map((link) => link.url);
+  const w41Grouped =
+    math &&
+    clayton &&
+    mathCovered.length === mathUrls.length &&
+    mathUrls.every((url) => mathCovered.includes(url)) &&
+    mathUrls.every((url) => !renderedUrls.has(url)) &&
+    claytonCovered.length === 1 &&
+    claytonUrls.every((url) => claytonCovered.includes(url)) &&
+    claytonUrls.every((url) => !renderedUrls.has(url)) &&
+    typeof math.number_note === 'string' &&
+    math.number_note.includes('722') &&
+    math.number_note.includes('719') &&
+    math.number_note.includes('Education Disrupted') &&
+    math.number_note.includes('Last Week in AI') &&
+    w41.briefing.synthesis.includes('722') &&
+    w41.briefing.synthesis.includes('719') &&
+    topIds.every((id, index) => w41.briefing.top[index]?.id === id) &&
+    absorbed.every((id) => !renderedIds.has(id));
+  if (!w41Grouped) {
+    console.error('self-test: 2026-W41 must show the math release once and the Clayton appointment once');
+    console.error(JSON.stringify({ mathCovered, claytonCovered, note: math?.number_note }, null, 2));
+    return false;
+  }
+  console.log('self-test PASS 2026-W41 math release and Clayton appointment are each one item');
   return true;
 }
 

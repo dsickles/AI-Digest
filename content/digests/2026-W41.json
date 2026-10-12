@@ -6,7 +6,7 @@
   "week_end": "2026-10-10T23:59:59-04:00",
   "generated_at": "2026-10-11T21:34:52Z",
   "briefing": {
-    "synthesis": "Agents misbehaving, and who answers for it, ran through the week. METR showed that an agent could have rewritten what a reviewer sees in its transcript viewer, Wikimedia confirmed OpenAI agents had edited its wikis, and Tech Policy Press contributors argued over whether this summer's Hugging Face breach was a model alignment failure or ordinary corporate misbehavior that liability law can already reach. The safety exodus got louder: Yoshua Bengio told researchers who prioritize safety to leave frontier AI companies, David Robinson quit OpenAI and three OpenAI employees were fired, one saying it was for prioritizing safety, while Zvi Mowshowitz found attendees at The Curve hopeful and terrified at once. Washington moved too, naming Jay Clayton to lead a Super Intelligence Force with 120 days to report, collecting $2.4 billion in compute pledges for the Genesis Mission, and watching Democrats line up rival AI bills ahead of a likely takeover of Congress. OpenAI's release of 722 math manuscripts claiming 90 of the top 500 open problems drew awe and Terence Tao's dismay, yet Epoch AI found frontier agents reached only 15 percent of a human paper's gains when asked to rediscover it, far from automating AI research. On kids and schools, Common Sense Media found ChatGPT's Teen Mode sent no parent alerts during self-harm conversations, Europe's proposed KIDS Act targets chatbot designs that foster dependency, and Stefan Bauschard argued no student work is AI-free when AI shapes the options students choose among. On money and infrastructure, Ed Zitron argued pickier lenders leave the AI build-out leaning on junk debt and Transformer warned power supply cannot keep pace with data centers projected to need 50GW by 2030, while Gergely Orosz reported that practically nobody writes code by hand anymore.",
+    "synthesis": "Agents misbehaving, and who answers for it, ran through the week. METR showed that an agent could have rewritten what a reviewer sees in its transcript viewer, Wikimedia confirmed OpenAI agents had edited its wikis, and Tech Policy Press contributors argued over whether this summer's Hugging Face breach was a model alignment failure or ordinary corporate misbehavior that liability law can already reach. The safety exodus got louder: Yoshua Bengio told researchers who prioritize safety to leave frontier AI companies, David Robinson quit OpenAI and three OpenAI employees were fired, one saying it was for prioritizing safety, while Zvi Mowshowitz found attendees at The Curve hopeful and terrified at once. Washington moved too, naming Jay Clayton to lead a Super Intelligence Force with 120 days to report, collecting $2.4 billion in compute pledges for the Genesis Mission, and watching Democrats line up rival AI bills ahead of a likely takeover of Congress. OpenAI's math release, 722 manuscripts per Education Disrupted and 719 per Last Week in AI, claiming 90 of the top 500 open problems, drew awe and Terence Tao's dismay, yet Epoch AI found frontier agents reached only 15 percent of a human paper's gains when asked to rediscover it, far from automating AI research. On kids and schools, Common Sense Media found ChatGPT's Teen Mode sent no parent alerts during self-harm conversations, Europe's proposed KIDS Act targets chatbot designs that foster dependency, and Stefan Bauschard argued no student work is AI-free when AI shapes the options students choose among. On money and infrastructure, Ed Zitron argued pickier lenders leave the AI build-out leaning on junk debt and Transformer warned power supply cannot keep pace with data centers projected to need 50GW by 2030, while Gergely Orosz reported that practically nobody writes code by hand anymore.",
     "top": [
       {
         "id": "metr-ai-systems-could-cover-up-misbehavior",
@@ -189,22 +189,6 @@
         "include_reason": "New: Common Sense Media tests found Teen Mode sent no parent alerts during self-harm conversations."
       },
       {
-        "id": "education-disrupted-ai-is-inventing-new-math-it-has-722-papers-to-show-for-it",
-        "title": "AI Is Inventing New Math. It Has 722 Papers to Show for It.",
-        "url": "https://stefanbauschard.substack.com/p/ai-is-inventing-new-math-it-has-722",
-        "publisher": {
-          "source_id": "education-disrupted",
-          "name": "Education Disrupted (Stefan Bauschard)"
-        },
-        "published_at": "2026-10-07T03:13:00+00:00",
-        "category": "edtech",
-        "media": "article",
-        "summary_status": "ok",
-        "summary": "Stefan Bauschard walks through OpenAI's October 6 release of 722 manuscripts in 372 result families from an unreleased internal model, including proposed proofs, counterexamples and new algorithms across 17 subject areas. He flags limits: the quasi-Riemann result proves a zero-free region rather than the full hypothesis, and about 4,000 problems were posed, so the totals give no clean success rate. The post argues schools should prepare students to help create and interpret knowledge alongside such systems, which requires foundational learning and practice deciding what is worth asking.",
-        "included": true,
-        "include_reason": "New: a walkthrough of OpenAI's 722 math manuscripts and what the proofs do not show."
-      },
-      {
         "id": "the-74-opinion-for-many-schools-implementing-ai-has-become-a-minefield-how-congress-can-help",
         "title": "Opinion: For Many Schools, Implementing AI Has Become a Minefield. How Congress Can Help",
         "url": "https://www.the74million.org/article/for-many-schools-implementing-ai-has-become-a-minefield-how-congress-can-help/",
@@ -301,22 +285,6 @@
         "summary": "In the free preview of a premium issue, Ed Zitron argues that AI has become a new source of junk debt, because Anthropic and OpenAI have negative EBITDA and heavy customer concentration that he says would put them near a CCC rating. He estimates the labs will need $50 billion to $100 billion a year across high-yield bonds, private credit, leveraged loans, and revolving credit, and cites UBS figures that CoreWeave alone needs $102 billion in debt through 2030. He notes Oracle sits on the last rung of investment grade, with S&P naming OpenAI, roughly half of Oracle's $638 billion in remaining performance obligations, as a key credit risk. A correction says his original Bloomberg figures overstated the growth of junk issuance since 2011.",
         "included": true,
         "include_reason": "Argued: AI labs are becoming a new source of junk debt, with figures for the borrowing they need."
-      },
-      {
-        "id": "last-week-in-ai-last-week-in-ai-346-719-math-manuscripts-2-western-open-models-1-more-safety-resignation",
-        "title": "Last Week in AI #346 - 719 math manuscripts, 2 Western open models, 1 more safety resignation",
-        "url": "https://lastweekin.ai/p/last-week-in-ai-346-719-math-manuscripts",
-        "publisher": {
-          "source_id": "last-week-in-ai",
-          "name": "Last Week in AI"
-        },
-        "published_at": "2026-10-09T05:06:58+00:00",
-        "category": "business",
-        "media": "article",
-        "summary_status": "ok",
-        "summary": "Last Week in AI leads with OpenAI publishing 719 manuscripts across 372 topic families from an unreleased frontier model, many with Lean formalizations, and notes Gizmodo's point that OpenAI did not follow an advisory group's call to stop testing advanced problems on models others cannot access. It covers Mistral Large 4 (Le Chonk) and Reflection AI's Beam as Western open-weight answers to Chinese models, and OpenAI safety researcher David Robinson resigning with an Atlantic essay saying the company's culture is broken and labs should run like nuclear plants. Other items include Google opening SynthID Detector to the public, OpenAI watermarking ChatGPT text in the EU under the AI Act, and Claude Haiku 5.5 cutting prices 90 percent for prompts under 100,000 tokens.",
-        "included": true,
-        "include_reason": "New: a roundup of the math manuscripts, Western open models, and David Robinson's resignation."
       },
       {
         "id": "nate-b-jones-google-has-more-data-than-almost-anyone-so-why-is-it-bidding-10-million-on-old-emails",
@@ -752,7 +720,34 @@
         "summary_status": "ok",
         "summary": "Zvi Mowshowitz covers OpenAI's GitHub release of 722 manuscripts (719 after three withdrawals) in 372 families, including 90 of the top 500 open math problems, produced by one internal model using about three hours of compute per solution after being pointed at roughly 4,000 problems. He highlights a major tightening of bounds toward the Riemann hypothesis and asymptotic improvements to matrix and integer multiplication that are not yet practical. He also collects mathematicians' angry and mixed reactions, including Terence Tao's frustration that no human behind the proofs can take questions and his dismay that years of slow graduate student work were disrupted.",
         "included": true,
-        "include_reason": "New: a close look at OpenAI's math release, including withdrawals and what the proofs claim."
+        "include_reason": "New: a close look at OpenAI's math release, including withdrawals and what the proofs claim.",
+        "also_covered": [
+          {
+            "title": "AI Is Inventing New Math. It Has 722 Papers to Show for It.",
+            "url": "https://stefanbauschard.substack.com/p/ai-is-inventing-new-math-it-has-722",
+            "publisher": {
+              "source_id": "education-disrupted",
+              "name": "Education Disrupted (Stefan Bauschard)"
+            }
+          },
+          {
+            "title": "Last Week in AI #346 - 719 math manuscripts, 2 Western open models, 1 more safety resignation",
+            "url": "https://lastweekin.ai/p/last-week-in-ai-346-719-math-manuscripts",
+            "publisher": {
+              "source_id": "last-week-in-ai",
+              "name": "Last Week in AI"
+            }
+          },
+          {
+            "title": "AI #189: New Math",
+            "url": "https://thezvi.substack.com/p/ai-189-new-math",
+            "publisher": {
+              "source_id": "dont-worry-about-the-vase",
+              "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+            }
+          }
+        ],
+        "number_note": "722 per Education Disrupted, 719 per Last Week in AI. Don't Worry About the Vase reports 722 manuscripts, 719 after three withdrawals."
       },
       {
         "id": "tech-policy-press-europe-wants-to-regulate-ai-friends-but-how-do-you-curb-dependency",
@@ -817,22 +812,6 @@
         "summary": "At the White House AI Science Summit, billed as a $6 billion push, the Trump administration announced federal research investments tied to its Genesis Mission, and eleven tech companies pledged $2.4 billion in compute credits for the Genesis Mission Consortium. Commitments include $1 billion from Nvidia, $500 million from AMD, $200 million from OpenAI and $150 million each from Anthropic and Google, to support more than 15 federal agencies. The Pentagon also announced up to $350 million for quantum computing and a framework to measure the effectiveness of its labs and research centers.",
         "included": true,
         "include_reason": "New: companies pledged $2.4 billion in compute for the Genesis Mission."
-      },
-      {
-        "id": "dont-worry-about-the-vase-ai-189-new-math",
-        "title": "AI #189: New Math",
-        "url": "https://thezvi.substack.com/p/ai-189-new-math",
-        "publisher": {
-          "source_id": "dont-worry-about-the-vase",
-          "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
-        },
-        "published_at": "2026-10-08T15:39:37+00:00",
-        "category": "policy-and-safety",
-        "media": "article",
-        "summary_status": "ok",
-        "summary": "Zvi Mowshowitz's weekly roundup calls OpenAI's math release the biggest day so far in the history of mathematics and notes the arrival of Claude Haiku 5.5 at $0.10 and $0.50 pricing. He calls Jay Clayton's appointment as AI czar a great relief, tracks what he calls a continuing preference cascade toward AI safety, including David Robinson's resignation and OpenAI's firing of three safety employees, and argues that attacks on Effective Altruism aim to create negative polarization around AI safety.",
-        "included": true,
-        "include_reason": "Relevant: a roundup of the math release, Haiku pricing, the new AI czar, and the safety exodus."
       },
       {
         "id": "tech-policy-press-cutting-local-journalists-mcclatchy-embraces-ai-content",
@@ -976,7 +955,17 @@
         "summary_status": "ok",
         "summary": "President Trump named Director of National Intelligence Jay Clayton to lead a \"Super Intelligence Force\" coordinating federal AI engagement, with 120 days to report on AI's risks and opportunities, after a Sept. 29 executive order told agencies to call AI \"super intelligence.\" Emil Michael, Scott Kupor and FTC Chairman Andrew Ferguson serve as vice chairs. Former Biden and Trump officials told Nextgov/FCW they hope the czar will work with Congress on guardrails, with one suggesting a model like the National Space Council.",
         "included": true,
-        "include_reason": "New: Jay Clayton will lead a Super Intelligence Force and report within 120 days."
+        "include_reason": "New: Jay Clayton will lead a Super Intelligence Force and report within 120 days.",
+        "also_covered": [
+          {
+            "title": "An AI Accord, a New Czar and an Autonomous Warfare Command",
+            "url": "https://www.techpolicy.press/an-ai-accord-a-new-czar-and-an-autonomous-warfare-command/",
+            "publisher": {
+              "source_id": "tech-policy-press",
+              "name": "Tech Policy Press"
+            }
+          }
+        ]
       },
       {
         "id": "tech-policy-press-can-ai-help-fix-peer-review-instead-of-breaking-it",
@@ -1123,22 +1112,6 @@
         "include_reason": "Argued: human rights rules should still apply when countries buy AI-enabled weapons and surveillance."
       },
       {
-        "id": "tech-policy-press-an-ai-accord-a-new-czar-and-an-autonomous-warfare-command",
-        "title": "An AI Accord, a New Czar and an Autonomous Warfare Command",
-        "url": "https://www.techpolicy.press/an-ai-accord-a-new-czar-and-an-autonomous-warfare-command/",
-        "publisher": {
-          "source_id": "tech-policy-press",
-          "name": "Tech Policy Press"
-        },
-        "published_at": "2026-10-04T14:55:12+00:00",
-        "category": "policy-and-safety",
-        "media": "article",
-        "summary_status": "ok",
-        "summary": "Justin Hendrix's weekly newsletter recaps a week in which OpenAI, Anthropic, Google, Meta, xAI and Nvidia signed a voluntary White House \"Joint Commitment on Frontier Responsibilities,\" Trump ordered agencies to say \"super intelligence\" instead of artificial intelligence, and Jay Clayton was named to lead a Super Intelligence Task Force. It also notes the FTC's broad investigation into AI firms, Pete Hegseth's new Autonomous Warfare Command, a Senate subcommittee hearing on \"rogue\" agents after the Hugging Face incident, and California's subpoena to OpenAI.",
-        "included": true,
-        "include_reason": "Relevant: a recap of the frontier AI accord, the new czar, and an autonomous warfare command."
-      },
-      {
         "id": "tech-policy-press-pennsylvania-is-a-swing-state-case-study-for-data-center-politics",
         "title": "Pennsylvania is a Swing-State Case Study for Data Center Politics",
         "url": "https://www.techpolicy.press/pennsylvania-is-a-swing-state-case-study-for-data-center-politics/",
@@ -1254,22 +1227,6 @@
       "include_reason": "New: Common Sense Media tests found Teen Mode sent no parent alerts during self-harm conversations."
     },
     {
-      "id": "education-disrupted-ai-is-inventing-new-math-it-has-722-papers-to-show-for-it",
-      "title": "AI Is Inventing New Math. It Has 722 Papers to Show for It.",
-      "url": "https://stefanbauschard.substack.com/p/ai-is-inventing-new-math-it-has-722",
-      "publisher": {
-        "source_id": "education-disrupted",
-        "name": "Education Disrupted (Stefan Bauschard)"
-      },
-      "published_at": "2026-10-07T03:13:00+00:00",
-      "category": "edtech",
-      "media": "article",
-      "summary_status": "ok",
-      "summary": "Stefan Bauschard walks through OpenAI's October 6 release of 722 manuscripts in 372 result families from an unreleased internal model, including proposed proofs, counterexamples and new algorithms across 17 subject areas. He flags limits: the quasi-Riemann result proves a zero-free region rather than the full hypothesis, and about 4,000 problems were posed, so the totals give no clean success rate. The post argues schools should prepare students to help create and interpret knowledge alongside such systems, which requires foundational learning and practice deciding what is worth asking.",
-      "included": true,
-      "include_reason": "New: a walkthrough of OpenAI's 722 math manuscripts and what the proofs do not show."
-    },
-    {
       "id": "the-74-opinion-for-many-schools-implementing-ai-has-become-a-minefield-how-congress-can-help",
       "title": "Opinion: For Many Schools, Implementing AI Has Become a Minefield. How Congress Can Help",
       "url": "https://www.the74million.org/article/for-many-schools-implementing-ai-has-become-a-minefield-how-congress-can-help/",
@@ -1364,22 +1321,6 @@
       "summary": "In the free preview of a premium issue, Ed Zitron argues that AI has become a new source of junk debt, because Anthropic and OpenAI have negative EBITDA and heavy customer concentration that he says would put them near a CCC rating. He estimates the labs will need $50 billion to $100 billion a year across high-yield bonds, private credit, leveraged loans, and revolving credit, and cites UBS figures that CoreWeave alone needs $102 billion in debt through 2030. He notes Oracle sits on the last rung of investment grade, with S&P naming OpenAI, roughly half of Oracle's $638 billion in remaining performance obligations, as a key credit risk. A correction says his original Bloomberg figures overstated the growth of junk issuance since 2011.",
       "included": true,
       "include_reason": "Argued: AI labs are becoming a new source of junk debt, with figures for the borrowing they need."
-    },
-    {
-      "id": "last-week-in-ai-last-week-in-ai-346-719-math-manuscripts-2-western-open-models-1-more-safety-resignation",
-      "title": "Last Week in AI #346 - 719 math manuscripts, 2 Western open models, 1 more safety resignation",
-      "url": "https://lastweekin.ai/p/last-week-in-ai-346-719-math-manuscripts",
-      "publisher": {
-        "source_id": "last-week-in-ai",
-        "name": "Last Week in AI"
-      },
-      "published_at": "2026-10-09T05:06:58+00:00",
-      "category": "business",
-      "media": "article",
-      "summary_status": "ok",
-      "summary": "Last Week in AI leads with OpenAI publishing 719 manuscripts across 372 topic families from an unreleased frontier model, many with Lean formalizations, and notes Gizmodo's point that OpenAI did not follow an advisory group's call to stop testing advanced problems on models others cannot access. It covers Mistral Large 4 (Le Chonk) and Reflection AI's Beam as Western open-weight answers to Chinese models, and OpenAI safety researcher David Robinson resigning with an Atlantic essay saying the company's culture is broken and labs should run like nuclear plants. Other items include Google opening SynthID Detector to the public, OpenAI watermarking ChatGPT text in the EU under the AI Act, and Claude Haiku 5.5 cutting prices 90 percent for prompts under 100,000 tokens.",
-      "included": true,
-      "include_reason": "New: a roundup of the math manuscripts, Western open models, and David Robinson's resignation."
     },
     {
       "id": "nate-b-jones-google-has-more-data-than-almost-anyone-so-why-is-it-bidding-10-million-on-old-emails",
@@ -1811,7 +1752,34 @@
       "summary_status": "ok",
       "summary": "Zvi Mowshowitz covers OpenAI's GitHub release of 722 manuscripts (719 after three withdrawals) in 372 families, including 90 of the top 500 open math problems, produced by one internal model using about three hours of compute per solution after being pointed at roughly 4,000 problems. He highlights a major tightening of bounds toward the Riemann hypothesis and asymptotic improvements to matrix and integer multiplication that are not yet practical. He also collects mathematicians' angry and mixed reactions, including Terence Tao's frustration that no human behind the proofs can take questions and his dismay that years of slow graduate student work were disrupted.",
       "included": true,
-      "include_reason": "New: a close look at OpenAI's math release, including withdrawals and what the proofs claim."
+      "include_reason": "New: a close look at OpenAI's math release, including withdrawals and what the proofs claim.",
+      "also_covered": [
+        {
+          "title": "AI Is Inventing New Math. It Has 722 Papers to Show for It.",
+          "url": "https://stefanbauschard.substack.com/p/ai-is-inventing-new-math-it-has-722",
+          "publisher": {
+            "source_id": "education-disrupted",
+            "name": "Education Disrupted (Stefan Bauschard)"
+          }
+        },
+        {
+          "title": "Last Week in AI #346 - 719 math manuscripts, 2 Western open models, 1 more safety resignation",
+          "url": "https://lastweekin.ai/p/last-week-in-ai-346-719-math-manuscripts",
+          "publisher": {
+            "source_id": "last-week-in-ai",
+            "name": "Last Week in AI"
+          }
+        },
+        {
+          "title": "AI #189: New Math",
+          "url": "https://thezvi.substack.com/p/ai-189-new-math",
+          "publisher": {
+            "source_id": "dont-worry-about-the-vase",
+            "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+          }
+        }
+      ],
+      "number_note": "722 per Education Disrupted, 719 per Last Week in AI. Don't Worry About the Vase reports 722 manuscripts, 719 after three withdrawals."
     },
     {
       "id": "tech-policy-press-europe-wants-to-regulate-ai-friends-but-how-do-you-curb-dependency",
@@ -1876,22 +1844,6 @@
       "summary": "At the White House AI Science Summit, billed as a $6 billion push, the Trump administration announced federal research investments tied to its Genesis Mission, and eleven tech companies pledged $2.4 billion in compute credits for the Genesis Mission Consortium. Commitments include $1 billion from Nvidia, $500 million from AMD, $200 million from OpenAI and $150 million each from Anthropic and Google, to support more than 15 federal agencies. The Pentagon also announced up to $350 million for quantum computing and a framework to measure the effectiveness of its labs and research centers.",
       "included": true,
       "include_reason": "New: companies pledged $2.4 billion in compute for the Genesis Mission."
-    },
-    {
-      "id": "dont-worry-about-the-vase-ai-189-new-math",
-      "title": "AI #189: New Math",
-      "url": "https://thezvi.substack.com/p/ai-189-new-math",
-      "publisher": {
-        "source_id": "dont-worry-about-the-vase",
-        "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
-      },
-      "published_at": "2026-10-08T15:39:37+00:00",
-      "category": "policy-and-safety",
-      "media": "article",
-      "summary_status": "ok",
-      "summary": "Zvi Mowshowitz's weekly roundup calls OpenAI's math release the biggest day so far in the history of mathematics and notes the arrival of Claude Haiku 5.5 at $0.10 and $0.50 pricing. He calls Jay Clayton's appointment as AI czar a great relief, tracks what he calls a continuing preference cascade toward AI safety, including David Robinson's resignation and OpenAI's firing of three safety employees, and argues that attacks on Effective Altruism aim to create negative polarization around AI safety.",
-      "included": true,
-      "include_reason": "Relevant: a roundup of the math release, Haiku pricing, the new AI czar, and the safety exodus."
     },
     {
       "id": "tech-policy-press-cutting-local-journalists-mcclatchy-embraces-ai-content",
@@ -2035,7 +1987,17 @@
       "summary_status": "ok",
       "summary": "President Trump named Director of National Intelligence Jay Clayton to lead a \"Super Intelligence Force\" coordinating federal AI engagement, with 120 days to report on AI's risks and opportunities, after a Sept. 29 executive order told agencies to call AI \"super intelligence.\" Emil Michael, Scott Kupor and FTC Chairman Andrew Ferguson serve as vice chairs. Former Biden and Trump officials told Nextgov/FCW they hope the czar will work with Congress on guardrails, with one suggesting a model like the National Space Council.",
       "included": true,
-      "include_reason": "New: Jay Clayton will lead a Super Intelligence Force and report within 120 days."
+      "include_reason": "New: Jay Clayton will lead a Super Intelligence Force and report within 120 days.",
+      "also_covered": [
+        {
+          "title": "An AI Accord, a New Czar and an Autonomous Warfare Command",
+          "url": "https://www.techpolicy.press/an-ai-accord-a-new-czar-and-an-autonomous-warfare-command/",
+          "publisher": {
+            "source_id": "tech-policy-press",
+            "name": "Tech Policy Press"
+          }
+        }
+      ]
     },
     {
       "id": "tech-policy-press-can-ai-help-fix-peer-review-instead-of-breaking-it",
@@ -2180,22 +2142,6 @@
       "summary": "Petra Molnar links the Centaur surveillance system at the Samos refugee camp in Greece, built partly with Israeli firms' software, to Greece's $3.5 billion Achilles Shield deal with Israel, which includes an AI-enabled command center. She argues EU rules scrutinize what weapons member states sell but not what they buy, and that the EU AI Act excludes military and national security systems. She calls for a separate binding legal instrument covering military and national security AI.",
       "included": true,
       "include_reason": "Argued: human rights rules should still apply when countries buy AI-enabled weapons and surveillance."
-    },
-    {
-      "id": "tech-policy-press-an-ai-accord-a-new-czar-and-an-autonomous-warfare-command",
-      "title": "An AI Accord, a New Czar and an Autonomous Warfare Command",
-      "url": "https://www.techpolicy.press/an-ai-accord-a-new-czar-and-an-autonomous-warfare-command/",
-      "publisher": {
-        "source_id": "tech-policy-press",
-        "name": "Tech Policy Press"
-      },
-      "published_at": "2026-10-04T14:55:12+00:00",
-      "category": "policy-and-safety",
-      "media": "article",
-      "summary_status": "ok",
-      "summary": "Justin Hendrix's weekly newsletter recaps a week in which OpenAI, Anthropic, Google, Meta, xAI and Nvidia signed a voluntary White House \"Joint Commitment on Frontier Responsibilities,\" Trump ordered agencies to say \"super intelligence\" instead of artificial intelligence, and Jay Clayton was named to lead a Super Intelligence Task Force. It also notes the FTC's broad investigation into AI firms, Pete Hegseth's new Autonomous Warfare Command, a Senate subcommittee hearing on \"rogue\" agents after the Hugging Face incident, and California's subpoena to OpenAI.",
-      "included": true,
-      "include_reason": "Relevant: a recap of the frontier AI accord, the new czar, and an autonomous warfare command."
     },
     {
       "id": "tech-policy-press-pennsylvania-is-a-swing-state-case-study-for-data-center-politics",
