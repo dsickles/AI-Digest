@@ -1,10 +1,16 @@
 ---
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { parse as parseYaml } from 'yaml';
 import Shell from '../components/Shell.astro';
-import { latestWeek } from '../lib/weeks';
-import { loadSourceIndex } from '../lib/sources.mjs';
+import { formatSourceCountSubline, latestWeek } from '../lib/weeks';
+import { countSourceReferences, loadSourceIndex, sourceWeekCountLabel } from '../lib/sources.mjs';
 
 const week = latestWeek();
 const index = loadSourceIndex();
+const sourceFile = parseYaml(readFileSync(join(process.cwd(), 'config', 'sources.yaml'), 'utf8'));
+const references = countSourceReferences(week, sourceFile?.sources ?? []);
+const subline = week ? formatSourceCountSubline(week.week_start, week.week_end) : '';
 const mid = Math.ceil(index.sections.length / 2);
 const columns = [index.sections.slice(0, mid), index.sections.slice(mid)].filter((column) => column.length > 0);
 ---
@@ -17,8 +23,8 @@ const columns = [index.sections.slice(0, mid), index.sections.slice(mid)].filter
   scope="latest"
 >
   <header class="sources-head">
-    <h2 class="page-title">Sources</h2>
-    <p class="sources-lede">All {index.total} feeds the digest reads, by section.</p>
+    <h2 class="page-title">Sources <span class="tot">({index.total})</span></h2>
+    {subline && <p class="sources-note">{subline}</p>}
   </header>
   <div class="source-cols">
     {
@@ -30,19 +36,22 @@ const columns = [index.sections.slice(0, mid), index.sections.slice(mid)].filter
               data-section={section.id}
               aria-labelledby={`source-section-${section.id}`}
             >
-              <h3 class="source-section-title" id={`source-section-${section.id}`}>
-                {section.label}{' '}
-                <span class="n">{section.count}</span>
-              </h3>
+              <h2 class="source-section-title" id={`source-section-${section.id}`}>
+                {section.label}<span class="n">{section.count}</span>
+              </h2>
               <ul class="source-list">
-                {section.sources.map((source) => (
-                  <li class="source-row">
-                    <a href={source.homeUrl} target="_blank" rel="noopener noreferrer">
-                      {source.name}
-                    </a>
-                    <span class="source-type">{source.typeLabel}</span>
-                  </li>
-                ))}
+                {section.sources.map((source) => {
+                  const count = references.get(source.id) ?? 0;
+                  return (
+                    <li class="source-row">
+                      <a href={source.homeUrl} target="_blank" rel="noopener noreferrer">
+                        {source.name}
+                      </a>
+                      <span class="source-type">{source.typeLabel}</span>
+                      <span class:list={['source-count', count === 0 && 'none']}>{sourceWeekCountLabel(count)}</span>
+                    </li>
+                  );
+                })}
               </ul>
             </section>
           ))}

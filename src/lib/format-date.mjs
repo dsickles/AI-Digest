@@ -39,3 +39,13 @@ export function formatWeekRange(weekStart, weekEnd) {
   const startLabel = startYear === endYear ? monthDay.format(readerInstant(weekStart)) : formatDate(weekStart);
   return `Week of ${startLabel} – ${formatDate(weekEnd)}`;
 }
+
+// Month and day labels from the current week. "to" joins them so this sentence
+// does not add a dash. A week that crosses a year includes the year.
+export function formatSourceCountSubline(weekStart, weekEnd) {
+  const startYear = yearOnly.format(readerInstant(weekStart));
+  const endYear = yearOnly.format(readerInstant(weekEnd));
+  const startLabel = startYear === endYear ? monthDay.format(readerInstant(weekStart)) : formatDate(weekStart);
+  const endLabel = startYear === endYear ? monthDay.format(readerInstant(weekEnd)) : formatDate(weekEnd);
+  return `Counts show items each source contributed this week (${startLabel} to ${endLabel}).`;
+}
