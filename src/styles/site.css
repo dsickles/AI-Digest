@@ -253,21 +253,6 @@ a:hover {
   margin-top: var(--s5);
 }
 
-.left-col > .notw {
-  padding-top: var(--s2);
-  border-top: 1px solid var(--rule-strong);
-}
-
-.notw-label {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  line-height: 1.4;
-  text-transform: uppercase;
-  color: var(--ink-3);
-}
-
 .notw-fig {
   margin: var(--s3) 0 0 -0.04em;
   font-weight: 700;
