@@ -617,6 +617,43 @@ function compactCss(css) {
   return out;
 }
 
+function classRuleBodies(css, className) {
+  const bodies = [];
+  const needle = `.${className}`;
+  let from = 0;
+  while (from < css.length) {
+    const start = css.indexOf(needle, from);
+    if (start === -1) break;
+    const after = css[start + needle.length] ?? '';
+    if (/[A-Za-z0-9_-]/.test(after)) {
+      from = start + needle.length;
+      continue;
+    }
+    const open = css.indexOf('{', start);
+    if (open === -1) break;
+    if (css.slice(start, open).includes('}')) {
+      from = start + needle.length;
+      continue;
+    }
+    let depth = 0;
+    let close = -1;
+    for (let index = open; index < css.length; index += 1) {
+      if (css[index] === '{') depth += 1;
+      else if (css[index] === '}') {
+        depth -= 1;
+        if (depth === 0) {
+          close = index;
+          break;
+        }
+      }
+    }
+    if (close === -1) break;
+    bodies.push(css.slice(open + 1, close));
+    from = close + 1;
+  }
+  return bodies;
+}
+
 function ruleBody(css, selector) {
   const forms = [
     selector,
@@ -1048,7 +1085,7 @@ function assertProgramCss(html, label) {
   const leadPlace = ruleBody(css, '.syn > .lead');
   const leadSpans = leadPlace.includes('grid-column:1/-1') || leadPlace.includes('grid-area:1/1/auto/-1');
   if (!leadSpans) fail(`${label} lead does not span the page above the columns`);
-  const themePlace = ruleBody(css, '.syn > .themes-col');
+  const themePlace = ruleBody(css, '.brief-flow > .themes-col');
   const themesLeft =
     (themePlace.includes('grid-column:1/5') && themePlace.includes('grid-row:2')) ||
     themePlace.includes('grid-area:2/1/auto/5');
@@ -1059,25 +1096,45 @@ function assertProgramCss(html, label) {
     topPlace.includes('grid-area:2/5/auto/13');
   if (!topRight) fail(`${label} Top 5 is not the right two thirds under the lead`);
   if (css.includes('stories-rest')) fail(`${label} Top 5 stories can leave the right column`);
-  const numberCol = ruleBody(css, '.syn > .themes-col.has-number');
-  if (!numberCol.includes('align-self:stretch') || !numberCol.includes('flex-direction:column')) {
-    fail(`${label} Number of the week does not fill the space under the themes`);
+  if (!themePlace.includes('align-self:start')) {
+    fail(`${label} themes column cannot end above the Top 5`);
   }
-  const notw = ruleBody(css, '.notw');
-  if (!notw.includes('margin-top:auto') || !notw.includes('border-top:1pxsolidvar(--rule-strong)')) {
-    fail(`${label} Number of the week does not sit at the bottom of the themes column`);
+  const leftCol = ruleBody(css, '.syn > .left-col');
+  const underLead =
+    (leftCol.includes('grid-column:1/5') && leftCol.includes('grid-row:2')) || leftCol.includes('grid-area:2/1/auto/5');
+  if (!underLead || !leftCol.includes('align-self:start')) {
+    fail(`${label} Number of the week is not under the lead in the left column`);
+  }
+  const beside = ruleBody(css, '.syn:has(> .left-col) > .top');
+  if (beside.includes('grid-row:1') || beside.includes('grid-area:1/5/auto/13')) {
+    fail(`${label} Top 5 starts above the lead beside the Number of the week`);
+  }
+  if (ruleBody(css, '.left-col > .notw').includes('border-top')) {
+    fail(`${label} Number of the week stacks a second rule above the heading`);
+  }
+  const sectionHeading = ruleBody(css, '.h2');
+  if (
+    !sectionHeading.includes('font-size:15px') ||
+    !sectionHeading.includes('font-weight:600') ||
+    !sectionHeading.includes('color:var(--ink)') ||
+    !sectionHeading.includes('border-top:1pxsolidvar(--rule-strong)') ||
+    sectionHeading.includes('text-transform') ||
+    sectionHeading.includes('--ink-3') ||
+    sectionHeading.includes('letter-spacing:0.08em') ||
+    sectionHeading.includes('letter-spacing:.08em')
+  ) {
+    fail(`${label} section headings are not the bright 15px label`);
+  }
+  if (css.includes('.notw-label')) {
+    fail(`${label} Number of the week label does not use the section heading`);
+  }
+  const placementRules = [...classRuleBodies(css, 'notw'), ...classRuleBodies(css, 'themes-col')];
+  if (placementRules.some((body) => body.includes('margin-top:auto'))) {
+    fail(`${label} Number of the week is pinned to the bottom of the themes column`);
   }
   const fig = ruleBody(css, '.notw-fig');
   if (!fig.includes('color:var(--signal)') || !fig.includes('font-size:88px') || !fig.includes('font-weight:700')) {
     fail(`${label} Number of the week value is not the large vermilion figure`);
-  }
-  const numberLabel = ruleBody(css, '.notw-label');
-  if (
-    !numberLabel.includes('font-size:12px') ||
-    !numberLabel.includes('text-transform:uppercase') ||
-    !numberLabel.includes('color:var(--ink-3)')
-  ) {
-    fail(`${label} Number of the week label is not the grey uppercase program label`);
   }
   if (css.includes('.briefing-full')) fail(`${label} full briefing toggle styles are still present`);
   const storyBox = ruleBody(css, '.story');
@@ -1116,16 +1173,15 @@ function assertProgramCss(html, label) {
     fail(`${label} mid-width layout does not drop to one column`);
   }
   const themesStack =
-    tablet.includes('.syn>.themes-col') &&
+    tablet.includes('.syn>.lead') &&
+    tablet.includes('.brief-flow>.themes-col') &&
+    tablet.includes('.syn>.left-col') &&
     tablet.includes('.syn>.top') &&
     (tablet.includes('grid-area:auto/1/auto/-1') ||
       (tablet.includes('grid-column:1/-1') && tablet.includes('grid-row:auto')));
-  if (!themesStack) fail(`${label} themes and Top 5 do not stack under the lead on a narrow window`);
+  if (!themesStack) fail(`${label} themes and Top 5 do not stack on a narrow window`);
   if (!ruleBody(tablet, '.notw-fig').includes('font-size:64px')) {
     fail(`${label} Number of the week value is not 64px on a narrow window`);
-  }
-  if (!ruleBody(tablet, '.notw').includes('margin-top:var(--s6)')) {
-    fail(`${label} Number of the week does not follow the themes on a narrow window`);
   }
   if (tablet.includes('.index')) fail(`${label} narrow window still styles the Top 5 index`);
   const play = ruleBody(css, '.play');
@@ -1214,6 +1270,9 @@ function assertPhoneCss(css, label) {
   }
   if (!ruleBody(phone, '.num').includes('font-size:48px')) {
     fail(`${label} Top 5 numeral is not 48px at phone width`);
+  }
+  if (!ruleBody(phone, '.syn > .lead').includes('font-size:19px')) {
+    fail(`${label} lead stays at desktop size on a phone`);
   }
   if (phone.includes('.index')) fail(`${label} phone still styles the Top 5 index`);
   if (!ruleBody(phone, '.page-title').includes('font-size:40px')) {
@@ -1392,7 +1451,12 @@ function assertNumberOfWeek(html, weekDoc, where) {
   const slot = html.match(/<section class="notw"[\s\S]*?<\/section>/);
   if (!slot) fail(`${where} is missing the Number of the week`);
   const block = slot[0];
-  if (!decode(block).includes('Number of the week')) fail(`${where} Number of the week is missing its label`);
+  if (!/<h2\b[^>]*class="h2"[^>]*>\s*Number of the week\s*<\/h2>/.test(block)) {
+    fail(`${where} Number of the week label does not use the section heading`);
+  }
+  if (!html.includes('<h2 class="h2" id="themes-heading">') || !html.includes('<h2 class="h2" id="briefing-heading">')) {
+    fail(`${where} themes or Top 5 heading does not use the section heading`);
+  }
   const fig = block.match(/<p class="notw-fig">([\s\S]*?)<\/p>/);
   if (!fig || decode(fig[1]).trim() !== number.value) fail(`${where} Number of the week value does not match the file`);
   const lines = [...block.matchAll(/<p class="notw-text">([\s\S]*?)<\/p>/g)].map((match) => decode(match[1]).trim());
@@ -1411,11 +1475,13 @@ function assertNumberOfWeek(html, weekDoc, where) {
   if (!block.includes(`datetime="${card.published_at}"`)) {
     fail(`${where} Number of the week source line is missing the date`);
   }
-  const themesAt = html.indexOf('class="themes-col has-number"');
+  const leftAt = html.indexOf('class="left-col"');
   const notwAt = html.indexOf('class="notw"');
+  const leadAt = html.indexOf('class="lead"');
+  const themesAt = html.indexOf('class="themes-col"');
   const topCol = html.indexOf('class="top top-col"');
-  if (themesAt < 0 || notwAt < themesAt || topCol < 0 || notwAt > topCol) {
-    fail(`${where} Number of the week is not at the bottom of the themes column`);
+  if (leadAt < 0 || leftAt < leadAt || notwAt < leftAt || themesAt < notwAt || topCol < themesAt) {
+    fail(`${where} Number of the week is not under the lead and above the themes`);
   }
 }
 
