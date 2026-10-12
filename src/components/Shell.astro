@@ -2,7 +2,6 @@
 import Base from '../layouts/Base.astro';
 import SiteNav from './SiteNav.astro';
 import { documentTitle, SITE_TITLE } from '../lib/site';
-import { loadSourceIndex } from '../lib/sources.mjs';
 import { formatDate, formatWeekRange, type Topic, type Week } from '../lib/weeks';
 
 interface Props {
@@ -19,7 +18,6 @@ const { titleParts = [], description, canonical, week, active, scope, showLatest
 const title = documentTitle(...titleParts);
 const archiveCurrent = active === 'archive' ? 'page' : undefined;
 const sourcesCurrent = active === 'sources' ? 'page' : undefined;
-const sourceCount = loadSourceIndex().total;
 ---
 
 <Base title={title} description={description} canonical={canonical}>
@@ -42,7 +40,7 @@ const sourceCount = loadSourceIndex().total;
         }
         <a href="/sources" aria-current={sourcesCurrent}>Sources</a>
         <span class="sep" aria-hidden="true">·</span>
-        <a href="/archive" aria-current={archiveCurrent}>Archive</a>
+        <a class="arch" href="/archive" aria-current={archiveCurrent}>Archive</a>
       </span>
     </p>
     {
@@ -57,7 +55,4 @@ const sourceCount = loadSourceIndex().total;
   <main>
     <slot />
   </main>
-  <footer class="site-foot">
-    <a href="/sources">Every source we read ({sourceCount})</a>
-  </footer>
 </Base>

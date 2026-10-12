@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { formatDate, formatWeekRange } from '../src/lib/format-date.mjs';
+import { formatDate, formatSourceCountSubline, formatWeekRange } from '../src/lib/format-date.mjs';
 import {
   digestWeekId,
   isCompleteWeek,
@@ -14,7 +14,14 @@ import {
 } from '../src/lib/week-rules.mjs';
 import { storyPlacementErrors } from '../src/lib/story-groups.mjs';
 import { alsoSeenFillerKind, visibleAlsoSeen } from '../src/lib/also-seen.mjs';
-import { indexSources, loadSourceIndex, sourceHomeUrl } from '../src/lib/sources.mjs';
+import {
+  compareSourceNames,
+  countSourceReferences,
+  indexSources,
+  loadSourceIndex,
+  sourceHomeUrl,
+  sourceWeekCountLabel,
+} from '../src/lib/sources.mjs';
 import { parse as parseYaml } from 'yaml';
 
 const DEGRADED_BODY = "The summary couldn't be generated this week.";
@@ -843,6 +850,30 @@ function assertSourceRules() {
         enabled: true,
       },
       {
+        id: 'metr',
+        type: 'rss',
+        url: 'https://metr.example/feed',
+        display_name: 'METR',
+        tag: 'technical',
+        enabled: true,
+      },
+      {
+        id: 'pragmatic',
+        type: 'rss',
+        url: 'https://pragmatic.example/feed',
+        display_name: 'The Pragmatic Engineer (Gergely Orosz)',
+        tag: 'technical',
+        enabled: true,
+      },
+      {
+        id: 'simon',
+        type: 'rss',
+        url: 'https://simon.example/feed',
+        display_name: 'Simon Willison',
+        tag: 'technical',
+        enabled: true,
+      },
+      {
         id: 'the-sample',
         type: 'rss',
         url: 'https://sample.example/feed',
@@ -869,12 +900,77 @@ function assertSourceRules() {
       },
     ],
   });
-  if (indexed.total !== 5 || indexed.sources.some((source) => source.name === 'Hidden Feed')) {
+  if (indexed.total !== 8 || indexed.sources.some((source) => source.name === 'Hidden Feed')) {
     fail('disabled source was listed');
   }
   const order = indexed.sections.map((section) => `${section.label}:${section.sources.map((source) => source.name).join(',')}`);
-  const expectedOrder = ['Business:Zed', 'Technical:Alpha', 'Education:Education Week,The 74', 'Policy and Safety:Policy Desk'];
+  const expectedOrder = [
+    'Business:Zed',
+    'Technical:Alpha,METR,The Pragmatic Engineer (Gergely Orosz),Simon Willison',
+    'Education:The 74,Education Week',
+    'Policy and Safety:Policy Desk',
+  ];
   if (order.join('|') !== expectedOrder.join('|')) fail(`source section order is ${order.join(' | ')}`);
+  const catalog = [
+    { id: 'alpha-desk', display_name: 'Alpha', url: 'https://alpha.example/feed' },
+    { id: 'zed-desk', display_name: 'Zed', url: 'https://zed.example/feed' },
+    { id: 'policy-desk', display_name: 'Policy Desk', url: 'https://policy.example/rss' },
+    { id: 'named-only', display_name: 'Named Desk' },
+  ];
+  const counted = countSourceReferences(
+    {
+      briefing: {
+        top: [
+          {
+            id: 'shared',
+            url: 'https://example.com/shared',
+            publisher: { source_id: 'alpha-desk' },
+            also_covered: [{ url: 'https://example.com/also', publisher: { source_id: 'policy-desk' } }],
+          },
+        ],
+      },
+      topics: {
+        business: [{ id: 'again', publisher: { source_id: 'alpha-desk' } }],
+        technical: [
+          {
+            id: 'shared',
+            url: 'https://example.com/shared',
+            publisher: { source_id: 'alpha-desk' },
+            also_covered: [{ url: 'https://example.com/also', publisher: { source_id: 'policy-desk' } }],
+          },
+        ],
+      },
+      main_feed: [{ id: 'shared', url: 'https://example.com/shared', publisher: { source_id: 'alpha-desk' } }],
+      footer_aside: [{ id: 'thin', url: 'https://example.com/thin', publisher: { source_id: 'zed-desk' } }],
+      excluded: [{ id: 'dropped', url: 'https://example.com/dropped', publisher: { source_id: 'alpha-desk' } }],
+    },
+    catalog,
+  );
+  if (counted.get('alpha-desk') !== 2) fail(`shared item counted ${counted.get('alpha-desk') ?? 0} times`);
+  if ((counted.get('policy-desk') ?? 0) !== 0) fail('also_covered was counted');
+  if (counted.get('zed-desk') !== 1) fail(`thin item counted ${counted.get('zed-desk') ?? 0} times`);
+  if ((counted.get('named-only') ?? 0) !== 0) fail('a source with no items was given a count');
+  const matched = countSourceReferences(
+    {
+      topics: {
+        business: [{ id: 'by-name', publisher: { name: 'Named Desk' } }],
+        technical: [{ id: 'by-feed', feed_url: 'https://alpha.example/feed', publisher: { name: 'Someone else' } }],
+        edtech: [{ id: 'by-id', publisher: { source_id: 'zed-desk', name: 'Named Desk' } }],
+      },
+    },
+    catalog,
+  );
+  if (matched.get('named-only') !== 1) fail('display name was not matched');
+  if (matched.get('alpha-desk') !== 1) fail('feed URL was not matched');
+  if (matched.get('zed-desk') !== 1) fail('source id did not win over the display name');
+  if (sourceWeekCountLabel(0) !== 'None this week' || sourceWeekCountLabel(2) !== '2 this week') {
+    fail('source count label is wrong');
+  }
+  const note = formatSourceCountSubline('2026-10-04T00:00:00-04:00', '2026-10-10T23:59:59-04:00');
+  if (note !== 'Counts show items each source contributed this week (Oct 4 to Oct 10).') {
+    fail(`source count subline is "${note}"`);
+  }
+  if (note.includes('\u2013') || note.includes('\u2014')) fail('source count subline uses a dash');
   console.log('source index rules passed');
 }
 
@@ -902,12 +998,8 @@ function assertSourceLinks(html, file, label) {
   if (briefing.includes('href="/sources"') || sections.includes('href="/sources"') || sections.includes('>Sources<')) {
     fail(`${label} Sources is a nav tab`);
   }
-  const footers = [...html.matchAll(/<footer\b[^>]*class="[^"]*\bsite-foot\b[^"]*"[^>]*>([\s\S]*?)<\/footer>/g)];
-  if (footers.length !== 1) fail(`${label} is missing the sources footer`);
-  const footerText = decode(footers[0][0]).replace(/\s+/g, ' ');
-  const expected = `Every source we read (${enabledSourcesFromYaml().length})`;
-  if (!footers[0][0].includes('href="/sources"') || !footerText.includes(expected)) {
-    fail(`${label} footer does not link to every source (${expected})`);
+  if (/<footer\b[^>]*class="[^"]*\bsite-foot\b/.test(html) || html.includes('Every source we read')) {
+    fail(`${label} still has the sources footer`);
   }
 }
 
@@ -925,17 +1017,26 @@ function assertSourcesIndex(html, label) {
   if (!mainMatch) fail(`${label} is missing main`);
   const main = mainMatch[1];
   const decoded = decode(main).replace(/\s+/g, ' ');
-  const lede = `All ${enabled.length} feeds the digest reads, by section.`;
-  if (!decoded.includes(lede)) fail(`${label} lede does not match the source file`);
-  if (!main.includes('>Sources<')) fail(`${label} is missing the Sources heading`);
-  if (/\bthis week\b/i.test(decoded) || /\bcontribut/i.test(decoded)) {
-    fail(`${label} shows a weekly count or contribution data`);
+  const countedWeek = selectLatestPublished(loadDigestWeeks(), builtAsOf);
+  if (!countedWeek) fail(`${label} has no latest week to count`);
+  const note = formatSourceCountSubline(countedWeek.week_start, countedWeek.week_end);
+  if (!decoded.includes(note)) fail(`${label} week subline is "${note}" and was not found`);
+  if (note.includes('\u2013') || note.includes('\u2014')) fail(`${label} week subline uses a dash`);
+  if (decoded.includes('All ') && decoded.includes('feeds the digest reads')) {
+    fail(`${label} still has the old feeds line`);
   }
+  if (html.includes('Every source we read')) fail(`${label} still has the sources footer`);
+  const references = countSourceReferences(countedWeek, enabled);
+  const pageHeading = decode(main.match(/<h2\b[^>]*class="[^"]*\bpage-title\b[^"]*"[^>]*>([\s\S]*?)<\/h2>/)?.[1] ?? '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (pageHeading !== `Sources (${enabled.length})`) fail(`${label} heading is "${pageHeading}"`);
   const columns = [...main.matchAll(/<div class="source-col">([\s\S]*?)<\/div>/g)].map((match) => match[1]);
   const expectedSections = SECTION_IDS.map((id, position) => {
     const sources = enabled
       .filter((source) => source.tag === id)
-      .sort((left, right) => left.display_name.localeCompare(right.display_name, 'en', { sensitivity: 'base', numeric: true }));
+      .sort((left, right) => compareSourceNames(left.display_name, right.display_name));
     return { id, label: SECTION_LABELS[position], sources };
   }).filter((section) => section.sources.length > 0);
   const mid = Math.ceil(expectedSections.length / 2);
@@ -955,7 +1056,7 @@ function assertSourcesIndex(html, label) {
       if (!attrs.includes(`data-section="${expected.id}"`)) {
         fail(`${label} ${expected.label} is not in its column`);
       }
-      const heading = decode(block.match(/<h3\b[^>]*>([\s\S]*?)<\/h3>/)?.[1] ?? '')
+      const heading = decode(block.match(/<h2\b[^>]*>([\s\S]*?)<\/h2>/)?.[1] ?? '')
         .replace(/<[^>]*>/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
@@ -973,11 +1074,19 @@ function assertSourcesIndex(html, label) {
         const type = decode(row.match(/class="[^"]*\bsource-type\b[^"]*"[^>]*>([\s\S]*?)</)?.[1] ?? '')
           .replace(/\s+/g, ' ')
           .trim();
+        const countText = decode(row.match(/class="[^"]*\bsource-count\b[^"]*"[^>]*>([\s\S]*?)</)?.[1] ?? '')
+          .replace(/\s+/g, ' ')
+          .trim();
+        const expectedCount = references.get(source.id) ?? 0;
+        const expectedLabel = sourceWeekCountLabel(expectedCount);
         const rowText = decode(row.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
         if (name !== source.display_name) fail(`${label} ${expected.label} row ${rowIndex + 1} is ${name}`);
         if (href !== sourceHomeUrl(source)) fail(`${label} ${name} links to ${href || 'nothing'}`);
         if (type !== (source.type === 'youtube' ? 'YouTube' : 'RSS')) fail(`${label} ${name} type is ${type}`);
-        if (rowText !== `${source.display_name} ${type}`) fail(`${label} ${name} row reads "${rowText}"`);
+        if (countText !== expectedLabel) fail(`${label} ${name} count is "${countText}"; week has ${expectedLabel}`);
+        if (expectedCount === 0 && !/class="[^"]*\bnone\b/.test(row)) fail(`${label} ${name} zero count is not muted`);
+        if (expectedCount > 0 && /class="[^"]*\bnone\b/.test(row)) fail(`${label} ${name} count is muted`);
+        if (rowText !== `${source.display_name} ${type} ${expectedLabel}`) fail(`${label} ${name} row reads "${rowText}"`);
         renderedNames.push(source.display_name);
       });
     });
@@ -986,7 +1095,7 @@ function assertSourcesIndex(html, label) {
   for (const source of enabled) {
     if (!renderedNames.includes(source.display_name)) fail(`${label} is missing ${source.display_name}`);
   }
-  console.log(`sources page lists ${enabled.length} feeds from config/sources.yaml`);
+  console.log(`sources page lists ${enabled.length} feeds from config/sources.yaml for ${countedWeek.week_id}`);
 }
 
 function assertTitle(html, file, label) {
@@ -1233,6 +1342,22 @@ function assertSourcesCss(css, label) {
   if (!cols.includes('display:grid') || !cols.includes('grid-template-columns:repeat(2,minmax(0,1fr))')) {
     fail(`${label} sources page is not a two-column grid`);
   }
+  if (!cols.includes('column-gap:var(--gut)')) {
+    fail(`${label} source columns do not use the 24px gutter`);
+  }
+  const current = ruleBody(css, '.bar a[aria-current="page"]') || ruleBody(css, '.bar a[aria-current=page]');
+  if (
+    !current.includes('text-decoration:underline') ||
+    !current.includes('text-decoration-color:var(--signal)') ||
+    !current.includes('text-decoration-thickness:2px') ||
+    !(current.includes('text-underline-offset:.3em') || current.includes('text-underline-offset:0.3em')) ||
+    current.includes('border-bottom')
+  ) {
+    fail(`${label} Sources current mark is not the mock underline`);
+  }
+  if (ruleBody(css, '.sources-note').includes('max-width')) {
+    fail(`${label} week note is width-capped`);
+  }
   const row = ruleBody(css, '.source-row');
   if (!row.includes('min-height:44px')) fail(`${label} source rows are shorter than 44px`);
   const vermilion =
@@ -1246,6 +1371,15 @@ function assertSourcesCss(css, label) {
   }
   if (!ruleBody(phone, '.source-row').includes('min-height:44px')) {
     fail(`${label} phone source rows are shorter than 44px`);
+  }
+  if (!ruleBody(phone, '.source-row a').includes('grid-column:1/-1')) {
+    fail(`${label} phone source name does not sit on its own line`);
+  }
+  if (!ruleBody(phone, '.bar .sep:last-of-type').includes('display:none')) {
+    fail(`${label} phone week line can leave a dangling separator`);
+  }
+  if (!ruleBody(phone, '.bar .arch').includes('margin-left:auto')) {
+    fail(`${label} phone Archive is not the last week-line link`);
   }
   const narrow = mediaBody(css, ['max-width:1080px', 'width<=1080px']);
   if (!ruleBody(narrow, '.source-cols').includes('grid-template-columns:1fr')) {
