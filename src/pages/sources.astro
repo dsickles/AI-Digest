@@ -1,0 +1,53 @@
+---
+import Shell from '../components/Shell.astro';
+import { latestWeek } from '../lib/weeks';
+import { loadSourceIndex } from '../lib/sources.mjs';
+
+const week = latestWeek();
+const index = loadSourceIndex();
+const mid = Math.ceil(index.sections.length / 2);
+const columns = [index.sections.slice(0, mid), index.sections.slice(mid)].filter((column) => column.length > 0);
+---
+
+<Shell
+  titleParts={['Sources']}
+  description="Every source the digest reads, by section."
+  week={week}
+  active="sources"
+  scope="latest"
+>
+  <header class="sources-head">
+    <h2 class="page-title">Sources</h2>
+    <p class="sources-lede">All {index.total} feeds the digest reads, by section.</p>
+  </header>
+  <div class="source-cols">
+    {
+      columns.map((column) => (
+        <div class="source-col">
+          {column.map((section) => (
+            <section
+              class="source-section"
+              data-section={section.id}
+              aria-labelledby={`source-section-${section.id}`}
+            >
+              <h3 class="source-section-title" id={`source-section-${section.id}`}>
+                {section.label}{' '}
+                <span class="n">{section.count}</span>
+              </h3>
+              <ul class="source-list">
+                {section.sources.map((source) => (
+                  <li class="source-row">
+                    <a href={source.homeUrl} target="_blank" rel="noopener noreferrer">
+                      {source.name}
+                    </a>
+                    <span class="source-type">{source.typeLabel}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+</Shell>
