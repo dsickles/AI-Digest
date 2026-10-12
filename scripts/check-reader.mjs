@@ -903,9 +903,24 @@ function assertProgramCss(html, label) {
   if (beside.includes('grid-row:1') || beside.includes('grid-area:1/5/auto/13')) {
     fail(`${label} Top 5 starts above the lead beside the Number of the week`);
   }
-  const notwTop = ruleBody(css, '.left-col > .notw');
-  if (!notwTop.includes('border-top:1pxsolidvar(--rule-strong)')) {
-    fail(`${label} Number of the week is missing the strong rule above it`);
+  if (ruleBody(css, '.left-col > .notw').includes('border-top')) {
+    fail(`${label} Number of the week stacks a second rule above the heading`);
+  }
+  const sectionHeading = ruleBody(css, '.h2');
+  if (
+    !sectionHeading.includes('font-size:15px') ||
+    !sectionHeading.includes('font-weight:600') ||
+    !sectionHeading.includes('color:var(--ink)') ||
+    !sectionHeading.includes('border-top:1pxsolidvar(--rule-strong)') ||
+    sectionHeading.includes('text-transform') ||
+    sectionHeading.includes('--ink-3') ||
+    sectionHeading.includes('letter-spacing:0.08em') ||
+    sectionHeading.includes('letter-spacing:.08em')
+  ) {
+    fail(`${label} section headings are not the bright 15px label`);
+  }
+  if (css.includes('.notw-label')) {
+    fail(`${label} Number of the week label does not use the section heading`);
   }
   const placementRules = [...classRuleBodies(css, 'notw'), ...classRuleBodies(css, 'themes-col')];
   if (placementRules.some((body) => body.includes('margin-top:auto'))) {
@@ -914,14 +929,6 @@ function assertProgramCss(html, label) {
   const fig = ruleBody(css, '.notw-fig');
   if (!fig.includes('color:var(--signal)') || !fig.includes('font-size:88px') || !fig.includes('font-weight:700')) {
     fail(`${label} Number of the week value is not the large vermilion figure`);
-  }
-  const numberLabel = ruleBody(css, '.notw-label');
-  if (
-    !numberLabel.includes('font-size:12px') ||
-    !numberLabel.includes('text-transform:uppercase') ||
-    !numberLabel.includes('color:var(--ink-3)')
-  ) {
-    fail(`${label} Number of the week label is not the grey uppercase program label`);
   }
   if (css.includes('.briefing-full')) fail(`${label} full briefing toggle styles are still present`);
   const storyBox = ruleBody(css, '.story');
@@ -1212,7 +1219,12 @@ function assertNumberOfWeek(html, weekDoc, where) {
   const slot = html.match(/<section class="notw"[\s\S]*?<\/section>/);
   if (!slot) fail(`${where} is missing the Number of the week`);
   const block = slot[0];
-  if (!decode(block).includes('Number of the week')) fail(`${where} Number of the week is missing its label`);
+  if (!/<h2\b[^>]*class="h2"[^>]*>\s*Number of the week\s*<\/h2>/.test(block)) {
+    fail(`${where} Number of the week label does not use the section heading`);
+  }
+  if (!html.includes('<h2 class="h2" id="themes-heading">') || !html.includes('<h2 class="h2" id="briefing-heading">')) {
+    fail(`${where} themes or Top 5 heading does not use the section heading`);
+  }
   const fig = block.match(/<p class="notw-fig">([\s\S]*?)<\/p>/);
   if (!fig || decode(fig[1]).trim() !== number.value) fail(`${where} Number of the week value does not match the file`);
   const lines = [...block.matchAll(/<p class="notw-text">([\s\S]*?)<\/p>/g)].map((match) => decode(match[1]).trim());
