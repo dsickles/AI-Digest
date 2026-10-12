@@ -763,7 +763,9 @@ function assertProgramCss(html, label) {
   if (!tablet.includes('.flow{columns:1}') || !tablet.includes('.rowsets{grid-template-columns:1fr}')) {
     fail(`${label} mid-width layout does not drop to one column`);
   }
-  if (!tablet.includes('grid-column:1/-1')) fail(`${label} index does not drop below the synthesis`);
+  if (!tablet.includes('grid-column:1/-1') && !tablet.includes('grid-area:auto/1/auto/-1')) {
+    fail(`${label} index does not drop below the synthesis`);
+  }
   const play = ruleBody(css, '.play');
   if (!play.includes('width:1.1em') || !play.includes('height:1.1em') || !play.includes('color:var(--ink-2)')) {
     fail(`${label} play icon is not the 1.1em ink mark`);
@@ -822,6 +824,10 @@ function assertPhoneCss(css, label) {
   ) {
     fail(`${label} Summary control tap target is shorter than the reference padding`);
   }
+  const briefingToggle = ruleBody(phone, '.briefing-full .toggle');
+  if (!briefingToggle.includes('min-height:34px') || !briefingToggle.includes('padding:var(--s2)var(--s2)var(--s2)0')) {
+    fail(`${label} Read the full briefing tap target is shorter than 34px`);
+  }
 }
 
 function assertDimmedEmptyState(html, label, expectEmpty, where) {
@@ -879,6 +885,66 @@ function assertSectionTab(html, weekDoc, topic, where) {
   assertDegradedHits(html, renderedCopy(cards), `${where} ${topic.label}`);
 }
 
+function themeHref(weekDoc, id) {
+  if ((weekDoc.briefing.top ?? []).some((card) => card.id === id)) return `#${id}`;
+  const card = (weekDoc.main_feed ?? []).find((item) => item.id === id);
+  if (!card) return null;
+  return `/digest/${weekDoc.week_id}/${card.category}#${id}`;
+}
+
+function assertBriefingScan(html, weekDoc, where) {
+  const themes = weekDoc.briefing.themes;
+  const hasScan = typeof weekDoc.briefing.lead === 'string' && Array.isArray(themes) && themes.length > 0;
+  if (!hasScan) {
+    if (html.includes('Read the full briefing')) fail(`${where} shows Read the full briefing without theme data`);
+    if (html.includes('class="lead"') || html.includes('class="theme"')) {
+      fail(`${where} shows a lead line or theme row without theme data`);
+    }
+    if (!html.includes('class="synthesis"')) fail(`${where} briefing dropped the synthesis paragraph`);
+    return;
+  }
+  if (themes.length < 4 || themes.length > 6) fail(`${where} has ${themes.length} themes; expected 4 to 6`);
+  const lead = html.match(/<p class="lead">([\s\S]*?)<\/p>/);
+  if (!lead || decode(lead[1]).trim() !== weekDoc.briefing.lead) fail(`${where} lead line does not match the week file`);
+  if (html.includes('class="synthesis"')) fail(`${where} still shows the synthesis as the open paragraph`);
+  const rows = [...html.matchAll(/<li class="theme">([\s\S]*?)<\/li>/g)];
+  if (rows.length !== themes.length) fail(`${where} shows ${rows.length} theme rows; the file has ${themes.length}`);
+  themes.forEach((theme, index) => {
+    const row = decode(rows[index][1]);
+    if (!row.includes(theme.label)) fail(`${where} theme ${index + 1} is missing its label`);
+    if (!row.includes(theme.sentence)) fail(`${where} theme ${index + 1} is missing its sentence`);
+    const hrefs = [...rows[index][1].matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
+    const expected = theme.story_ids.map((id) => themeHref(weekDoc, id));
+    if (hrefs.join('|') !== expected.join('|')) {
+      fail(`${where} theme ${theme.label} links ${hrefs.join(', ') || 'nothing'}`);
+    }
+    if (new Set(hrefs).size !== hrefs.length) fail(`${where} theme ${theme.label} links two copies of the same story`);
+    for (const id of theme.story_ids) {
+      if (!(weekDoc.main_feed ?? []).some((card) => card.id === id)) {
+        fail(`${where} theme ${theme.label} does not link the merged main item ${id}`);
+      }
+    }
+  });
+  const button = html.match(/<button\b([^>]*)>([\s\S]*?)<\/button>/);
+  if (!button) fail(`${where} is missing Read the full briefing`);
+  const buttonText = decode(button[2].replace(/<[^>]*>/g, '')).replace(/\s+/g, ' ').trim();
+  if (buttonText !== 'Read the full briefing') fail(`${where} briefing toggle reads "${buttonText}"`);
+  if (!/\baria-expanded="false"/.test(button[1])) fail(`${where} Read the full briefing does not start closed`);
+  if (/\bclass="briefing-full open"/.test(html)) fail(`${where} full briefing starts open`);
+  const controls = button[1].match(/\baria-controls="([^"]*)"/)?.[1];
+  if (!controls) fail(`${where} Read the full briefing is missing aria-controls`);
+  const panel = html.match(new RegExp(`<div class="summary-panel" id="${controls}">([\\s\\S]*?)</div>`));
+  if (!panel || !decode(panel[1]).includes(weekDoc.briefing.synthesis)) {
+    fail(`${where} full briefing toggle does not hold the synthesis`);
+  }
+  if (!/viewBox="0 0 10 10"/.test(button[2]) || !/stroke-linecap="round"/.test(button[2])) {
+    fail(`${where} Read the full briefing chevron does not match Summary`);
+  }
+  if (!button[2].includes('M1.75 3.25 5 6.75 8.25 3.25')) {
+    fail(`${where} Read the full briefing chevron does not point down`);
+  }
+}
+
 function assertBriefingTab(html, weekDoc, where) {
   const cards = briefingCards(weekDoc);
   const parts = splitFooter(html);
@@ -900,6 +966,7 @@ function assertBriefingTab(html, weekDoc, where) {
     }
   });
   if (!decode(html).includes(weekDoc.briefing.synthesis)) fail(`${where} briefing is missing the synthesis`);
+  assertBriefingScan(html, weekDoc, where);
   assertOrder(parts.main, 'card', cards, `${where} briefing`);
   for (const card of cards) assertCard(parts.main, card);
   assertBriefingAlsoSeen(html, footerCards(weekDoc), where);

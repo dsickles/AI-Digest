@@ -71,6 +71,12 @@ export interface ThinCard extends InclusionFields, GroupingFields {
   summary_status: 'thin';
 }
 
+export interface BriefingTheme {
+  label: string;
+  sentence: string;
+  story_ids: string[];
+}
+
 export interface Week {
   schema_version: 1;
   week_id: string;
@@ -80,6 +86,8 @@ export interface Week {
   generated_at: string;
   briefing: {
     synthesis: string;
+    lead?: string;
+    themes?: BriefingTheme[];
     top: MainCard[];
   };
   topics: Record<Topic, MainCard[]>;

@@ -8,13 +8,14 @@ import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import { digestWeekId, isoWeekId, newYorkParts } from '../src/lib/week-rules.mjs';
 import { sourcePlacementErrors, validateSourcesDocument } from '../src/lib/source-rules.mjs';
-import { numberNoteErrors, storyPlacementErrors } from '../src/lib/story-groups.mjs';
+import { canonicalStoryUrl, numberNoteErrors, storyPlacementErrors } from '../src/lib/story-groups.mjs';
 
 export { isoWeekId };
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const RUBRIC_PATH = join(ROOT, 'config', 'inclusion-rubric.md');
 const GROUPING_PATH = join(ROOT, 'config', 'story-grouping.md');
+const BRIEFING_PATH = join(ROOT, 'config', 'briefing.md');
 const DIGEST_SCHEMA_PATH = join(ROOT, 'schema', 'digest.schema.json');
 const REPORT_SCHEMA_PATH = join(ROOT, 'schema', 'report.schema.json');
 const SOURCES_PATH = join(ROOT, 'config', 'sources.yaml');
@@ -311,6 +312,7 @@ function validateDigestDocument(doc, filename, sources) {
 
   errors.push(...validateRubric(doc));
   errors.push(...validateGrouping(doc, sources));
+  errors.push(...validateBriefingScan(doc));
   return errors;
 }
 
@@ -408,6 +410,129 @@ function validateReportDocument(doc, filename) {
   return [];
 }
 
+const THEME_WEEK = '2026-W41';
+const DASH = /[\u2013\u2014]/;
+
+function wordCount(text) {
+  return String(text ?? '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length;
+}
+
+function isOneSentence(text) {
+  const trimmed = String(text ?? '').trim();
+  const match = trimmed.match(/^.+?[.!?](?=\s|$)/);
+  return Boolean(match) && match[0].length === trimmed.length;
+}
+
+function storyKeys(card) {
+  const keys = new Set();
+  const add = (url) => {
+    const key = canonicalStoryUrl(url);
+    if (key) keys.add(key);
+  };
+  if (card && typeof card === 'object') {
+    add(card.url);
+    for (const link of card.also_covered ?? []) add(link?.url);
+  }
+  return keys;
+}
+
+function validateBriefingScan(doc) {
+  const errors = [];
+  const briefing = doc?.briefing;
+  if (!briefing || typeof briefing !== 'object') return errors;
+  const hasLead = Object.hasOwn(briefing, 'lead');
+  const hasThemes = Object.hasOwn(briefing, 'themes');
+  const required = typeof doc.week_id === 'string' && doc.week_id >= THEME_WEEK;
+  if (required && (!hasLead || !hasThemes)) {
+    errors.push('briefing must include a lead line and 4 to 6 themes from 2026-W41 on');
+  } else if (hasLead !== hasThemes) {
+    errors.push('briefing lead and themes must be set together');
+  }
+  if (!hasLead && !hasThemes) return errors;
+
+  if (typeof briefing.lead !== 'string' || !isOneSentence(briefing.lead)) {
+    errors.push('briefing lead must be one sentence');
+  } else if (DASH.test(briefing.lead)) {
+    errors.push('briefing lead must not use an em dash or an en dash');
+  }
+
+  const themes = Array.isArray(briefing.themes) ? briefing.themes : [];
+  if (themes.length < 4 || themes.length > 6) {
+    errors.push('briefing must include 4 to 6 themes');
+  }
+  const mainById = new Map((doc.main_feed ?? []).filter((card) => card && typeof card === 'object').map((card) => [card.id, card]));
+  themes.forEach((theme, index) => {
+    if (!theme || typeof theme !== 'object') {
+      errors.push(`theme ${index + 1} is missing`);
+      return;
+    }
+    const where = `theme ${theme.label || index + 1}`;
+    const label = typeof theme.label === 'string' ? theme.label.trim() : '';
+    if (label.length === 0 || label.length > 32 || wordCount(label) > 4 || /[.!?]/.test(label) || /[\r\n]/.test(label)) {
+      errors.push(`${where} label must be a short label of at most 4 words`);
+    } else if (DASH.test(label)) {
+      errors.push(`${where} label must not use an em dash or an en dash`);
+    }
+    if (typeof theme.sentence !== 'string' || !isOneSentence(theme.sentence)) {
+      errors.push(`${where} sentence must be one sentence`);
+    } else {
+      const count = wordCount(theme.sentence);
+      if (count < 25 || count > 35) errors.push(`${where} sentence must be 25 to 35 words`);
+      if (DASH.test(theme.sentence)) errors.push(`${where} sentence must not use an em dash or an en dash`);
+    }
+    const ids = Array.isArray(theme.story_ids) ? theme.story_ids : [];
+    if (ids.length === 0) errors.push(`${where} must link at least one merged story`);
+    const seenIds = new Set();
+    const linked = [];
+    for (const id of ids) {
+      if (seenIds.has(id)) {
+        errors.push(`${where} links ${id} twice`);
+        continue;
+      }
+      seenIds.add(id);
+      const card = mainById.get(id);
+      if (!card) {
+        errors.push(`${where} story ${id} must be the merged main item`);
+        continue;
+      }
+      linked.push(card);
+    }
+    for (let left = 0; left < linked.length; left += 1) {
+      const leftKeys = storyKeys(linked[left]);
+      for (let right = left + 1; right < linked.length; right += 1) {
+        const rightKeys = storyKeys(linked[right]);
+        const shared = [...leftKeys].some((key) => rightKeys.has(key));
+        if (shared) {
+          errors.push(
+            `${where} links two copies of the same story (${linked[left].id} and ${linked[right].id})`,
+          );
+        }
+      }
+    }
+  });
+  return errors;
+}
+
+function briefingFileErrors() {
+  if (!existsSync(BRIEFING_PATH)) return ['config/briefing.md is missing'];
+  const text = readFileSync(BRIEFING_PATH, 'utf8');
+  const required = [
+    ['lead', 'config/briefing.md must tell ingest how to write the lead line'],
+    ['themes', 'config/briefing.md must tell ingest how to write themes'],
+    ['25 to 35', 'config/briefing.md must tell ingest the theme sentence is 25 to 35 words'],
+    ['story_ids', 'config/briefing.md must tell ingest to link themes by story id'],
+    ['merged main item', 'config/briefing.md must tell ingest to link the merged main item'],
+    ['2026-W40', 'config/briefing.md must keep weeks before 2026-W41, including 2026-W40, valid without a lead or themes'],
+  ];
+  for (const [needle, message] of required) {
+    if (!text.includes(needle)) return [message];
+  }
+  return [];
+}
+
 function rubricFileErrors() {
   if (!existsSync(RUBRIC_PATH)) return ['config/inclusion-rubric.md is missing'];
   const text = readFileSync(RUBRIC_PATH, 'utf8');
@@ -443,7 +568,7 @@ function groupingFileErrors() {
 export function validateArchive(contentDir, sources) {
   const digestPaths = jsonFiles(join(contentDir, 'digests'));
   const reportPaths = jsonFiles(join(contentDir, 'reports'));
-  const errors = [...rubricFileErrors(), ...groupingFileErrors()];
+  const errors = [...rubricFileErrors(), ...groupingFileErrors(), ...briefingFileErrors()];
 
   if (digestPaths.length === 0) {
     errors.push(`${contentDir}/digests has no week json files`);
@@ -765,6 +890,7 @@ function runSelfTest(sources) {
 
   if (!proveInclusion(sources, sample)) return false;
   if (!proveGrouping(sources)) return false;
+  if (!proveBriefing(sources)) return false;
   if (!proveSourceRules(sources, sample)) return false;
 
   console.log('self-test PASS');
@@ -785,6 +911,10 @@ function rubricCard(id, title) {
     included: true,
     include_reason: 'New: a launch worth a full card.',
   };
+}
+
+function themeSentence() {
+  return 'This theme ties together the included items that belong on one short scan line for the week and points at each merged main story once only.';
 }
 
 function rubricWeek() {
@@ -815,6 +945,12 @@ function rubricWeek() {
     generated_at: '2026-10-11T15:00:00Z',
     briefing: {
       synthesis: 'Eight items from one source still fit, because there is no per-source cap.',
+      lead: 'Eight included items from one source still fit in a single week.',
+      themes: [1, 2, 3, 4].map((n) => ({
+        label: `Theme ${n}`,
+        sentence: themeSentence(),
+        story_ids: [`rubric-item-${n}`],
+      })),
       top: cards.slice(0, 5),
     },
     topics: { edtech: [], business: [], technical: cards },
@@ -1037,6 +1173,125 @@ function proveGrouping(sources) {
     return false;
   }
   console.log('self-test PASS 2026-W41 math release and Clayton appointment are each one item');
+  return true;
+}
+
+function proveBriefing(sources) {
+  const open = rubricWeek();
+  const openErrors = validateDigestDocument(open, '2026-W41.json', sources);
+  if (openErrors.length !== 0) {
+    console.error('self-test: a rubric week with a lead line and themes must pass');
+    for (const error of openErrors) console.error(`- ${error}`);
+    return false;
+  }
+  console.log('self-test PASS lead line and themes');
+
+  const missing = rubricWeek();
+  delete missing.briefing.lead;
+  delete missing.briefing.themes;
+  if (
+    !expectRubricFailure(
+      sources,
+      missing,
+      'lead line and 4 to 6 themes',
+      'rubric week without a lead line or themes',
+    )
+  ) {
+    return false;
+  }
+
+  const short = rubricWeek();
+  short.briefing.themes[0].sentence = 'Too short to pass the word count rule today.';
+  if (!expectRubricFailure(sources, short, '25 to 35 words', 'theme sentence outside 25 to 35 words')) {
+    return false;
+  }
+
+  const twoSentences = rubricWeek();
+  twoSentences.briefing.themes[0].sentence = 'This is one sentence. This is a second sentence that should not be in the theme row.';
+  if (!expectRubricFailure(sources, twoSentences, 'must be one sentence', 'theme sentence that is two sentences')) {
+    return false;
+  }
+
+  const missingStory = rubricWeek();
+  missingStory.briefing.themes[0].story_ids = ['not-a-real-item'];
+  if (
+    !expectRubricFailure(
+      sources,
+      missingStory,
+      'must be the merged main item',
+      'theme link that is not a merged main item',
+    )
+  ) {
+    return false;
+  }
+
+  const copies = rubricWeek();
+  const primary = copies.topics.technical[0];
+  const second = copies.topics.technical[1];
+  second.url = 'https://importai.substack.com/p/same-story-copy';
+  primary.also_covered = [
+    {
+      title: 'Same story from the other source',
+      url: second.url,
+      publisher: { source_id: 'import-ai', name: 'Import AI' },
+    },
+  ];
+  copies.briefing.themes[0].story_ids = [primary.id, second.id];
+  if (
+    !expectRubricFailure(
+      sources,
+      copies,
+      'two copies of the same story',
+      'theme links two copies of the same story',
+    )
+  ) {
+    return false;
+  }
+
+  const few = rubricWeek();
+  few.briefing.themes = few.briefing.themes.slice(0, 3);
+  if (!expectRubricFailure(sources, few, 'fewer than 4', 'fewer than 4 themes')) return false;
+
+  const w40 = JSON.parse(readFileSync(join(ROOT, 'content', 'digests', '2026-W40.json'), 'utf8'));
+  if (Object.hasOwn(w40.briefing, 'lead') || Object.hasOwn(w40.briefing, 'themes')) {
+    console.error('self-test: 2026-W40 must omit lead and themes');
+    return false;
+  }
+  const w40Errors = validateDigestDocument(w40, '2026-W40.json', sources);
+  if (w40Errors.length !== 0) {
+    console.error('self-test: 2026-W40 without a lead line or themes must pass');
+    for (const error of w40Errors) console.error(`- ${error}`);
+    return false;
+  }
+  console.log('self-test PASS 2026-W40 without a lead line or themes');
+
+  const w41Path = join(ROOT, 'content', 'digests', '2026-W41.json');
+  const w41 = JSON.parse(readFileSync(w41Path, 'utf8'));
+  const mathId = 'dont-worry-about-the-vase-new-math-from-openai';
+  const absorbed = [
+    'education-disrupted-ai-is-inventing-new-math-it-has-722-papers-to-show-for-it',
+    'last-week-in-ai-last-week-in-ai-346-719-math-manuscripts-2-western-open-models-1-more-safety-resignation',
+    'dont-worry-about-the-vase-ai-189-new-math',
+  ];
+  const research = (w41.briefing.themes ?? []).find((theme) => theme.label === 'Research');
+  const themeIds = (w41.briefing.themes ?? []).flatMap((theme) => theme.story_ids ?? []);
+  const w41Scan =
+    typeof w41.briefing.lead === 'string' &&
+    isOneSentence(w41.briefing.lead) &&
+    Array.isArray(w41.briefing.themes) &&
+    w41.briefing.themes.length >= 4 &&
+    w41.briefing.themes.length <= 6 &&
+    research &&
+    research.story_ids.includes(mathId) &&
+    research.story_ids.every((id) => !absorbed.includes(id)) &&
+    themeIds.every((id) => !absorbed.includes(id)) &&
+    new Set(research.story_ids).size === research.story_ids.length;
+  if (!w41Scan) {
+    console.error('self-test: 2026-W41 themes must link the merged math item, not a second copy');
+    console.error(JSON.stringify({ lead: w41.briefing.lead, research }, null, 2));
+    return false;
+  }
+  console.log('self-test PASS 2026-W41 themes link merged stories');
   return true;
 }
 

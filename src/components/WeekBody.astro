@@ -2,7 +2,17 @@
 import Card from './Card.astro';
 import ThinCard from './ThinCard.astro';
 import TopicSection from './TopicSection.astro';
-import { alsoSeenItems, formatDate, shownBriefingCards, shownTopicCards, TOPIC_LABELS, type Topic, type Week } from '../lib/weeks';
+import {
+  alsoSeenItems,
+  formatDate,
+  shownBriefingCards,
+  shownTopicCards,
+  TOPIC_LABELS,
+  weekPath,
+  type MainCard,
+  type Topic,
+  type Week,
+} from '../lib/weeks';
 
 interface Props {
   week: Week;
@@ -16,13 +26,106 @@ const topCards = shownBriefingCards(week);
 const footerItems = alsoSeenItems(week);
 const topCount = topCards.length;
 const topLabel = `Top ${topCount} this week`;
+const themes = week.briefing.themes ?? [];
+const hasScan =
+  view === 'briefing' &&
+  typeof week.briefing.lead === 'string' &&
+  week.briefing.lead.trim().length > 0 &&
+  themes.length > 0;
+const mainById = new Map((week.main_feed ?? []).map((card) => [card.id, card]));
+const topIds = new Set(topCards.map((card) => card.id));
+
+function publisherShort(name: string): string {
+  return name.split(' (')[0].trim();
+}
+
+function cleanWord(word: string): string {
+  return word.replace(/^[^A-Za-z0-9$]+|[^A-Za-z0-9]+$/g, '');
+}
+
+function linkLabel(card: MainCard, peers: MainCard[]): string {
+  const name = publisherShort(card.publisher.name);
+  const collisions = peers.filter((peer) => peer.id !== card.id && publisherShort(peer.publisher.name) === name);
+  if (collisions.length === 0) return name;
+  const words = card.title.split(/\s+/).map(cleanWord).filter(Boolean);
+  const start = words[0] && words[0].length < 6 ? 2 : 1;
+  for (let count = start; count <= Math.min(4, words.length); count += 1) {
+    const phrase = words.slice(0, count).join(' ');
+    const clash = collisions.some((peer) => {
+      const peerWords = peer.title.split(/\s+/).map(cleanWord).filter(Boolean);
+      return peerWords.slice(0, count).join(' ') === phrase;
+    });
+    if (!clash) return `${name}, ${phrase}`;
+  }
+  return name;
+}
+
+function storyHref(card: MainCard): string {
+  if (topIds.has(card.id)) return `#${card.id}`;
+  return `${weekPath(week.week_id, card.category)}#${card.id}`;
+}
 ---
 
 {
   view === 'briefing' ? (
     <>
       <section class="g syn" aria-label="This week">
-        <p class="synthesis">{week.briefing.synthesis}</p>
+        {hasScan ? (
+          <>
+            <p class="lead">{week.briefing.lead}</p>
+            <ol class="themes">
+              {themes.map((theme) => {
+                const cards = theme.story_ids.flatMap((id) => {
+                  const card = mainById.get(id);
+                  return card ? [card] : [];
+                });
+                return (
+                  <li class="theme">
+                    <p class="theme-label">{theme.label}</p>
+                    <p class="theme-sentence">{theme.sentence}</p>
+                    {cards.length > 0 && (
+                      <p class="theme-links">
+                        {cards.map((card, index) => (
+                          <>
+                            {index > 0 && (
+                              <span class="sep" aria-hidden="true">
+                                {' '}
+                                ·{' '}
+                              </span>
+                            )}
+                            <a href={storyHref(card)}>
+                              {linkLabel(card, cards)}
+                              <span class="visually-hidden"> {card.title}</span>
+                            </a>
+                          </>
+                        ))}
+                      </p>
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+            <div class="briefing-full">
+              <button class="toggle" type="button" aria-expanded="false" aria-controls="full-briefing">
+                Read the full briefing
+                <svg viewBox="0 0 10 10" aria-hidden="true" focusable="false">
+                  <path
+                    d="M1.75 3.25 5 6.75 8.25 3.25"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"></path>
+                </svg>
+              </button>
+              <div class="summary-panel" id="full-briefing">
+                <p class="summary">{week.briefing.synthesis}</p>
+              </div>
+            </div>
+          </>
+        ) : (
+          <p class="synthesis">{week.briefing.synthesis}</p>
+        )}
         <ol class="index" aria-label={topLabel}>
           {topCards.map((card, index) => (
             <li>
@@ -77,3 +180,14 @@ const topLabel = `Top ${topCount} this week`;
     <TopicSection label={topicLabel} cards={topicCards} />
   )
 }
+
+<script>
+  const buttons = document.querySelectorAll('.briefing-full .toggle');
+  for (const button of buttons) {
+    button.addEventListener('click', () => {
+      const open = button.getAttribute('aria-expanded') !== 'true';
+      button.setAttribute('aria-expanded', open ? 'true' : 'false');
+      button.closest('.briefing-full')?.classList.toggle('open', open);
+    });
+  }
+</script>
