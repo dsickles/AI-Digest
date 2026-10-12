@@ -39,3 +39,14 @@ export function formatWeekRange(weekStart, weekEnd) {
   const startLabel = startYear === endYear ? monthDay.format(readerInstant(weekStart)) : formatDate(weekStart);
   return `Week of ${startLabel} – ${formatDate(weekEnd)}`;
 }
+
+// Same month and day labels as the week line. "to" joins them so this sentence
+// does not add a dash. 2026-W41 is shown as W41.
+export function formatSourceCountNote(weekStart, weekEnd, weekId) {
+  const startYear = yearOnly.format(readerInstant(weekStart));
+  const endYear = yearOnly.format(readerInstant(weekEnd));
+  const startLabel = startYear === endYear ? monthDay.format(readerInstant(weekStart)) : formatDate(weekStart);
+  const id = String(weekId);
+  const label = /^\d{4}-W\d{2}$/.test(id) ? id.slice(5) : id;
+  return `Counts from the week of ${startLabel} to ${formatDate(weekEnd)} (${label})`;
+}

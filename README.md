@@ -15,7 +15,7 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 | Topics for skim | Business, Technical, Education, and Policy and Safety each get their own list. |
 | Thin items | Quick mentions live under Also seen at the bottom of their topic tab, not in the main list and not on Briefing. |
 | Own the archive | Past weeks stay readable from the Archive control on the week line. |
-| Every source | The Sources page lists every feed the digest reads, including ones with nothing this week. |
+| Every source | The Sources page lists every feed the digest reads. A source with no items in the latest week shows 0. |
 
 ## What you get
 
@@ -23,7 +23,7 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 - **Topic tabs** in this order: Business, Technical, Education, Policy and Safety
 - **Also seen** at the bottom of a topic tab that has thin links, including on an archived week. A tab with no thin items leaves that section off. Briefing does not list them.
 - An **Archive** of past weeks, each with a Read this week link
-- A **Sources** page: every enabled feed in `config/sources.yaml`, grouped by section
+- A **Sources** page: every enabled feed in `config/sources.yaml`, grouped by section, with each row's count from the latest week file
 - Week content checked into git under `content/digests/`
 - A static site anyone can open without an account or PIN
 
@@ -35,7 +35,7 @@ Open the live site (or your local copy). You land on the latest finished week's 
 - **Skim a topic.** Use Business, Technical, Education, or Policy and Safety. Each page shows that topic's main list in file order. Thin links, when that topic has them, sit at the bottom under Also seen. An empty topic still appears and says so. The tab count is the main list only.
 - **Open a story.** The title is the link to the article. A one-line takeaway under the title says why it matters, and it stays visible while Summary is closed. Where a Summary control exists, it expands or collapses the shorter summary without leaving the page. Top 5 rows stay open, with the takeaway above the summary. Video items show a play control on the row.
 - **Browse the archive.** Archive is the far-right link on the week line, after Sources, and it is not in the topic row. Open a past week with Read this week.
-- **See every source.** Sources sits on that same week line, between Updated and Archive, and the footer of every page links to it. The list is the feeds the digest reads, not a count of this week's items.
+- **See every source.** Sources sits on that same week line, between Updated and Archive. Each row shows how many items that source contributed to the latest week, including 0, and a grey note beside the heading names that week.
 
 A week that is still open (including a half-finished draft file) stays off the home page and out of the archive until its Saturday 23:59:59 America/New_York has passed.
 
@@ -104,7 +104,7 @@ pnpm build
 pnpm check:reader
 ```
 
-`pnpm check:reader` reads the built `dist/` folder and checks that Briefing, topics, takeaways, the Number of the week, Also seen rules, Archive links, and the Sources page match the committed week and `config/sources.yaml`.
+`pnpm check:reader` reads the built `dist/` folder and checks that Briefing, topics, takeaways, the Number of the week, Also seen rules, Archive links, and the Sources page (including each source's count from the latest week file) match the committed week and `config/sources.yaml`.
 
 The checked-in source list is `config/sources.yaml`. The site does not fetch those sources when someone visits; it only renders the week files.
 

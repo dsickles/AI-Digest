@@ -1,10 +1,12 @@
 ---
 import Shell from '../components/Shell.astro';
-import { latestWeek } from '../lib/weeks';
-import { loadSourceIndex } from '../lib/sources.mjs';
+import { formatSourceCountNote, latestWeek } from '../lib/weeks';
+import { countSourceReferences, loadSourceIndex } from '../lib/sources.mjs';
 
 const week = latestWeek();
 const index = loadSourceIndex();
+const references = countSourceReferences(week);
+const countNote = week ? formatSourceCountNote(week.week_start, week.week_end, week.week_id) : '';
 const mid = Math.ceil(index.sections.length / 2);
 const columns = [index.sections.slice(0, mid), index.sections.slice(mid)].filter((column) => column.length > 0);
 ---
@@ -18,7 +20,7 @@ const columns = [index.sections.slice(0, mid), index.sections.slice(mid)].filter
 >
   <header class="sources-head">
     <h2 class="page-title">Sources</h2>
-    <p class="sources-lede">All {index.total} feeds the digest reads, by section.</p>
+    {countNote && <p class="sources-note">{countNote}</p>}
   </header>
   <div class="source-cols">
     {
@@ -40,6 +42,7 @@ const columns = [index.sections.slice(0, mid), index.sections.slice(mid)].filter
                     <a href={source.homeUrl} target="_blank" rel="noopener noreferrer">
                       {source.name}
                     </a>
+                    <span class="source-count">{references.get(source.id) ?? 0}</span>
                     <span class="source-type">{source.typeLabel}</span>
                   </li>
                 ))}

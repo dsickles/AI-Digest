@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { formatDate, formatWeekRange } from '../src/lib/format-date.mjs';
+import { formatDate, formatSourceCountNote, formatWeekRange } from '../src/lib/format-date.mjs';
 import {
   digestWeekId,
   isCompleteWeek,
@@ -14,7 +14,7 @@ import {
 } from '../src/lib/week-rules.mjs';
 import { storyPlacementErrors } from '../src/lib/story-groups.mjs';
 import { alsoSeenFillerKind, visibleAlsoSeen } from '../src/lib/also-seen.mjs';
-import { indexSources, loadSourceIndex, sourceHomeUrl } from '../src/lib/sources.mjs';
+import { countSourceReferences, indexSources, loadSourceIndex, sourceHomeUrl } from '../src/lib/sources.mjs';
 import { parse as parseYaml } from 'yaml';
 
 const DEGRADED_BODY = "The summary couldn't be generated this week.";
@@ -875,6 +875,41 @@ function assertSourceRules() {
   const order = indexed.sections.map((section) => `${section.label}:${section.sources.map((source) => source.name).join(',')}`);
   const expectedOrder = ['Business:Zed', 'Technical:Alpha', 'Education:Education Week,The 74', 'Policy and Safety:Policy Desk'];
   if (order.join('|') !== expectedOrder.join('|')) fail(`source section order is ${order.join(' | ')}`);
+  const counted = countSourceReferences({
+    briefing: {
+      top: [
+        {
+          id: 'shared',
+          url: 'https://example.com/shared',
+          publisher: { source_id: 'alpha-desk' },
+          also_covered: [
+            { url: 'https://example.com/also', publisher: { source_id: 'policy-desk' } },
+            { url: 'https://example.com/shared', publisher: { source_id: 'alpha-desk' } },
+          ],
+        },
+      ],
+    },
+    topics: {
+      technical: [
+        {
+          id: 'shared',
+          url: 'https://example.com/shared',
+          publisher: { source_id: 'alpha-desk' },
+          also_covered: [{ url: 'https://example.com/also', publisher: { source_id: 'policy-desk' } }],
+        },
+      ],
+    },
+    main_feed: [{ id: 'shared', url: 'https://example.com/shared', publisher: { source_id: 'alpha-desk' } }],
+    footer_aside: [{ id: 'thin', url: 'https://example.com/thin', publisher: { source_id: 'zed-desk' } }],
+    excluded: [{ id: 'dropped', url: 'https://example.com/dropped', publisher: { source_id: 'alpha-desk' } }],
+  });
+  if (counted.get('alpha-desk') !== 1) fail(`shared item counted ${counted.get('alpha-desk') ?? 0} times`);
+  if (counted.get('policy-desk') !== 1) fail(`also_covered item counted ${counted.get('policy-desk') ?? 0} times`);
+  if (counted.get('zed-desk') !== 1) fail(`thin item counted ${counted.get('zed-desk') ?? 0} times`);
+  if (counted.has('the-sample')) fail('a source with no items was given a count');
+  const note = formatSourceCountNote('2026-10-04T00:00:00-04:00', '2026-10-10T23:59:59-04:00', '2026-W41');
+  if (note !== 'Counts from the week of Oct 4 to Oct 10, 2026 (W41)') fail(`source count note is "${note}"`);
+  if (note.includes('\u2013') || note.includes('\u2014')) fail('source count note uses a dash');
   console.log('source index rules passed');
 }
 
@@ -902,12 +937,8 @@ function assertSourceLinks(html, file, label) {
   if (briefing.includes('href="/sources"') || sections.includes('href="/sources"') || sections.includes('>Sources<')) {
     fail(`${label} Sources is a nav tab`);
   }
-  const footers = [...html.matchAll(/<footer\b[^>]*class="[^"]*\bsite-foot\b[^"]*"[^>]*>([\s\S]*?)<\/footer>/g)];
-  if (footers.length !== 1) fail(`${label} is missing the sources footer`);
-  const footerText = decode(footers[0][0]).replace(/\s+/g, ' ');
-  const expected = `Every source we read (${enabledSourcesFromYaml().length})`;
-  if (!footers[0][0].includes('href="/sources"') || !footerText.includes(expected)) {
-    fail(`${label} footer does not link to every source (${expected})`);
+  if (/<footer\b[^>]*class="[^"]*\bsite-foot\b/.test(html) || html.includes('Every source we read')) {
+    fail(`${label} still has the sources footer`);
   }
 }
 
@@ -925,12 +956,14 @@ function assertSourcesIndex(html, label) {
   if (!mainMatch) fail(`${label} is missing main`);
   const main = mainMatch[1];
   const decoded = decode(main).replace(/\s+/g, ' ');
-  const lede = `All ${enabled.length} feeds the digest reads, by section.`;
-  if (!decoded.includes(lede)) fail(`${label} lede does not match the source file`);
+  const countedWeek = selectLatestPublished(loadDigestWeeks(), builtAsOf);
+  if (!countedWeek) fail(`${label} has no latest week to count`);
+  const note = formatSourceCountNote(countedWeek.week_start, countedWeek.week_end, countedWeek.week_id);
+  if (!decoded.includes(note)) fail(`${label} week note is "${note}" and was not found`);
+  if (note.includes('\u2013') || note.includes('\u2014')) fail(`${label} week note uses a dash`);
+  if (html.includes('Every source we read')) fail(`${label} still has the sources footer`);
+  const references = countSourceReferences(countedWeek);
   if (!main.includes('>Sources<')) fail(`${label} is missing the Sources heading`);
-  if (/\bthis week\b/i.test(decoded) || /\bcontribut/i.test(decoded)) {
-    fail(`${label} shows a weekly count or contribution data`);
-  }
   const columns = [...main.matchAll(/<div class="source-col">([\s\S]*?)<\/div>/g)].map((match) => match[1]);
   const expectedSections = SECTION_IDS.map((id, position) => {
     const sources = enabled
@@ -973,11 +1006,16 @@ function assertSourcesIndex(html, label) {
         const type = decode(row.match(/class="[^"]*\bsource-type\b[^"]*"[^>]*>([\s\S]*?)</)?.[1] ?? '')
           .replace(/\s+/g, ' ')
           .trim();
+        const countText = decode(row.match(/class="[^"]*\bsource-count\b[^"]*"[^>]*>([\s\S]*?)</)?.[1] ?? '')
+          .replace(/\s+/g, ' ')
+          .trim();
+        const expectedCount = String(references.get(source.id) ?? 0);
         const rowText = decode(row.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
         if (name !== source.display_name) fail(`${label} ${expected.label} row ${rowIndex + 1} is ${name}`);
         if (href !== sourceHomeUrl(source)) fail(`${label} ${name} links to ${href || 'nothing'}`);
         if (type !== (source.type === 'youtube' ? 'YouTube' : 'RSS')) fail(`${label} ${name} type is ${type}`);
-        if (rowText !== `${source.display_name} ${type}`) fail(`${label} ${name} row reads "${rowText}"`);
+        if (countText !== expectedCount) fail(`${label} ${name} count is ${countText || 'missing'}; week has ${expectedCount}`);
+        if (rowText !== `${source.display_name} ${expectedCount} ${type}`) fail(`${label} ${name} row reads "${rowText}"`);
         renderedNames.push(source.display_name);
       });
     });
@@ -986,7 +1024,7 @@ function assertSourcesIndex(html, label) {
   for (const source of enabled) {
     if (!renderedNames.includes(source.display_name)) fail(`${label} is missing ${source.display_name}`);
   }
-  console.log(`sources page lists ${enabled.length} feeds from config/sources.yaml`);
+  console.log(`sources page lists ${enabled.length} feeds from config/sources.yaml for ${countedWeek.week_id}`);
 }
 
 function assertTitle(html, file, label) {

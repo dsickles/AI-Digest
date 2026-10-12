@@ -61,3 +61,43 @@ export function loadSourceIndex(path = SOURCES_PATH) {
   const doc = parseYaml(readFileSync(path, 'utf8'));
   return indexSources(doc);
 }
+
+function citeSource(counts, seen, sourceId, url) {
+  if (typeof sourceId !== 'string' || sourceId.length === 0) return;
+  const key = `${sourceId}\n${typeof url === 'string' ? url : ''}`;
+  if (seen.has(key)) return;
+  seen.add(key);
+  counts.set(sourceId, (counts.get(sourceId) ?? 0) + 1);
+}
+
+// Items cited from each source in one week file. A story that also appears in
+// the Top 5 or main_feed counts once. An also_covered link counts for its own
+// publisher. Excluded items are left out.
+export function countSourceReferences(week) {
+  const counts = new Map();
+  if (!week || typeof week !== 'object') return counts;
+  const seenItems = new Set();
+  const seenCitations = new Set();
+  const lists = [
+    week.briefing?.top,
+    ...Object.values(week.topics ?? {}),
+    week.main_feed,
+    week.footer_aside,
+  ];
+  for (const list of lists) {
+    if (!Array.isArray(list)) continue;
+    for (const card of list) {
+      if (!card || typeof card !== 'object') continue;
+      if (typeof card.id === 'string') {
+        if (seenItems.has(card.id)) continue;
+        seenItems.add(card.id);
+      }
+      citeSource(counts, seenCitations, card.publisher?.source_id, card.url);
+      if (!Array.isArray(card.also_covered)) continue;
+      for (const extra of card.also_covered) {
+        citeSource(counts, seenCitations, extra?.publisher?.source_id, extra?.url);
+      }
+    }
+  }
+  return counts;
+}
