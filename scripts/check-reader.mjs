@@ -826,6 +826,7 @@ function assertProgramCss(html, label) {
     (topPlace.includes('grid-column:5/13') && topPlace.includes('grid-row:2')) ||
     topPlace.includes('grid-area:2/5/auto/13');
   if (!topRight) fail(`${label} Top 5 is not the right two thirds under the lead`);
+  if (css.includes('stories-rest')) fail(`${label} Top 5 stories can leave the right column`);
   if (css.includes('.briefing-full')) fail(`${label} full briefing toggle styles are still present`);
   const storyBox = ruleBody(css, '.story');
   if (!storyBox.includes('break-inside:avoid') || !storyBox.includes('list-style:none')) {
@@ -1068,6 +1069,13 @@ function assertBriefingScan(html, weekDoc, where) {
   }
   const topAt = html.indexOf('id="briefing-heading"');
   if (topAt < 0 || listAt > topAt) fail(`${where} themes do not come before the Top 5`);
+  if (html.includes('stories-rest')) fail(`${where} moves Top 5 stories out of the right column`);
+  const topCol = html.indexOf('class="top top-col"');
+  const storiesAt = html.indexOf('<ol class="stories"');
+  const storyLists = html.match(/<ol class="stories"/g) ?? [];
+  if (topCol < 0 || storiesAt < topCol || storyLists.length !== 1) {
+    fail(`${where} Top 5 stories are not one list in the right column`);
+  }
   const rows = [...html.matchAll(/<li class="theme">([\s\S]*?)<\/li>/g)];
   if (rows.length !== themes.length) fail(`${where} shows ${rows.length} theme rows; the file has ${themes.length}`);
   themes.forEach((theme, index) => {

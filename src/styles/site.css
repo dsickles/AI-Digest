@@ -245,15 +245,8 @@ a:hover {
   margin-top: var(--s5);
 }
 
-.syn > .stories-rest {
-  grid-column: 1 / -1;
-  grid-row: 3;
-  min-width: 0;
-}
-
 .themes,
-.syn > .top > .stories,
-.stories-rest {
+.syn > .top > .stories {
   display: flex;
   flex-direction: column;
 }
@@ -700,8 +693,7 @@ main > .page-title {
   .syn > .synthesis,
   .syn > .lead,
   .syn > .themes-col,
-  .syn > .top,
-  .syn > .stories-rest {
+  .syn > .top {
     grid-column: 1 / -1;
     grid-row: auto;
   }

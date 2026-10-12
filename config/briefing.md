@@ -2,7 +2,7 @@
 
 Ingest reads this file when it writes the Briefing. The site renders the week file. It does not invent a lead or themes.
 
-`briefing.synthesis` stays in the file. The archive excerpt uses its first sentence. From `2026-W41` on, the Briefing page does not render that paragraph and does not offer a toggle. It opens with the lead, then five themes under the header "This week's themes", beside the Top 5. Weeks before `2026-W41`, including `2026-W40`, omit `lead` and `themes`. The site then shows the synthesis paragraph. Do not backfill those weeks.
+`briefing.synthesis` stays in the file. The archive excerpt uses its first sentence. From `2026-W41` on, the Briefing page does not render that paragraph and does not offer a toggle. It opens with the lead, then five themes under the header "This week's themes", in the left third beside the Top 5. Every Top 5 story stays in the right two thirds. Weeks before `2026-W41`, including `2026-W40`, omit `lead` and `themes`. The site then shows the synthesis paragraph. Do not backfill those weeks.
 
 ## Lead
 

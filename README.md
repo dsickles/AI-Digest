@@ -18,7 +18,7 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 
 ## What you get
 
-- A **Briefing** page: a lead of 1 to 3 sentences, exactly five theme rows under "This week's themes", and a Top 5. On a wide screen the themes sit in the left third and the Top 5 in the right two thirds. A week with no theme data still shows the synthesis paragraph.
+- A **Briefing** page: a lead of 1 to 3 sentences, exactly five theme rows under "This week's themes", and a Top 5. On a wide screen the themes sit in the left third and every Top 5 story stays in the right two thirds. A week with no theme data still shows the synthesis paragraph.
 - **Topic tabs** in this order: Business, Technical, Education, Policy and Safety
 - **Also seen** at the bottom of a topic tab that has thin links, including on an archived week. A tab with no thin items leaves that section off. Briefing does not list them.
 - An **Archive** of past weeks, each with a Read this week link
@@ -29,7 +29,7 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 
 Open the live site (or your local copy). You land on the latest finished week's Briefing.
 
-- **Read the Briefing.** The lead comes first, then "This week's themes" and the Top 5. On a wide screen those two sit side by side. On a phone the order is lead, themes, Top 5. An older week with no theme data shows the synthesis paragraph instead.
+- **Read the Briefing.** The lead comes first, then "This week's themes" and the Top 5. On a wide screen those two sit side by side, and every Top 5 story stays in the right column. On a phone the order is lead, themes, Top 5. An older week with no theme data shows the synthesis paragraph instead.
 - **Skim a topic.** Use Business, Technical, Education, or Policy and Safety. Each page shows that topic's main list in file order. Thin links, when that topic has them, sit at the bottom under Also seen. An empty topic still appears and says so. The tab count is the main list only.
 - **Open a story.** The title is the link to the article. Where a Summary control exists, it expands or collapses the summary without leaving the page. Top 5 rows stay open. Video items show a play control on the row.
 - **Browse the archive.** Archive sits on the week line next to Updated, not in the topic row. Open a past week with Read this week.
