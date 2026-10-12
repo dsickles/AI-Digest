@@ -730,8 +730,21 @@ function assertProgramCss(html, label) {
   if (!numeral.includes('color:var(--signal)') || !numeral.includes('font-size:88px')) {
     fail(`${label} Top 5 numeral is not the vermilion program figure`);
   }
-  const indexNumeral = ruleBody(css, '.index .k');
-  if (!indexNumeral.includes('color:var(--signal)')) fail(`${label} index numeral is not vermilion`);
+  if (css.includes('.index')) fail(`${label} Top 5 index styles are still present`);
+  const leadPlace = ruleBody(css, '.syn > .lead');
+  const leadBesideThemes =
+    leadPlace.includes('grid-column:1/9') || leadPlace.includes('grid-area:1/1/auto/9');
+  if (!leadBesideThemes) fail(`${label} lead line is not in the left columns`);
+  const themePlace = ruleBody(css, '.syn > .themes');
+  const themesBesideLead =
+    (themePlace.includes('grid-column:9/13') && themePlace.includes('grid-row:1')) ||
+    themePlace.includes('grid-area:1/9/auto/13') ||
+    themePlace.includes('grid-area:1/9/span2/13');
+  if (!themesBesideLead) fail(`${label} theme rows do not sit beside the lead`);
+  const storyBox = ruleBody(css, '.story');
+  if (!storyBox.includes('break-inside:avoid') || !storyBox.includes('list-style:none')) {
+    fail(`${label} a Top 5 story can split across columns or show a list marker beside the numeral`);
+  }
   const rank = ruleBody(css, '.row::before');
   if (!rank.includes('content:counter(topic-rank)') || !rank.includes('color:var(--ink-3)')) {
     fail(`${label} topic rank is not the grey list position`);
@@ -763,9 +776,12 @@ function assertProgramCss(html, label) {
   if (!tablet.includes('.flow{columns:1}') || !tablet.includes('.rowsets{grid-template-columns:1fr}')) {
     fail(`${label} mid-width layout does not drop to one column`);
   }
-  if (!tablet.includes('grid-column:1/-1') && !tablet.includes('grid-area:auto/1/auto/-1')) {
-    fail(`${label} index does not drop below the synthesis`);
-  }
+  const themesStack =
+    tablet.includes('.syn>.themes') &&
+    ((tablet.includes('grid-column:1/-1') && tablet.includes('grid-row:auto')) ||
+      tablet.includes('grid-area:auto/1/auto/-1'));
+  if (!themesStack) fail(`${label} theme rows do not drop under the lead on a narrow window`);
+  if (tablet.includes('.index')) fail(`${label} narrow window still styles the Top 5 index`);
   const play = ruleBody(css, '.play');
   if (!play.includes('width:1.1em') || !play.includes('height:1.1em') || !play.includes('color:var(--ink-2)')) {
     fail(`${label} play icon is not the 1.1em ink mark`);
@@ -809,8 +825,7 @@ function assertPhoneCss(css, label) {
   if (!ruleBody(phone, '.num').includes('font-size:48px')) {
     fail(`${label} Top 5 numeral is not 48px at phone width`);
   }
-  const indexMeta = ruleBody(phone, '.index .im');
-  if (!indexMeta.includes('display:none')) fail(`${label} phone index still shows publisher and date`);
+  if (phone.includes('.index')) fail(`${label} phone still styles the Top 5 index`);
   if (!ruleBody(phone, '.page-title').includes('font-size:40px')) {
     fail(`${label} phone topic title is not 40px`);
   }
@@ -945,6 +960,43 @@ function assertBriefingScan(html, weekDoc, where) {
   }
 }
 
+function visibleCopy(html) {
+  const stripped = html
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<span class="visually-hidden">[\s\S]*?<\/span>/g, ' ');
+  return decode(stripped.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+}
+
+function assertNoTopIndex(html, cards, where) {
+  if (html.includes('class="index"')) fail(`${where} still shows the Top 5 index`);
+  if (/class="k"/.test(html)) fail(`${where} still shows an index numeral`);
+  if (/aria-label="Top \d+ this week"/.test(html)) fail(`${where} still labels a Top 5 index`);
+  const copy = visibleCopy(html);
+  for (const card of cards) {
+    const hits = copy.split(card.title).length - 1;
+    if (hits !== 1) fail(`${where} shows "${card.title}" ${hits} times`);
+  }
+}
+
+function assertStoryNumber(article, card, rank, where) {
+  const nums = [...article.matchAll(/<span\b([^>]*\bclass="num"[^>]*)>([\s\S]*?)<\/span>/g)];
+  if (nums.length !== 1) fail(`${where} ${card.id} has ${nums.length} rank numerals`);
+  const value = decode(nums[0][2]).replace(/\s+/g, '');
+  if (value !== String(rank)) fail(`${where} ${card.id} rank numeral is not ${rank}`);
+  if (!/\baria-hidden="true"/.test(nums[0][1])) {
+    fail(`${where} ${card.id} exposes the numeral to a screen reader as well as the list marker`);
+  }
+  const withoutNum = article.replace(nums[0][0], ' ');
+  const text = visibleCopy(withoutNum);
+  const at = text.indexOf(card.title);
+  if (at < 0) fail(`${where} ${card.id} is missing its title`);
+  const before = text.slice(0, at);
+  if (new RegExp(`(?:^|\\s)${rank}(?:\\s|\\.|$)`).test(before)) {
+    fail(`${where} ${card.id} numbers the story twice`);
+  }
+}
+
 function assertBriefingTab(html, weekDoc, where) {
   const cards = briefingCards(weekDoc);
   const parts = splitFooter(html);
@@ -957,13 +1009,11 @@ function assertBriefingTab(html, weekDoc, where) {
     fail(`${where} briefing does not show ${topLabel}`);
   }
   if (!html.includes('aria-label="This week"')) fail(`${where} briefing is missing the synthesis region`);
-  if (!html.includes(`aria-label="${topLabel}"`)) fail(`${where} index is missing its label`);
+  if (!/<ol class="stories">/.test(parts.main)) fail(`${where} Top 5 is not a single numbered list`);
+  assertNoTopIndex(parts.main, cards, where);
   cards.forEach((card, index) => {
-    if (!html.includes(`href="#${card.id}"`)) fail(`${where} index does not link ${card.id}`);
     const article = extractArticle(parts.main, card.id);
-    if (!new RegExp(`class="num"[^>]*>\\s*${index + 1}\\s*<`).test(article)) {
-      fail(`${where} ${card.id} rank numeral is not ${index + 1}`);
-    }
+    assertStoryNumber(article, card, index + 1, where);
   });
   if (!decode(html).includes(weekDoc.briefing.synthesis)) fail(`${where} briefing is missing the synthesis`);
   assertBriefingScan(html, weekDoc, where);
