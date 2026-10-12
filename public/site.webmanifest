@@ -1,0 +1,19 @@
+{
+  "name": "Dan's AI Digest",
+  "short_name": "AI Digest",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "background_color": "#08090a",
+  "theme_color": "#08090a"
+}
