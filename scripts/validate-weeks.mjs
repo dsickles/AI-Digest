@@ -9,6 +9,7 @@ import addFormats from 'ajv-formats';
 import { digestWeekId, isoWeekId, newYorkParts } from '../src/lib/week-rules.mjs';
 import { sourcePlacementErrors, validateSourcesDocument } from '../src/lib/source-rules.mjs';
 import { canonicalStoryUrl, numberNoteErrors, storyPlacementErrors } from '../src/lib/story-groups.mjs';
+import { alsoSeenFillerErrors, alsoSeenFillerKind, visibleAlsoSeen } from '../src/lib/also-seen.mjs';
 
 export { isoWeekId };
 
@@ -313,6 +314,7 @@ function validateDigestDocument(doc, filename, sources) {
   errors.push(...validateRubric(doc));
   errors.push(...validateGrouping(doc, sources));
   errors.push(...validateBriefingScan(doc));
+  errors.push(...alsoSeenFillerErrors(doc));
   return errors;
 }
 
@@ -897,6 +899,21 @@ function runSelfTest(sources) {
   return true;
 }
 
+function thinAlsoSeenCard(id, title, reason = 'Thin: the feed had no article body, so this stays a link in Also seen.') {
+  return {
+    id,
+    title,
+    url: `https://simonwillison.net/2026/Oct/6/${id}/`,
+    publisher: { source_id: 'simon-willison', name: 'Simon Willison' },
+    published_at: '2026-10-06T18:00:00-04:00',
+    category: 'technical',
+    media: 'article',
+    summary_status: 'thin',
+    included: true,
+    include_reason: reason,
+  };
+}
+
 function rubricCard(id, title) {
   return {
     id,
@@ -980,6 +997,75 @@ function proveInclusion(sources, sample) {
     return false;
   }
   console.log('self-test PASS rubric week with no per-source cap');
+  if (!open.footer_aside.some((card) => card.summary_status === 'thin')) {
+    console.error('self-test: rubric week dropped its thin Also seen link');
+    return false;
+  }
+  console.log('self-test PASS thin items stay in Also seen');
+
+  const emptyAlsoSeen = rubricWeek();
+  emptyAlsoSeen.footer_aside = [];
+  const emptyAlsoSeenErrors = validateDigestDocument(emptyAlsoSeen, '2026-W41.json', sources);
+  if (emptyAlsoSeenErrors.length !== 0) {
+    console.error('self-test: a week with no Also seen items must pass');
+    for (const error of emptyAlsoSeenErrors) console.error(`- ${error}`);
+    return false;
+  }
+  console.log('self-test PASS Also seen can be empty');
+
+  const versionBump = rubricWeek();
+  versionBump.footer_aside.push(thinAlsoSeenCard('rubric-version-bump', 'llm-mistral 0.16'));
+  if (
+    !expectRubricFailure(
+      sources,
+      versionBump,
+      'must not appear in Also seen',
+      'version bump in Also seen',
+    )
+  ) {
+    return false;
+  }
+
+  const letterVersion = rubricWeek();
+  letterVersion.footer_aside.push(thinAlsoSeenCard('rubric-letter-version', 'datasette-atom 0.11a0'));
+  if (
+    !expectRubricFailure(
+      sources,
+      letterVersion,
+      'must not appear in Also seen',
+      'letter-suffix version bump in Also seen',
+    )
+  ) {
+    return false;
+  }
+
+  const quoteTitle = rubricWeek();
+  quoteTitle.footer_aside.push(thinAlsoSeenCard('rubric-quote-title', 'Quoting Carson Gross'));
+  if (
+    !expectRubricFailure(
+      sources,
+      quoteTitle,
+      'must not appear in Also seen',
+      'quote-only title in Also seen',
+    )
+  ) {
+    return false;
+  }
+
+  const quoteReason = rubricWeek();
+  quoteReason.footer_aside.push(
+    thinAlsoSeenCard('rubric-quote-reason', 'A pointer with no argument', 'Excluded: a quote with no commentary.'),
+  );
+  if (
+    !expectRubricFailure(
+      sources,
+      quoteReason,
+      'must not appear in Also seen',
+      'quote-only reason in Also seen',
+    )
+  ) {
+    return false;
+  }
 
   const missingList = rubricWeek();
   delete missingList.excluded;
@@ -1038,6 +1124,28 @@ function proveInclusion(sources, sample) {
   if (!expectRubricFailure(sources, stripped, 'include_reason', '2026-W41 excluded item with no reason')) {
     return false;
   }
+  const filler = (committed.footer_aside ?? []).filter((card) => alsoSeenFillerKind(card));
+  if (filler.length !== 0) {
+    console.error(`self-test: 2026-W41 Also seen still includes ${filler.map((card) => card.title).join(', ')}`);
+    return false;
+  }
+  const seen = visibleAlsoSeen(committed.footer_aside);
+  const thinVideo = seen.find(
+    (card) => card.media === 'video' && /video description/i.test(String(card.include_reason ?? '')),
+  );
+  const thinArticle = seen.find((card) => card.summary_status === 'thin' && card.media !== 'video');
+  if (!thinVideo || !thinArticle) {
+    console.error('self-test: 2026-W41 Also seen must keep thin articles and description-only videos');
+    return false;
+  }
+  const excludedFiller = (committed.excluded ?? []).filter(
+    (card) => card.title === 'llm-mistral 0.16' || card.title === 'datasette-atom 0.11a0' || card.title === 'Quoting Carson Gross',
+  );
+  if (excludedFiller.length !== 3 || excludedFiller.some((card) => visibleAlsoSeen([card]).length !== 0)) {
+    console.error('self-test: 2026-W41 version bumps and quote-only posts must stay excluded');
+    return false;
+  }
+  console.log('self-test PASS 2026-W41 Also seen keeps thin links and drops filler');
   return true;
 }
 

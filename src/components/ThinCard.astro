@@ -1,7 +1,7 @@
 ---
 import CoverageNotes from './CoverageNotes.astro';
 import PlayIcon from './PlayIcon.astro';
-import { formatDate, type ThinCard } from '../lib/weeks';
+import { formatDate, TOPIC_LABELS, type ThinCard } from '../lib/weeks';
 
 interface Props {
   item: ThinCard;
@@ -9,9 +9,11 @@ interface Props {
 
 const { item } = Astro.props;
 const video = item.media === 'video';
+const sectionLabel = TOPIC_LABELS[item.category];
 ---
 
 <article class="thin" id={item.id}>
+  <p class="section-label">{sectionLabel}</p>
   <h3 class="card-title">
     <a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a>
   </h3>

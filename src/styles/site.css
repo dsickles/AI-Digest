@@ -518,6 +518,19 @@ a:hover {
   min-width: 0;
 }
 
+.thin .section-label {
+  grid-column: 2;
+  min-width: 0;
+  margin: 0 0 2px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
 .thin h3 {
   font-size: 18px;
   font-weight: 500;
@@ -896,7 +909,8 @@ main > .page-title {
   .thin h3,
   .thin .meta,
   .thin .number-note,
-  .thin .also-covered {
+  .thin .also-covered,
+  .thin .section-label {
     grid-column: 1 / -1;
   }
 
