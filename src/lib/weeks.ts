@@ -1,9 +1,9 @@
 import { basename } from 'node:path';
 import { visibleAlsoSeen } from './also-seen.mjs';
-import { formatDate, formatSourceCountSubline, formatWeekRange } from './format-date.mjs';
+import { formatDate, formatRunStamp, formatSourceCountSubline, formatWeekRange } from './format-date.mjs';
 import { isPublishedWeek, readerNow, selectLatestPublished } from './week-rules.mjs';
 
-export { formatDate, formatSourceCountSubline, formatWeekRange };
+export { formatDate, formatRunStamp, formatSourceCountSubline, formatWeekRange };
 
 export const TOPICS = ['edtech', 'business', 'technical', 'policy-and-safety'] as const;
 

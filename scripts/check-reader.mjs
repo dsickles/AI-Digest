@@ -2,7 +2,8 @@ import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { formatDate, formatSourceCountSubline, formatWeekRange } from '../src/lib/format-date.mjs';
+import { formatDate, formatRunStamp, formatSourceCountSubline, formatWeekRange } from '../src/lib/format-date.mjs';
+import { countWord, joinAnd, shortSourceName } from '../src/lib/about-stats.mjs';
 import {
   digestWeekId,
   isCompleteWeek,
@@ -428,14 +429,16 @@ function assertReaderChrome(html, label, file = '') {
   const timeEnd = weekLine.indexOf('</time>');
   if (timeEnd === -1) fail(`${label} Updated date is missing`);
   const afterTime = weekLine.slice(timeEnd + '</time>'.length);
-  const sourcesAt = afterTime.search(/<a\b[^>]*href="\/sources"[^>]*>/);
+  if (rangeText.includes('\u2013') || rangeText.includes('\u2014')) fail(`${label} week range uses a dash`);
+  if (!/\bto\b/.test(rangeText)) fail(`${label} week range does not use to`);
+  const aboutAt = afterTime.search(/<a\b[^>]*href="\/about\/how-it-works"[^>]*>/);
   const archiveAt = afterTime.search(/<a\b[^>]*href="\/archive"[^>]*>/);
-  if (sourcesAt === -1) fail(`${label} Sources is not to the right of Updated`);
-  if (archiveAt === -1 || archiveAt < sourcesAt) fail(`${label} Archive is not the far-right week-line link`);
-  const between = decode(afterTime.slice(0, sourcesAt)).replace(/&middot;/gi, '·').replace(/<[^>]*>/g, '');
-  if (between.includes(',')) fail(`${label} has a comma between Updated and Sources`);
-  if (!/^[\s·]*$/.test(between)) fail(`${label} puts "${between}" between Updated and Sources`);
-  assertSourceLinks(html, file, label);
+  if (aboutAt === -1) fail(`${label} About is not to the right of Updated`);
+  if (archiveAt === -1 || archiveAt < aboutAt) fail(`${label} Archive is not the far-right week-line link`);
+  const between = decode(afterTime.slice(0, aboutAt)).replace(/&middot;/gi, '·').replace(/<[^>]*>/g, '');
+  if (between.includes(',')) fail(`${label} has a comma between Updated and About`);
+  if (!/^[\s·]*$/.test(between)) fail(`${label} puts "${between}" between Updated and About`);
+  assertWeekLineLinks(html, file, label);
   assertSectionCounts(html, file, label);
   assertTitle(html, file, label);
 }
@@ -509,18 +512,167 @@ function assertIconHead(html, label) {
   if (/favicon\.ico|rel="shortcut icon"/i.test(head)) fail(`${label} still has an old favicon tag`);
 }
 
+function redirectTarget(file) {
+  const normalized = String(file).replaceAll('\\', '/');
+  if (/\/about\/(?:how-it-works|sources)\/index\.html$/.test(normalized)) return '';
+  if (/\/sources\/index\.html$/.test(normalized)) return '/about/sources';
+  if (/\/about\/index\.html$/.test(normalized)) return '/about/how-it-works';
+  return '';
+}
+
+function assertRedirect(html, file, target) {
+  const refresh = html.match(/http-equiv="refresh"[^>]*content="[^"]*url=([^";\s]+)"/i)?.[1];
+  const canonical = html.match(/rel="canonical" href="([^"]+)"/)?.[1];
+  const link = html.match(/<a\b[^>]*href="([^"]+)"/)?.[1];
+  for (const [name, value] of [
+    ['refresh', refresh],
+    ['canonical', canonical],
+    ['link', link],
+  ]) {
+    if (value !== target && value !== `${target}/`) {
+      fail(`${file} ${name} goes to ${value ?? 'nothing'}; expected ${target}`);
+    }
+  }
+}
+
+function recomputeAbout(weekDoc) {
+  const main = Array.isArray(weekDoc?.main_feed) ? weekDoc.main_feed : [];
+  const aside = Array.isArray(weekDoc?.footer_aside) ? weekDoc.footer_aside : [];
+  const excluded = Array.isArray(weekDoc?.excluded) ? weekDoc.excluded : [];
+  const stories = main.length;
+  const merged = main.reduce(
+    (sum, card) => sum + (Array.isArray(card?.also_covered) ? card.also_covered.length : 0),
+    0,
+  );
+  const alsoSeen = aside.length;
+  const leftOut = excluded.length;
+  const considered = stories + merged + alsoSeen + leftOut;
+  const themes = Array.isArray(weekDoc?.briefing?.themes) ? weekDoc.briefing.themes.length : 0;
+  const picks = Array.isArray(weekDoc?.briefing?.top) ? weekDoc.briefing.top.length : 0;
+  const rawValue = weekDoc?.briefing?.number_of_week?.value;
+  const numberValue = typeof rawValue === 'string' ? rawValue : '';
+  const weekMatch = /^(\d{4})-W(\d{2})$/.exec(String(weekDoc?.week_id ?? ''));
+  const weekLabel = weekMatch ? `W${weekMatch[2]}` : '';
+  return { stories, merged, alsoSeen, leftOut, considered, themes, picks, numberValue, weekLabel };
+}
+
+function assertAboutFrame(html, tab, label) {
+  const main = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1] ?? '';
+  const decoded = decode(main).replace(/\s+/g, ' ');
+  const intro =
+    'Dan wanted one weekly read on AI across business, technical work, education and policy, without wading through dozens of feeds.';
+  if (!decoded.includes(intro)) fail(`${label} is missing the About intro`);
+  if (!decoded.includes('This page explains how a week gets made and lists every source it reads.')) {
+    fail(`${label} intro does not name both tabs`);
+  }
+  const tabs = main.match(/<nav\b[^>]*class="[^"]*\btabs\b[^"]*"[^>]*>([\s\S]*?)<\/nav>/)?.[1] ?? '';
+  if (!tabs.includes('href="/about/how-it-works"') || !tabs.includes('>How it works<')) {
+    fail(`${label} is missing the How it works tab`);
+  }
+  if (!tabs.includes('href="/about/sources"') || !tabs.includes('>Sources<')) {
+    fail(`${label} is missing the Sources tab`);
+  }
+  const current = tab === 'sources' ? '/about/sources' : '/about/how-it-works';
+  const currentLink = tabs.match(new RegExp(`<a\\b[^>]*href="${current}"[^>]*>`))?.[0] ?? '';
+  if (!/aria-current="page"/.test(currentLink)) fail(`${label} ${tab} tab is not current`);
+  const other = tab === 'sources' ? '/about/how-it-works' : '/about/sources';
+  const otherLink = tabs.match(new RegExp(`<a\\b[^>]*href="${other}"[^>]*>`))?.[0] ?? '';
+  if (/aria-current="page"/.test(otherLink)) fail(`${label} marks both About tabs current`);
+  if (decoded.includes('How these are picked')) fail(`${label} still links How these are picked`);
+  if (main.includes('\u2013') || main.includes('\u2014')) fail(`${label} copy contains a dash`);
+}
+
+function assertHowItWorks(html, label) {
+  assertAboutFrame(html, 'how-it-works', label);
+  const countedWeek = selectLatestPublished(loadDigestWeeks(), builtAsOf);
+  if (!countedWeek) fail(`${label} has no latest week`);
+  const stats = recomputeAbout(countedWeek);
+  const main = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1] ?? '';
+  const decoded = decode(main).replace(/\s+/g, ' ');
+  const run = main.match(/<p\b[^>]*class="[^"]*\brun\b[^"]*"[^>]*>/)?.[0] ?? '';
+  const attr = (name) => run.match(new RegExp(`\\bdata-${name}="(\\d+)"`))?.[1];
+  const expectAttr = [
+    ['considered', stats.considered],
+    ['stories', stats.stories],
+    ['merged', stats.merged],
+    ['also-seen', stats.alsoSeen],
+    ['left-out', stats.leftOut],
+    ['themes', stats.themes],
+    ['picks', stats.picks],
+  ];
+  for (const [name, value] of expectAttr) {
+    if (attr(name) !== String(value)) fail(`${label} data-${name} is ${attr(name) ?? 'missing'}; week has ${value}`);
+  }
+  const enabled = enabledSourcesFromYaml();
+  const aiOnly = enabled.filter((source) => source.ai_only === true);
+  if (attr('sources') !== String(enabled.length)) {
+    fail(`${label} source total is ${attr('sources') ?? 'missing'}; config has ${enabled.length}`);
+  }
+  if (attr('ai-only') !== String(aiOnly.length)) {
+    fail(`${label} AI-only count is ${attr('ai-only') ?? 'missing'}; config has ${aiOnly.length}`);
+  }
+  const noun = (count, singular, plural) => `${count} ${count === 1 ? singular : plural}`;
+  const badge = stats.numberValue ? `${stats.weekLabel}: ${stats.numberValue}` : stats.weekLabel;
+  const phrases = [
+    `${noun(stats.considered, 'item', 'items')} considered`,
+    `${noun(stats.stories, 'story', 'stories')} (${stats.merged} more merged in as also covered)`,
+    `${stats.alsoSeen} Also seen ${stats.alsoSeen === 1 ? 'link' : 'links'}`,
+    `${stats.leftOut} left out`,
+    noun(stats.themes, 'theme', 'themes'),
+    `${stats.stories} + ${stats.merged} + ${stats.alsoSeen} + ${stats.leftOut} = ${stats.considered}`,
+    `${stats.merged} merged in, ${stats.alsoSeen} to Also seen`,
+    `${stats.alsoSeen} went to Also seen`,
+    noun(stats.stories, 'story', 'stories'),
+    noun(stats.picks, 'pick', 'picks'),
+    badge,
+    `${enabled.length} right now`,
+    `pins the ${enabled.length} approved sources`,
+    `the ${aiOnly.length} sources set to AI only`,
+    `counts in the ${stats.leftOut}`,
+    `${countWord(aiOnly.length)} ${aiOnly.length === 1 ? 'source is' : 'sources are'} set so items not about AI stay out: ${joinAnd(aiOnly.map((source) => shortSourceName(source.display_name)))}.`,
+    'Runs Sundays at 7:29 AM ET.',
+    `This week ran ${formatRunStamp(countedWeek.generated_at)}.`,
+    'Steps 6 to 8 are not done in a fixed order.',
+  ];
+  for (const phrase of phrases) {
+    if (!decoded.includes(phrase)) fail(`${label} is missing "${phrase}"`);
+  }
+  const numberCnt = main.match(/data-number="([^"]*)"/)?.[1] ?? '';
+  if (decode(numberCnt) !== badge) fail(`${label} number badge is "${decode(numberCnt)}"; expected ${badge}`);
+  console.log(
+    `about counts for ${countedWeek.week_id}: ${stats.considered} considered, ${stats.stories} stories, ${stats.merged} merged, ${stats.alsoSeen} also seen, ${stats.leftOut} left out`,
+  );
+}
+
 function assertBuiltChrome(scope) {
   const files = walk(DIST);
   if (files.length === 0) fail(`${scope} produced no HTML`);
   assertIconFiles();
-  assertProgramCss(readFileSync(files[0], 'utf8'), scope);
+  const styled = files.find((file) => !redirectTarget(file));
+  if (!styled) fail(`${scope} produced no reader page`);
+  assertProgramCss(readFileSync(styled, 'utf8'), scope);
+  const seenRedirects = new Set();
   for (const file of files) {
     const html = readFileSync(file, 'utf8');
+    const normalized = String(file).replaceAll('\\', '/');
+    const target = redirectTarget(file);
+    if (target) {
+      assertRedirect(html, file, target);
+      seenRedirects.add(target);
+      continue;
+    }
     assertIconHead(html, `${scope} ${file}`);
     assertReaderChrome(html, `${scope} ${file}`, file);
-    if (/(?:^|\/)sources\/index\.html$/.test(String(file).replaceAll('\\', '/'))) {
+    if (/\/about\/sources\/index\.html$/.test(normalized)) {
       assertSourcesIndex(html, `${scope} ${file}`);
+      assertAboutFrame(html, 'sources', `${scope} ${file}`);
     }
+    if (/\/about\/how-it-works\/index\.html$/.test(normalized)) {
+      assertHowItWorks(html, `${scope} ${file}`);
+    }
+  }
+  if (!seenRedirects.has('/about/sources') || !seenRedirects.has('/about/how-it-works')) {
+    fail(`${scope} is missing the /sources or /about redirect`);
   }
 }
 
@@ -971,32 +1123,41 @@ function assertSourceRules() {
     fail(`source count subline is "${note}"`);
   }
   if (note.includes('\u2013') || note.includes('\u2014')) fail('source count subline uses a dash');
+  const range = formatWeekRange('2026-10-04T00:00:00-04:00', '2026-10-10T23:59:59-04:00');
+  if (range !== 'Week of Oct 4 to Oct 10, 2026') fail(`week range is "${range}"`);
+  if (range.includes('\u2013') || range.includes('\u2014')) fail('week range uses a dash');
+  const ran = formatRunStamp('2026-10-11T21:34:52Z');
+  if (ran !== 'Oct 11, 5:34 PM ET') fail(`run stamp is "${ran}"`);
   console.log('source index rules passed');
 }
 
-function assertSourceLinks(html, file, label) {
+function assertWeekLineLinks(html, file, label) {
   const weekLine = html.match(/<p\b[^>]*class="[^"]*\bweek-line\b[^"]*"[^>]*>[\s\S]*?<\/p>/)?.[0];
   if (!weekLine) fail(`${label} is missing the week line`);
   const archiveAt = weekLine.search(/<a\b[^>]*href="\/archive"/);
-  const sourcesAt = weekLine.search(/<a\b[^>]*href="\/sources"/);
-  if (sourcesAt === -1 || !weekLine.includes('>Sources<')) fail(`${label} week line is missing the Sources link`);
-  if (archiveAt === -1 || archiveAt < sourcesAt) fail(`${label} Archive is not to the right of Sources`);
-  const sourcesLabelAt = weekLine.indexOf('>Sources</a>');
-  if (sourcesLabelAt === -1 || sourcesLabelAt > archiveAt) fail(`${label} Sources label is missing before Archive`);
-  const betweenLinks = decode(weekLine.slice(sourcesLabelAt + '>Sources</a>'.length, archiveAt))
+  const aboutAt = weekLine.search(/<a\b[^>]*href="\/about\/how-it-works"/);
+  if (aboutAt === -1 || !weekLine.includes('>About<')) fail(`${label} week line is missing the About link`);
+  if (archiveAt === -1 || archiveAt < aboutAt) fail(`${label} Archive is not to the right of About`);
+  const aboutLabelAt = weekLine.indexOf('>About</a>');
+  if (aboutLabelAt === -1 || aboutLabelAt > archiveAt) fail(`${label} About label is missing before Archive`);
+  const betweenLinks = decode(weekLine.slice(aboutLabelAt + '>About</a>'.length, archiveAt))
     .replace(/&middot;/gi, '·')
     .replace(/<[^>]*>/g, '');
-  if (!/^[\s·]*$/.test(betweenLinks)) fail(`${label} puts "${betweenLinks}" between Sources and Archive`);
+  if (!/^[\s·]*$/.test(betweenLinks)) fail(`${label} puts "${betweenLinks}" between About and Archive`);
   const weekHrefs = [...weekLine.matchAll(/\bhref="([^"]*)"/g)].map((match) => match[1]);
   if (weekHrefs.at(-1) !== '/archive') fail(`${label} Archive is not the far-right week-line link`);
-  const onSources = /(?:^|\/)sources\/index\.html$/.test(String(file).replaceAll('\\', '/'));
-  const sourcesLink = weekLine.match(/<a\b[^>]*href="\/sources"[^>]*>/)?.[0] ?? '';
-  if (onSources && !/aria-current="page"/.test(sourcesLink)) fail(`${label} Sources link is not current`);
-  if (!onSources && /aria-current="page"/.test(sourcesLink)) fail(`${label} Sources link is current off the sources page`);
+  const normalized = String(file).replaceAll('\\', '/');
+  const onAbout = /(?:^|\/)about\/(?:how-it-works|sources)\/index\.html$/.test(normalized);
+  const aboutLink = weekLine.match(/<a\b[^>]*href="\/about\/how-it-works"[^>]*>/)?.[0] ?? '';
+  if (onAbout && !/aria-current="page"/.test(aboutLink)) fail(`${label} About link is not current`);
+  if (!onAbout && /aria-current="page"/.test(aboutLink)) fail(`${label} About link is current off the About page`);
   const briefing = navBlock(html, 'nav-briefing');
   const sections = navBlock(html, 'nav-sections');
   if (briefing.includes('href="/sources"') || sections.includes('href="/sources"') || sections.includes('>Sources<')) {
     fail(`${label} Sources is a nav tab`);
+  }
+  if (briefing.includes('href="/about') || sections.includes('>About<')) {
+    fail(`${label} About is a nav tab`);
   }
   if (/<footer\b[^>]*class="[^"]*\bsite-foot\b/.test(html) || html.includes('Every source we read')) {
     fail(`${label} still has the sources footer`);
@@ -1111,8 +1272,12 @@ function assertTitle(html, file, label) {
     if (title !== "Dan's AI Digest: Archive") fail(`${label} title is "${title}"`);
     return;
   }
-  if (/(?:^|\/)sources\/index\.html$/.test(normalized)) {
-    if (title !== "Dan's AI Digest: Sources") fail(`${label} title is "${title}"`);
+  if (/(?:^|\/)about\/how-it-works\/index\.html$/.test(normalized)) {
+    if (title !== "About: how it works · Dan's AI Digest") fail(`${label} title is "${title}"`);
+    return;
+  }
+  if (/(?:^|\/)about\/sources\/index\.html$/.test(normalized)) {
+    if (title !== "About: sources · Dan's AI Digest") fail(`${label} title is "${title}"`);
     return;
   }
   if (title !== "Dan's AI Digest") fail(`${label} title is "${title}"`);
@@ -2009,7 +2174,7 @@ if (!decode(archivePages.technical).includes('September sponsors-only newsletter
 if (decode(archivePages.briefing).includes('September sponsors-only newsletter')) {
   fail(`archive ${WEEK_ID} briefing still lists the September sponsors footer`);
 }
-if (!pages.digest.includes('Week of Sep 27 \u2013 Oct 3, 2026')) {
+if (!pages.digest.includes('Week of Sep 27 to Oct 3, 2026')) {
   fail('archive 2026-W40 is missing the week range');
 }
 
@@ -2321,7 +2486,7 @@ try {
   if (!homeDuringWeek.includes(week.briefing.synthesis)) {
     fail('the empty fixture replaced the latest week');
   }
-  if (!homeDuringWeek.includes('Week of Sep 27 \u2013 Oct 3, 2026')) {
+  if (!homeDuringWeek.includes('Week of Sep 27 to Oct 3, 2026')) {
     fail('mid-week home left the last published week');
   }
   if (
@@ -2351,7 +2516,7 @@ try {
   if (!archiveDuringWeek.includes('Saved older week synthesis from the file.')) {
     fail('archive excerpt for the older week does not match the saved file');
   }
-  if (!archiveDuringWeek.includes('Week of Sep 20 \u2013 Sep 26, 2026')) {
+  if (!archiveDuringWeek.includes('Week of Sep 20 to Sep 26, 2026')) {
     fail('archive is missing the older week range');
   }
 

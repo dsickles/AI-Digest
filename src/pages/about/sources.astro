@@ -2,9 +2,10 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse as parseYaml } from 'yaml';
-import Shell from '../components/Shell.astro';
-import { formatSourceCountSubline, latestWeek } from '../lib/weeks';
-import { countSourceReferences, loadSourceIndex, sourceWeekCountLabel } from '../lib/sources.mjs';
+import AboutTabs from '../../components/AboutTabs.astro';
+import Shell from '../../components/Shell.astro';
+import { countSourceReferences, loadSourceIndex, sourceWeekCountLabel } from '../../lib/sources.mjs';
+import { formatSourceCountSubline, latestWeek, synthesisExcerpt } from '../../lib/weeks';
 
 const week = latestWeek();
 const index = loadSourceIndex();
@@ -16,12 +17,14 @@ const columns = [index.sections.slice(0, mid), index.sections.slice(mid)].filter
 ---
 
 <Shell
-  titleParts={['Sources']}
-  description="Every source the digest reads, by section."
+  title="About: sources · Dan's AI Digest"
+  description={week ? synthesisExcerpt(week.briefing.synthesis) : undefined}
+  canonical="/about/sources"
   week={week}
-  active="sources"
+  active="about"
   scope="latest"
 >
+  <AboutTabs tab="sources" />
   <header class="sources-head">
     <h2 class="page-title">Sources <span class="tot">({index.total})</span></h2>
     {subline && <p class="sources-note">{subline}</p>}

@@ -14,13 +14,14 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 | Briefing first | A short lead, the Number of the week, five themes, and the Top 5. No wall of text. |
 | Topics for skim | Business, Technical, Education, and Policy and Safety each get their own list, with quick mentions under Also seen at the bottom. |
 | Own the archive | Past weeks stay readable from the Archive control on the week line. |
-| Every source listed | A Sources page lists all 33 feeds the digest reads, by section, with how many items each gave this week. |
+| Every source listed | The About page lists every feed the digest reads, by section, with how many items each gave this week. |
 
 ## What you get
 
 - A **Briefing** page: a lead of one to three sentences, then the Number of the week, then This week's themes (always five) in the left column, with the Top 5 in the wider right column. The number sits in that left column, under the lead and above the themes. On a phone: lead, number, themes, Top 5.
 - **Topic tabs**: Business, Technical, Education, Policy and Safety. Each ends with Also seen when that topic has thin items.
-- A **Sources** page at `/sources`, linked from the week line (Sources · Archive). The heading is Sources (33). A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week".
+- An **About** page with two tabs. How it works is `/about/how-it-works`. Sources is `/about/sources`. `/about` forwards to How it works. `/sources` forwards to the Sources tab. Both tabs open with the same short intro. How it works explains the weekly run, with every count taken from the latest week file and `config/sources.yaml`. Sources lists every feed. The heading is Sources, with the number of enabled feeds in parentheses. A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week".
+- A week line that reads Updated, the date, About, then Archive. Archive is always the far-right link. On an About page, About is marked as the current page. The week range uses "to", as in "Week of Oct 4 to Oct 10, 2026".
 - An **Archive** of past weeks, each with a Read this week link. Weeks from before the redesign still show their briefing paragraph.
 - A site icon for browser tabs and the phone home screen.
 - Week content checked into git under `content/digests/`
@@ -33,8 +34,8 @@ Open the live site (or your local copy). You land on the latest finished week's 
 - **Read the Briefing.** The lead sums up the week. The Number of the week is one figure with what was measured, why it matters, and a link to its story. Each theme is one sentence with links to the stories behind it. The Top 5 sits beside them. On a phone the order is lead, number, themes, Top 5. A week from before the redesign shows its briefing paragraph instead.
 - **Skim a topic.** Use Business, Technical, Education, or Policy and Safety. Each page shows that topic's main list in file order. Thin links, when that topic has them, sit at the bottom under Also seen. An empty topic still appears and says so. The tab count is the main list only.
 - **Open a story.** The title is the link to the article. A one-line takeaway under the title says why it matters, and it stays visible while Summary is closed. Where a Summary control exists, it expands or collapses the shorter summary without leaving the page. Top 5 rows stay open, with the takeaway above the summary. Video items show a play control on the row.
-- **Browse the archive.** Archive is the far-right link on the week line, after Sources, and it is not in the topic row. Open a past week with Read this week.
-- **See every source.** The week line reads Updated · Sources · Archive. The heading is Sources (33). A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week".
+- **Browse the archive.** Archive is the far-right link on the week line, after About, and it is not in the topic row. Open a past week with Read this week.
+- **Read how a week is made.** The week line is Updated, the date, About, Archive. About opens How it works. The Sources tab lists every feed the digest reads. `/sources` forwards there.
 
 A week that is still open (including a half-finished draft file) stays off the home page and out of the archive until its Saturday 23:59:59 America/New_York has passed.
 
@@ -66,7 +67,7 @@ You run a local copy to read the checked-in week the same way the live site does
    ```
 
    Leave that terminal open. Open [http://localhost:4321](http://localhost:4321). You should see the latest finished week's Briefing.
-5. Click around using **Reading a week**. Topic tabs, Archive, and Sources should match the description above.
+5. Click around using **Reading a week**. Topic tabs, Archive, and About should match the description above.
 6. Optional production-shaped build (still local):
 
    ```bash
@@ -103,9 +104,11 @@ pnpm build
 pnpm check:reader
 ```
 
-`pnpm check:reader` reads the built `dist/` folder and checks that Briefing, topics, takeaways, the Number of the week, Also seen rules, Archive links, and the Sources page (heading count, week note, and each source's count) match the committed week and `config/sources.yaml`.
+`pnpm check:reader` reads the built `dist/` folder and checks that Briefing, topics, takeaways, the Number of the week, Also seen rules, Archive links, and the About page match the committed week and `config/sources.yaml`. That includes the How it works counts (items considered, stories, merged in, Also seen, left out, themes, and the Number of the week), the Sources heading count, the week note, and each source's count.
 
-The Sources page reads `config/sources.yaml` at build time, so adding or removing a source there updates the page on the next build. Today it lists 33: Business 8, Technical 9, Education 9, Policy and Safety 7. The heading is Sources (33). A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week". Within a section, names are sorted alphabetically, and a leading "The" is ignored. Counts come from the current week file, so a row that says "None this week" had nothing that made the cut that week. The site does not fetch those sources when someone visits; it only renders the week files.
+The About page is the only entry for that explanation. `/about` forwards to `/about/how-it-works`. `/sources` forwards to `/about/sources`. How it works reads the latest week file at build time. Items considered are the main stories, plus the also covered links, plus Also seen, plus the items left out. The run line's sum has to match that total. Themes, the Number of the week, and the source total come from that week file and `config/sources.yaml`. None of those figures is typed into the page. The schedule line says the run is Sundays at 7:29 AM ET, and "This week ran" uses the week file's `generated_at`.
+
+The Sources tab reads `config/sources.yaml` at build time, so adding or removing a source there updates the page on the next build. Today the registry lists 33 enabled feeds: Business 8, Technical 9, Education 9, Policy and Safety 7. The heading is Sources, with that count in parentheses. A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week". Within a section, names are sorted alphabetically, and a leading "The" is ignored. Counts come from the current week file, so a row that says "None this week" had nothing that made the cut that week. The site does not fetch those sources when someone visits; it only renders the week files.
 
 ## What makes the cut
 
