@@ -34,6 +34,7 @@ html {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   scrollbar-color: var(--rule-strong) var(--ground);
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -1171,6 +1172,10 @@ main > .page-title {
 }
 
 @media (max-width: 720px) {
+  html {
+    scrollbar-gutter: auto;
+  }
+
   :root {
     --pad: 20px;
     --gut: 12px;

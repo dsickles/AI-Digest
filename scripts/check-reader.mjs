@@ -1336,6 +1336,9 @@ function assertProgramCss(html, label) {
     fail(`${label} is missing Host Grotesk`);
   }
   if (!ruleBody(css, 'body').includes('font-family:var(--sans)')) fail(`${label} body is not Host Grotesk`);
+  if (!ruleBody(css, 'html').includes('scrollbar-gutter:stable')) {
+    fail(`${label} page root does not keep a stable scrollbar gutter`);
+  }
   const mast = ruleBody(css, '.mast');
   if (!mast.includes('font-weight:700') || !mast.includes('font-size:clamp(38px,7vw,104px)')) {
     fail(`${label} masthead is not Host Grotesk 700 at the program size`);
@@ -1554,6 +1557,9 @@ function assertSourcesCss(css, label) {
 function assertPhoneCss(css, label) {
   const phone = mediaBody(css, ['max-width:720px', 'width<=720px']);
   if (!phone) fail(`${label} phone layout is missing`);
+  if (!ruleBody(phone, 'html').includes('scrollbar-gutter:auto')) {
+    fail(`${label} phone layout reserves a scrollbar gutter`);
+  }
   const mast = ruleBody(phone, '.mast');
   if (!mast.includes('font-size:clamp(30px,10.4vw,52px)') || !mast.includes('white-space:nowrap')) {
     fail(`${label} masthead does not stay on one line at phone width`);
