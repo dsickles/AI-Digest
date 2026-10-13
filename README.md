@@ -11,19 +11,18 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 | Intent | Meaning |
 |--------|---------|
 | One week, done | Sunday through Saturday (America/New_York). Only a finished week appears on the home page. |
-| Briefing first | A short lead, five theme rows, and a Top 5. |
-| Topics for skim | Business, Technical, Education, and Policy and Safety each get their own list. |
-| Thin items | Quick mentions live under Also seen at the bottom of their topic tab, not in the main list and not on Briefing. |
+| Briefing first | A short lead, the Number of the week, five themes, and the Top 5. No wall of text. |
+| Topics for skim | Business, Technical, Education, and Policy and Safety each get their own list, with quick mentions under Also seen at the bottom. |
 | Own the archive | Past weeks stay readable from the Archive control on the week line. |
-| Every source | The Sources page lists every feed the digest reads. A row with nothing in the latest week says None this week. |
+| Every source listed | A Sources page lists all 33 feeds the digest reads, by section, with how many items each gave this week. |
 
 ## What you get
 
-- A **Briefing** page: a lead of 1 to 3 sentences, exactly five theme rows under "This week's themes", and a Top 5. On a wide screen the themes sit in the left third and every Top 5 story stays in the right two thirds. When the week has a Number of the week, that figure sits in the left column under the lead and above This week's themes. The Top 5 stays in the right column. A week with no theme data still shows the synthesis paragraph. A week with no number shows no empty slot.
-- **Topic tabs** in this order: Business, Technical, Education, Policy and Safety
-- **Also seen** at the bottom of a topic tab that has thin links, including on an archived week. A tab with no thin items leaves that section off. Briefing does not list them.
-- An **Archive** of past weeks, each with a Read this week link
-- A **Sources** page: every enabled feed in `config/sources.yaml`, grouped by section. Each row says how many items that source contributed this week.
+- A **Briefing** page: a lead of one to three sentences, then the Number of the week, then This week's themes (always five) in the left column, with the Top 5 in the wider right column. The number sits in that left column, under the lead and above the themes. On a phone: lead, number, themes, Top 5.
+- **Topic tabs**: Business, Technical, Education, Policy and Safety. Each ends with Also seen when that topic has thin items.
+- A **Sources** page at `/sources`, linked from the week line (Sources · Archive). The heading is Sources (33). A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week".
+- An **Archive** of past weeks, each with a Read this week link. Weeks from before the redesign still show their briefing paragraph.
+- A site icon for browser tabs and the phone home screen.
 - Week content checked into git under `content/digests/`
 - A static site anyone can open without an account or PIN
 
@@ -31,11 +30,11 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 
 Open the live site (or your local copy). You land on the latest finished week's Briefing.
 
-- **Read the Briefing.** The lead comes first, then "This week's themes" and the Top 5. On a wide screen those two sit side by side and every Top 5 story stays in the right column. When the week has a Number of the week, that figure sits under the lead and above the themes. On a phone the order is lead, Number of the week, themes, Top 5. An older week with no theme data shows the synthesis paragraph instead. A week with no number leaves that slot out.
+- **Read the Briefing.** The lead sums up the week. The Number of the week is one figure with what was measured, why it matters, and a link to its story. Each theme is one sentence with links to the stories behind it. The Top 5 sits beside them. On a phone the order is lead, number, themes, Top 5. A week from before the redesign shows its briefing paragraph instead.
 - **Skim a topic.** Use Business, Technical, Education, or Policy and Safety. Each page shows that topic's main list in file order. Thin links, when that topic has them, sit at the bottom under Also seen. An empty topic still appears and says so. The tab count is the main list only.
 - **Open a story.** The title is the link to the article. A one-line takeaway under the title says why it matters, and it stays visible while Summary is closed. Where a Summary control exists, it expands or collapses the shorter summary without leaving the page. Top 5 rows stay open, with the takeaway above the summary. Video items show a play control on the row.
 - **Browse the archive.** Archive is the far-right link on the week line, after Sources, and it is not in the topic row. Open a past week with Read this week.
-- **See every source.** Open Sources on the week line, between Updated and Archive. The heading includes the feed count, and a grey line names the week those counts come from. Each row says how many items that source contributed, or None this week.
+- **See every source.** The week line reads Updated · Sources · Archive. The heading is Sources (33). A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week".
 
 A week that is still open (including a half-finished draft file) stays off the home page and out of the archive until its Saturday 23:59:59 America/New_York has passed.
 
@@ -67,7 +66,7 @@ You run a local copy to read the checked-in week the same way the live site does
    ```
 
    Leave that terminal open. Open [http://localhost:4321](http://localhost:4321). You should see the latest finished week's Briefing.
-5. Click around using **Reading a week**. Topic tabs and Archive should match the description above.
+5. Click around using **Reading a week**. Topic tabs, Archive, and Sources should match the description above.
 6. Optional production-shaped build (still local):
 
    ```bash
@@ -79,7 +78,7 @@ You run a local copy to read the checked-in week the same way the live site does
 
 ## How a week lands in the site
 
-Each week is one JSON file: `content/digests/{week_id}.json` (for example `2026-W40.json`). That file holds the Briefing, Top 5, topic lists, and Also seen links. The schema is `schema/digest.schema.json`. Extra structural checks live in `scripts/validate-weeks.mjs`.
+Each week is one JSON file: `content/digests/{week_id}.json` (for example `2026-W40.json`). That file holds the Briefing, Top 5, topic lists, and the Also seen links for those topic tabs. The schema is `schema/digest.schema.json`. Extra structural checks live in `scripts/validate-weeks.mjs`.
 
 What gets into a week is decided before the file is written. The rules Dan can edit are in `config/inclusion-rubric.md`. Ingest should read that file. There is no cap on how many items can come from one source.
 
@@ -104,9 +103,13 @@ pnpm build
 pnpm check:reader
 ```
 
-`pnpm check:reader` reads the built `dist/` folder and checks that Briefing, topics, takeaways, the Number of the week, Also seen rules, Archive links, and the Sources page (heading count, week subline, and each source's real count) match the committed week and `config/sources.yaml`.
+`pnpm check:reader` reads the built `dist/` folder and checks that Briefing, topics, takeaways, the Number of the week, Also seen rules, Archive links, and the Sources page (heading count, week note, and each source's count) match the committed week and `config/sources.yaml`.
 
-The checked-in source list is `config/sources.yaml`. The site does not fetch those sources when someone visits; it only renders the week files.
+The Sources page reads `config/sources.yaml` at build time, so adding or removing a source there updates the page on the next build. Today it lists 33: Business 8, Technical 9, Education 9, Policy and Safety 7. The heading is Sources (33). A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week". Within a section, names are sorted alphabetically, and a leading "The" is ignored. Counts come from the current week file, so a row that says "None this week" had nothing that made the cut that week. The site does not fetch those sources when someone visits; it only renders the week files.
+
+## What makes the cut
+
+Ingest follows editable files in `config/`. `config/inclusion-rubric.md` decides what gets in: an item must be new, argued, or relevant, with no cap per source. `config/story-grouping.md` merges coverage of the same story into one item with Also covered by links, and flags numbers that disagree. `config/briefing.md` sets the lead and the five themes. `config/number-of-week.md` sets the Number of the week rubric. The five tests are: it changes the picture (it shifts what a reader believes, beyond a big headline figure), it is firsthand (from the source's own research, data, or filing), it has something to compare against (such as last year, humans, or a target), it is about something real (money, schools, safety, jobs, or policy), and it is new this week and will still matter in a month. Items with a real summary go in the topic lists, and thin items that still pass go to that tab's Also seen. A main item whose summary could not be generated stays in the topic list too.
 
 ## Deploy on Vercel
 
