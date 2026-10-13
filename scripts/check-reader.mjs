@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { formatDate, formatRunStamp, formatSourceCountSubline, formatWeekRange } from '../src/lib/format-date.mjs';
-import { countWord, joinAnd, shortSourceName } from '../src/lib/about-stats.mjs';
+import { aiOnlyLine, consideredLine, pickCountPhrase, shortSourceName, themeCountPhrase } from '../src/lib/about-stats.mjs';
 import {
   digestWeekId,
   isCompleteWeek,
@@ -562,7 +562,7 @@ function assertAboutFrame(html, tab, label) {
   const intro =
     'Dan wanted one weekly read on AI across business, technical work, education and policy, without wading through dozens of feeds.';
   if (!decoded.includes(intro)) fail(`${label} is missing the About intro`);
-  if (!decoded.includes('This page explains how a week gets made and lists every source it reads.')) {
+  if (!decoded.includes('This page explains how a week gets made and lists every source Dan picked.')) {
     fail(`${label} intro does not name both tabs`);
   }
   const tabs = main.match(/<nav\b[^>]*class="[^"]*\btabs\b[^"]*"[^>]*>([\s\S]*?)<\/nav>/)?.[1] ?? '';
@@ -611,36 +611,30 @@ function assertHowItWorks(html, label) {
   if (attr('ai-only') !== String(aiOnly.length)) {
     fail(`${label} AI-only count is ${attr('ai-only') ?? 'missing'}; config has ${aiOnly.length}`);
   }
-  const noun = (count, singular, plural) => `${count} ${count === 1 ? singular : plural}`;
-  const badge = stats.numberValue ? `${stats.weekLabel}: ${stats.numberValue}` : stats.weekLabel;
+  const aiOnlyNames = aiOnly.map((source) => shortSourceName(source.display_name));
   const phrases = [
-    `${noun(stats.considered, 'item', 'items')} considered`,
-    `${noun(stats.stories, 'story', 'stories')} (${stats.merged} more merged in as also covered)`,
-    `${stats.alsoSeen} Also seen ${stats.alsoSeen === 1 ? 'link' : 'links'}`,
-    `${stats.leftOut} left out`,
-    noun(stats.themes, 'theme', 'themes'),
-    `${stats.stories} + ${stats.merged} + ${stats.alsoSeen} + ${stats.leftOut} = ${stats.considered}`,
-    `${stats.merged} merged in, ${stats.alsoSeen} to Also seen`,
-    `${stats.alsoSeen} went to Also seen`,
-    noun(stats.stories, 'story', 'stories'),
-    noun(stats.picks, 'pick', 'picks'),
-    badge,
+    consideredLine(stats),
     `${enabled.length} right now`,
-    `pins the ${enabled.length} approved sources`,
-    `the ${aiOnly.length} sources set to AI only`,
-    `counts in the ${stats.leftOut}`,
-    `${countWord(aiOnly.length)} ${aiOnly.length === 1 ? 'source is' : 'sources are'} set so items not about AI stay out: ${joinAnd(aiOnly.map((source) => shortSourceName(source.display_name)))}.`,
+    `Most weeks all ${enabled.length} are read`,
+    aiOnlyLine(aiOnlyNames),
+    `then ${themeCountPhrase(stats.themes)}`,
+    `Top ${stats.picks}`,
+    pickCountPhrase(stats.picks),
+    'with no weighted score',
+    "The summary couldn't be generated this week.",
     'Runs Sundays at 7:29 AM ET.',
     `This week ran ${formatRunStamp(countedWeek.generated_at)}.`,
-    'Steps 6 to 8 are not done in a fixed order.',
+    'Every item left out keeps a written reason',
   ];
   for (const phrase of phrases) {
     if (!decoded.includes(phrase)) fail(`${label} is missing "${phrase}"`);
   }
-  const numberCnt = main.match(/data-number="([^"]*)"/)?.[1] ?? '';
-  if (decode(numberCnt) !== badge) fail(`${label} number badge is "${decode(numberCnt)}"; expected ${badge}`);
+  for (const gone of ['Schema check', 'Vercel deploys', 'merges automatically', 'Steps 6 to 8']) {
+    if (decoded.includes(gone)) fail(`${label} still explains repo mechanics: ${gone}`);
+  }
+  if (decoded.includes('\u2013') || decoded.includes('\u2014')) fail(`${label} copy contains a dash`);
   console.log(
-    `about counts for ${countedWeek.week_id}: ${stats.considered} considered, ${stats.stories} stories, ${stats.merged} merged, ${stats.alsoSeen} also seen, ${stats.leftOut} left out`,
+    `about counts for ${countedWeek.week_id}: ${stats.considered} considered, ${stats.stories} stories, ${stats.merged} merged, ${stats.alsoSeen} short links, ${stats.leftOut} left out`,
   );
 }
 
@@ -1187,36 +1181,28 @@ function assertSourcesIndex(html, label) {
     fail(`${label} still has the old feeds line`);
   }
   if (html.includes('Every source we read')) fail(`${label} still has the sources footer`);
+  if (main.includes('class="source-col"')) fail(`${label} still stacks sections inside columns`);
   const references = countSourceReferences(countedWeek, enabled);
   const pageHeading = decode(main.match(/<h2\b[^>]*class="[^"]*\bpage-title\b[^"]*"[^>]*>([\s\S]*?)<\/h2>/)?.[1] ?? '')
     .replace(/<[^>]*>/g, '')
     .replace(/\s+/g, ' ')
     .trim();
   if (pageHeading !== `Sources (${enabled.length})`) fail(`${label} heading is "${pageHeading}"`);
-  const columns = [...main.matchAll(/<div class="source-col">([\s\S]*?)<\/div>/g)].map((match) => match[1]);
   const expectedSections = SECTION_IDS.map((id, position) => {
     const sources = enabled
       .filter((source) => source.tag === id)
       .sort((left, right) => compareSourceNames(left.display_name, right.display_name));
     return { id, label: SECTION_LABELS[position], sources };
   }).filter((section) => section.sources.length > 0);
-  const mid = Math.ceil(expectedSections.length / 2);
-  const expectedColumns = [expectedSections.slice(0, mid), expectedSections.slice(mid)].filter((column) => column.length > 0);
-  if (columns.length !== expectedColumns.length) fail(`${label} has ${columns.length} source columns`);
+  const sections = [...main.matchAll(/<section\b([^>]*)>([\s\S]*?)<\/section>/g)];
+  if (sections.length !== expectedSections.length) fail(`${label} has ${sections.length} source sections`);
   const renderedNames = [];
-  expectedColumns.forEach((expectedColumn, columnIndex) => {
-    const sections = [
-      ...columns[columnIndex].matchAll(/<section\b([^>]*)>([\s\S]*?)<\/section>/g),
-    ];
-    if (sections.length !== expectedColumn.length) {
-      fail(`${label} column ${columnIndex + 1} has ${sections.length} sections`);
+  expectedSections.forEach((expected, sectionIndex) => {
+    const attrs = sections[sectionIndex][1];
+    const block = sections[sectionIndex][2];
+    if (!attrs.includes(`data-section="${expected.id}"`)) {
+      fail(`${label} ${expected.label} is not section ${sectionIndex + 1}`);
     }
-    expectedColumn.forEach((expected, sectionIndex) => {
-      const attrs = sections[sectionIndex][1];
-      const block = sections[sectionIndex][2];
-      if (!attrs.includes(`data-section="${expected.id}"`)) {
-        fail(`${label} ${expected.label} is not in its column`);
-      }
       const heading = decode(block.match(/<h2\b[^>]*>([\s\S]*?)<\/h2>/)?.[1] ?? '')
         .replace(/<[^>]*>/g, ' ')
         .replace(/\s+/g, ' ')
@@ -1250,7 +1236,6 @@ function assertSourcesIndex(html, label) {
         if (rowText !== `${source.display_name} ${type} ${expectedLabel}`) fail(`${label} ${name} row reads "${rowText}"`);
         renderedNames.push(source.display_name);
       });
-    });
   });
   if (renderedNames.length !== enabled.length) fail(`${label} renders ${renderedNames.length} sources`);
   for (const source of enabled) {
@@ -1507,9 +1492,17 @@ function assertSourcesCss(css, label) {
   if (!cols.includes('display:grid') || !cols.includes('grid-template-columns:repeat(2,minmax(0,1fr))')) {
     fail(`${label} sources page is not a two-column grid`);
   }
-  if (!cols.includes('column-gap:var(--gut)')) {
-    fail(`${label} source columns do not use the 24px gutter`);
+  const alignedGap =
+    (cols.includes('column-gap:48px') && cols.includes('row-gap:32px')) ||
+    cols.includes('gap:32px48px') ||
+    cols.includes('gap:32px 48px');
+  if (!alignedGap || !cols.includes('align-items:start')) {
+    fail(`${label} source sections are not a 2 by 2 grid with aligned rows`);
   }
+  const sectionTitle = ruleBody(css, '.source-section-title');
+  if (!sectionTitle.includes('font-size:28px')) fail(`${label} source section headers are not 28px`);
+  const sourcesHeading = ruleBody(css, '.sources-head .page-title');
+  if (!sourcesHeading.includes('font-size:40px')) fail(`${label} Sources heading is not 40px`);
   const current = ruleBody(css, '.bar a[aria-current="page"]') || ruleBody(css, '.bar a[aria-current=page]');
   if (
     !current.includes('text-decoration:underline') ||
@@ -1526,7 +1519,7 @@ function assertSourcesCss(css, label) {
   const row = ruleBody(css, '.source-row');
   if (!row.includes('min-height:44px')) fail(`${label} source rows are shorter than 44px`);
   const vermilion =
-    css.includes('.source-rowa:hover,.source-rowa:focus-visible{color:var(--signal)}') ||
+    css.includes('.source-rowa:hover,.source-rowa:focus-visible{color:var(--signal)') ||
     (ruleBody(css, '.source-row a:hover').includes('color:var(--signal)') &&
       ruleBody(css, '.source-row a:focus-visible').includes('color:var(--signal)'));
   if (!vermilion) fail(`${label} source links do not turn vermilion on hover and focus`);
@@ -1549,6 +1542,12 @@ function assertSourcesCss(css, label) {
   const narrow = mediaBody(css, ['max-width:1080px', 'width<=1080px']);
   if (!ruleBody(narrow, '.source-cols').includes('grid-template-columns:1fr')) {
     fail(`${label} sources page stays two columns on a narrow window`);
+  }
+  if (!ruleBody(narrow, '.source-section-title').includes('font-size:22px')) {
+    fail(`${label} source section headers are not 22px on a narrow window`);
+  }
+  if (!ruleBody(narrow, '.sources-head .page-title').includes('font-size:30px')) {
+    fail(`${label} Sources heading is not 30px on a narrow window`);
   }
 }
 

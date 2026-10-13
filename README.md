@@ -20,7 +20,7 @@ You open the site to read. Editors (or bots) ship each week as a file in this re
 
 - A **Briefing** page: a lead of one to three sentences, then the Number of the week, then This week's themes (always five) in the left column, with the Top 5 in the wider right column. The number sits in that left column, under the lead and above the themes. On a phone: lead, number, themes, Top 5.
 - **Topic tabs**: Business, Technical, Education, Policy and Safety. Each ends with Also seen when that topic has thin items.
-- An **About** page with two tabs. How it works is `/about/how-it-works`. Sources is `/about/sources`. `/about` forwards to How it works. `/sources` forwards to the Sources tab. Both tabs open with the same short intro. How it works explains the weekly run, with every count taken from the latest week file and `config/sources.yaml`. Sources lists every feed. The heading is Sources, with the number of enabled feeds in parentheses. A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week".
+- An **About** page with two tabs. How it works is `/about/how-it-works`. Sources is `/about/sources`. `/about` forwards to How it works. `/sources` forwards to the Sources tab. Both tabs open with the same short intro. How it works tells a reader how a week is made: who picks the sources, what is filtered out, the inclusion rules, how duplicates are merged, how summaries are written, how the lead, themes, Top 5, and Number of the week are chosen, what it can get wrong, and when it runs. Every count on that page comes from the latest week file and `config/sources.yaml`. Sources lists every feed in a 2 by 2 grid on a desktop: Business beside Technical, then Education beside Policy and Safety, with the headers in each row starting at the same height. On a phone the same four sections stack in that order. The heading is Sources, with the number of enabled feeds in parentheses. A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week".
 - A week line that reads Updated, the date, About, then Archive. Archive is always the far-right link. On an About page, About is marked as the current page. The week range uses "to", as in "Week of Oct 4 to Oct 10, 2026".
 - An **Archive** of past weeks, each with a Read this week link. Weeks from before the redesign still show their briefing paragraph.
 - A site icon for browser tabs and the phone home screen.
@@ -104,11 +104,32 @@ pnpm build
 pnpm check:reader
 ```
 
-`pnpm check:reader` reads the built `dist/` folder and checks that Briefing, topics, takeaways, the Number of the week, Also seen rules, Archive links, and the About page match the committed week and `config/sources.yaml`. That includes the How it works counts (items considered, stories, merged in, Also seen, left out, themes, and the Number of the week), the Sources heading count, the week note, and each source's count.
+`pnpm check:reader` reads the built `dist/` folder and checks that Briefing, topics, takeaways, the Number of the week, Also seen rules, Archive links, and the About page match the committed week and `config/sources.yaml`. That includes the How it works counts (items considered, stories, merged into others, short links, left out, themes, Top 5, the source total, and the sources marked AI only), the Sources heading count, the week note, and each source's count.
 
-The About page is the only entry for that explanation. `/about` forwards to `/about/how-it-works`. `/sources` forwards to `/about/sources`. How it works reads the latest week file at build time. Items considered are the main stories, plus the also covered links, plus Also seen, plus the items left out. The run line's sum has to match that total. Themes, the Number of the week, and the source total come from that week file and `config/sources.yaml`. None of those figures is typed into the page. The schedule line says the run is Sundays at 7:29 AM ET, and "This week ran" uses the week file's `generated_at`.
+The About page is the only entry for that explanation. `/about` forwards to `/about/how-it-works`. `/sources` forwards to `/about/sources`. How it works is for readers. It reads the latest week file at build time. Items considered are the main stories, plus the also covered links, plus the short links (Also seen), plus the items left out. The run line states that total. The source total and the AI only sources come from `config/sources.yaml`. The theme count and the Top 5 count come from that week file. None of those figures is typed into the page. The schedule line says the run is Sundays at 7:29 AM ET, and "This week ran" uses the week file's `generated_at`. Schema checks, pull requests, the deploy, and field names are in How a week is published, not on the page.
 
-The Sources tab reads `config/sources.yaml` at build time, so adding or removing a source there updates the page on the next build. Today the registry lists 33 enabled feeds: Business 8, Technical 9, Education 9, Policy and Safety 7. The heading is Sources, with that count in parentheses. A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week". Within a section, names are sorted alphabetically, and a leading "The" is ignored. Counts come from the current week file, so a row that says "None this week" had nothing that made the cut that week. The site does not fetch those sources when someone visits; it only renders the week files.
+The Sources tab reads `config/sources.yaml` at build time, so adding or removing a source there updates the page on the next build. Today the registry lists 33 enabled feeds: Business 8, Technical 9, Education 9, Policy and Safety 7. On a desktop those four sections sit in a 2 by 2 grid, Business beside Technical, then Education beside Policy and Safety. On a phone they stack in that order. The heading is Sources, with that count in parentheses, 40px on a desktop and 30px on a phone. Section headers are 28px on a desktop and 22px on a phone, with the section count in grey at the same size. A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week". Within a section, names are sorted alphabetically, and a leading "The" is ignored. Counts come from the current week file, so a row that says "None this week" had nothing that made the cut that week. The site does not fetch those sources when someone visits; it only renders the week files.
+
+## How a week is published
+
+The weekly file is built and checked before it goes live. The schema is `schema/digest.schema.json`. `pnpm validate:weeks` checks every file in `content/digests/` against that schema and the extra rules in `scripts/validate-weeks.mjs`. `pnpm validate:weeks:self-test` proves a bad file fails.
+
+A pull request runs two jobs from `.github/workflows/schema.yml`. The week schema job runs `pnpm validate:weeks` and `pnpm validate:weeks:self-test`. The static site job runs `pnpm build` and `pnpm check:reader`.
+
+A pull request that only adds a new week file auto-merges once those checks pass. Replacing a week, or changing sources, the schema, or code, needs Dan.
+
+After the merge, Vercel rebuilds the static site and deploys it. See Deploy on Vercel below.
+
+### Field names
+
+A week file is `content/digests/{week_id}.json`.
+
+- `schema_version`, `week_id`, `timezone`, `week_start`, `week_end`, `generated_at`
+- `briefing.synthesis` and `briefing.top` for the Top 5
+- `briefing.lead`, one to three sentences, and `briefing.themes`. Each theme has `label`, `sentence`, and `story_ids`
+- `briefing.number_of_week` with `value`, `what`, `why`, and `story_id`
+- `topics` for the four section lists, `main_feed` for those lists together, `footer_aside` for Also seen, and `excluded` for items left out
+- On each item from 2026-W41 on: `included`, `include_reason`, and `takeaway` on main items. Merged sources use `also_covered`. A disagreed figure uses `number_note`. `summary` and `summary_status` say whether the summary was written
 
 ## What makes the cut
 

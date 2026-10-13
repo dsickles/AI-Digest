@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import AboutTabs from '../../components/AboutTabs.astro';
 import Shell from '../../components/Shell.astro';
-import { aboutCounts, countedNoun, countWord, joinAnd, numberBadge, shortSourceName } from '../../lib/about-stats.mjs';
+import { aboutCounts, aiOnlyLine, consideredLine, pickCountPhrase, shortSourceName, themeCountPhrase } from '../../lib/about-stats.mjs';
 import { formatRunStamp, latestWeek, synthesisExcerpt } from '../../lib/weeks';
 
 const week = latestWeek();
@@ -14,21 +14,15 @@ if (!week) {
 
 const sourceFile = parseYaml(readFileSync(join(process.cwd(), 'config', 'sources.yaml'), 'utf8'));
 const enabled = (sourceFile?.sources ?? []).filter((source) => source && source.enabled === true);
-const aiOnly = enabled.filter((source) => source.ai_only === true);
-const aiOnlyNames = aiOnly.map((source) => shortSourceName(source.display_name));
+const aiOnlyNames = enabled
+  .filter((source) => source.ai_only === true)
+  .map((source) => shortSourceName(source.display_name));
 const counts = aboutCounts(week);
 const sourcesTotal = enabled.length;
-const badge = numberBadge(counts);
-const runSum = `${counts.stories} + ${counts.merged} + ${counts.alsoSeen} + ${counts.leftOut} = ${counts.considered}`;
-const consideredLabel = `${countedNoun(counts.considered, 'item', 'items')} considered`;
-const storiesLabel = `${countedNoun(counts.stories, 'story', 'stories')} (${counts.merged} more merged in as also covered)`;
-const alsoSeenLabel = `${counts.alsoSeen} Also seen ${counts.alsoSeen === 1 ? 'link' : 'links'}`;
-const themesLabel = countedNoun(counts.themes, 'theme', 'themes');
-const picksLabel = countedNoun(counts.picks, 'pick', 'picks');
-const storiesCountLabel = countedNoun(counts.stories, 'story', 'stories');
-const aiOnlySentence = `${countWord(aiOnly.length)} ${
-  aiOnly.length === 1 ? 'source is' : 'sources are'
-} set so items not about AI stay out: ${joinAnd(aiOnlyNames)}.`;
+const runLine = consideredLine(counts);
+const themesPhrase = themeCountPhrase(counts.themes);
+const picksPhrase = pickCountPhrase(counts.picks);
+const aiOnlySentence = aiOnlyLine(aiOnlyNames);
 const ranAt = formatRunStamp(week.generated_at);
 ---
 
@@ -52,172 +46,125 @@ const ranAt = formatRunStamp(week.generated_at);
       data-themes={counts.themes}
       data-picks={counts.picks}
       data-sources={sourcesTotal}
-      data-ai-only={aiOnly.length}
+      data-ai-only={aiOnlyNames.length}
     >
-      <span class="ri">{consideredLabel}</span>
-      <span class="sep" aria-hidden="true">·</span>
-      <span class="ri">{storiesLabel}</span>
-      <span class="sep" aria-hidden="true">·</span>
-      <span class="ri">{alsoSeenLabel}</span>
-      <span class="sep" aria-hidden="true">·</span>
-      <span class="ri">{counts.leftOut} left out</span>
-      <span class="sep" aria-hidden="true">·</span>
-      <span class="ri">{themesLabel}</span>
-    </p>
-    <p class="runnote">
-      {runSum}. Some items are filtered out before review and aren't in this count: anything outside the Sunday to
-      Saturday week, source-level filters (for example Latent Space AINews and subscriber-only posts), and items not
-      about AI from the {aiOnly.length} sources set to AI only. A passing mention from any other source is a rubric
-      call and counts in the {counts.leftOut}.
+      {runLine}
     </p>
   </div>
   <div class="g hbody">
-    <section class="steps-col" aria-labelledby="steps-h">
-      <h2 class="h2" id="steps-h">Each week, in order</h2>
+    <section class="steps-col" aria-label="How a week is built">
       <ol class="steps">
         <li class="step" id="sources">
           <span class="sn" aria-hidden="true">1</span>
           <div>
-            <h3>Dan picks the sources</h3>
+            <h3>Who picks the sources</h3>
             <p>
-              Dan chooses every feed the digest reads, <a href="/about/sources" data-source-total={sourcesTotal}
-                >{sourcesTotal} right now</a
-              > across newsletters, blogs and YouTube channels. Nothing outside that list gets in, and changing it takes
-              Dan's approval. A validator test pins the {sourcesTotal} approved sources.
+              Dan picks every source, <a href="/about/sources">{sourcesTotal} right now</a>: newsletters, blogs and
+              YouTube channels. Nothing outside that list gets in. Most weeks all {sourcesTotal} are read; a source that
+              blocks automated reading is skipped that week.
             </p>
           </div>
         </li>
         <li class="step" id="filters">
           <span class="sn" aria-hidden="true">2</span>
           <div>
-            <h3>Source filters<span class="cnt">before counting</span></h3>
-            <p>
-              Items outside the Sunday to Saturday week are dropped. Some sources have their own filters, such as Latent
-              Space's AINews and subscriber-only posts. {aiOnlySentence} These items are never counted. A passing-mention
-              item from any other source is a rubric call and counts in the {counts.leftOut} left out.
-            </p>
+            <h3>What is filtered out before review</h3>
+            <p>These never reach the AI's review and are not in the count above:</p>
+            <ul class="rl">
+              <li>Anything published outside the Sunday to Saturday week.</li>
+              <li>Duplicates: the same link, or near-identical titles.</li>
+              <li>{aiOnlySentence}</li>
+              <li>Old pages re-dated into the week.</li>
+              <li>AI-written roundups, such as Latent Space's AINews.</li>
+              <li>Subscriber-only posts.</li>
+            </ul>
           </div>
         </li>
         <li class="step" id="rules">
           <span class="sn" aria-hidden="true">3</span>
           <div>
-            <h3>Inclusion rubric<span class="cnt">{counts.leftOut} left out</span></h3>
+            <h3>The inclusion rules</h3>
+            <p>The AI reads each remaining item. It gets in if it meets at least one rule:</p>
+            <ul class="rl">
+              <li><b>New.</b> A launch, a finding, a policy move, or real data.</li>
+              <li><b>Argued.</b> A real argument or analysis, not just a pointer to someone else's.</li>
+              <li><b>Relevant.</b> It touches a theme from this week or a running story.</li>
+            </ul>
             <p>
-              The AI checks each counted item: it has to be new, argued, or relevant to a running story. Each one gets a
-              yes or no plus a one-line reason. Version bumps and quote-only posts never reach Also seen.
+              Left out: shorts with no substance, quotes with no commentary, and minor version releases. Every item left
+              out keeps a written reason, so the call can be checked. An item that only mentions AI in passing is left
+              out here too. There is no cap on how many items one source can contribute.
             </p>
           </div>
         </li>
         <li class="step" id="merge">
           <span class="sn" aria-hidden="true">4</span>
           <div>
-            <h3>Grouping<span class="cnt">{counts.merged} merged in, {counts.alsoSeen} to Also seen</span></h3>
+            <h3>How duplicate stories are merged</h3>
             <p>
-              Writeups of the same story become one, and one URL belongs to one item. Thin items (video descriptions or
-              feed items with no article body) are marked during grouping. {counts.alsoSeen} went to Also seen. The lead
-              source is picked in order: a full card beats a thin link, a piece about the story beats a roundup, then the
-              source stating the key facts wins. Excluded items are never added back.
+              When several sources cover the same story, they become one entry and the others are listed as also covered.
+              The lead source is picked this way: a full article beats a short link, a piece about the story beats a
+              roundup, and after that the source that states the key facts wins. Items with no article text, such as a
+              bare video description, become short links under Also seen. An item left out is never added back by merging.
             </p>
           </div>
         </li>
+      </ol>
+    </section>
+    <section class="side-col" aria-label="How a week is built, continued">
+      <ol class="steps">
         <li class="step" id="summaries">
           <span class="sn" aria-hidden="true">5</span>
           <div>
-            <h3>Each story is summarized<span class="cnt">{storiesCountLabel}</span></h3>
+            <h3>How summaries are written</h3>
             <p>
-              A summary of 60 words or fewer and a one-sentence takeaway, from that source only. On a merged story the
-              takeaway uses the main item's summary.
+              Each summary is 60 words or fewer, plus a one-sentence takeaway, written only from that article's text or
+              the video's transcript. Nothing is added from elsewhere. If a summary can't be made, the story still appears
+              with the note: The summary couldn't be generated this week.
             </p>
           </div>
         </li>
         <li class="step" id="themes">
           <span class="sn" aria-hidden="true">6</span>
           <div>
-            <h3>Lead and themes<span class="cnt">{themesLabel}</span></h3>
-            <p>
-              The lead and the five themes are written together: one to three sentences, then five rows of a short label
-              and one 25 to 35 word sentence. Which themes is the AI's judgment, and a story can sit in two.
-            </p>
+            <h3>How the lead, themes, Top {counts.picks} and Number of the week are chosen</h3>
+            <p>These are the AI's judgment, guided by stated criteria, with no weighted score.</p>
+            <ul class="rl">
+              <li>
+                <b>Lead and themes.</b> Written together: a lead of one to three sentences, then {themesPhrase}, each a
+                short label and one sentence of 25 to 35 words. A story can sit in two themes.
+              </li>
+              <li id="top5">
+                <b>Top {counts.picks}.</b> {picksPhrase} the AI judges most worth reading. There is no rank order.
+              </li>
+              <li>
+                <b>Number of the week.</b> The figure from the week that passes the most of five tests: it changes the
+                picture, it comes firsthand, it has a comparison, it is about something real, and it is new this week but
+                will still matter in a month.
+              </li>
+            </ul>
           </div>
         </li>
-        <li class="step" id="top5">
+        <li class="step" id="wrong">
           <span class="sn" aria-hidden="true">7</span>
           <div>
-            <h3>Top 5<span class="cnt">{picksLabel}</span></h3>
-            <p>The AI picks five full stories. It is the AI's judgment, with no scoring formula and no defined rank order.</p>
+            <h3>What it can get wrong</h3>
+            <ul class="rl">
+              <li>It can misjudge what counts as new or argued and leave out a good piece. The written reasons make that checkable.</li>
+              <li>Merging can join two different stories, or miss that two writeups are the same one.</li>
+              <li>Short summaries drop nuance. Check the source before quoting a figure.</li>
+              <li>The themes, Top {counts.picks} and Number of the week are judgment calls, not measurements.</li>
+            </ul>
           </div>
         </li>
-        <li class="step" id="number">
+        <li class="step" id="when">
           <span class="sn" aria-hidden="true">8</span>
           <div>
-            <h3>Number of the week<span class="cnt" data-number={badge}>{badge}</span></h3>
-            <p>
-              Figures from the week are scored on five tests: it changes the picture, it is firsthand, it has a
-              comparison, it is about something real, and it will still matter in a month. Required from W42 on.
-            </p>
-          </div>
-        </li>
-        <li class="snote">Steps 6 to 8 are not done in a fixed order.</li>
-        <li class="step" id="check">
-          <span class="sn" aria-hidden="true">9</span>
-          <div>
-            <h3>Schema check</h3>
-            <p>The week file is built and validated. The checks pass: the week schema and the static site build.</p>
-          </div>
-        </li>
-        <li class="step" id="publish">
-          <span class="sn" aria-hidden="true">10</span>
-          <div>
-            <h3>The week file is merged</h3>
-            <p>A PR that changes only that file is opened, and it merges automatically once the checks pass, with no person reviewing it.</p>
-          </div>
-        </li>
-        <li class="step" id="deploy">
-          <span class="sn" aria-hidden="true">11</span>
-          <div>
-            <h3>Vercel deploys</h3>
-            <p>The site rebuilds from the merged week file and goes live.</p>
+            <h3>When it runs</h3>
+            <p>Runs Sundays at 7:29 AM ET. This week ran {ranAt}.</p>
           </div>
         </li>
       </ol>
     </section>
-    <aside class="side-col">
-      <section aria-labelledby="rules-h">
-        <h2 class="h2" id="rules-h">Inclusion rules</h2>
-        <p class="sub">An item gets in if it meets at least one:</p>
-        <ul class="rl">
-          <li><b>New.</b> A launch, a finding, a policy move, or real data.</li>
-          <li><b>Argued.</b> A real argument or analysis, not just a pointer to someone else's.</li>
-          <li><b>Relevant.</b> It touches a theme from this week or a running story.</li>
-        </ul>
-        <p class="sub">Left out:</p>
-        <ul class="rl">
-          <li>Shorts with no substance.</li>
-          <li>Quotes with no commentary.</li>
-          <li>Minor version releases.</li>
-        </ul>
-        <p class="sub">
-          Version bumps and quote-only posts do not appear in Also seen either, and grouping never brings back an excluded
-          item.
-        </p>
-        <p class="sub">There is no cap on how many items one source can contribute.</p>
-      </section>
-      <section aria-labelledby="wrong-h" class="wrong">
-        <h2 class="h2" id="wrong-h">What it can get wrong</h2>
-        <ul class="rl">
-          <li>
-            It can misjudge what counts as new or argued and leave out a good piece. Every exclusion keeps its reason, so
-            it can be checked.
-          </li>
-          <li>Merging can join two different stories, or miss that two writeups are the same one.</li>
-          <li>Short summaries drop nuance. Check the source before quoting a figure.</li>
-          <li>
-            A weekly PR that only adds that week's file merges automatically once the checks pass, with no person reviewing
-            it.
-          </li>
-        </ul>
-      </section>
-    </aside>
   </div>
-  <p class="hfoot">Runs Sundays at 7:29 AM ET. This week ran {ranAt}.</p>
 </Shell>

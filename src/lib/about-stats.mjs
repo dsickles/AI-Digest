@@ -53,3 +53,23 @@ export function numberBadge(counts) {
   if (!counts.numberValue) return counts.weekLabel;
   return `${counts.weekLabel}: ${counts.numberValue}`;
 }
+
+// Reader copy on How it works. Digits stay digits. A count inside a sentence
+// uses the lowercase word, and a count that opens a sentence stays capitalized.
+export function consideredLine(counts) {
+  return `${countedNoun(counts.considered, 'item', 'items')} considered this week: ${countedNoun(counts.stories, 'story', 'stories')}, ${counts.merged} merged into others, ${countedNoun(counts.alsoSeen, 'short link', 'short links')}, ${counts.leftOut} left out.`;
+}
+
+export function themeCountPhrase(count) {
+  return `${countWord(count).toLowerCase()} ${count === 1 ? 'theme' : 'themes'}`;
+}
+
+export function pickCountPhrase(count) {
+  return `${countWord(count)} ${count === 1 ? 'full story' : 'full stories'}`;
+}
+
+export function aiOnlyLine(names) {
+  if (names.length === 0) return 'Items not about AI, from the sources Dan marked AI only.';
+  const noun = names.length === 1 ? 'source' : 'sources';
+  return `Items not about AI, from the ${countWord(names.length).toLowerCase()} ${noun} Dan marked AI only: ${joinAnd(names)}.`;
+}

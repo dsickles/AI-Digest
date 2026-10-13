@@ -731,9 +731,10 @@ main > .page-title {
 
 .sources-head .page-title {
   grid-column: 1 / 7;
-  font-size: 28px;
+  font-size: 40px;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
 }
 
 .sources-head .tot {
@@ -753,28 +754,32 @@ main > .page-title {
 .source-cols {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: var(--gut);
+  column-gap: 48px;
+  row-gap: 32px;
   align-items: start;
-  margin-top: var(--s5);
+  margin-top: 32px;
 }
 
-.source-section + .source-section {
-  margin-top: var(--s6);
+.source-section {
+  min-width: 0;
 }
 
 .source-section-title {
   margin: 0;
-  padding: var(--s2) 0;
+  padding: 12px 0;
   border-top: 1px solid var(--rule-strong);
-  font-size: 15px;
+  font-size: 28px;
   font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   color: var(--ink);
 }
 
 .source-section-title .n {
   color: var(--ink-3);
-  margin-left: 0.4em;
-  font-weight: 400;
+  margin-left: 0.3em;
+  font-size: inherit;
+  font-weight: 600;
 }
 
 .source-list {
@@ -804,10 +809,16 @@ main > .page-title {
 
 .source-row a:hover {
   color: var(--signal);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
 }
 
 .source-row a:focus-visible {
   color: var(--signal);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
 }
 
 .source-type {
@@ -912,12 +923,12 @@ main > .page-title {
 }
 
 .steps-col {
-  grid-column: 1 / 9;
+  grid-column: 1 / 8;
   min-width: 0;
 }
 
 .side-col {
-  grid-column: 9 / 13;
+  grid-column: 8 / 13;
   min-width: 0;
 }
 
@@ -961,6 +972,23 @@ main > .page-title {
   font-weight: 500;
   color: var(--ink-3);
   letter-spacing: 0;
+}
+
+.step ul.rl {
+  margin-top: 4px;
+}
+
+.step ul.rl li {
+  padding: 6px 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink-2);
+  border-bottom: 0;
+}
+
+.step p + p,
+.step ul + p {
+  margin-top: 6px;
 }
 
 .step p {
@@ -1107,7 +1135,15 @@ main > .page-title {
 
   .source-cols {
     grid-template-columns: 1fr;
-    column-gap: var(--gut);
+    margin-top: 24px;
+  }
+
+  .sources-head .page-title {
+    font-size: 30px;
+  }
+
+  .source-section-title {
+    font-size: 22px;
   }
 
   .ab .intro,
