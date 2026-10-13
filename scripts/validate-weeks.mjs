@@ -220,11 +220,17 @@ function validateCardIdentity(card, sources, where) {
   if (source.type === 'youtube' && card.media !== 'video') {
     errors.push(`${where} YouTube sources use media "video"`);
   }
-  if (source.type === 'rss' && card.media !== 'article') {
-    errors.push(`${where} RSS sources use media "article"`);
+  if ((source.type === 'rss' || source.type === 'page-fetch') && card.media !== 'article') {
+    const kind = source.type === 'page-fetch' ? 'Page-fetch' : 'RSS';
+    errors.push(`${where} ${kind} sources use media "article"`);
   }
-  if (card.summary_status === 'thin' && source.type !== 'rss' && source.type !== 'youtube') {
-    errors.push(`${where} thin cards are RSS links or description-only videos`);
+  if (
+    card.summary_status === 'thin' &&
+    source.type !== 'rss' &&
+    source.type !== 'youtube' &&
+    source.type !== 'page-fetch'
+  ) {
+    errors.push(`${where} thin cards are RSS links, page-fetch links, or description-only videos`);
   }
   if (card.summary_status === 'transcript_missing' && source.type !== 'youtube') {
     errors.push(`${where} transcript_missing is a YouTube in-place status`);
@@ -2008,6 +2014,15 @@ const APPROVED_AFTER_EIGHT = [
     tag: 'business',
     enabled: true,
   },
+  {
+    id: 'stanford-hai',
+    type: 'page-fetch',
+    url: 'https://hai.stanford.edu/news',
+    home_url: 'https://hai.stanford.edu/',
+    display_name: 'Stanford HAI',
+    tag: 'technical',
+    enabled: true,
+  },
 ];
 
 function sourceArticle(sample, id, sourceId, name, category, title, summary) {
@@ -2038,7 +2053,7 @@ function proveSourceRules(sources, sample) {
     console.error('self-test: the original eight sources changed');
     return false;
   }
-  if (!deepEqual(doc.sources.slice(8), APPROVED_AFTER_EIGHT) || doc.sources.length !== 33) {
+  if (!deepEqual(doc.sources.slice(8), APPROVED_AFTER_EIGHT) || doc.sources.length !== 34) {
     console.error('self-test: approved sources do not match the registry after the original eight');
     return false;
   }
@@ -2062,6 +2077,7 @@ function proveSourceRules(sources, sample) {
     'epoch-ai',
     'latent-space',
     'nieman-lab',
+    'stanford-hai',
   ];
   if (
     mustBeAiOnly.some((id) => sources.get(id)?.aiOnly !== true) ||

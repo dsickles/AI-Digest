@@ -31,6 +31,7 @@ export function compareSourceNames(left, right) {
 export function sourceTypeLabel(type) {
   if (type === 'rss') return 'RSS';
   if (type === 'youtube') return 'YouTube';
+  if (type === 'page-fetch') return 'Page';
   throw new Error(`unknown source type ${type}`);
 }
 

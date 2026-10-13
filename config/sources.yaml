@@ -7,13 +7,13 @@
 #
 # Schema (per pipeline.config.SourceConfig — D-36 discriminated union):
 #   id            Stable kebab-case identifier (used as items.source_id)
-#   type          Adapter type — "rss" (Phase 1) or "youtube" (Phase 2 D-27)
-#   url           Feed URL (RSS rows only)
+#   type          Adapter type: "rss" (Phase 1), "youtube" (Phase 2 D-27), or "page-fetch"
+#   url           Feed URL (RSS rows). Page URL (page-fetch rows).
 #   channel_id    YouTube UC… channel handle (YouTube rows only — feed URL derived)
 #   channel_url   Optional friendly /@handle URL for the publisher badge link
 #                 (YouTube rows; falls back to /channel/UC… if omitted)
-#   home_url      Optional explicit publisher home URL (RSS rows; falls back to
-#                 canonical_url origin in the renderer if omitted)
+#   home_url      Optional explicit publisher home URL (RSS and page-fetch rows;
+#                 falls back to canonical_url origin in the renderer if omitted)
 #   display_name  Human-readable publisher name shown in the digest
 #   tag           Section id: edtech, business, technical, or policy-and-safety.
 #                 edtech and policy-and-safety are the card category. A week file
@@ -261,4 +261,16 @@ sources:
     home_url: https://www.niemanlab.org/
     display_name: Nieman Lab
     tag: business
+    enabled: true
+  # No RSS or Atom feed. The news page has no alternate link, and /news/rss,
+  # /rss.xml, /feed, /feed.xml, and /news/all/rss return HTML, so this row
+  # fetches the news page. Items belong in policy-and-safety, edtech, or
+  # technical, so the tag is technical (a hint). edtech or policy-and-safety
+  # would force every item into that one section.
+  - id: stanford-hai
+    type: page-fetch
+    url: https://hai.stanford.edu/news
+    home_url: https://hai.stanford.edu/
+    display_name: Stanford HAI
+    tag: technical
     enabled: true

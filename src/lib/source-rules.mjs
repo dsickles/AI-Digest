@@ -73,13 +73,14 @@ export function validateSourcesDocument(doc) {
     if (source.ai_only !== undefined && typeof source.ai_only !== 'boolean') {
       errors.push(`${where} ai_only must be true or false`);
     }
-    if (source.type === 'rss') {
-      if (!isHttps(source.url)) errors.push(`${where} url must be an https feed`);
+    if (source.type === 'rss' || source.type === 'page-fetch') {
+      const urlKind = source.type === 'page-fetch' ? 'page' : 'feed';
+      if (!isHttps(source.url)) errors.push(`${where} url must be an https ${urlKind}`);
       if (source.home_url !== undefined && !isHttps(source.home_url)) {
         errors.push(`${where} home_url must be an https URL`);
       }
       if (source.channel_id !== undefined || source.channel_url !== undefined) {
-        errors.push(`${where} rss sources do not use channel_id or channel_url`);
+        errors.push(`${where} ${source.type} sources do not use channel_id or channel_url`);
       }
     } else if (source.type === 'youtube') {
       if (typeof source.channel_id !== 'string' || !CHANNEL_ID.test(source.channel_id)) {
@@ -92,7 +93,7 @@ export function validateSourcesDocument(doc) {
         errors.push(`${where} youtube sources do not use url or home_url`);
       }
     } else {
-      errors.push(`${where} type must be rss or youtube`);
+      errors.push(`${where} type must be rss, youtube, or page-fetch`);
     }
   });
   return errors;
