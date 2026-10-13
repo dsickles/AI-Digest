@@ -14,6 +14,13 @@ const monthDay = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
 });
 
+const hourMinute = new Intl.DateTimeFormat('en-US', {
+  timeZone: TIME_ZONE,
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true,
+});
+
 const yearOnly = new Intl.DateTimeFormat('en-US', {
   timeZone: TIME_ZONE,
   year: 'numeric',
@@ -37,7 +44,14 @@ export function formatWeekRange(weekStart, weekEnd) {
   const startYear = yearOnly.format(readerInstant(weekStart));
   const endYear = yearOnly.format(readerInstant(weekEnd));
   const startLabel = startYear === endYear ? monthDay.format(readerInstant(weekStart)) : formatDate(weekStart);
-  return `Week of ${startLabel} – ${formatDate(weekEnd)}`;
+  return `Week of ${startLabel} to ${formatDate(weekEnd)}`;
+}
+
+// "Oct 11, 5:34 PM ET". The zone name stays ET in both daylight and standard time.
+export function formatRunStamp(iso) {
+  const instant = readerInstant(iso);
+  const clock = hourMinute.format(instant).replace(/[\u202f\u00a0]/g, ' ');
+  return `${monthDay.format(instant)}, ${clock} ET`;
 }
 
 // Month and day labels from the current week. "to" joins them so this sentence

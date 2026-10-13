@@ -1,0 +1,20 @@
+---
+interface Props {
+  tab: 'how-it-works' | 'sources';
+}
+
+const { tab } = Astro.props;
+---
+
+<div class="g ab">
+  <h2>About this digest</h2>
+  <p class="intro">
+    Dan wanted one weekly read on AI across business, technical work, education and policy, without wading through
+    dozens of feeds. So he picks the sources, and AI does the sorting and summarizing. This page explains how a week
+    gets made and lists every source Dan picked.
+  </p>
+</div>
+<nav class="tabs" aria-label="About">
+  <a href="/about/how-it-works" aria-current={tab === 'how-it-works' ? 'page' : undefined}>How it works</a>
+  <a href="/about/sources" aria-current={tab === 'sources' ? 'page' : undefined}>Sources</a>
+</nav>

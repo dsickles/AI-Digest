@@ -5,19 +5,21 @@ import { documentTitle, SITE_TITLE } from '../lib/site';
 import { formatDate, formatWeekRange, type Topic, type Week } from '../lib/weeks';
 
 interface Props {
+  title?: string;
   titleParts?: string[];
   description?: string;
   canonical?: string;
   week?: Week;
-  active: 'briefing' | Topic | 'archive' | 'sources';
+  active: 'briefing' | Topic | 'archive' | 'about';
   scope: 'latest' | 'week';
   showLatestLink?: boolean;
 }
 
-const { titleParts = [], description, canonical, week, active, scope, showLatestLink = false } = Astro.props;
-const title = documentTitle(...titleParts);
+const { title: titleOverride, titleParts = [], description, canonical, week, active, scope, showLatestLink = false } =
+  Astro.props;
+const title = titleOverride ?? documentTitle(...titleParts);
 const archiveCurrent = active === 'archive' ? 'page' : undefined;
-const sourcesCurrent = active === 'sources' ? 'page' : undefined;
+const aboutCurrent = active === 'about' ? 'page' : undefined;
 ---
 
 <Base title={title} description={description} canonical={canonical}>
@@ -38,7 +40,7 @@ const sourcesCurrent = active === 'sources' ? 'page' : undefined;
             </>
           )
         }
-        <a href="/sources" aria-current={sourcesCurrent}>Sources</a>
+        <a href="/about/how-it-works" aria-current={aboutCurrent}>About</a>
         <span class="sep" aria-hidden="true">·</span>
         <a class="arch" href="/archive" aria-current={archiveCurrent}>Archive</a>
       </span>
