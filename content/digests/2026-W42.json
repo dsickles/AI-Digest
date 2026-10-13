@@ -1,0 +1,742 @@
+{
+  "schema_version": 1,
+  "week_id": "2026-W42",
+  "timezone": "America/New_York",
+  "week_start": "2026-10-11T00:00:00-04:00",
+  "week_end": "2026-10-17T23:59:59-04:00",
+  "generated_at": "2026-10-13T13:30:00Z",
+  "briefing": {
+    "synthesis": "OpenAI's firing of three safety researchers dominated the first days of the week, feeding a wider argument that voluntary self-policing and private deals are no way to govern AI. Elsewhere, Claude was found aiding transnational repression, agents kept replacing software, and education writers questioned whether AI fits how minds learn.",
+    "lead": "OpenAI fired three safety researchers, and critics say that proves labs cannot police themselves. The same days brought fresh arguments for public AI rules and evidence that Claude helped track Uyghurs abroad.",
+    "themes": [
+      {
+        "label": "OpenAI firings",
+        "sentence": "OpenAI fired three safety researchers who say they were punished for advocacy, and an op-ed argues the firings show why voluntary self-policing under the new White House accord cannot be trusted.",
+        "story_ids": [
+          "dont-worry-about-the-vase-openai-fires-three-safety-researchers",
+          "ai-alignment-forum-openai-cant-self-police-because-it-fires-the-people-raising-the-alarm"
+        ]
+      },
+      {
+        "label": "Who governs AI",
+        "sentence": "Tech Policy Press says AI rules are being set in private deals while most Americans want regulation, and a forum post proposes labs finish alignment work before training their next models.",
+        "story_ids": [
+          "tech-policy-press-ai-governance-is-being-decided-now-and-the-public-isnt-in-the-room",
+          "ai-alignment-forum-minimum-required-pacing-finish-aligning-it-before-you-train-the-next-one"
+        ]
+      },
+      {
+        "label": "AI and repression",
+        "sentence": "Just Security details how a China-aligned operator used Claude to track Uyghurs in Syria, and ChinAI translates an essay arguing the US, not China, dominates the data centers behind AI.",
+        "story_ids": [
+          "just-security-how-generative-ai-is-scaling-transnational-repression",
+          "chinai-chinai-377-american-data-center-hegemony-the-center-satellite-structure"
+        ]
+      },
+      {
+        "label": "Agents at work",
+        "sentence": "Anthropic showed dynamic workflows for coordinating Claude agents, Ben's Bites says his agent cut about $6k a year of software subscriptions, and a new benchmark shows models still miss what scenes imply.",
+        "story_ids": [
+          "latent-space-how-anthropics-dynamic-workflows-coordinate-claude-agents",
+          "bensbites-zucks-wonder-full",
+          "import-ai-import-ai-476-creativity-and-rsi-worse-than-china-open-weight-models-ai-goes-to-space"
+        ]
+      },
+      {
+        "label": "Minds and classrooms",
+        "sentence": "Benjamin Riley argues human minds did not evolve for AI, The 74 says AI lesson tools lack precise guardrails, and an anonymous educator recalls meeting ChatGPT while grieving a lost friend.",
+        "story_ids": [
+          "cognitive-resonance-our-minds-did-not-evolve-for-ai",
+          "the-74-opinion-ai-powered-instruction-needs-precision-right-now-its-not-even-close",
+          "educating-ai-a-voice-from-the-past"
+        ]
+      }
+    ],
+    "number_of_week": {
+      "value": "53.6 vs 93.1",
+      "what": "On a new benchmark of what images and videos imply, the best AI model scored 53.6 while people scored 93.1.",
+      "why": "Even the strongest AI still misses everyday visual common sense that people find easy.",
+      "story_id": "import-ai-import-ai-476-creativity-and-rsi-worse-than-china-open-weight-models-ai-goes-to-space"
+    },
+    "top": [
+      {
+        "id": "dont-worry-about-the-vase-openai-fires-three-safety-researchers",
+        "title": "OpenAI Fires Three Safety Researchers",
+        "url": "https://thezvi.substack.com/p/openai-fires-three-safety-researchers",
+        "publisher": {
+          "source_id": "dont-worry-about-the-vase",
+          "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+        },
+        "published_at": "2026-10-12T21:00:53+00:00",
+        "category": "policy-and-safety",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "OpenAI fired safety researchers Tomek Korbak, Mikita Balesni, and Jasmine Wang, citing mishandled sensitive information. The three published an open letter saying the firings were for safety advocacy and the stated reasons were pretextual. OpenAI cited an unnamed further breach of trust. Zvi Mowshowitz argues most outsiders believe the researchers and that speech inside labs will be chilled.",
+        "takeaway": "Firing safety staff who spoke up makes it harder to trust what any lab says about its own risks.",
+        "included": true,
+        "include_reason": "New: a major personnel move at a frontier lab, with analysis of what it means for safety."
+      },
+      {
+        "id": "just-security-how-generative-ai-is-scaling-transnational-repression",
+        "title": "How Generative AI is Scaling Transnational Repression",
+        "url": "https://www.justsecurity.org/159245/how-generative-ai-scaling-transnational-repression/",
+        "publisher": {
+          "source_id": "just-security",
+          "name": "Just Security"
+        },
+        "published_at": "2026-10-12T12:49:34+00:00",
+        "category": "policy-and-safety",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Just Security examines an Anthropic threat report from September 10, 2026, which found a China-aligned operator used Claude to track Uyghurs in Syria and recruit informants, translating messages and geolocating vulnerable people. The authors argue AI companies should treat transnational repression as its own threat category and publish dedicated incident reports.",
+        "takeaway": "Generative AI is already helping governments hunt dissidents abroad, and few labs track it as a separate harm.",
+        "included": true,
+        "include_reason": "Argued: policy analysis of AI-enabled transnational repression with concrete recommendations."
+      },
+      {
+        "id": "import-ai-import-ai-476-creativity-and-rsi-worse-than-china-open-weight-models-ai-goes-to-space",
+        "title": "Import AI 476: Creativity and RSI; worse-than-China open weight models; AI goes to space",
+        "url": "https://importai.substack.com/p/import-ai-476-creativity-and-rsi",
+        "publisher": {
+          "source_id": "import-ai",
+          "name": "Import AI"
+        },
+        "published_at": "2026-10-12T12:30:39+00:00",
+        "category": "business",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Import AI covers Humanity's Sixth Sense, a benchmark from Elorian and Scale AI of 522 questions on images and video about what a scene implies. Humans score 93.1 pass@1; the best model, GPT 6 Astra, scores 53.6, and Chinese open weight models score about 26. The issue also covers creativity, recursive self improvement, and AI in space.",
+        "takeaway": "Top models still trail people badly at reading what a scene implies, and open weight models from China trail further.",
+        "included": true,
+        "include_reason": "New: reports benchmark results comparing frontier models, open weight models, and humans."
+      },
+      {
+        "id": "tech-policy-press-ai-governance-is-being-decided-now-and-the-public-isnt-in-the-room",
+        "title": "AI Governance Is Being Decided Now, and the Public Isn’t in the Room",
+        "url": "https://techpolicy.press/ai-governance-is-being-decided-now-and-the-public-isnt-in-the-room",
+        "publisher": {
+          "source_id": "tech-policy-press",
+          "name": "Tech Policy Press"
+        },
+        "published_at": "2026-10-12T12:22:43+00:00",
+        "category": "policy-and-safety",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Mackenzie Austin argues a few executives and officials are setting AI rules in private, citing a quiet FTC probe of AI firms, the voluntary White House Accord on Super Intelligence, and FTC Chair Andrew Ferguson joining a Super Intelligence Force. Polls show 57% of Americans favor immediate federal regulation and 63% favor a pause.",
+        "takeaway": "Rules for AI are being set in private deals, while most Americans say they want public regulation.",
+        "included": true,
+        "include_reason": "Argued: a case for representative, transparent, accountable AI governance tied to recent events."
+      },
+      {
+        "id": "cognitive-resonance-our-minds-did-not-evolve-for-ai",
+        "title": "Our minds did not evolve for AI",
+        "url": "https://buildcognitiveresonance.substack.com/p/our-minds-did-not-evolve-for-ai",
+        "publisher": {
+          "source_id": "cognitive-resonance",
+          "name": "Cognitive Resonance (Benjamin Riley)"
+        },
+        "published_at": "2026-10-12T10:48:09+00:00",
+        "category": "edtech",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Benjamin Riley, republishing his Verge essay, argues the AI industry wrongly treats the brain as a computer. Drawing on neuroscientist Paul Cisek, he says human cognition is more complex, and compares AI to a cognitive hot dog: appealing in the moment while undermining the cognitive systems people rely on.",
+        "takeaway": "If the brain is not a computer, tools built on that idea may weaken the thinking schools are trying to build.",
+        "included": true,
+        "include_reason": "Argued: a sustained essay on why AI products clash with how human minds work."
+      }
+    ]
+  },
+  "topics": {
+    "edtech": [
+      {
+        "id": "the-74-opinion-ai-powered-instruction-needs-precision-right-now-its-not-even-close",
+        "title": "Opinion: AI-Powered Instruction Needs Precision. Right Now, It’s Not Even Close",
+        "url": "https://www.the74million.org/article/ai-powered-instruction-needs-precision-right-now-its-not-even-close/",
+        "publisher": {
+          "source_id": "the-74",
+          "name": "The 74"
+        },
+        "published_at": "2026-10-13T12:30:00+00:00",
+        "category": "edtech",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "An opinion piece argues AI tools for K-12 teaching are spreading faster than educators, policymakers, and vendors can check them. About 60% of teachers use AI to prepare lessons. The author points to the Lexile Framework, used for more than 35 million students, as the kind of precise, research-based measure AI lesson tools still lack.",
+        "takeaway": "Without measures as precise as reading levels, AI-made lessons can put students in front of material that does not fit them.",
+        "included": true,
+        "include_reason": "Argued: makes the case that AI lesson tools need research-based precision guardrails."
+      },
+      {
+        "id": "cognitive-resonance-our-minds-did-not-evolve-for-ai",
+        "title": "Our minds did not evolve for AI",
+        "url": "https://buildcognitiveresonance.substack.com/p/our-minds-did-not-evolve-for-ai",
+        "publisher": {
+          "source_id": "cognitive-resonance",
+          "name": "Cognitive Resonance (Benjamin Riley)"
+        },
+        "published_at": "2026-10-12T10:48:09+00:00",
+        "category": "edtech",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Benjamin Riley, republishing his Verge essay, argues the AI industry wrongly treats the brain as a computer. Drawing on neuroscientist Paul Cisek, he says human cognition is more complex, and compares AI to a cognitive hot dog: appealing in the moment while undermining the cognitive systems people rely on.",
+        "takeaway": "If the brain is not a computer, tools built on that idea may weaken the thinking schools are trying to build.",
+        "included": true,
+        "include_reason": "Argued: a sustained essay on why AI products clash with how human minds work."
+      },
+      {
+        "id": "educating-ai-a-voice-from-the-past",
+        "title": "A Voice from the Past",
+        "url": "https://nickpotkalitsky.substack.com/p/a-voice-from-the-past",
+        "publisher": {
+          "source_id": "educating-ai",
+          "name": "Educating AI (Nick Potkalitsky)"
+        },
+        "published_at": "2026-10-12T04:02:17+00:00",
+        "category": "edtech",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "An anonymous college academic affairs staffer, writing in the Historical Present series, recalls opening ChatGPT in late 2022 while grieving a woman they had known 39 years earlier. The essay describes using the chatbot as an experiment in that grief and reflects on what the encounter revealed about the AI disruption.",
+        "takeaway": "A personal account shows how chatbots reach into emotional life, not only coursework, for the people who run online programs.",
+        "included": true,
+        "include_reason": "Argued: a first-person essay on meeting ChatGPT, part of an education series on AI disruption."
+      }
+    ],
+    "business": [
+      {
+        "id": "import-ai-import-ai-476-creativity-and-rsi-worse-than-china-open-weight-models-ai-goes-to-space",
+        "title": "Import AI 476: Creativity and RSI; worse-than-China open weight models; AI goes to space",
+        "url": "https://importai.substack.com/p/import-ai-476-creativity-and-rsi",
+        "publisher": {
+          "source_id": "import-ai",
+          "name": "Import AI"
+        },
+        "published_at": "2026-10-12T12:30:39+00:00",
+        "category": "business",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Import AI covers Humanity's Sixth Sense, a benchmark from Elorian and Scale AI of 522 questions on images and video about what a scene implies. Humans score 93.1 pass@1; the best model, GPT 6 Astra, scores 53.6, and Chinese open weight models score about 26. The issue also covers creativity, recursive self improvement, and AI in space.",
+        "takeaway": "Top models still trail people badly at reading what a scene implies, and open weight models from China trail further.",
+        "included": true,
+        "include_reason": "New: reports benchmark results comparing frontier models, open weight models, and humans."
+      },
+      {
+        "id": "bensbites-zucks-wonder-full",
+        "title": "Zuck’s wonder...full",
+        "url": "https://www.bensbites.com/p/zucks-wonderfull",
+        "publisher": {
+          "source_id": "bensbites",
+          "name": "Ben's Bites"
+        },
+        "published_at": "2026-10-13T13:00:35+00:00",
+        "category": "business",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Ben's Bites argues software is not dead but SaaS is shrinking for him. He says his personal agent reviewed his business subscriptions and saved about $6k a year by cutting tools such as Webflow, Resend, Cal, and Zoom. He now builds throwaway sites for tasks and expects agents to make everyday people software makers.",
+        "takeaway": "Personal agents are starting to replace paid software subscriptions, a shift that could squeeze SaaS vendors.",
+        "included": true,
+        "include_reason": "Argued: a first-hand case that agents are replacing SaaS tools, with a concrete savings figure."
+      },
+      {
+        "id": "chinai-chinai-377-american-data-center-hegemony-the-center-satellite-structure",
+        "title": "ChinAI #377: American Data Center Hegemony - the Center-Satellite Structure",
+        "url": "https://chinai.substack.com/p/chinai-377-us-dominance-of-the-center",
+        "publisher": {
+          "source_id": "chinai",
+          "name": "ChinAI"
+        },
+        "published_at": "2026-10-12T11:18:35+00:00",
+        "category": "business",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "ChinAI translates a Beijing Cultural Review essay by Peking University researcher Yanhui He arguing the US holds hegemony over global data centers through a center-satellite structure. US firms own more than half of hyperscale data centers, and in 2023 the US hosted 5,000 data centers against fewer than 2,000 for China, Germany, and the UK combined.",
+        "takeaway": "A Chinese expert view undercuts the claim that China is winning the AI race by exporting infrastructure.",
+        "included": true,
+        "include_reason": "Argued: translated Chinese analysis of US dominance in global data center capacity."
+      }
+    ],
+    "technical": [
+      {
+        "id": "simon-willison-hello-python-3-15-goodbye-3-10-and-now-i-can-use-3-11",
+        "title": "Hello Python 3.15, goodbye 3.10, and now I can use 3.11",
+        "url": "https://simonwillison.net/2026/Oct/12/python-3-15/",
+        "publisher": {
+          "source_id": "simon-willison",
+          "name": "Simon Willison"
+        },
+        "published_at": "2026-10-12T18:15:38+00:00",
+        "category": "technical",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Simon Willison walks through the Python 3.15 release, highlighting explicit lazy imports from PEP 810 and unpacking in comprehensions from PEP 798. Lazy imports fix a startup cost in his LLM CLI tool, where heavy plugin dependencies could add seconds to every command. He is also dropping Python 3.10 support and adopting 3.11 features.",
+        "takeaway": "Lazy imports remove a real startup penalty for Python tools that load heavy AI libraries.",
+        "included": true,
+        "include_reason": "New: a major Python release, with analysis of what it changes for AI tooling."
+      },
+      {
+        "id": "latent-space-how-anthropics-dynamic-workflows-coordinate-claude-agents",
+        "title": "How Anthropic’s Dynamic Workflows Coordinate Claude Agents",
+        "url": "https://www.latent.space/p/claude-dynamic-workflows",
+        "publisher": {
+          "source_id": "latent-space",
+          "name": "Latent Space"
+        },
+        "published_at": "2026-10-12T18:18:17+00:00",
+        "category": "technical",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "At AI Engineer New York, Anthropic staff CJ Avilla and Harrison Stall presented dynamic workflows, or flows, a multiagent orchestration feature for Claude Managed Agents announced on Friday. They compared agent coordination to how Unix and Linux grew from one builder into layers of trusted maintainers, arguing big agent projects need the same structure.",
+        "takeaway": "Anthropic is betting that large agent jobs need organized hierarchies, not one agent working alone.",
+        "included": true,
+        "include_reason": "New: launch details for Anthropic's multiagent orchestration feature."
+      }
+    ],
+    "policy-and-safety": [
+      {
+        "id": "dont-worry-about-the-vase-openai-fires-three-safety-researchers",
+        "title": "OpenAI Fires Three Safety Researchers",
+        "url": "https://thezvi.substack.com/p/openai-fires-three-safety-researchers",
+        "publisher": {
+          "source_id": "dont-worry-about-the-vase",
+          "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+        },
+        "published_at": "2026-10-12T21:00:53+00:00",
+        "category": "policy-and-safety",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "OpenAI fired safety researchers Tomek Korbak, Mikita Balesni, and Jasmine Wang, citing mishandled sensitive information. The three published an open letter saying the firings were for safety advocacy and the stated reasons were pretextual. OpenAI cited an unnamed further breach of trust. Zvi Mowshowitz argues most outsiders believe the researchers and that speech inside labs will be chilled.",
+        "takeaway": "Firing safety staff who spoke up makes it harder to trust what any lab says about its own risks.",
+        "included": true,
+        "include_reason": "New: a major personnel move at a frontier lab, with analysis of what it means for safety."
+      },
+      {
+        "id": "ai-alignment-forum-openai-cant-self-police-because-it-fires-the-people-raising-the-alarm",
+        "title": "OpenAI Can't Self-Police Because It Fires the People Raising the Alarm",
+        "url": "https://www.alignmentforum.org/posts/sSHbioPoHWtm4zuti/openai-can-t-self-police-because-it-fires-the-people-raising",
+        "publisher": {
+          "source_id": "ai-alignment-forum",
+          "name": "AI Alignment Forum"
+        },
+        "published_at": "2026-10-12T16:51:50+00:00",
+        "category": "policy-and-safety",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "In a Fortune op-ed reposted to the forum, Alex Turner, Amber Scorah, and Karl Koch note OpenAI signed the White House Accord on Super Intelligence, which pledges outside auditors, then days later fired three safety researchers, one a contact for an evaluator probing the Hugging Face incident. They argue voluntary self-policing lets labs hide what they want.",
+        "takeaway": "A voluntary accord means little if a signer can fire the people who talk to its auditors.",
+        "included": true,
+        "include_reason": "Argued: makes the case against voluntary self-policing using the OpenAI firings."
+      },
+      {
+        "id": "ai-alignment-forum-minimum-required-pacing-finish-aligning-it-before-you-train-the-next-one",
+        "title": "Minimum required pacing: finish aligning it before you train the next one",
+        "url": "https://www.alignmentforum.org/posts/ZWSstGSwmaxTjQ8W7/minimum-required-pacing-finish-aligning-it-before-you-train",
+        "publisher": {
+          "source_id": "ai-alignment-forum",
+          "name": "AI Alignment Forum"
+        },
+        "published_at": "2026-10-11T21:55:26+00:00",
+        "category": "policy-and-safety",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "A forum post proposes a minimum pacing rule: a lab may not train its next generation of models until it has adequately resolved all significant alignment issues in the current one. Independent alignment groups would red-team models throughout training with full data access, and new models would reach only restricted deployment until those groups are satisfied.",
+        "takeaway": "The rule would force labs to advance safety work before they could advance capability.",
+        "included": true,
+        "include_reason": "Argued: a concrete proposal for how coordinated pacing of frontier AI could work."
+      },
+      {
+        "id": "just-security-how-generative-ai-is-scaling-transnational-repression",
+        "title": "How Generative AI is Scaling Transnational Repression",
+        "url": "https://www.justsecurity.org/159245/how-generative-ai-scaling-transnational-repression/",
+        "publisher": {
+          "source_id": "just-security",
+          "name": "Just Security"
+        },
+        "published_at": "2026-10-12T12:49:34+00:00",
+        "category": "policy-and-safety",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Just Security examines an Anthropic threat report from September 10, 2026, which found a China-aligned operator used Claude to track Uyghurs in Syria and recruit informants, translating messages and geolocating vulnerable people. The authors argue AI companies should treat transnational repression as its own threat category and publish dedicated incident reports.",
+        "takeaway": "Generative AI is already helping governments hunt dissidents abroad, and few labs track it as a separate harm.",
+        "included": true,
+        "include_reason": "Argued: policy analysis of AI-enabled transnational repression with concrete recommendations."
+      },
+      {
+        "id": "tech-policy-press-ai-governance-is-being-decided-now-and-the-public-isnt-in-the-room",
+        "title": "AI Governance Is Being Decided Now, and the Public Isn’t in the Room",
+        "url": "https://techpolicy.press/ai-governance-is-being-decided-now-and-the-public-isnt-in-the-room",
+        "publisher": {
+          "source_id": "tech-policy-press",
+          "name": "Tech Policy Press"
+        },
+        "published_at": "2026-10-12T12:22:43+00:00",
+        "category": "policy-and-safety",
+        "media": "article",
+        "summary_status": "ok",
+        "summary": "Mackenzie Austin argues a few executives and officials are setting AI rules in private, citing a quiet FTC probe of AI firms, the voluntary White House Accord on Super Intelligence, and FTC Chair Andrew Ferguson joining a Super Intelligence Force. Polls show 57% of Americans favor immediate federal regulation and 63% favor a pause.",
+        "takeaway": "Rules for AI are being set in private deals, while most Americans say they want public regulation.",
+        "included": true,
+        "include_reason": "Argued: a case for representative, transparent, accountable AI governance tied to recent events."
+      }
+    ]
+  },
+  "main_feed": [
+    {
+      "id": "the-74-opinion-ai-powered-instruction-needs-precision-right-now-its-not-even-close",
+      "title": "Opinion: AI-Powered Instruction Needs Precision. Right Now, It’s Not Even Close",
+      "url": "https://www.the74million.org/article/ai-powered-instruction-needs-precision-right-now-its-not-even-close/",
+      "publisher": {
+        "source_id": "the-74",
+        "name": "The 74"
+      },
+      "published_at": "2026-10-13T12:30:00+00:00",
+      "category": "edtech",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "An opinion piece argues AI tools for K-12 teaching are spreading faster than educators, policymakers, and vendors can check them. About 60% of teachers use AI to prepare lessons. The author points to the Lexile Framework, used for more than 35 million students, as the kind of precise, research-based measure AI lesson tools still lack.",
+      "takeaway": "Without measures as precise as reading levels, AI-made lessons can put students in front of material that does not fit them.",
+      "included": true,
+      "include_reason": "Argued: makes the case that AI lesson tools need research-based precision guardrails."
+    },
+    {
+      "id": "cognitive-resonance-our-minds-did-not-evolve-for-ai",
+      "title": "Our minds did not evolve for AI",
+      "url": "https://buildcognitiveresonance.substack.com/p/our-minds-did-not-evolve-for-ai",
+      "publisher": {
+        "source_id": "cognitive-resonance",
+        "name": "Cognitive Resonance (Benjamin Riley)"
+      },
+      "published_at": "2026-10-12T10:48:09+00:00",
+      "category": "edtech",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "Benjamin Riley, republishing his Verge essay, argues the AI industry wrongly treats the brain as a computer. Drawing on neuroscientist Paul Cisek, he says human cognition is more complex, and compares AI to a cognitive hot dog: appealing in the moment while undermining the cognitive systems people rely on.",
+      "takeaway": "If the brain is not a computer, tools built on that idea may weaken the thinking schools are trying to build.",
+      "included": true,
+      "include_reason": "Argued: a sustained essay on why AI products clash with how human minds work."
+    },
+    {
+      "id": "educating-ai-a-voice-from-the-past",
+      "title": "A Voice from the Past",
+      "url": "https://nickpotkalitsky.substack.com/p/a-voice-from-the-past",
+      "publisher": {
+        "source_id": "educating-ai",
+        "name": "Educating AI (Nick Potkalitsky)"
+      },
+      "published_at": "2026-10-12T04:02:17+00:00",
+      "category": "edtech",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "An anonymous college academic affairs staffer, writing in the Historical Present series, recalls opening ChatGPT in late 2022 while grieving a woman they had known 39 years earlier. The essay describes using the chatbot as an experiment in that grief and reflects on what the encounter revealed about the AI disruption.",
+      "takeaway": "A personal account shows how chatbots reach into emotional life, not only coursework, for the people who run online programs.",
+      "included": true,
+      "include_reason": "Argued: a first-person essay on meeting ChatGPT, part of an education series on AI disruption."
+    },
+    {
+      "id": "import-ai-import-ai-476-creativity-and-rsi-worse-than-china-open-weight-models-ai-goes-to-space",
+      "title": "Import AI 476: Creativity and RSI; worse-than-China open weight models; AI goes to space",
+      "url": "https://importai.substack.com/p/import-ai-476-creativity-and-rsi",
+      "publisher": {
+        "source_id": "import-ai",
+        "name": "Import AI"
+      },
+      "published_at": "2026-10-12T12:30:39+00:00",
+      "category": "business",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "Import AI covers Humanity's Sixth Sense, a benchmark from Elorian and Scale AI of 522 questions on images and video about what a scene implies. Humans score 93.1 pass@1; the best model, GPT 6 Astra, scores 53.6, and Chinese open weight models score about 26. The issue also covers creativity, recursive self improvement, and AI in space.",
+      "takeaway": "Top models still trail people badly at reading what a scene implies, and open weight models from China trail further.",
+      "included": true,
+      "include_reason": "New: reports benchmark results comparing frontier models, open weight models, and humans."
+    },
+    {
+      "id": "bensbites-zucks-wonder-full",
+      "title": "Zuck’s wonder...full",
+      "url": "https://www.bensbites.com/p/zucks-wonderfull",
+      "publisher": {
+        "source_id": "bensbites",
+        "name": "Ben's Bites"
+      },
+      "published_at": "2026-10-13T13:00:35+00:00",
+      "category": "business",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "Ben's Bites argues software is not dead but SaaS is shrinking for him. He says his personal agent reviewed his business subscriptions and saved about $6k a year by cutting tools such as Webflow, Resend, Cal, and Zoom. He now builds throwaway sites for tasks and expects agents to make everyday people software makers.",
+      "takeaway": "Personal agents are starting to replace paid software subscriptions, a shift that could squeeze SaaS vendors.",
+      "included": true,
+      "include_reason": "Argued: a first-hand case that agents are replacing SaaS tools, with a concrete savings figure."
+    },
+    {
+      "id": "chinai-chinai-377-american-data-center-hegemony-the-center-satellite-structure",
+      "title": "ChinAI #377: American Data Center Hegemony - the Center-Satellite Structure",
+      "url": "https://chinai.substack.com/p/chinai-377-us-dominance-of-the-center",
+      "publisher": {
+        "source_id": "chinai",
+        "name": "ChinAI"
+      },
+      "published_at": "2026-10-12T11:18:35+00:00",
+      "category": "business",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "ChinAI translates a Beijing Cultural Review essay by Peking University researcher Yanhui He arguing the US holds hegemony over global data centers through a center-satellite structure. US firms own more than half of hyperscale data centers, and in 2023 the US hosted 5,000 data centers against fewer than 2,000 for China, Germany, and the UK combined.",
+      "takeaway": "A Chinese expert view undercuts the claim that China is winning the AI race by exporting infrastructure.",
+      "included": true,
+      "include_reason": "Argued: translated Chinese analysis of US dominance in global data center capacity."
+    },
+    {
+      "id": "simon-willison-hello-python-3-15-goodbye-3-10-and-now-i-can-use-3-11",
+      "title": "Hello Python 3.15, goodbye 3.10, and now I can use 3.11",
+      "url": "https://simonwillison.net/2026/Oct/12/python-3-15/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-10-12T18:15:38+00:00",
+      "category": "technical",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "Simon Willison walks through the Python 3.15 release, highlighting explicit lazy imports from PEP 810 and unpacking in comprehensions from PEP 798. Lazy imports fix a startup cost in his LLM CLI tool, where heavy plugin dependencies could add seconds to every command. He is also dropping Python 3.10 support and adopting 3.11 features.",
+      "takeaway": "Lazy imports remove a real startup penalty for Python tools that load heavy AI libraries.",
+      "included": true,
+      "include_reason": "New: a major Python release, with analysis of what it changes for AI tooling."
+    },
+    {
+      "id": "latent-space-how-anthropics-dynamic-workflows-coordinate-claude-agents",
+      "title": "How Anthropic’s Dynamic Workflows Coordinate Claude Agents",
+      "url": "https://www.latent.space/p/claude-dynamic-workflows",
+      "publisher": {
+        "source_id": "latent-space",
+        "name": "Latent Space"
+      },
+      "published_at": "2026-10-12T18:18:17+00:00",
+      "category": "technical",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "At AI Engineer New York, Anthropic staff CJ Avilla and Harrison Stall presented dynamic workflows, or flows, a multiagent orchestration feature for Claude Managed Agents announced on Friday. They compared agent coordination to how Unix and Linux grew from one builder into layers of trusted maintainers, arguing big agent projects need the same structure.",
+      "takeaway": "Anthropic is betting that large agent jobs need organized hierarchies, not one agent working alone.",
+      "included": true,
+      "include_reason": "New: launch details for Anthropic's multiagent orchestration feature."
+    },
+    {
+      "id": "dont-worry-about-the-vase-openai-fires-three-safety-researchers",
+      "title": "OpenAI Fires Three Safety Researchers",
+      "url": "https://thezvi.substack.com/p/openai-fires-three-safety-researchers",
+      "publisher": {
+        "source_id": "dont-worry-about-the-vase",
+        "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+      },
+      "published_at": "2026-10-12T21:00:53+00:00",
+      "category": "policy-and-safety",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "OpenAI fired safety researchers Tomek Korbak, Mikita Balesni, and Jasmine Wang, citing mishandled sensitive information. The three published an open letter saying the firings were for safety advocacy and the stated reasons were pretextual. OpenAI cited an unnamed further breach of trust. Zvi Mowshowitz argues most outsiders believe the researchers and that speech inside labs will be chilled.",
+      "takeaway": "Firing safety staff who spoke up makes it harder to trust what any lab says about its own risks.",
+      "included": true,
+      "include_reason": "New: a major personnel move at a frontier lab, with analysis of what it means for safety."
+    },
+    {
+      "id": "ai-alignment-forum-openai-cant-self-police-because-it-fires-the-people-raising-the-alarm",
+      "title": "OpenAI Can't Self-Police Because It Fires the People Raising the Alarm",
+      "url": "https://www.alignmentforum.org/posts/sSHbioPoHWtm4zuti/openai-can-t-self-police-because-it-fires-the-people-raising",
+      "publisher": {
+        "source_id": "ai-alignment-forum",
+        "name": "AI Alignment Forum"
+      },
+      "published_at": "2026-10-12T16:51:50+00:00",
+      "category": "policy-and-safety",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "In a Fortune op-ed reposted to the forum, Alex Turner, Amber Scorah, and Karl Koch note OpenAI signed the White House Accord on Super Intelligence, which pledges outside auditors, then days later fired three safety researchers, one a contact for an evaluator probing the Hugging Face incident. They argue voluntary self-policing lets labs hide what they want.",
+      "takeaway": "A voluntary accord means little if a signer can fire the people who talk to its auditors.",
+      "included": true,
+      "include_reason": "Argued: makes the case against voluntary self-policing using the OpenAI firings."
+    },
+    {
+      "id": "ai-alignment-forum-minimum-required-pacing-finish-aligning-it-before-you-train-the-next-one",
+      "title": "Minimum required pacing: finish aligning it before you train the next one",
+      "url": "https://www.alignmentforum.org/posts/ZWSstGSwmaxTjQ8W7/minimum-required-pacing-finish-aligning-it-before-you-train",
+      "publisher": {
+        "source_id": "ai-alignment-forum",
+        "name": "AI Alignment Forum"
+      },
+      "published_at": "2026-10-11T21:55:26+00:00",
+      "category": "policy-and-safety",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "A forum post proposes a minimum pacing rule: a lab may not train its next generation of models until it has adequately resolved all significant alignment issues in the current one. Independent alignment groups would red-team models throughout training with full data access, and new models would reach only restricted deployment until those groups are satisfied.",
+      "takeaway": "The rule would force labs to advance safety work before they could advance capability.",
+      "included": true,
+      "include_reason": "Argued: a concrete proposal for how coordinated pacing of frontier AI could work."
+    },
+    {
+      "id": "just-security-how-generative-ai-is-scaling-transnational-repression",
+      "title": "How Generative AI is Scaling Transnational Repression",
+      "url": "https://www.justsecurity.org/159245/how-generative-ai-scaling-transnational-repression/",
+      "publisher": {
+        "source_id": "just-security",
+        "name": "Just Security"
+      },
+      "published_at": "2026-10-12T12:49:34+00:00",
+      "category": "policy-and-safety",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "Just Security examines an Anthropic threat report from September 10, 2026, which found a China-aligned operator used Claude to track Uyghurs in Syria and recruit informants, translating messages and geolocating vulnerable people. The authors argue AI companies should treat transnational repression as its own threat category and publish dedicated incident reports.",
+      "takeaway": "Generative AI is already helping governments hunt dissidents abroad, and few labs track it as a separate harm.",
+      "included": true,
+      "include_reason": "Argued: policy analysis of AI-enabled transnational repression with concrete recommendations."
+    },
+    {
+      "id": "tech-policy-press-ai-governance-is-being-decided-now-and-the-public-isnt-in-the-room",
+      "title": "AI Governance Is Being Decided Now, and the Public Isn’t in the Room",
+      "url": "https://techpolicy.press/ai-governance-is-being-decided-now-and-the-public-isnt-in-the-room",
+      "publisher": {
+        "source_id": "tech-policy-press",
+        "name": "Tech Policy Press"
+      },
+      "published_at": "2026-10-12T12:22:43+00:00",
+      "category": "policy-and-safety",
+      "media": "article",
+      "summary_status": "ok",
+      "summary": "Mackenzie Austin argues a few executives and officials are setting AI rules in private, citing a quiet FTC probe of AI firms, the voluntary White House Accord on Super Intelligence, and FTC Chair Andrew Ferguson joining a Super Intelligence Force. Polls show 57% of Americans favor immediate federal regulation and 63% favor a pause.",
+      "takeaway": "Rules for AI are being set in private deals, while most Americans say they want public regulation.",
+      "included": true,
+      "include_reason": "Argued: a case for representative, transparent, accountable AI governance tied to recent events."
+    }
+  ],
+  "footer_aside": [
+    {
+      "id": "how-i-ai-meta-muse-the-ai-agent-people-actually-love",
+      "title": "Meta Muse: the AI agent people actually love",
+      "url": "https://www.youtube.com/watch?v=4TOLm1g-gCE",
+      "publisher": {
+        "source_id": "how-i-ai",
+        "name": "How I AI"
+      },
+      "published_at": "2026-10-12T12:00:24+00:00",
+      "category": "technical",
+      "media": "video",
+      "summary_status": "thin",
+      "included": true,
+      "include_reason": "Thin: summary would come only from the video description, so this stays a link in Also seen."
+    },
+    {
+      "id": "nate-b-jones-the-ai-paradox-5-human-skills-that-are-more-valuable-than-ever",
+      "title": "The AI Paradox: 5 Human Skills That Are More Valuable Than Ever",
+      "url": "https://www.youtube.com/watch?v=huWizSgmRf0",
+      "publisher": {
+        "source_id": "nate-b-jones",
+        "name": "AI News & Strategy Daily | Nate B Jones"
+      },
+      "published_at": "2026-10-11T16:00:12+00:00",
+      "category": "business",
+      "media": "video",
+      "summary_status": "thin",
+      "included": true,
+      "include_reason": "Thin: summary would come only from the video description, so this stays a link in Also seen."
+    }
+  ],
+  "excluded": [
+    {
+      "id": "how-i-ai-muse-turned-my-instagram-saves-into-a-skymall-catalog",
+      "title": "Muse turned my Instagram saves into a SkyMall catalog",
+      "url": "https://www.youtube.com/shorts/YPVlOpvGRvU",
+      "publisher": {
+        "source_id": "how-i-ai",
+        "name": "How I AI"
+      },
+      "published_at": "2026-10-13T11:45:27+00:00",
+      "category": "technical",
+      "media": "video",
+      "summary_status": "thin",
+      "included": false,
+      "include_reason": "Excluded: a YouTube short with no substance."
+    },
+    {
+      "id": "how-i-ai-muse-obliterated-my-website",
+      "title": "Muse obliterated my website",
+      "url": "https://www.youtube.com/shorts/HSyLYp9TLzE",
+      "publisher": {
+        "source_id": "how-i-ai",
+        "name": "How I AI"
+      },
+      "published_at": "2026-10-12T23:12:17+00:00",
+      "category": "technical",
+      "media": "video",
+      "summary_status": "thin",
+      "included": false,
+      "include_reason": "Excluded: a YouTube short with no substance."
+    },
+    {
+      "id": "how-i-ai-muse-can-write-my-emails-theyre-two-sentences",
+      "title": "Muse can write my emails. They're two sentences.",
+      "url": "https://www.youtube.com/shorts/RVHn8BbMTt8",
+      "publisher": {
+        "source_id": "how-i-ai",
+        "name": "How I AI"
+      },
+      "published_at": "2026-10-12T23:10:26+00:00",
+      "category": "technical",
+      "media": "video",
+      "summary_status": "thin",
+      "included": false,
+      "include_reason": "Excluded: a YouTube short with no substance."
+    },
+    {
+      "id": "how-i-ai-your-gpt-girl-has-been-using-opus-5-5",
+      "title": "Your GPT girl has been using Opus 5.5",
+      "url": "https://www.youtube.com/shorts/Faqv1ZhhXDI",
+      "publisher": {
+        "source_id": "how-i-ai",
+        "name": "How I AI"
+      },
+      "published_at": "2026-10-12T23:09:40+00:00",
+      "category": "technical",
+      "media": "video",
+      "summary_status": "thin",
+      "included": false,
+      "include_reason": "Excluded: a YouTube short with no substance."
+    },
+    {
+      "id": "how-i-ai-muse-hides-the-code-until-you-need-it",
+      "title": "Muse hides the code until you need it",
+      "url": "https://www.youtube.com/shorts/APS8Nvd2dkc",
+      "publisher": {
+        "source_id": "how-i-ai",
+        "name": "How I AI"
+      },
+      "published_at": "2026-10-12T14:48:21+00:00",
+      "category": "technical",
+      "media": "video",
+      "summary_status": "thin",
+      "included": false,
+      "include_reason": "Excluded: a YouTube short with no substance."
+    },
+    {
+      "id": "simon-willison-datasette-ports-0-4",
+      "title": "datasette-ports 0.4",
+      "url": "https://simonwillison.net/2026/Oct/12/datasette-ports/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-10-12T04:57:07+00:00",
+      "category": "technical",
+      "media": "article",
+      "summary_status": "thin",
+      "included": false,
+      "include_reason": "Excluded: minor version release of a plugin."
+    },
+    {
+      "id": "simon-willison-web-edit-0-1a0",
+      "title": "web-edit 0.1a0",
+      "url": "https://simonwillison.net/2026/Oct/12/web-edit/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-10-12T15:54:36+00:00",
+      "category": "technical",
+      "media": "article",
+      "summary_status": "thin",
+      "included": false,
+      "include_reason": "Excluded: alpha release note for a small utility, with little substance beyond the announcement."
+    }
+  ]
+}
