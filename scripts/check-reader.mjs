@@ -1229,7 +1229,9 @@ function assertSourcesIndex(html, label) {
         const rowText = decode(row.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
         if (name !== source.display_name) fail(`${label} ${expected.label} row ${rowIndex + 1} is ${name}`);
         if (href !== sourceHomeUrl(source)) fail(`${label} ${name} links to ${href || 'nothing'}`);
-        if (type !== (source.type === 'youtube' ? 'YouTube' : 'RSS')) fail(`${label} ${name} type is ${type}`);
+        const expectedType =
+          source.type === 'youtube' ? 'YouTube' : source.type === 'page-fetch' ? 'Page' : 'RSS';
+        if (type !== expectedType) fail(`${label} ${name} type is ${type}`);
         if (countText !== expectedLabel) fail(`${label} ${name} count is "${countText}"; week has ${expectedLabel}`);
         if (expectedCount === 0 && !/class="[^"]*\bnone\b/.test(row)) fail(`${label} ${name} zero count is not muted`);
         if (expectedCount > 0 && /class="[^"]*\bnone\b/.test(row)) fail(`${label} ${name} count is muted`);
