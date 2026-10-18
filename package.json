@@ -13,7 +13,8 @@
     "preview": "astro preview",
     "validate:weeks": "node scripts/validate-weeks.mjs",
     "validate:weeks:self-test": "node scripts/validate-weeks.mjs --self-test",
-    "check:reader": "node scripts/check-reader.mjs"
+    "check:reader": "node scripts/check-reader.mjs",
+    "screenshot": "node scripts/screenshot.mjs"
   },
   "dependencies": {
     "astro": "^7.3.5"
@@ -26,6 +27,7 @@
   "devDependencies": {
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
+    "puppeteer-core": "^25.14.0",
     "yaml": "^2.9.1"
   }
 }
