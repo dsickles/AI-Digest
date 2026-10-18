@@ -77,6 +77,32 @@ You run a local copy to read the checked-in week the same way the live site does
 
    Open [http://localhost:4321](http://localhost:4321) again. Same site, served from `dist/`.
 
+## Screenshots
+
+`scripts/screenshot.mjs` saves a PNG of an http or https page with Chrome already on the machine. It does not download a browser.
+
+Build, then serve `dist/` with preview (http://localhost:4321). Leave that terminal open.
+
+```bash
+pnpm build
+pnpm preview
+```
+
+In a second terminal, take a desktop shot (1280x800 is the default) and a phone shot:
+
+```bash
+pnpm screenshot http://localhost:4321 tmp/desktop.png
+pnpm screenshot http://localhost:4321 tmp/phone.png --width 390 --height 844
+```
+
+`node scripts/screenshot.mjs` is the same command. `--full-page` captures the whole scroll height. The script waits until the network is idle, creates the parent folder for the PNG, and exits with a nonzero status if the shot fails.
+
+Point `CHROME_PATH` at the Chrome binary when it lives somewhere else:
+
+```bash
+CHROME_PATH=/usr/bin/google-chrome pnpm screenshot http://localhost:4321 tmp/desktop.png
+```
+
 ## How a week lands in the site
 
 Each week is one JSON file: `content/digests/{week_id}.json` (for example `2026-W40.json`). That file holds the Briefing, Top 5, topic lists, and the Also seen links for those topic tabs. The schema is `schema/digest.schema.json`. Extra structural checks live in `scripts/validate-weeks.mjs`.
