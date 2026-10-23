@@ -177,23 +177,6 @@
         "takeaway": "Evidence from real chat logs cuts against the fear that AI mainly makes people stop thinking.",
         "included": true,
         "include_reason": "New: a Stanford study of a quarter-million Claude conversations on how people actually work with AI."
-      },
-      {
-        "id": "transformer-leading-the-future-stumbles-as-pro-safety-pacs-gain-ground",
-        "title": "Leading the Future stumbles as pro-safety PACs gain ground",
-        "url": "https://www.transformernews.ai/p/leading-the-future-struggles-ai-safety-pacs-gain-ground",
-        "publisher": {
-          "source_id": "transformer",
-          "name": "Transformer (Shakeel Hashim)"
-        },
-        "published_at": "2026-10-16T15:13:20+00:00",
-        "category": "policy-and-safety",
-        "media": "article",
-        "summary_status": "ok",
-        "summary": "Leading the Future, the super PAC launched with over $100 million from Andreessen Horowitz, Ron Conway, and Greg Brockman to fight AI regulation, reported zero new donations last quarter. It has spent $30 million, including $8.2 million against Alex Bores, who lost his race. Safety PACs such as Guardrails Alliance, Tomorrow Together, and Anthropic-backed Public First are gaining ground.",
-        "takeaway": "Money to block AI regulation is drying up just as safety-minded donors gain influence before the midterms.",
-        "included": true,
-        "include_reason": "New: FEC filings showing the anti-regulation super PAC stalling while AI safety PACs grow."
       }
     ]
   },
