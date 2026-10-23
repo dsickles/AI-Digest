@@ -93,16 +93,11 @@ From `2026-W42` on, the Briefing also carries `number_of_week`: a short `value`,
 
 From `2026-W41` on, every main item also has a `takeaway`: one sentence on why it matters, not a restatement of the title. The page shows that line under the title and meta line, on Top 5 and on every topic page, including while Summary is closed. An opened summary is 60 words or fewer. Ingest follows `config/takeaway.md`. Thin Also seen items omit `takeaway`. `2026-W40` omits it, can keep a longer summary, and still renders.
 
+A week may also carry `briefing.ranking`: one row per Top 5 story, in the same order, with `importance` (0 to 3), `sources` (distinct sources, capped at 3), `novelty` (0 to 2), and a one-sentence `reason`. Swartz follows `config/top5-ranking.md`. The Briefing then shows "Why #1" and the reason under each Top 5 story, and How it works describes the ranking. A week without it keeps the unranked Top 5. Every week through `2026-W42` omits it.
+
 Optional ops notes can sit beside a week as `content/reports/{week_id}.json`. A missing report is fine.
 
-Before you trust a change:
-
-```bash
-pnpm validate:weeks
-pnpm validate:weeks:self-test
-pnpm build
-pnpm check:reader
-```
+Before you trust a change, run the checks in **Running the tests** below.
 
 `pnpm check:reader` reads the built `dist/` folder and checks that Briefing, topics, takeaways, the Number of the week, Also seen rules, Archive links, and the About page match the committed week and `config/sources.yaml`. That includes the How it works counts (items considered, stories, merged into others, short links, left out, themes, Top 5, the source total, and the sources marked AI only), the Sources heading count, the week note, and each source's count.
 
@@ -110,11 +105,24 @@ The About page is the only entry for that explanation. `/about` forwards to `/ab
 
 The Sources tab reads `config/sources.yaml` at build time, so adding or removing a source there updates the page on the next build. Today the registry lists 33 enabled feeds: Business 8, Technical 9, Education 9, Policy and Safety 7. On a desktop those four sections sit in a 2 by 2 grid, Business beside Technical, then Education beside Policy and Safety. On a phone they stack in that order. The heading is Sources, with that count in parentheses, 40px on a desktop and 30px on a phone. Section headers are 28px on a desktop and 22px on a phone, with the section count in grey at the same size. A note names the week, at the right of the heading on a desktop and under the heading on a phone. Each row shows "N this week" or "None this week". Within a section, names are sorted alphabetically, and a leading "The" is ignored. Counts come from the current week file, so a row that says "None this week" had nothing that made the cut that week. The site does not fetch those sources when someone visits; it only renders the week files.
 
+## Running the tests
+
+```bash
+pnpm lint                      # ESLint on the scripts, pages, and tests
+pnpm typecheck                 # astro check
+pnpm validate:weeks            # every week file against the schema and the rules
+pnpm validate:weeks:self-test  # proves bad week files fail
+pnpm test                      # unit tests, then a build, then checks on the built pages
+pnpm check:reader              # the full reader check on dist/ (run after pnpm build)
+```
+
+`pnpm test:unit` (in `tests/unit/`) runs the week validator against every committed week and against bad copies that each break one rule, and checks the message names the problem. It also renders the Briefing with and without a Top 5 ranking. `pnpm test:site` (in `tests/site/`) reads `dist/` and checks each page: the week line reads Updated, About, Archive in that order, each section shows the latest week's count (Policy and Safety included), the Archive links every published week, the About counts match, and every page carries a link preview.
+
 ## How a week is published
 
 The weekly file is built and checked before it goes live. The schema is `schema/digest.schema.json`. `pnpm validate:weeks` checks every file in `content/digests/` against that schema and the extra rules in `scripts/validate-weeks.mjs`. `pnpm validate:weeks:self-test` proves a bad file fails.
 
-A pull request runs two jobs from `.github/workflows/schema.yml`. The week schema job runs `pnpm validate:weeks` and `pnpm validate:weeks:self-test`. The static site job runs `pnpm build` and `pnpm check:reader`.
+A pull request runs four jobs from `.github/workflows/ci.yml`: lint, typecheck, week schema, and static site. The week schema job runs `pnpm validate:weeks`, `pnpm validate:weeks:self-test`, and `pnpm test:unit`. The static site job runs `pnpm build`, `pnpm test:site`, and `pnpm check:reader`.
 
 A pull request that only adds a new week file auto-merges once those checks pass. Replacing a week, or changing sources, the schema, or code, needs Dan.
 
@@ -128,12 +136,17 @@ A week file is `content/digests/{week_id}.json`.
 - `briefing.synthesis` and `briefing.top` for the Top 5
 - `briefing.lead`, one to three sentences, and `briefing.themes`. Each theme has `label`, `sentence`, and `story_ids`
 - `briefing.number_of_week` with `value`, `what`, `why`, and `story_id`
+- `briefing.ranking`, optional, with `story_id`, `importance`, `sources`, `novelty`, and `reason` per Top 5 story
 - `topics` for the four section lists, `main_feed` for those lists together, `footer_aside` for Also seen, and `excluded` for items left out
 - On each item from 2026-W41 on: `included`, `include_reason`, and `takeaway` on main items. Merged sources use `also_covered`. A disagreed figure uses `number_note`. `summary` and `summary_status` say whether the summary was written
 
 ## What makes the cut
 
-Ingest follows editable files in `config/`. `config/inclusion-rubric.md` decides what gets in: an item must be new, argued, or relevant, with no cap per source. `config/story-grouping.md` merges coverage of the same story into one item with Also covered by links, and flags numbers that disagree. `config/briefing.md` sets the lead and the five themes. `config/number-of-week.md` sets the Number of the week rubric. The five tests are: it changes the picture (it shifts what a reader believes, beyond a big headline figure), it is firsthand (from the source's own research, data, or filing), it has something to compare against (such as last year, humans, or a target), it is about something real (money, schools, safety, jobs, or policy), and it is new this week and will still matter in a month. Items with a real summary go in the topic lists, and thin items that still pass go to that tab's Also seen. A main item whose summary could not be generated stays in the topic list too.
+Ingest follows editable files in `config/`. `config/inclusion-rubric.md` decides what gets in: an item must be new, argued, or relevant, with no cap per source. `config/story-grouping.md` merges coverage of the same story into one item with Also covered by links, and flags numbers that disagree. `config/briefing.md` sets the lead and the five themes. `config/number-of-week.md` sets the Number of the week rubric. `config/top5-ranking.md` sets the Top 5 order. `config/README.md` lists every file the weekly run reads. The five tests are: it changes the picture (it shifts what a reader believes, beyond a big headline figure), it is firsthand (from the source's own research, data, or filing), it has something to compare against (such as last year, humans, or a target), it is about something real (money, schools, safety, jobs, or policy), and it is new this week and will still matter in a month. Items with a real summary go in the topic lists, and thin items that still pass go to that tab's Also seen. A main item whose summary could not be generated stays in the topic list too.
+
+## Link previews
+
+Every page sets Open Graph and Twitter card tags, so a shared link shows a card. The image is `public/share.png` (1200 by 630, the Row D icon with the site name). A Briefing link's title is the site name and the week, such as "Dan's AI Digest: Week of Oct 11 to Oct 17, 2026", and its description is that week's lead. `SITE_URL` in `src/lib/site.ts` makes the image and page URLs absolute.
 
 ## Deploy on Vercel
 

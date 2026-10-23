@@ -13,7 +13,12 @@
     "preview": "astro preview",
     "validate:weeks": "node scripts/validate-weeks.mjs",
     "validate:weeks:self-test": "node scripts/validate-weeks.mjs --self-test",
-    "check:reader": "node scripts/check-reader.mjs"
+    "check:reader": "node scripts/check-reader.mjs",
+    "lint": "eslint .",
+    "typecheck": "astro check",
+    "test:unit": "vitest run tests/unit",
+    "test:site": "vitest run tests/site",
+    "test": "pnpm test:unit && pnpm build && pnpm test:site"
   },
   "dependencies": {
     "astro": "^7.3.5"
@@ -24,8 +29,17 @@
     ]
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.20.5",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
+    "eslint": "^10.13.0",
+    "eslint-plugin-astro": "^3.2.1",
+    "globals": "^17.13.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.0",
+    "vitest": "^5.0.5",
     "yaml": "^2.9.1"
   }
 }
