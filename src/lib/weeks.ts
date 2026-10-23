@@ -18,7 +18,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
 
 export const DEGRADED_BODY = "The summary couldn't be generated this week.";
 
-const TIME_ZONE = 'America/New_York';
+type TimeZone = 'America/New_York';
 
 export interface Publisher {
   source_id: string;
@@ -86,10 +86,18 @@ export interface NumberOfWeek {
   story_id: string;
 }
 
+export interface RankRow {
+  story_id: string;
+  importance: number;
+  sources: number;
+  novelty: number;
+  reason: string;
+}
+
 export interface Week {
   schema_version: 1;
   week_id: string;
-  timezone: typeof TIME_ZONE;
+  timezone: TimeZone;
   week_start: string;
   week_end: string;
   generated_at: string;
@@ -98,6 +106,7 @@ export interface Week {
     lead?: string;
     themes?: BriefingTheme[];
     number_of_week?: NumberOfWeek;
+    ranking?: RankRow[];
     top: MainCard[];
   };
   topics: Record<Topic, MainCard[]>;

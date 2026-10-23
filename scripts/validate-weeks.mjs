@@ -19,6 +19,7 @@ const GROUPING_PATH = join(ROOT, 'config', 'story-grouping.md');
 const BRIEFING_PATH = join(ROOT, 'config', 'briefing.md');
 const NUMBER_PATH = join(ROOT, 'config', 'number-of-week.md');
 const TAKEAWAY_PATH = join(ROOT, 'config', 'takeaway.md');
+const RANKING_PATH = join(ROOT, 'config', 'top5-ranking.md');
 const DIGEST_SCHEMA_PATH = join(ROOT, 'schema', 'digest.schema.json');
 const REPORT_SCHEMA_PATH = join(ROOT, 'schema', 'report.schema.json');
 const SOURCES_PATH = join(ROOT, 'config', 'sources.yaml');
@@ -58,7 +59,7 @@ function concatTopics(doc) {
   return TOPIC_ORDER.flatMap((topic) => doc.topics[topic] ?? []);
 }
 
-function loadSources() {
+export function loadSources() {
   const doc = parseYaml(readFileSync(SOURCES_PATH, 'utf8'));
   const configErrors = validateSourcesDocument(doc);
   if (configErrors.length > 0) {
@@ -239,7 +240,7 @@ function validateCardIdentity(card, sources, where) {
   return errors;
 }
 
-function validateDigestDocument(doc, filename, sources) {
+export function validateDigestDocument(doc, filename, sources) {
   if (!validateDigestSchema(doc)) {
     return formatAjvErrors(validateDigestSchema.errors);
   }
@@ -323,6 +324,7 @@ function validateDigestDocument(doc, filename, sources) {
   errors.push(...validateGrouping(doc, sources));
   errors.push(...validateBriefingScan(doc));
   errors.push(...validateNumberOfWeek(doc));
+  errors.push(...validateRanking(doc));
   errors.push(...validateTakeaways(doc));
   errors.push(...alsoSeenFillerErrors(doc));
   return errors;
@@ -551,6 +553,70 @@ function validateBriefingScan(doc) {
   return errors;
 }
 
+const RANK_REASON_WORD_CAP = 25;
+
+function rankKey(row) {
+  return [row.importance, row.sources, row.novelty];
+}
+
+function distinctSources(card) {
+  const ids = new Set([card.publisher?.source_id]);
+  for (const link of card.also_covered ?? []) ids.add(link?.publisher?.source_id);
+  ids.delete(undefined);
+  return Math.min(3, ids.size);
+}
+
+// briefing.ranking is optional. When a week has it, it explains briefing.top
+// in order, and the order has to follow config/top5-ranking.md.
+export function validateRanking(doc) {
+  const errors = [];
+  const briefing = doc?.briefing;
+  if (!briefing || typeof briefing !== 'object' || !Object.hasOwn(briefing, 'ranking')) return errors;
+  const rows = Array.isArray(briefing.ranking) ? briefing.ranking : [];
+  const top = Array.isArray(briefing.top) ? briefing.top : [];
+  if (rows.length !== top.length) {
+    errors.push(`briefing ranking must have one row per Top ${top.length} story`);
+    return errors;
+  }
+  rows.forEach((row, index) => {
+    const rank = index + 1;
+    const card = top[index];
+    if (!row || typeof row !== 'object' || !card) return;
+    if (row.story_id !== card.id) {
+      errors.push(`ranking row ${rank} is ${row.story_id}, but Top 5 story ${rank} is ${card.id}`);
+      return;
+    }
+    const sources = distinctSources(card);
+    if (row.sources !== sources) {
+      errors.push(`ranking row ${rank} (${card.id}) counts ${row.sources} sources; the card has ${sources}, capped at 3`);
+    }
+    if (typeof row.reason !== 'string' || !isOneSentence(row.reason)) {
+      errors.push(`ranking row ${rank} reason must be one sentence`);
+    } else {
+      if (wordCount(row.reason) > RANK_REASON_WORD_CAP) {
+        errors.push(`ranking row ${rank} reason must be ${RANK_REASON_WORD_CAP} words or fewer`);
+      }
+      if (DASH.test(row.reason)) errors.push(`ranking row ${rank} reason must not use an em dash or an en dash`);
+    }
+    if (index === 0) return;
+    const previous = rows[index - 1];
+    if (!previous || typeof previous !== 'object') return;
+    const before = rankKey(previous);
+    const after = rankKey(row);
+    const firstDiff = before.findIndex((value, at) => value !== after.at(at));
+    if (firstDiff !== -1 && before.at(firstDiff) < after.at(firstDiff)) {
+      errors.push(
+        `ranking row ${rank} (${card.id}) outranks row ${rank - 1}: order by importance, then sources, then novelty`,
+      );
+    }
+  });
+  return errors;
+}
+
+function rankingFileErrors() {
+  return existsSync(RANKING_PATH) ? [] : [`${relative(ROOT, RANKING_PATH)} is missing`];
+}
+
 function validateNumberOfWeek(doc) {
   const errors = [];
   const briefing = doc?.briefing;
@@ -746,7 +812,7 @@ function groupingFileErrors() {
 export function validateArchive(contentDir, sources) {
   const digestPaths = jsonFiles(join(contentDir, 'digests'));
   const reportPaths = jsonFiles(join(contentDir, 'reports'));
-  const errors = [...rubricFileErrors(), ...groupingFileErrors(), ...briefingFileErrors(), ...takeawayFileErrors(), ...numberOfWeekFileErrors()];
+  const errors = [...rubricFileErrors(), ...groupingFileErrors(), ...briefingFileErrors(), ...takeawayFileErrors(), ...numberOfWeekFileErrors(), ...rankingFileErrors()];
 
   if (digestPaths.length === 0) {
     errors.push(`${contentDir}/digests has no week json files`);

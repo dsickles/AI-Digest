@@ -19,7 +19,7 @@ const latest = latestWeek();
 ---
 
 <Shell
-  description={synthesisExcerpt(week.briefing.synthesis)}
+  description={week.briefing.lead ?? synthesisExcerpt(week.briefing.synthesis)}
   week={week}
   active="briefing"
   scope="week"

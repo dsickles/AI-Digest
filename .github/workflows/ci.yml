@@ -1,5 +1,7 @@
-name: schema
+name: ci
 
+# Every PR, including the weekly digest PRs that auto-merge, runs these jobs.
+# "week schema" and "static site" keep their names so existing required checks still match.
 on:
   pull_request:
 
@@ -7,6 +9,38 @@ permissions:
   contents: read
 
 jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm lint
+
+  typecheck:
+    name: typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        run: pnpm typecheck
+
   week-files:
     name: week schema
     runs-on: ubuntu-latest
@@ -34,6 +68,9 @@ jobs:
       - name: Prove an invalid week file fails
         run: pnpm validate:weeks:self-test
 
+      - name: Unit tests
+        run: pnpm test:unit
+
   site:
     name: static site
     runs-on: ubuntu-latest
@@ -57,6 +94,9 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Check the built pages
+        run: pnpm test:site
 
       - name: Check the reader against the sample week
         run: pnpm check:reader

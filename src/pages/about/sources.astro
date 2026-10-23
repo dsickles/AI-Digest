@@ -7,6 +7,13 @@ import Shell from '../../components/Shell.astro';
 import { countSourceReferences, loadSourceIndex, sourceWeekCountLabel } from '../../lib/sources.mjs';
 import { formatSourceCountSubline, latestWeek, synthesisExcerpt } from '../../lib/weeks';
 
+interface SourceIndexRow {
+  id: string;
+  homeUrl: string;
+  name: string;
+  typeLabel: string;
+}
+
 const week = latestWeek();
 const index = loadSourceIndex();
 const sourceFile = parseYaml(readFileSync(join(process.cwd(), 'config', 'sources.yaml'), 'utf8'));
@@ -39,7 +46,7 @@ const subline = week ? formatSourceCountSubline(week.week_start, week.week_end) 
             {section.label}<span class="n">{section.count}</span>
           </h2>
           <ul class="source-list">
-            {section.sources.map((source) => {
+            {section.sources.map((source: SourceIndexRow) => {
               const count = references.get(source.id) ?? 0;
               return (
                 <li class="source-row">

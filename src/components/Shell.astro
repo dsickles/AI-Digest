@@ -18,11 +18,14 @@ interface Props {
 const { title: titleOverride, titleParts = [], description, canonical, week, active, scope, showLatestLink = false } =
   Astro.props;
 const title = titleOverride ?? documentTitle(...titleParts);
+// A shared week reads as that week, not just the site name.
+const shareTitle =
+  week && active === 'briefing' ? `${SITE_TITLE}: ${formatWeekRange(week.week_start, week.week_end)}` : title;
 const archiveCurrent = active === 'archive' ? 'page' : undefined;
 const aboutCurrent = active === 'about' ? 'page' : undefined;
 ---
 
-<Base title={title} description={description} canonical={canonical}>
+<Base title={title} description={description} canonical={canonical} shareTitle={shareTitle}>
   <header class="g">
     <h1 class="mast"><a href="/">{SITE_TITLE}</a></h1>
     <p class="bar week-line">

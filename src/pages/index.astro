@@ -4,7 +4,7 @@ import WeekBody from '../components/WeekBody.astro';
 import { latestWeek, synthesisExcerpt, weekPath } from '../lib/weeks';
 
 const week = latestWeek();
-const description = week ? synthesisExcerpt(week.briefing.synthesis) : undefined;
+const description = week ? (week.briefing.lead ?? synthesisExcerpt(week.briefing.synthesis)) : undefined;
 const canonical = week ? weekPath(week.week_id, 'briefing') : undefined;
 ---
 

@@ -642,6 +642,20 @@ main > .page-title {
   margin-top: var(--s1);
 }
 
+.rank-why {
+  margin-top: var(--s2);
+  max-width: 72ch;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.rank-why-label {
+  font-weight: 600;
+  color: var(--ink);
+}
+
 .row .takeaway {
   font-size: 15px;
   line-height: 1.4;

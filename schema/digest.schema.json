@@ -349,6 +349,41 @@
         }
       ]
     },
+    "rankRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["story_id", "importance", "sources", "novelty", "reason"],
+      "properties": {
+        "story_id": {
+          "description": "The briefing.top card at this rank.",
+          "type": "string",
+          "minLength": 1
+        },
+        "importance": {
+          "description": "Lasting importance, 0 to 3.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "sources": {
+          "description": "Distinct sources that covered the story: the main publisher plus also_covered publishers, capped at 3.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "novelty": {
+          "description": "2 firsthand data, 1 reported data, 0 commentary.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "reason": {
+          "description": "One sentence a reader sees: why the story sits at this rank.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
     "numberOfWeek": {
       "type": "object",
       "additionalProperties": false,
@@ -404,6 +439,13 @@
         "number_of_week": {
           "description": "One figure for the week. Required from 2026-W42 on. 2026-W41 and earlier may omit it.",
           "$ref": "#/$defs/numberOfWeek"
+        },
+        "ranking": {
+          "description": "Why the Top 5 is in its order: one row per briefing.top card, in the same order. Optional for now. See config/top5-ranking.md.",
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": { "$ref": "#/$defs/rankRow" }
         },
         "top": {
           "description": "Briefing Top N. N is 5. Full cards only, not every card in the week.",
