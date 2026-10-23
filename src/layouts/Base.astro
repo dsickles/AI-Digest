@@ -1,13 +1,17 @@
 ---
 import '../styles/site.css';
+import { SITE_URL } from '../lib/site';
 
 interface Props {
   title: string;
   description?: string;
   canonical?: string;
+  shareTitle?: string;
 }
 
-const { title, description = "Dan's weekly AI digest.", canonical } = Astro.props;
+const { title, description = "Dan's weekly AI digest.", canonical, shareTitle = title } = Astro.props;
+const pageUrl = new URL(canonical ?? Astro.url.pathname, SITE_URL).href;
+const shareImage = new URL('/share.png', SITE_URL).href;
 ---
 
 <!doctype html>
@@ -25,6 +29,16 @@ const { title, description = "Dan's weekly AI digest.", canonical } = Astro.prop
     <meta name="description" content={description} />
     <title>{title}</title>
     {canonical && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Dan's AI Digest" />
+    <meta property="og:title" content={shareTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={shareImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Dan's AI Digest: what happened in AI this week" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
