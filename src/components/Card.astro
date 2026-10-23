@@ -7,9 +7,10 @@ interface Props {
   card: MainCard;
   variant?: 'top' | 'topic';
   index?: number;
+  rankReason?: string;
 }
 
-const { card, variant = 'top', index } = Astro.props;
+const { card, variant = 'top', index, rankReason } = Astro.props;
 const video = card.media === 'video';
 const summary = card.summary_status === 'ok' ? card.summary : card.body;
 const summaryId = `summary-${card.id}`;
@@ -35,6 +36,13 @@ const summaryId = `summary-${card.id}`;
       <time datetime={card.published_at}>{formatDate(card.published_at)}</time>
     </p>
     {card.takeaway && <p class="takeaway">{card.takeaway}</p>}
+    {
+      rankReason && index !== undefined && (
+        <p class="rank-why">
+          <span class="rank-why-label">Why #{index}</span> {rankReason}
+        </p>
+      )
+    }
     <CoverageNotes links={card.also_covered} numberNote={card.number_note} />
   </div>
   {

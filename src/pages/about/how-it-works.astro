@@ -12,7 +12,15 @@ if (!week) {
   throw new Error('About needs a published week');
 }
 
-const sourceFile = parseYaml(readFileSync(join(process.cwd(), 'config', 'sources.yaml'), 'utf8'));
+interface SourceRow {
+  enabled?: boolean;
+  ai_only?: boolean;
+  display_name: string;
+}
+
+const sourceFile = parseYaml(readFileSync(join(process.cwd(), 'config', 'sources.yaml'), 'utf8')) as {
+  sources?: SourceRow[];
+} | null;
 const enabled = (sourceFile?.sources ?? []).filter((source) => source && source.enabled === true);
 const aiOnlyNames = enabled
   .filter((source) => source.ai_only === true)
@@ -135,7 +143,12 @@ const ranAt = formatRunStamp(week.generated_at);
                 short label and one sentence of 25 to 35 words. A story can sit in two themes.
               </li>
               <li id="top5">
-                <b>Top {counts.picks}.</b> {picksPhrase} the AI judges most worth reading. There is no rank order.
+                <b>Top {counts.picks}.</b> {picksPhrase} the AI judges most worth reading.{' '}
+                {
+                  counts.ranked
+                    ? 'They are ranked by lasting importance, then by how many different sources covered the story, then by whether it brings new data. Each one says why it holds its place.'
+                    : 'There is no rank order.'
+                }
               </li>
               <li>
                 <b>Number of the week.</b> The figure from the week that passes the most of five tests: it changes the

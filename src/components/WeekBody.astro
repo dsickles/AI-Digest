@@ -25,6 +25,7 @@ const topCards = shownBriefingCards(week);
 const topicAlsoSeen = view === 'briefing' ? [] : alsoSeenItems(week).filter((item) => item.category === view);
 const topCount = topCards.length;
 const topLabel = `Top ${topCount} this week`;
+const rankReasons = new Map((week.briefing.ranking ?? []).map((row) => [row.story_id, row.reason]));
 const themes = week.briefing.themes ?? [];
 const hasScan =
   view === 'briefing' &&
@@ -142,7 +143,7 @@ function storyHref(card: MainCard): string {
           <ol class="stories">
             {topCards.map((card, index) => (
               <li class="story">
-                <Card card={card} variant="top" index={index + 1} />
+                <Card card={card} variant="top" index={index + 1} rankReason={rankReasons.get(card.id)} />
               </li>
             ))}
           </ol>
@@ -161,7 +162,7 @@ function storyHref(card: MainCard): string {
             <ol class="stories">
               {topCards.map((card, index) => (
                 <li class="story">
-                  <Card card={card} variant="top" index={index + 1} />
+                  <Card card={card} variant="top" index={index + 1} rankReason={rankReasons.get(card.id)} />
                 </li>
               ))}
             </ol>

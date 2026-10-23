@@ -21,7 +21,8 @@ export function aboutCounts(week) {
   const numberValue = typeof rawValue === 'string' ? rawValue : '';
   const weekMatch = /^(\d{4})-W(\d{2})$/.exec(String(week?.week_id ?? ''));
   const weekLabel = weekMatch ? `W${weekMatch[2]}` : '';
-  return { stories, merged, alsoSeen, leftOut, considered, themes, picks, numberValue, weekLabel };
+  const ranked = Array.isArray(week?.briefing?.ranking) && week.briefing.ranking.length > 0;
+  return { stories, merged, alsoSeen, leftOut, considered, themes, picks, numberValue, weekLabel, ranked };
 }
 
 export function countWord(count) {
