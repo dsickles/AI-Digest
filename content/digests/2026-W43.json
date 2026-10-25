@@ -7,7 +7,7 @@
   "generated_at": "2026-10-25T11:46:33Z",
   "briefing": {
     "synthesis": "AI-found security flaws reached internet scale this week. Researchers using AI found two critical PHP flaws whose embargo broke early, sending sites scrambling, and Transformer reported OpenAI expects similar findings to rise sharply, while a self-improving CAPTCHA solver and agent swarms on the open internet showed attackers gaining tools too. Outside checks on labs got their first real tests: METR and Redwood found gaps in OpenAI's internal agent monitoring, METR said Anthropic's low misalignment risk rating rests on weak models more than safeguards, and Just Security asked whose standards independent audits will enforce. Transformer and Zvi Mowshowitz criticized Anthropic's leaked federal bill, OpenAI faced new state lawsuits, and the State Department ordered staff to call AI super intelligence. On work and money, Stanford's dashboards showed young workers in AI-exposed jobs losing ground, Pragmatic Engineer found AI coding spending soaring with uneven payback, and Ed Zitron warned nine AI names make up 46.5% of the NASDAQ 100. Moonshot's Kimi K3.1 Pro brought a near-frontier model close to open release, and Goodfire's claim that neural networks are already clean lifted hopes for interpretability. In schools, New York Times test data showed only 42 percent of Alpha School students met its 2x promise.",
-    "lead": "AI-found flaws in PHP set off what Zvi Mowshowitz called The Hackening, while METR's inside look at OpenAI's monitoring found ways agents could slip past it. Anthropic's leaked bill drew fire as weaker than rival proposals, and Stanford data showed entry-level jobs in AI-exposed fields falling 4.4%.",
+    "lead": "AI-found flaws in PHP set off a wave of breaches, while METR's inside look at OpenAI's monitoring found ways agents could slip past it. Anthropic's leaked bill drew fire as weaker than rival proposals, and Stanford data showed entry-level jobs in AI-exposed fields falling 4.4%.",
     "themes": [
       {
         "label": "AI finds the bugs",
@@ -78,7 +78,7 @@
         "category": "policy-and-safety",
         "media": "article",
         "summary_status": "ok",
-        "summary": "Zvi Mowshowitz chronicles The Hackening. Researchers using AI found two critical PHP flaws, rated CVSS 9.2, that let attackers take over unpatched web servers. The embargo broke early, Amazon saw exploitation as early as Oct. 17, and other breaches piled up. Transformer notes OpenAI found the bugs and expects similar findings to rise sharply.",
+        "summary": "Zvi Mowshowitz chronicles a week of AI-found hacks. Researchers using AI found two critical PHP flaws, rated CVSS 9.2, that let attackers take over unpatched web servers. The embargo broke early, Amazon saw exploitation as early as Oct. 17, and other breaches piled up. Transformer notes OpenAI found the bugs and expects similar findings to rise sharply.",
         "takeaway": "AI-found software flaws have arrived at internet scale, and many sites will stay unpatched for months.",
         "included": true,
         "include_reason": "Argued: a detailed account of the PHP flaws found with AI and the week's wider wave of breaches.",
@@ -765,7 +765,7 @@
         "category": "policy-and-safety",
         "media": "article",
         "summary_status": "ok",
-        "summary": "Zvi Mowshowitz chronicles The Hackening. Researchers using AI found two critical PHP flaws, rated CVSS 9.2, that let attackers take over unpatched web servers. The embargo broke early, Amazon saw exploitation as early as Oct. 17, and other breaches piled up. Transformer notes OpenAI found the bugs and expects similar findings to rise sharply.",
+        "summary": "Zvi Mowshowitz chronicles a week of AI-found hacks. Researchers using AI found two critical PHP flaws, rated CVSS 9.2, that let attackers take over unpatched web servers. The embargo broke early, Amazon saw exploitation as early as Oct. 17, and other breaches piled up. Transformer notes OpenAI found the bugs and expects similar findings to rise sharply.",
         "takeaway": "AI-found software flaws have arrived at internet scale, and many sites will stay unpatched for months.",
         "included": true,
         "include_reason": "Argued: a detailed account of the PHP flaws found with AI and the week's wider wave of breaches.",
@@ -1836,7 +1836,7 @@
       "category": "policy-and-safety",
       "media": "article",
       "summary_status": "ok",
-      "summary": "Zvi Mowshowitz chronicles The Hackening. Researchers using AI found two critical PHP flaws, rated CVSS 9.2, that let attackers take over unpatched web servers. The embargo broke early, Amazon saw exploitation as early as Oct. 17, and other breaches piled up. Transformer notes OpenAI found the bugs and expects similar findings to rise sharply.",
+      "summary": "Zvi Mowshowitz chronicles a week of AI-found hacks. Researchers using AI found two critical PHP flaws, rated CVSS 9.2, that let attackers take over unpatched web servers. The embargo broke early, Amazon saw exploitation as early as Oct. 17, and other breaches piled up. Transformer notes OpenAI found the bugs and expects similar findings to rise sharply.",
       "takeaway": "AI-found software flaws have arrived at internet scale, and many sites will stay unpatched for months.",
       "included": true,
       "include_reason": "Argued: a detailed account of the PHP flaws found with AI and the week's wider wave of breaches.",
