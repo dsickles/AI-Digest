@@ -1,0 +1,584 @@
+# X watchlist: DRAFT by Swartz (research analyst), 2026-10-26.
+# Dan will review this before anything uses it. Nothing here is live, and no X List was created.
+#
+# Every handle was checked with the X connector (get_users_by_usernames) on 2026-10-26:
+# it exists, is not protected, and posted within the last 60 days.
+# Dropped handles and the reasons are in docs/x-trial/2026-W43.md, section 8.
+#
+# stance is about the section's main debate:
+#   business:          booster = expects big near-term AI returns; skeptic = doubts the payoff or the spending
+#   technical:         booster = expects fast capability gains from current methods; skeptic = doubts that
+#   edtech:            booster = pushes AI into schools now; skeptic = wants evidence first or warns of harm
+#   policy-and-safety: booster = favors moving fast with light-touch rules; skeptic = doubts lab safety
+#                      claims and wants stronger outside checks; neutral = evaluators and analysts
+#   builders:          booster = all-in on AI tools; skeptic = calls out hype and missing evals
+
+# ---- business (15) ----
+- handle: emollick
+  name: "Ethan Mollick"
+  role: "Wharton professor studying AI, writes One Useful Thing"
+  section: business
+  stance: booster
+  why: "Posts quick firsthand tests of new models between his weekly essays."
+  enabled: true
+- handle: edzitron
+  name: "Ed Zitron"
+  role: "Writer of Where's Your Ed At, host of Better Offline"
+  section: business
+  stance: skeptic
+  why: "Live reactions to AI earnings and capex news days before his long essays land."
+  enabled: true
+- handle: GaryMarcus
+  name: "Gary Marcus"
+  role: "Cognitive scientist and longtime generative AI critic"
+  section: business
+  stance: skeptic
+  why: "The loudest skeptic reply to any big claim, useful as the other side of a debate."
+  enabled: true
+- handle: DAcemogluMIT
+  name: "Daron Acemoglu"
+  role: "MIT Institute Professor, economist of technology and work"
+  section: business
+  stance: skeptic
+  why: "Nobel economist doubtful of large AI productivity gains; none of our feeds is an economist skeptic."
+  enabled: true
+- handle: erikbryn
+  name: "Erik Brynjolfsson"
+  role: "Director of the Stanford Digital Economy Lab"
+  section: business
+  stance: neutral
+  why: "First-hand author of the labor data Stanford HAI reports, posts the charts early."
+  enabled: true
+- handle: binarybits
+  name: "Timothy B. Lee"
+  role: "Journalist covering AI and the economy, Understanding AI newsletter"
+  section: business
+  stance: neutral
+  why: "Careful explainer reporting on AI economics that we do not carry as a feed."
+  enabled: true
+- handle: jasonfurman
+  name: "Jason Furman"
+  role: "Harvard economics professor, former CEA chair"
+  section: business
+  stance: neutral
+  why: "Reads macro and jobs data on AI with a policy economist's caution."
+  enabled: true
+- handle: alexolegimas
+  name: "Alex Imas"
+  role: "Director of AGI Economics at Google DeepMind, Chicago Booth professor"
+  section: business
+  stance: neutral
+  why: "Economist inside a frontier lab, posts on how to measure AI's economic effects."
+  enabled: true
+- handle: bcmerchant
+  name: "Brian Merchant"
+  role: "Author of Blood in the Machine, tech labor writer"
+  section: business
+  stance: skeptic
+  why: "Worker-side view of AI and jobs that our business feeds lack."
+  enabled: true
+- handle: dylan522p
+  name: "Dylan Patel"
+  role: "SemiAnalysis, AI infrastructure research"
+  section: business
+  stance: booster
+  why: "Firsthand compute, chip, and data center numbers."
+  enabled: true
+- handle: levie
+  name: "Aaron Levie"
+  role: "CEO of Box"
+  section: business
+  stance: booster
+  why: "Enterprise buyer's view of what AI agents actually do inside companies."
+  enabled: true
+- handle: tobi
+  name: "Tobi Lutke"
+  role: "CEO of Shopify"
+  section: business
+  stance: booster
+  why: "A CEO who sets company AI policy in public and posts about it."
+  enabled: true
+- handle: sama
+  name: "Sam Altman"
+  role: "CEO of OpenAI"
+  section: business
+  stance: booster
+  why: "First-hand OpenAI announcements and claims, which our feeds only report second-hand."
+  enabled: true
+- handle: jackclarkSF
+  name: "Jack Clark"
+  role: "Anthropic co-founder, writes Import AI"
+  section: business
+  stance: booster
+  why: "Anthropic policy and economics claims straight from the source, more often than Import AI ships."
+  enabled: true
+- handle: GergelyOrosz
+  name: "Gergely Orosz"
+  role: "Writer of The Pragmatic Engineer"
+  section: business
+  stance: neutral
+  why: "Daily engineering-industry signals on AI tooling spend between newsletter issues."
+  enabled: true
+
+# ---- technical (17) ----
+- handle: karpathy
+  name: "Andrej Karpathy"
+  role: "AI researcher, former Tesla AI director and OpenAI founding member"
+  section: technical
+  stance: booster
+  why: "Hands-on takes on models and coding agents that often set the week's vocabulary."
+  enabled: true
+- handle: natolambert
+  name: "Nathan Lambert"
+  role: "Open model researcher, writes Interconnects"
+  section: technical
+  stance: booster
+  why: "Quick reactions to open model releases before the Interconnects roundup."
+  enabled: true
+- handle: rasbt
+  name: "Sebastian Raschka"
+  role: "ML research engineer, author of Build a Large Language Model From Scratch"
+  section: technical
+  stance: neutral
+  why: "Paper picks and architecture notes beyond his Ahead of AI posts."
+  enabled: true
+- handle: ylecun
+  name: "Yann LeCun"
+  role: "Founder of AMI Labs, NYU professor, former Meta chief AI scientist"
+  section: technical
+  stance: skeptic
+  why: "Argues LLMs are not the road to human-level AI, a skeptic with first-hand research standing."
+  enabled: true
+- handle: fchollet
+  name: "Francois Chollet"
+  role: "Co-founder of Ndea and ARC Prize, creator of Keras"
+  section: technical
+  stance: skeptic
+  why: "ARC-AGI results and skeptic takes on reasoning claims."
+  enabled: true
+- handle: MelMitchell1
+  name: "Melanie Mitchell"
+  role: "Professor at the Santa Fe Institute"
+  section: technical
+  stance: skeptic
+  why: "Research-based doubts about AI reasoning and benchmarks."
+  enabled: true
+- handle: rao2z
+  name: "Subbarao Kambhampati"
+  role: "AI researcher and teacher at Arizona State, former AAAI president"
+  section: technical
+  stance: skeptic
+  why: "Paper-backed critiques of LLM planning and reasoning claims."
+  enabled: true
+- handle: random_walker
+  name: "Arvind Narayanan"
+  role: "Princeton CS professor, co-author of AI Snake Oil and AI as Normal Technology"
+  section: technical
+  stance: skeptic
+  why: "Short threads that rebut hype between AI as Normal Technology essays."
+  enabled: true
+- handle: sarahookr
+  name: "Sara Hooker"
+  role: "Builds at Adaption AI, former head of Cohere Labs"
+  section: technical
+  stance: skeptic
+  why: "Research voice doubtful that scaling compute alone keeps paying off."
+  enabled: true
+- handle: EpochAIResearch
+  name: "Epoch AI"
+  role: "Research group tracking AI trends"
+  section: technical
+  stance: neutral
+  why: "Charts and data releases that appear on X before the Epoch Brief."
+  enabled: true
+- handle: ArtificialAnlys
+  name: "Artificial Analysis"
+  role: "Independent model benchmarking"
+  section: technical
+  stance: neutral
+  why: "Same-day independent benchmark numbers for new model releases."
+  enabled: true
+- handle: OfirPress
+  name: "Ofir Press"
+  role: "SWE-bench creator, Princeton postdoc"
+  section: technical
+  stance: neutral
+  why: "Benchmark maker who comments on coding agent evaluation claims."
+  enabled: true
+- handle: GoodfireAI
+  name: "Goodfire"
+  role: "Interpretability research company"
+  section: technical
+  stance: booster
+  why: "First-hand interpretability results, as in the W43 neural nets are clean claim."
+  enabled: true
+- handle: NeelNanda5
+  name: "Neel Nanda"
+  role: "Mechanistic interpretability lead at Google DeepMind"
+  section: technical
+  stance: neutral
+  why: "Insider view of what interpretability can and cannot show yet."
+  enabled: true
+- handle: polynoamial
+  name: "Noam Brown"
+  role: "Reasoning researcher at OpenAI"
+  section: technical
+  stance: booster
+  why: "First-hand OpenAI reasoning research claims."
+  enabled: true
+- handle: ClementDelangue
+  name: "Clement Delangue"
+  role: "Co-founder and CEO of Hugging Face"
+  section: technical
+  stance: booster
+  why: "Open model release and download signals."
+  enabled: true
+- handle: Kimi_Moonshot
+  name: "Kimi (Moonshot AI)"
+  role: "Official account of Moonshot AI's Kimi models"
+  section: technical
+  stance: booster
+  why: "Primary source for Kimi releases, as in W43's Kimi K3.1 Pro story."
+  enabled: true
+
+# ---- edtech (13) ----
+- handle: ddmeyer
+  name: "Dan Meyer"
+  role: "Former math teacher, works at Desmos and Amplify"
+  section: edtech
+  stance: skeptic
+  why: "Teacher-side skeptic of AI tutors and chatbots in class."
+  enabled: true
+- handle: benjaminjriley
+  name: "Benjamin Riley"
+  role: "Founder of Cognitive Resonance"
+  section: edtech
+  stance: skeptic
+  why: "Feed author whose X carries quick replies to edtech claims between essays."
+  enabled: true
+- handle: natwexler
+  name: "Natalie Wexler"
+  role: "Education writer, author of The Knowledge Gap"
+  section: edtech
+  stance: skeptic
+  why: "Science of learning view on AI and reading."
+  enabled: true
+- handle: dylanwiliam
+  name: "Dylan Wiliam"
+  role: "Teacher, researcher, and writer on assessment"
+  section: edtech
+  stance: skeptic
+  why: "Assessment expert who tests AI claims against classroom evidence."
+  enabled: true
+- handle: Doug_Lemov
+  name: "Doug Lemov"
+  role: "Author of Teach Like a Champion"
+  section: edtech
+  stance: skeptic
+  why: "Practitioner view on attention, phones, and AI in classrooms."
+  enabled: true
+- handle: JonHaidt
+  name: "Jonathan Haidt"
+  role: "NYU Stern social psychologist, author of The Anxious Generation"
+  section: edtech
+  stance: skeptic
+  why: "Leading voice on tech and childhood, now extending to AI companions."
+  enabled: true
+- handle: daisychristo
+  name: "Daisy Christodoulou"
+  role: "Director of Education at No More Marking"
+  section: edtech
+  stance: neutral
+  why: "Runs AI-assisted marking at scale and reports its results."
+  enabled: true
+- handle: C_Hendrick
+  name: "Carl Hendrick"
+  role: "Senior learning scientist at Alpha School"
+  section: edtech
+  stance: neutral
+  why: "Learning scientist inside Alpha School, which W43 covered through test data."
+  enabled: true
+- handle: BryanAlexander
+  name: "Bryan Alexander"
+  role: "Higher education futurist, AI Academia and the Future newsletter"
+  section: edtech
+  stance: neutral
+  why: "Higher-ed AI coverage, where our edtech feeds lean K-12."
+  enabled: true
+- handle: mackenzieprice
+  name: "MacKenzie Price"
+  role: "Co-founder of Alpha School and 2HrLearning"
+  section: edtech
+  stance: booster
+  why: "Primary voice for AI-driven schooling claims that W43 tested."
+  enabled: true
+- handle: michaelbhorn
+  name: "Michael B. Horn"
+  role: "Author and education innovation writer"
+  section: edtech
+  stance: booster
+  why: "Disruptive-innovation view of AI in schools."
+  enabled: true
+- handle: tvanderark
+  name: "Tom Vander Ark"
+  role: "Education advisor, Getting Smart"
+  section: edtech
+  stance: booster
+  why: "Optimistic edtech adoption and policy signals."
+  enabled: true
+- handle: khanacademy
+  name: "Khan Academy"
+  role: "Nonprofit education platform, maker of Khanmigo"
+  section: edtech
+  stance: booster
+  why: "First-hand Khanmigo announcements and data."
+  enabled: true
+
+# ---- policy-and-safety (18) ----
+- handle: ShakeelHashim
+  name: "Shakeel Hashim"
+  role: "Editor and founder of Transformer"
+  section: policy-and-safety
+  stance: skeptic
+  why: "Feed author who breaks policy scoops on X before the newsletter."
+  enabled: true
+- handle: TheZvi
+  name: "Zvi Mowshowitz"
+  role: "Writer of Don't Worry About the Vase"
+  section: policy-and-safety
+  stance: skeptic
+  why: "Feed author; X shows his fast reactions and arguments with named people."
+  enabled: true
+- handle: So8res
+  name: "Nate Soares"
+  role: "President of MIRI, co-author of If Anyone Builds It Everyone Dies"
+  section: policy-and-safety
+  stance: skeptic
+  why: "Strongest case that labs' safety plans fall short."
+  enabled: true
+- handle: ESYudkowsky
+  name: "Eliezer Yudkowsky"
+  role: "MIRI co-founder, alignment researcher"
+  section: policy-and-safety
+  stance: skeptic
+  why: "Original AI risk voice, often argues with lab staff in public."
+  enabled: true
+- handle: DKokotajlo
+  name: "Daniel Kokotajlo"
+  role: "Former OpenAI researcher, AI Futures Project, AI 2027 author"
+  section: policy-and-safety
+  stance: skeptic
+  why: "Timelines and lab governance claims with first-hand OpenAI history."
+  enabled: true
+- handle: sjgadler
+  name: "Steven Adler"
+  role: "Co-founder of Guidelight AI Standards, ex-OpenAI safety researcher"
+  section: policy-and-safety
+  stance: skeptic
+  why: "Ex-lab safety researcher who checks labs' safety claims."
+  enabled: true
+- handle: Miles_Brundage
+  name: "Miles Brundage"
+  role: "Executive Director of AVERI, AI policy researcher"
+  section: policy-and-safety
+  stance: skeptic
+  why: "Pushes for independent auditing of labs, W43's Checking the labs theme."
+  enabled: true
+- handle: MarietjeSchaake
+  name: "Marietje Schaake"
+  role: "Stanford HAI fellow, FT columnist, former MEP"
+  section: policy-and-safety
+  stance: skeptic
+  why: "European regulation view our US-heavy policy feeds miss."
+  enabled: true
+- handle: METR_Evals
+  name: "METR"
+  role: "AI evaluation nonprofit"
+  section: policy-and-safety
+  stance: neutral
+  why: "Primary source for METR reports, often with threads that add detail."
+  enabled: true
+- handle: ChrisPainterYup
+  name: "Chris Painter"
+  role: "President of METR"
+  section: policy-and-safety
+  stance: neutral
+  why: "Explains what METR's audits did and did not get access to."
+  enabled: true
+- handle: bshlgrs
+  name: "Buck Shlegeris"
+  role: "CEO of Redwood Research"
+  section: policy-and-safety
+  stance: neutral
+  why: "AI control researcher, Redwood co-ran the W43 OpenAI monitoring red team."
+  enabled: true
+- handle: hlntnr
+  name: "Helen Toner"
+  role: "CSET founding team, former OpenAI board member"
+  section: policy-and-safety
+  stance: neutral
+  why: "National security and China framing of AI policy."
+  enabled: true
+- handle: sayashk
+  name: "Sayash Kapoor"
+  role: "AI agents and policy researcher, incoming UC Berkeley professor"
+  section: policy-and-safety
+  stance: neutral
+  why: "Agent evaluation research behind W43's evaluations story."
+  enabled: true
+- handle: peterwildeford
+  name: "Peter Wildeford"
+  role: "Head of Policy at the AI Policy Network, forecaster"
+  section: policy-and-safety
+  stance: neutral
+  why: "Bill-by-bill tracking of US AI legislation."
+  enabled: true
+- handle: deanwball
+  name: "Dean W. Ball"
+  role: "Head of strategic futures at OpenAI"
+  section: policy-and-safety
+  stance: booster
+  why: "Light-touch federal framework voice with inside policy experience."
+  enabled: true
+- handle: AdamThierer
+  name: "Adam Thierer"
+  role: "Innovation policy analyst at R Street"
+  section: policy-and-safety
+  stance: booster
+  why: "Permissionless innovation case against state AI rules."
+  enabled: true
+- handle: sriramk
+  name: "Sriram Krishnan"
+  role: "Former White House AI adviser, a16z"
+  section: policy-and-safety
+  stance: booster
+  why: "Administration-aligned view on AI policy moves."
+  enabled: true
+- handle: DavidSacks
+  name: "David Sacks"
+  role: "Co-chair of PCAST, Craft Ventures"
+  section: policy-and-safety
+  stance: booster
+  why: "Official-level statements on federal AI policy."
+  enabled: true
+
+# ---- builders (17) ----
+- handle: dexhorthy
+  name: "Dex Horthy"
+  role: "Builder at HumanLayer, AI Tinkerers SF lead"
+  section: builders
+  stance: booster
+  why: "Context engineering and agent workflow practice from someone shipping agents."
+  enabled: true
+- handle: simonw
+  name: "Simon Willison"
+  role: "Creator of Datasette, co-creator of Django"
+  section: builders
+  stance: neutral
+  why: "Feed author; X has short tool notes that never become blog posts."
+  enabled: true
+- handle: hwchase17
+  name: "Harrison Chase"
+  role: "CEO of LangChain"
+  section: builders
+  stance: booster
+  why: "What agent builders are adopting, from the framework side."
+  enabled: true
+- handle: amasad
+  name: "Amjad Masad"
+  role: "CEO of Replit"
+  section: builders
+  stance: booster
+  why: "Vibe coding platform metrics and launches."
+  enabled: true
+- handle: thorstenball
+  name: "Thorsten Ball"
+  role: "Works on Amp coding agent, writer"
+  section: builders
+  stance: booster
+  why: "Practical notes on running coding agents daily."
+  enabled: true
+- handle: clairevo
+  name: "Claire Vo"
+  role: "Builds ChatPRD, host of How I AI"
+  section: builders
+  stance: booster
+  why: "PM-side AI workflows; host of one of our feeds, X adds quick tips."
+  enabled: true
+- handle: bcherny
+  name: "Boris Cherny"
+  role: "Claude Code lead at Anthropic"
+  section: builders
+  stance: booster
+  why: "First-hand Claude Code changes and usage advice."
+  enabled: true
+- handle: steipete
+  name: "Peter Steinberger"
+  role: "Developer building with coding agents"
+  section: builders
+  stance: booster
+  why: "Heavy agent user who reports what breaks."
+  enabled: true
+- handle: GeoffreyHuntley
+  name: "Geoffrey Huntley"
+  role: "Software engineer writing about agentic coding"
+  section: builders
+  stance: booster
+  why: "Agent loop techniques other builders copy."
+  enabled: true
+- handle: jsngr
+  name: "Jordan Singer"
+  role: "Co-founder and CEO of Mainframe, ex-Figma AI"
+  section: builders
+  stance: booster
+  why: "Designer-builder view of AI tools."
+  enabled: true
+- handle: petergyang
+  name: "Peter Yang"
+  role: "Product leader, AI tutorials and interviews"
+  section: builders
+  stance: booster
+  why: "PM interviews on how teams actually use AI tools."
+  enabled: true
+- handle: mitchellh
+  name: "Mitchell Hashimoto"
+  role: "Creator of Ghostty, HashiCorp co-founder"
+  section: builders
+  stance: neutral
+  why: "Measured, experienced view of where AI coding helps and hurts."
+  enabled: true
+- handle: antirez
+  name: "Salvatore Sanfilippo"
+  role: "Creator of Redis"
+  section: builders
+  stance: neutral
+  why: "Veteran programmer testing LLMs on real systems code."
+  enabled: true
+- handle: sh_reya
+  name: "Shreya Shankar"
+  role: "Researcher on LLM data systems, incoming CMU professor"
+  section: builders
+  stance: neutral
+  why: "Research-backed evals and LLM pipeline practice."
+  enabled: true
+- handle: HamelHusain
+  name: "Hamel Husain"
+  role: "Evals practitioner, now at OpenAI"
+  section: builders
+  stance: skeptic
+  why: "Skeptic of shipping without evals; calls out vibe-based claims."
+  enabled: true
+- handle: ThePrimeagen
+  name: "ThePrimeagen (Michael Paulson)"
+  role: "Software engineer and streamer"
+  section: builders
+  stance: skeptic
+  why: "Large developer audience skeptic of AI coding hype."
+  enabled: true
+- handle: dhh
+  name: "David Heinemeier Hansson"
+  role: "Creator of Ruby on Rails, CTO of 37signals"
+  section: builders
+  stance: neutral
+  why: "Opinionated veteran whose views on AI coding shift in public."
+  enabled: true
