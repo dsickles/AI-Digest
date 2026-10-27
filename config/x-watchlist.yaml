@@ -4,6 +4,8 @@
 # Every handle was checked with the X connector (get_users_by_usernames) on 2026-10-26:
 # it exists, is not protected, and posted within the last 60 days.
 # Dropped handles and the reasons are in docs/x-trial/2026-W43.md, section 8.
+# Oct 27: trial changes added (section 7 of that report). Three accounts disabled, 16 added,
+# and a primary-sources group. joshua_saxe is still unchecked and stays disabled until it is.
 #
 # stance is about the section's main debate:
 #   business:          booster = expects big near-term AI returns; skeptic = doubts the payoff or the spending
@@ -11,9 +13,10 @@
 #   edtech:            booster = pushes AI into schools now; skeptic = wants evidence first or warns of harm
 #   policy-and-safety: booster = favors moving fast with light-touch rules; skeptic = doubts lab safety
 #                      claims and wants stronger outside checks; neutral = evaluators and analysts
+#   primary-sources:   always neutral; labs and government bodies, not people
 #   builders:          booster = all-in on AI tools; skeptic = calls out hype and missing evals
 
-# ---- business (15) ----
+# ---- business (17) ----
 - handle: emollick
   name: "Ethan Mollick"
   role: "Wharton professor studying AI, writes One Useful Thing"
@@ -97,7 +100,7 @@
   section: business
   stance: booster
   why: "A CEO who sets company AI policy in public and posts about it."
-  enabled: true
+  enabled: false  # Disabled after the W43 trial: in-week hits were off-topic.
 - handle: sama
   name: "Sam Altman"
   role: "CEO of OpenAI"
@@ -120,7 +123,23 @@
   why: "Daily engineering-industry signals on AI tooling spend between newsletter issues."
   enabled: true
 
-# ---- technical (17) ----
+# Added after the W43 trial (docs/x-trial/2026-W43.md, section 7):
+- handle: EconBerger
+  name: "Guy Berger"
+  role: "Labor economist"
+  section: business
+  stance: neutral
+  why: "Labor-market data voice; the jobs theme had no watchlist reactions in W43."
+  enabled: true
+- handle: JimPethokoukis
+  name: "James Pethokoukis"
+  role: "AEI economic policy writer"
+  section: business
+  stance: booster
+  why: "Pro-growth view on AI and jobs, to balance the skeptic economists."
+  enabled: true
+
+# ---- technical (21) ----
 - handle: karpathy
   name: "Andrej Karpathy"
   role: "AI researcher, former Tesla AI director and OpenAI founding member"
@@ -241,7 +260,37 @@
   why: "Primary source for Kimi releases, as in W43's Kimi K3.1 Pro story."
   enabled: true
 
-# ---- edtech (13) ----
+# Added after the W43 trial (docs/x-trial/2026-W43.md, section 7):
+- handle: BlancheMinerva
+  name: "Stella Biderman"
+  role: "Executive director of EleutherAI"
+  section: technical
+  stance: booster
+  why: "Clearest \"defense is winning\" voice in the W43 cyber debate, a side the list lacked."
+  enabled: true
+- handle: saprmarks
+  name: "Samuel Marks"
+  role: "Scalable oversight lead at Anthropic"
+  section: technical
+  stance: neutral
+  why: "Lab researcher who engages with outside critiques."
+  enabled: true
+- handle: boazbaraktcs
+  name: "Boaz Barak"
+  role: "OpenAI researcher and Harvard professor"
+  section: technical
+  stance: neutral
+  why: "Lab researcher who engages with outside critiques."
+  enabled: true
+- handle: joshua_saxe
+  name: "Joshua Saxe"
+  role: "Abundant Security, ex-Meta AI security"
+  section: technical
+  stance: neutral
+  why: "Cyber-defense practitioner on whether AI-found bugs raise real damages."
+  enabled: false  # Not yet checked with get_users_by_usernames. Check, then enable.
+
+# ---- edtech (14) ----
 - handle: ddmeyer
   name: "Dan Meyer"
   role: "Former math teacher, works at Desmos and Amplify"
@@ -276,7 +325,7 @@
   section: edtech
   stance: skeptic
   why: "Practitioner view on attention, phones, and AI in classrooms."
-  enabled: true
+  enabled: false  # Disabled after the W43 trial: in-week posts were about reading instruction, not AI.
 - handle: JonHaidt
   name: "Jonathan Haidt"
   role: "NYU Stern social psychologist, author of The Anxious Generation"
@@ -332,9 +381,18 @@
   section: edtech
   stance: booster
   why: "First-hand Khanmigo announcements and data."
+  enabled: false  # Disabled after the W43 trial: in-week posts were product promos.
+
+# Added after the W43 trial (docs/x-trial/2026-W43.md, section 7):
+- handle: DavidPBLRoss
+  name: "David Ross"
+  role: "Writer on generative AI in education"
+  section: edtech
+  stance: neutral
+  why: "Edtech is the thinnest group; posts about AI in schools often."
   enabled: true
 
-# ---- policy-and-safety (18) ----
+# ---- policy-and-safety (23) ----
 - handle: ShakeelHashim
   name: "Shakeel Hashim"
   role: "Editor and founder of Transformer"
@@ -462,6 +520,43 @@
   why: "Official-level statements on federal AI policy."
   enabled: true
 
+# Added after the W43 trial (docs/x-trial/2026-W43.md, section 7):
+- handle: RyanGreenblatt
+  name: "Ryan Greenblatt"
+  role: "Researcher at METR"
+  section: policy-and-safety
+  stance: skeptic
+  why: "First-hand party in the W43 OpenAI firing story."
+  enabled: true
+- handle: tomekkorbak
+  name: "Tomek Korbak"
+  role: "Ex-OpenAI and UK AISI researcher"
+  section: policy-and-safety
+  stance: skeptic
+  why: "Insider view on third-party evaluations of labs."
+  enabled: true
+- handle: hamandcheese
+  name: "Samuel Hammond"
+  role: "Chief economist at the Foundation for American Innovation"
+  section: policy-and-safety
+  stance: neutral
+  why: "Broke the OpenAI chip-controls story on X in W43."
+  enabled: true
+- handle: thlarsen
+  name: "Thomas Larsen"
+  role: "AI Futures Project"
+  section: policy-and-safety
+  stance: skeptic
+  why: "Pushes labs to quantify risk estimates."
+  enabled: true
+- handle: ZeffMax
+  name: "Max Zeff"
+  role: "WSJ AI reporter"
+  section: policy-and-safety
+  stance: neutral
+  why: "First-hand scoops on the labs."
+  enabled: true
+
 # ---- builders (17) ----
 - handle: dexhorthy
   name: "Dex Horthy"
@@ -581,4 +676,36 @@
   section: builders
   stance: neutral
   why: "Opinionated veteran whose views on AI coding shift in public."
+  enabled: true
+
+# ---- primary-sources (4) ----
+# Labs and government bodies. Swept first each run: in the W43 trial they were the source
+# of most stories our feeds missed. Never quoted as a reaction; their posts point to the primary link.
+- handle: AnthropicAI
+  name: "Anthropic"
+  role: "AI lab"
+  section: primary-sources
+  stance: neutral
+  why: "Announcements and research that often appear on X before any feed covers them."
+  enabled: true
+- handle: OpenAI
+  name: "OpenAI"
+  role: "AI lab"
+  section: primary-sources
+  stance: neutral
+  why: "Announcements and research that often appear on X before any feed covers them."
+  enabled: true
+- handle: GoogleDeepMind
+  name: "Google DeepMind"
+  role: "AI lab"
+  section: primary-sources
+  stance: neutral
+  why: "Announcements and research that often appear on X before any feed covers them."
+  enabled: true
+- handle: AISecurityInst
+  name: "UK AI Security Institute"
+  role: "Government AI evaluator"
+  section: primary-sources
+  stance: neutral
+  why: "First-hand evaluation results, such as the W43 Mythos 5 testing."
   enabled: true
