@@ -2,11 +2,11 @@
 
 Dan can edit the rules in this file. Swartz follows them in the weekly run to read X through the Grok Bot X connector. The accounts it reads are in `x-watchlist.yaml`. The W43 trial that shaped these rules is in `docs/x-trial/2026-W43.md`.
 
-X is a layer on top of the feeds in `sources.yaml`, not one more feed. It does three jobs:
+X is a layer on top of the feeds in `sources.yaml`, not one more feed, and never where a story comes from. It does three jobs:
 
-- It finds stories the feeds missed.
-- It adds named reactions to the week's biggest stories.
+- It adds named reactions to stories our sources already carry.
 - It shows what builders are trying, which debates the feeds only show one side of, and which themes are rising.
+- It shows gaps in the feed list. A story that was all over X but missing from our feeds goes in the report, so Dan can decide whether a source is missing.
 
 ## Access
 
@@ -34,7 +34,7 @@ The X pass runs after the feed stories are included, grouped, and ranked, and be
 
 ## Rules for what X can add
 
-- **A story found on X** needs a primary link, such as a paper, blog post, filing, announcement page, or news article. The item's `url` is that link, never the post. It then goes through `inclusion-rubric.md` and `story-grouping.md` like any other item. A post from a `primary-sources` account counts as the tip, so find the page it links to.
+- **A story found on X** goes on the page only if it has a primary source and at least one independent outlet covering it. A post from a company's own account is first-party, so it counts as the primary source, not as confirmation. The item's `url` is never the post. If the story passes, it still goes through `inclusion-rubric.md` and `story-grouping.md` like any other item. If it doesn't pass, it goes in the report's missed stories section with what's missing.
 - **A reaction** comes only from an enabled watchlist account in the people sections. Lab and government accounts aren't quoted as reactions. Each reaction has a name, role, a one-line stance, and the post link. At most 2 per story.
 - **A debate** still needs at least one feed source on each side. X can add voices to a debate but can't start one. When X shows a side the feeds missed, record it in the report.
 - **No ranking by engagement.** Engagement counts (`public_metrics`) are only for spotting arguments.
@@ -55,13 +55,13 @@ Until Dan turns a step on here, it goes only in the run report.
 
 | Output | Status |
 | --- | --- |
-| Stories found on X | Waiting on Dan's choice for W44 |
-| "On X" reactions on Top 5 cards | Waiting on Dan's choice for W44 |
+| Stories found on X | Report only. The fix for the gap is in the feed list, not X |
+| "On X" reactions on Top 5 cards | Report only, until the schema supports them |
 | X voices in debates | Report only |
 | Builder candidates | Report only |
 | Theme heat for trends | Report only |
 
-None of these fits the week file yet. `scripts/validate-weeks.mjs` requires every item's `publisher.source_id` to be in `sources.yaml`, so a story from WSJ or OpenAI's blog that was found on X would fail. Each output needs a schema and validator change first (see the design doc). A story found on X is the smallest change: a `found_via` field that lets an item name a publisher outside the registry.
+None of these fits the week file yet. `scripts/validate-weeks.mjs` requires every item's `publisher.source_id` to be in `sources.yaml`. So a story X turns up can only reach the site once its publisher is a registered source, which is the feed-list decision. Reactions, debate voices, and theme heat each need a schema and validator change first (see the design doc).
 
 ## Run report
 
@@ -70,7 +70,7 @@ Each week, write `docs/x-trial/{week_id}.md` with the same sections as the W43 t
 1. Calls by tool, every 429, and wall-clock time
 2. Reactions
 3. Debates
-4. Missed stories, each with its primary link and rubric verdict
+4. Missed stories, each with its primary link, any independent coverage, a rubric verdict, and which source would have caught it
 5. For builders
 6. Trends
 7. Watchlist suggestions
