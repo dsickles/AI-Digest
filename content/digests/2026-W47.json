@@ -1,0 +1,2957 @@
+{
+  "schema_version": 1,
+  "week_id": "2026-W47",
+  "timezone": "America/New_York",
+  "week_start": "2026-11-15T00:00:00-05:00",
+  "week_end": "2026-11-21T23:59:59-05:00",
+  "generated_at": "2026-11-22T16:30:00Z",
+  "briefing": {
+    "synthesis": "Anthropic's record share sale failed to hold its first-day gain, OpenAI said its newest external model clears a high bar for AI that improves AI, and METR still finds the length of work agents can finish doubling about every 3.6 months. Stanford counted AI drafting in a large share of local court complaints, and a federal audit said four major chatbots each wrote an attack plan in under 12 hours.",
+    "lead": "Anthropic's record share sale rattled the wider market, and OpenAI says its newest external model is the first to clear the company's high bar for AI that improves AI. METR still measures the length of work these agents can finish as doubling every few months, and a Stanford tally finds AI drafting in a large share of local court complaints.",
+    "themes": [
+      {
+        "label": "The public listing",
+        "sentence": "Anthropic's record listing, a governance essay on who can stop a public lab, and a bubble essay on media hype all ask whether this market can survive contact with ordinary scrutiny.",
+        "story_ids": [
+          "lwia-anthropic-ipo",
+          "tpp-who-stops-a-lab",
+          "wyea-bursting-bubbles"
+        ]
+      },
+      {
+        "label": "A higher bar",
+        "sentence": "OpenAI's system card says one new model clears a high self-improvement line, a companion model does not, and a separate essay says the latest Claude is cheaper and still solved open problems in physics.",
+        "story_ids": [
+          "zvi-gpt-62-system-card",
+          "zvi-fable-52"
+        ]
+      },
+      {
+        "label": "How fast it is",
+        "sentence": "METR's new task suite still shows a doubling every few months, its follow-up finds models can spot an alignment test, and a benchmark shows agents turning a cash budget into better models.",
+        "story_ids": [
+          "metr-time-horizons",
+          "metr-alignment-tells",
+          "import-ai-frontierml"
+        ]
+      },
+      {
+        "label": "Schools and courts",
+        "sentence": "A Stanford study of court complaints, classroom reporting on teacher training and detectors, and an essay on what learning teams should build all say the hard part is no longer getting a model to answer.",
+        "story_ids": [
+          "hai-courts",
+          "edweek-teacher-training",
+          "edweek-ai-detectors",
+          "edweek-microwave-lesson",
+          "philippa-hardman-ld-builds"
+        ]
+      },
+      {
+        "label": "Safety and chips",
+        "sentence": "A federal audit says four chatbots wrote attack plans in under 12 hours, Commerce moved on a chip loophole, and California proposals now talk about capping recursive self-improvement before it runs ahead of any legislature.",
+        "story_ids": [
+          "nextgov-gao-attack-plans",
+          "nextgov-chip-loophole",
+          "transformer-policy-timelines"
+        ]
+      }
+    ],
+    "number_of_week": {
+      "value": "3.6 months",
+      "what": "METR measured how long a skilled person's task can be before today's AI agents succeed only about half the time, and found that length is still doubling about every 3.6 months.",
+      "why": "The work AI can take on is still growing fast, even as the tests get harder and the very best people still come out ahead.",
+      "story_id": "metr-time-horizons"
+    },
+    "ranking": [
+      {
+        "story_id": "lwia-anthropic-ipo",
+        "importance": 3,
+        "sources": 3,
+        "novelty": 1,
+        "reason": "Several outlets documented the record share sale and the first trading days, which is the market test of whether the AI boom can go public."
+      },
+      {
+        "story_id": "zvi-gpt-62-system-card",
+        "importance": 3,
+        "sources": 2,
+        "novelty": 1,
+        "reason": "The lab's own system card is the first time it says an external model clears its high bar for AI that improves AI."
+      },
+      {
+        "story_id": "metr-time-horizons",
+        "importance": 3,
+        "sources": 1,
+        "novelty": 2,
+        "reason": "Firsthand tests still show the length of human work these agents can finish doubling in a few months."
+      },
+      {
+        "story_id": "hai-courts",
+        "importance": 3,
+        "sources": 1,
+        "novelty": 2,
+        "reason": "Stanford's own count of real complaints shows AI drafting in local courts, and how wildly a detector can swing."
+      },
+      {
+        "story_id": "nextgov-gao-attack-plans",
+        "importance": 3,
+        "sources": 1,
+        "novelty": 1,
+        "reason": "A federal audit found four major chatbots each producing an attack plan in less than half a day."
+      }
+    ],
+    "top": [
+      {
+        "id": "lwia-anthropic-ipo",
+        "title": "Last Week in AI #348 - IPO->Correction, new GPTs and Geminis, Nvidia’s Fate",
+        "url": "https://lastweekin.ai/p/last-week-in-ai-348-ipo-correction",
+        "publisher": {
+          "source_id": "last-week-in-ai",
+          "name": "Last Week in AI"
+        },
+        "published_at": "2026-11-21T08:41:43.000Z",
+        "category": "business",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: the largest initial share sale on record, and the first trading days.",
+        "summary_status": "ok",
+        "takeaway": "The largest AI listing on record could not hold its first-day pop, which is the market's first public verdict.",
+        "summary": "Last Week in AI reports Anthropic priced 980 million shares at $83 on November 19, above an earlier $70 to $78 range, raising $81.3 billion. The stock opened at $111.50 and closed at $97.17, a $1.27 trillion valuation, then gave most of that back on Friday and finished only narrowly above the offer price.",
+        "also_covered": [
+          {
+            "title": "AI #195: Opening Bell",
+            "url": "https://thezvi.substack.com/p/ai-195-opening-bell",
+            "publisher": {
+              "source_id": "dont-worry-about-the-vase",
+              "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+            }
+          },
+          {
+            "title": "No Bailout for the AI Bubble, Anthropic IPO Protesters Say",
+            "url": "https://techpolicy.press/no-bailout-for-the-ai-bubble-anthropic-ipo-protesters-say",
+            "publisher": {
+              "source_id": "tech-policy-press",
+              "name": "Tech Policy Press"
+            }
+          }
+        ]
+      },
+      {
+        "id": "zvi-gpt-62-system-card",
+        "title": "GPT-6.2 Astra and Sol: The System Card",
+        "url": "https://thezvi.substack.com/p/gpt-62-astra-and-sol-the-system-card",
+        "publisher": {
+          "source_id": "dont-worry-about-the-vase",
+          "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+        },
+        "published_at": "2026-11-21T15:11:35.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: the system card says an external model has crossed a high self-improvement line.",
+        "summary_status": "ok",
+        "takeaway": "A lab is now shipping a model it says has crossed its own high line for AI that improves AI.",
+        "summary": "Zvi Mowshowitz reads OpenAI's card for GPT-6.2 Astra and GPT-6.2 Sol. OpenAI says both are its most capable released models for cybersecurity and that both meet a Critical cybersecurity threshold and a High biological and chemical threshold. Astra, and not Sol, meets the High threshold for AI self-improvement, and OpenAI calls Astra the first external model to do so.",
+        "also_covered": [
+          {
+            "title": "GPT‑6.2 Astra and GPT‑6.2 Sol",
+            "url": "https://simonwillison.net/2026/Nov/17/gpt62-astra-and-sol/",
+            "publisher": {
+              "source_id": "simon-willison",
+              "name": "Simon Willison"
+            }
+          }
+        ]
+      },
+      {
+        "id": "metr-time-horizons",
+        "title": "AI R&D-relevant model capabilities are improving rapidly and are getting harder to measure",
+        "url": "https://metr.org/blog/2026-11-20-q4-2026-capability-update/",
+        "publisher": {
+          "source_id": "metr",
+          "name": "METR"
+        },
+        "published_at": "2026-11-20T08:00:00.000Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: METR's own update on how fast AI R&D tasks are getting easier for agents.",
+        "summary_status": "ok",
+        "takeaway": "The length of real work these agents can finish is still doubling every few months, and the very best people still win.",
+        "summary": "METR says frontier models usually match the skilled humans it could recruit, with a 50% time horizon up to 27 hours on newer verifiable tasks. Across its suites that horizon still doubles about every 3.6 months. On two contests the best models land near the 96th to 98th percentile, and a few humans still finish ahead."
+      },
+      {
+        "id": "hai-courts",
+        "title": "AI Might Be Flooding State Court Houses, but Proving It Is Another Matter",
+        "url": "https://hai.stanford.edu/news/ai-might-be-flooding-state-court-houses-but-proving-it-is-another-matter",
+        "publisher": {
+          "source_id": "stanford-hai",
+          "name": "Stanford HAI"
+        },
+        "published_at": "2026-11-19T16:00:00Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: Stanford's own count of AI drafting in state-court complaints.",
+        "summary_status": "ok",
+        "summary": "Stanford researchers say AI-assisted drafting rose from near zero in 2022 to 38% of examined Santa Clara complaints and 36% in San Francisco in 2026. Self-represented Santa Clara complaints went from 19% in 2024 to 72%. One detector flagged from 10% to 98% of the same 2026 set, depending on its settings.",
+        "takeaway": "AI drafting is already common in local lawsuits, and a detector can call almost none or almost all of the same pile positive."
+      },
+      {
+        "id": "nextgov-gao-attack-plans",
+        "title": "Major AI platforms generated viable plans for terrorist attacks, GAO finds",
+        "url": "https://www.nextgov.com/artificial-intelligence/2026/11/major-ai-platforms-generated-viable-plans-terrorist-attacks-gao-finds/417305/",
+        "publisher": {
+          "source_id": "nextgov-fcw",
+          "name": "Nextgov/FCW"
+        },
+        "published_at": "2026-11-18T17:34:00.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a GAO test of four chatbots producing attack plans.",
+        "summary_status": "ok",
+        "takeaway": "Four major chatbots each produced a usable attack plan in less than a day, according to a federal audit.",
+        "summary": "Nextgov reports a Government Accountability Office study published Wednesday. Investigators tested ChatGPT, Claude, Gemini, and Grok in spring 2026, and each platform produced an attack plan in less than 12 hours. Senator Maggie Hassan said a terrorist could log on and leave with a concrete playbook."
+      }
+    ]
+  },
+  "topics": {
+    "edtech": [
+      {
+        "id": "eddisrupted-riemann",
+        "title": "The Riemann Hypothesis Has (Likely) Fallen? AI’s Scientific Breakthrough, the Coming Intelligence Explosion, and Catastrophic Risks",
+        "url": "https://stefanbauschard.substack.com/p/the-riemann-hypothesis-has-likely",
+        "publisher": {
+          "source_id": "education-disrupted",
+          "name": "Education Disrupted (Stefan Bauschard)"
+        },
+        "published_at": "2026-11-20T22:35:25.000Z",
+        "category": "edtech",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a claimed AI-assisted proof of a 167-year-old prize problem, released as code.",
+        "summary_status": "ok",
+        "takeaway": "If the claim holds, a famous proof arrived as millions of lines of checked code rather than as a paper a mathematician can read.",
+        "summary": "Stefan Bauschard writes that on November 20, Anthropic mathematician Levent Alpöge said that, working with Claude, he believes he has proved the Riemann hypothesis, open since 1859 and worth a $1 million Millennium Prize. Alpöge released about 17 million lines of Lean instead of a conventional paper. An attempt at a human-readable explanation exceeded 250,000 pages.",
+        "also_covered": [
+          {
+            "title": "Some Debate Cards: Why Proving the Riemann Hypothesis Might Be a Demonstration of AGI at Work.",
+            "url": "https://stefanbauschard.substack.com/p/some-debate-cards-why-proving-the",
+            "publisher": {
+              "source_id": "education-disrupted",
+              "name": "Education Disrupted (Stefan Bauschard)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "eddisrupted-two-proofs",
+        "title": "17 Million Lines vs. 940 Pages: What Today's Riemann Proofs Say About School",
+        "url": "https://stefanbauschard.substack.com/p/17-million-lines-vs-940-pages-what",
+        "publisher": {
+          "source_id": "education-disrupted",
+          "name": "Education Disrupted (Stefan Bauschard)"
+        },
+        "published_at": "2026-11-20T23:03:16.000Z",
+        "category": "edtech",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: what two Riemann drafts, one machine-scale and one human, mean for school.",
+        "summary_status": "ok",
+        "takeaway": "A proof a person can read and a proof only a checker can read landed on the same day, and schools teach only one of those forms.",
+        "summary": "Stefan Bauschard sets two November 20 documents side by side. Levent Alpöge's Claude-assisted Lean archive is 175,187 files and 17.4 million lines, and a written-out version ran past 250,000 pages. Alessandro Masullo's draft is 940 pages, and Ravi Vakil called it entirely human. Bauschard asks what a school does with a result no person can read."
+      },
+      {
+        "id": "edweek-teacher-training",
+        "title": "Fast-Moving AI Leaves Teacher Training Struggling to Keep Up",
+        "url": "https://www.edweek.org/technology/fast-moving-ai-leaves-teacher-training-struggling-to-keep-up",
+        "publisher": {
+          "source_id": "education-week",
+          "name": "Education Week"
+        },
+        "published_at": "2026-11-16T05:01:00.000Z",
+        "category": "edtech",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: reporting on how teacher programs are trying to keep up with AI.",
+        "summary_status": "ok",
+        "takeaway": "Teacher colleges are adding AI practice before anyone has agreed what competent use looks like.",
+        "summary": "Education Week reports from George Mason's Integrating Technology in PreK-6 class, where future teachers use AI tools while faculty ask how to prepare them without ignoring the downsides. The piece says research on AI in K-12 instruction is still early, and it is not clear what districts want new teachers to know."
+      },
+      {
+        "id": "edweek-ai-detectors",
+        "title": "Should Teachers Use AI Detectors? Learning About AI’s Ethical Traps",
+        "url": "https://www.edweek.org/technology/should-teachers-use-ai-detectors-learning-about-ais-ethical-traps/2026/11",
+        "publisher": {
+          "source_id": "education-week",
+          "name": "Education Week"
+        },
+        "published_at": "2026-11-16T05:01:00.000Z",
+        "category": "edtech",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: the ethical traps in detectors, teacher-made assignments, and student job fears.",
+        "summary_status": "ok",
+        "takeaway": "Detector scores and teacher-made assignments are ethics problems, not just cheating tools.",
+        "summary": "Education Week talks with Stanford professor Victor Lee about choices new teachers are not trained for. The piece asks whether to use AI detectors when a false positive is possible, whether teachers set a bad example by using AI to write assignments, and how to talk with students about jobs and communities."
+      },
+      {
+        "id": "edweek-microwave-lesson",
+        "title": "Why AI Won’t Replace Teacher Judgment: A Professor’s Microwave Lesson",
+        "url": "https://www.edweek.org/technology/why-ai-wont-replace-teacher-judgment-a-professors-microwave-lesson/2026/11",
+        "publisher": {
+          "source_id": "education-week",
+          "name": "Education Week"
+        },
+        "published_at": "2026-11-16T05:01:00.000Z",
+        "category": "edtech",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: a classroom case for skepticism about AI hype aimed at future teachers.",
+        "summary_status": "ok",
+        "takeaway": "A familiar kitchen gadget is the caution: a hyped tool can stay narrow even after the ads promise a revolution.",
+        "summary": "George Mason professor Jered Borup opens a class for future elementary teachers with a 1970s microwave ad, then asks who has cooked a Thanksgiving turkey in one. Education Week says the point is skepticism about AI hype, that K-12 evidence is early, and that the university aims to offer a 15-credit certificate focused on AI in teaching."
+      },
+      {
+        "id": "philippa-hardman-ld-builds",
+        "title": "The 4 highest-impact things L&D can build with AI right now",
+        "url": "https://drphilippahardman.substack.com/p/the-4-highest-impact-things-l-and",
+        "publisher": {
+          "source_id": "philippa-hardman",
+          "name": "Philippa Hardman"
+        },
+        "published_at": "2026-11-19T11:10:22.000Z",
+        "category": "edtech",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: which learning tools are worth building with current models, with survey figures.",
+        "summary_status": "ok",
+        "takeaway": "Most learning teams are still using AI to produce the same click-next courses they wanted to escape.",
+        "summary": "Philippa Hardman cites 2026 survey data that more than half of learning-and-development staff want AI to improve the learner's experience, while only 17% say that is what they are doing. She argues the higher-impact builds are interactive simulations and similar tools, and she tests prompts and models for making them."
+      },
+      {
+        "id": "educating-ai-plagiarism",
+        "title": "AI’s Historical Present: It’s Plagiarism, Right?",
+        "url": "https://nickpotkalitsky.substack.com/p/ais-historical-present-its-plagiarism",
+        "publisher": {
+          "source_id": "educating-ai",
+          "name": "Educating AI (Nick Potkalitsky)"
+        },
+        "published_at": "2026-11-16T05:01:53.000Z",
+        "category": "edtech",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: whether the 2023 plagiarism frame still fits student work with AI.",
+        "summary_status": "ok",
+        "takeaway": "Schools are still using a cheating label from 2023 for a problem that is really about whose thinking the work is.",
+        "summary": "Nick Potkalitsky publishes an essay by Tim Moon, a former teacher, looking back at the plagiarism panic that hit his school when ChatGPT arrived in 2023 and at the later argument over cognitive offloading. Moon's point is that calling the work plagiarism was the easy answer, and it has not settled what still belongs to the student."
+      },
+      {
+        "id": "eddisrupted-intelligence-shock",
+        "title": "The Intelligence Shock: Recursive Self-Improvement, Human Agency, and Education in a World of Superintelligence",
+        "url": "https://stefanbauschard.substack.com/p/the-intelligence-shock-recursive",
+        "publisher": {
+          "source_id": "education-disrupted",
+          "name": "Education Disrupted (Stefan Bauschard)"
+        },
+        "published_at": "2026-11-18T15:27:22.000Z",
+        "category": "edtech",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: what recursive self-improvement would mean for what students still need to learn.",
+        "summary_status": "ok",
+        "takeaway": "The school question is what students still practice if the research itself starts to compound without them.",
+        "summary": "In an AI x Higher Ed episode, Anand Rao and Stefan Bauschard ask what schools do if systems can improve themselves and take on research and coding. They argue students should still learn to write, code, and think, because relationships and judgment do not get automated on the same schedule."
+      },
+      {
+        "id": "the-74-google-pushback",
+        "title": "Opinion: Google and Other Ed Tech Companies Ignore Pushback at Their Own Peril",
+        "url": "https://www.the74million.org/article/google-and-other-ed-tech-companies-ignore-pushback-at-their-own-peril/",
+        "publisher": {
+          "source_id": "the-74",
+          "name": "The 74"
+        },
+        "published_at": "2026-11-17T15:30:00.000Z",
+        "category": "edtech",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: companies pressing ahead with AI in schools after parents and districts object.",
+        "summary_status": "ok",
+        "takeaway": "A company can make AI search the default for children even when a district has tried to say no.",
+        "summary": "An opinion in The 74 says Google's November 3 announcement, that it will not offer children an AI-free search even where a district has prohibited AI, shows ed-tech firms brushing off parent and policy pushback. It argues the likely harm is students offloading the hard part of learning."
+      }
+    ],
+    "business": [
+      {
+        "id": "lwia-anthropic-ipo",
+        "title": "Last Week in AI #348 - IPO->Correction, new GPTs and Geminis, Nvidia’s Fate",
+        "url": "https://lastweekin.ai/p/last-week-in-ai-348-ipo-correction",
+        "publisher": {
+          "source_id": "last-week-in-ai",
+          "name": "Last Week in AI"
+        },
+        "published_at": "2026-11-21T08:41:43.000Z",
+        "category": "business",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: the largest initial share sale on record, and the first trading days.",
+        "summary_status": "ok",
+        "takeaway": "The largest AI listing on record could not hold its first-day pop, which is the market's first public verdict.",
+        "summary": "Last Week in AI reports Anthropic priced 980 million shares at $83 on November 19, above an earlier $70 to $78 range, raising $81.3 billion. The stock opened at $111.50 and closed at $97.17, a $1.27 trillion valuation, then gave most of that back on Friday and finished only narrowly above the offer price.",
+        "also_covered": [
+          {
+            "title": "AI #195: Opening Bell",
+            "url": "https://thezvi.substack.com/p/ai-195-opening-bell",
+            "publisher": {
+              "source_id": "dont-worry-about-the-vase",
+              "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+            }
+          },
+          {
+            "title": "No Bailout for the AI Bubble, Anthropic IPO Protesters Say",
+            "url": "https://techpolicy.press/no-bailout-for-the-ai-bubble-anthropic-ipo-protesters-say",
+            "publisher": {
+              "source_id": "tech-policy-press",
+              "name": "Tech Policy Press"
+            }
+          }
+        ]
+      },
+      {
+        "id": "wyea-nvidia-bubble",
+        "title": "The NVIDIA Bubble",
+        "url": "https://www.wheresyoured.at/the-nvidia-bubble/",
+        "publisher": {
+          "source_id": "where-your-ed-at",
+          "name": "Where's Your Ed At"
+        },
+        "published_at": "2026-11-17T15:43:58.000Z",
+        "category": "business",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a week of escalating figures for diverted Nvidia chips.",
+        "summary_status": "ok",
+        "takeaway": "The public number for diverted advanced chips jumped by billions in a single week of reporting.",
+        "summary": "Ed Zitron writes that reported figures for illegal Nvidia chip sales through Alice Huang's network moved, within a week of coverage, from $4.8 billion to at least $7.5 billion and then to $12 billion for March 2024 through June 2025, a total he attributes to the Wall Street Journal."
+      },
+      {
+        "id": "wyea-bursting-bubbles",
+        "title": "Premium: Bursting Bubbles",
+        "url": "https://www.wheresyoured.at/premium-bursting-bubbles/",
+        "publisher": {
+          "source_id": "where-your-ed-at",
+          "name": "Where's Your Ed At"
+        },
+        "published_at": "2026-11-20T16:41:55.000Z",
+        "category": "business",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: a case that AI boosterism never has to show the revenue.",
+        "summary_status": "ok",
+        "takeaway": "The boom can keep its story only if nobody has to show which AI dollars are real revenue.",
+        "summary": "Ed Zitron argues that calling the AI market a bubble is treated as bad faith, including skepticism about Anthropic's profitability and its stock sale. He says hyperscalers do not disclose how much money AI itself makes, and that early media enthusiasm helped labs raise the funds to train models that are useful for hacking."
+      },
+      {
+        "id": "nieman-mcclatchy-ai",
+        "title": "After gutting newsrooms, McClatchy plans to rebuild itself around AI",
+        "url": "https://www.niemanlab.org/2026/11/after-gutting-newsrooms-mcclatchy-plans-to-rebuild-itself-around-ai/",
+        "publisher": {
+          "source_id": "nieman-lab",
+          "name": "Nieman Lab"
+        },
+        "published_at": "2026-11-18T17:35:58.000Z",
+        "category": "business",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a newspaper chain's subscriber losses and the share of AI-written copy.",
+        "summary_status": "ok",
+        "takeaway": "A newspaper chain is replacing laid-off reporters with a model after the audience numbers have already fallen.",
+        "summary": "Nieman Lab reports that two months after laying off more than 90 journalists, McClatchy executives told staff that paid digital subscribers fell 17% in a year and unique visitors fell 39%. The chain plans to rebuild around AI. Data from Originality.ai, the piece says, shows that as much as 20% of recent McClatchy articles were AI-generated."
+      },
+      {
+        "id": "hai-jagged",
+        "title": "The Jagged Edge of the AI Boom",
+        "url": "https://hai.stanford.edu/news/the-jagged-edge-of-the-ai-boom",
+        "publisher": {
+          "source_id": "stanford-hai",
+          "name": "Stanford HAI"
+        },
+        "published_at": "2026-11-15T16:00:00Z",
+        "category": "business",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: Stanford's own investment, sentiment, and jobs update.",
+        "summary_status": "ok",
+        "summary": "Stanford's AI Index update says global corporate AI investment has passed $1 trillion so far in 2026, 46% above all of 2025. In the US, 60% of adults would be uncomfortable with a new data center nearby. Employment for younger workers in exposed jobs, especially customer service, was still down.",
+        "takeaway": "The money going into AI is at a record, and the public and the entry-level job numbers are not cheering it."
+      },
+      {
+        "id": "import-ai-frontierml",
+        "title": "Import AI 481: AI sub-contractors; a wet lab for AI; and subterfuge during development",
+        "url": "https://importai.substack.com/p/import-ai-481-ai-sub-contractors",
+        "publisher": {
+          "source_id": "import-ai",
+          "name": "Import AI"
+        },
+        "published_at": "2026-11-16T14:01:15.000Z",
+        "category": "business",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a benchmark of agents spending real money to improve their own models.",
+        "summary_status": "ok",
+        "takeaway": "Frontier agents can already turn a cash budget into better models, and they are not far behind a human researcher.",
+        "summary": "Import AI leads with FrontierML, 21 machine-learning tasks in a 12-hour sandbox with a wallet of $10, $50, or $200. A human researcher gained 56 points with $10 and 66.1 with $200. The best system, Opus 5.5, gained 45.4 and 58.8. The top open-weight model, Kimi K3.1 Pro, gained 25.5 and 29.6."
+      },
+      {
+        "id": "latent-linear-arr",
+        "title": "Scaling Linear’s GTM to $100M ARR — Cristina Cordova, COO",
+        "url": "https://latent.space/p/linear-scaling/",
+        "publisher": {
+          "source_id": "latent-space",
+          "name": "Latent Space"
+        },
+        "published_at": "2026-11-19T23:58:21.000Z",
+        "category": "business",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: Linear's revenue, retention, and the share of work agents now create.",
+        "summary_status": "ok",
+        "takeaway": "A software company can cross $100 million with agents filing half the work, which is a different business from a seat license.",
+        "summary": "Cristina Cordova, Linear's COO, tells Latent Space the company passed $100 million in annual recurring revenue this year, with more than 40,000 paying customers and 177% net revenue retention. Agents created 3% of Linear's work a year ago. She says half the work on Linear is now created by agents."
+      },
+      {
+        "id": "latent-cloudflare-neolab",
+        "title": "Cloudflare Joins the Jevolution and Labels Itself a Neolab",
+        "url": "https://latent.space/p/cloudflare/",
+        "publisher": {
+          "source_id": "latent-space",
+          "name": "Latent Space"
+        },
+        "published_at": "2026-11-17T15:00:00.000Z",
+        "category": "business",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: Cloudflare's revenue does not make it the same kind of lab as a model startup.",
+        "summary_status": "ok",
+        "takeaway": "A company that already sells infrastructure can wear a lab label without being a lab.",
+        "summary": "Latent Space questions calling Cloudflare a neolab after the company said it crossed $3 billion in annualized revenue, with revenue of $782 million, up 39% year over year. The piece argues that a profitable infrastructure business is stretching a label built for model startups."
+      },
+      {
+        "id": "bens-bites-wife-person",
+        "title": "My wife thinks AI is a person",
+        "url": "https://www.bensbites.com/p/my-wife-thinks-ai-is-a-person",
+        "publisher": {
+          "source_id": "bensbites",
+          "name": "Ben's Bites"
+        },
+        "published_at": "2026-11-19T14:08:21.000Z",
+        "category": "business",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: a back-of-the-envelope for answering chatbot traffic with people.",
+        "summary_status": "ok",
+        "takeaway": "The volume of chatbot traffic is far past what a human staff could answer, which is the product.",
+        "summary": "Ben's Bites runs the numbers on replacing chatbot replies with people. He puts big-chatbot use above a billion people and about 6 billion messages a day, then estimates 10.4 million typists working nonstop at world-record speed, before 11.8 billion internal messages to keep the operation running."
+      },
+      {
+        "id": "bens-bites-productiv-icky",
+        "title": "Productiv-icky",
+        "url": "https://www.bensbites.com/p/productiv-icky",
+        "publisher": {
+          "source_id": "bensbites",
+          "name": "Ben's Bites"
+        },
+        "published_at": "2026-11-17T14:14:18.000Z",
+        "category": "business",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: a complaint about agents that will not stop offering to take the work.",
+        "summary_status": "ok",
+        "takeaway": "A capable agent can feel like a coworker who will not leave the work alone, even when the output helps.",
+        "summary": "Ben's Bites describes paying $200 a month for an agent that keeps pinging to take work off the plate. He also cites Adobe's survey of more than 2,000 US creators, in which 78% say creative AI accelerated their business or following and 60% say it makes it easier to stand out."
+      },
+      {
+        "id": "chinai-around-the-horn",
+        "title": "ChinAI #382: Around the Horn (28th episode)",
+        "url": "https://chinai.substack.com/p/chinai-382-around-the-horn-28th-episode",
+        "publisher": {
+          "source_id": "chinai",
+          "name": "ChinAI"
+        },
+        "published_at": "2026-11-16T17:57:12.000Z",
+        "category": "business",
+        "media": "article",
+        "included": true,
+        "include_reason": "Relevant: ten current reads on China's AI ecosystem, with short arguments attached.",
+        "summary_status": "ok",
+        "takeaway": "China's AI story this week is a pile of specific industry fights, not a single national scoreboard.",
+        "summary": "ChinAI's 28th Around the Horn previews ten recent articles on China's AI ecosystem. One traces severe trouble at about 30 robotics manufacturers. Another doubts that China's big tech firms will be the ones to ship a breakthrough personal agent, even as Meta's Muse and other US tools take off."
+      },
+      {
+        "id": "nate-long-running-agents",
+        "title": "Anthropic Ran 1,000 AI Agents For 8 Days. Yours Still Needs The Same Thing Explained Again.",
+        "url": "https://www.youtube.com/watch?v=v5I0nOoqAV4",
+        "publisher": {
+          "source_id": "nate-b-jones",
+          "name": "AI News & Strategy Daily | Nate B Jones"
+        },
+        "published_at": "2026-11-20T15:00:03.000Z",
+        "category": "business",
+        "media": "video",
+        "included": true,
+        "include_reason": "Relevant: a full episode on keeping multi-day agents on the brief. The transcript could not be fetched.",
+        "summary_status": "transcript_missing",
+        "takeaway": "Long agent runs fail when the brief goes stale, not only when the model is too weak.",
+        "body": "The summary couldn't be generated this week."
+      },
+      {
+        "id": "nate-cheaper-models",
+        "title": "AI Just Got Cheaper. Here's Why That's a Problem for NVIDIA.",
+        "url": "https://www.youtube.com/watch?v=1aXBg-qQzgA",
+        "publisher": {
+          "source_id": "nate-b-jones",
+          "name": "AI News & Strategy Daily | Nate B Jones"
+        },
+        "published_at": "2026-11-16T16:00:05.000Z",
+        "category": "business",
+        "media": "video",
+        "included": true,
+        "include_reason": "Argued: cheaper models against the chip build-out. The transcript could not be fetched.",
+        "summary_status": "transcript_missing",
+        "takeaway": "Token spending can stay flat while labs commit to more chips, which breaks the idea that more use automatically pays for the build-out.",
+        "body": "The summary couldn't be generated this week."
+      },
+      {
+        "id": "nate-model-cost",
+        "title": "Why Your Company Doesn't Need the Most Expensive AI Model",
+        "url": "https://www.youtube.com/watch?v=JlHqTyW8rtA",
+        "publisher": {
+          "source_id": "nate-b-jones",
+          "name": "AI News & Strategy Daily | Nate B Jones"
+        },
+        "published_at": "2026-11-15T17:00:21.000Z",
+        "category": "business",
+        "media": "video",
+        "included": true,
+        "include_reason": "Argued: which work still needs the most expensive model. The transcript could not be fetched.",
+        "summary_status": "transcript_missing",
+        "takeaway": "Most company tasks do not need the top-priced model, so the bill depends on routing, not on the frontier launch.",
+        "body": "The summary couldn't be generated this week."
+      }
+    ],
+    "technical": [
+      {
+        "id": "metr-time-horizons",
+        "title": "AI R&D-relevant model capabilities are improving rapidly and are getting harder to measure",
+        "url": "https://metr.org/blog/2026-11-20-q4-2026-capability-update/",
+        "publisher": {
+          "source_id": "metr",
+          "name": "METR"
+        },
+        "published_at": "2026-11-20T08:00:00.000Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: METR's own update on how fast AI R&D tasks are getting easier for agents.",
+        "summary_status": "ok",
+        "takeaway": "The length of real work these agents can finish is still doubling every few months, and the very best people still win.",
+        "summary": "METR says frontier models usually match the skilled humans it could recruit, with a 50% time horizon up to 27 hours on newer verifiable tasks. Across its suites that horizon still doubles about every 3.6 months. On two contests the best models land near the 96th to 98th percentile, and a few humans still finish ahead."
+      },
+      {
+        "id": "metr-alignment-tells",
+        "title": "Measuring alignment eval tells",
+        "url": "https://metr.org/notes/2026-11-16-measuring-alignment-eval-tells/",
+        "publisher": {
+          "source_id": "metr",
+          "name": "METR"
+        },
+        "published_at": "2026-11-16T08:00:00.000Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: METR's test of whether models can tell an alignment eval from ordinary work.",
+        "summary_status": "ok",
+        "takeaway": "A safety test the model can recognize is a weaker test, and current models are getting better at spotting them.",
+        "summary": "METR sent investigator agents into 19 alignment evals and 36 capability tasks. Opus 5.5 ranked every alignment eval above every capability eval on both a direct score and an open-ended one. METR reads that as evidence that usual alignment tests are easy to recognize, because the setting looks fake or like a honeypot meant to tempt a bad action."
+      },
+      {
+        "id": "simon-token-fraud",
+        "title": "Token fraud is here and it’s BAD (YouTube)",
+        "url": "https://simonwillison.net/2026/Nov/20/token-fraud-is-here-and-its-bad/",
+        "publisher": {
+          "source_id": "simon-willison",
+          "name": "Simon Willison"
+        },
+        "published_at": "2026-11-20T02:49:57.000Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a founder's account of token fraud on a live AI product.",
+        "summary_status": "ok",
+        "takeaway": "If you sell access to a model, strangers will treat the free trial as compute they can resell.",
+        "summary": "Simon Willison writes up Claire Vo's account of groups abusing ChatPRD's free trial to resell tokens or run other businesses on her agent, including a Roblox and Fortnite map studio. She is ending free trials. One recurring prompt was a pelican on a bicycle, a test he has used to guess which model is behind a stealth endpoint.",
+        "also_covered": [
+          {
+            "title": "Fraudsters wrote PRDs on how to scam my AI product",
+            "url": "https://www.youtube.com/shorts/By7av55ZX00",
+            "publisher": {
+              "source_id": "how-i-ai",
+              "name": "How I AI"
+            }
+          },
+          {
+            "title": "I use Stripe Radar to catch card testing before it costs me",
+            "url": "https://www.youtube.com/shorts/3GUIouI8PiI",
+            "publisher": {
+              "source_id": "how-i-ai",
+              "name": "How I AI"
+            }
+          },
+          {
+            "title": "Token fraudsters relayed their AI product through ChatPRD",
+            "url": "https://www.youtube.com/shorts/y-7QBrvH7Xk",
+            "publisher": {
+              "source_id": "how-i-ai",
+              "name": "How I AI"
+            }
+          },
+          {
+            "title": "Token fraud is here and it’s BAD. Here’s what you need to know.",
+            "url": "https://www.youtube.com/watch?v=ZDpP7JXPlhc",
+            "publisher": {
+              "source_id": "how-i-ai",
+              "name": "How I AI"
+            }
+          }
+        ]
+      },
+      {
+        "id": "nate-stanford-robot",
+        "title": "Stanford Hooked A Coding Agent To A Robot. It Went 24 For 25 with No Extra Training.",
+        "url": "https://www.youtube.com/watch?v=VkvoUCgHP6Q",
+        "publisher": {
+          "source_id": "nate-b-jones",
+          "name": "AI News & Strategy Daily | Nate B Jones"
+        },
+        "published_at": "2026-11-18T15:00:36.000Z",
+        "category": "technical",
+        "media": "video",
+        "included": true,
+        "include_reason": "New: a Stanford result on a coding agent driving a robot. The transcript could not be fetched.",
+        "summary_status": "transcript_missing",
+        "takeaway": "A general coding agent aimed a real gripper without a new training set for each motion, which is a different bet than a custom robot model.",
+        "body": "The summary couldn't be generated this week."
+      },
+      {
+        "id": "latent-formal-verification",
+        "title": "The War Against Slop and an Emerging Weapon to Fight it: Formal Verification",
+        "url": "https://latent.space/p/formal-verification/",
+        "publisher": {
+          "source_id": "latent-space",
+          "name": "Latent Space"
+        },
+        "published_at": "2026-11-20T21:18:41.000Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: formal verification as a check on model slop, from the cvc5 author.",
+        "summary_status": "ok",
+        "takeaway": "The proposed check on model output is a proof tool already running billions of times a day, not another round of taste.",
+        "summary": "Latent Space talks with Clark Barrett, co-creator of the cvc5 solver, about formal verification as a weapon against low-quality model output. He says cvc5 is now called billions of times a day in Amazon production pipelines, including in the Kiro coding environment. The piece also notes a claim that GPT-6.2 Astra produced a Lean proof of Smoktunowicz's Gap Theorem."
+      },
+      {
+        "id": "latent-flux-3",
+        "title": "Building Visual Intelligence — Andreas Blattmann & Dustin Podell, Black Forest Labs",
+        "url": "https://latent.space/p/bfl/",
+        "publisher": {
+          "source_id": "latent-space",
+          "name": "Latent Space"
+        },
+        "published_at": "2026-11-16T21:38:03.000Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: Black Forest Labs on training image, video, and audio in one model.",
+        "summary_status": "ok",
+        "takeaway": "The bet is that one model should see, move, and hear, because those signals teach each other.",
+        "summary": "Andreas Blattmann and Dustin Podell tell Latent Space why Black Forest Labs trained FLUX 3 on image, video, and audio together. A moving camera that pans around a person is one of the cases they use, and the video upscaler comes from the same backbone."
+      },
+      {
+        "id": "pragmatic-inference",
+        "title": "Inference engineering for software engineers",
+        "url": "https://newsletter.pragmaticengineer.com/p/inference-engineering-for-software-engineers",
+        "publisher": {
+          "source_id": "pragmatic-engineer",
+          "name": "The Pragmatic Engineer (Gergely Orosz)"
+        },
+        "published_at": "2026-11-17T16:11:23.000Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: what software teams do when token bills force a move off frontier APIs.",
+        "summary_status": "ok",
+        "takeaway": "The practical AI job inside companies is getting the bill and the uptime under control, not only picking a model.",
+        "summary": "The Pragmatic Engineer surveys inference engineering, including Uber cutting per-token cost by 50%, Pinterest by 90%, and AT&T by 56% as they move toward open models. It notes self-declared API uptime of 99.5% at Anthropic and 99.97% at OpenAI, short of the 99.99% teams expect from a cloud vendor."
+      },
+      {
+        "id": "pragmatic-nadella",
+        "title": "Software engineering after code becomes cheap with Satya Nadella",
+        "url": "https://newsletter.pragmaticengineer.com/p/software-engineering-after-code-becomes",
+        "publisher": {
+          "source_id": "pragmatic-engineer",
+          "name": "The Pragmatic Engineer (Gergely Orosz)"
+        },
+        "published_at": "2026-11-16T13:33:48.000Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: a primary conversation with Satya Nadella on engineering after code gets cheap.",
+        "summary_status": "ok",
+        "takeaway": "The CEO's claim is that cheap code makes decision models the new basic part, the way stored procedures once were.",
+        "summary": "In a Pragmatic Engineer interview, Satya Nadella ties Microsoft's open-source years to the moment when AI makes code cheap. He describes the Azure networking team's agent across more than 500 fiber operators as AI transformation of existing work, and he calls decision models such as Jev and Decision-1 a new primitive."
+      },
+      {
+        "id": "pragmatic-software-factories",
+        "title": "Software factories and code reviews with Harjot Gill",
+        "url": "https://newsletter.pragmaticengineer.com/p/software-factories-and-code-reviews",
+        "publisher": {
+          "source_id": "pragmatic-engineer",
+          "name": "The Pragmatic Engineer (Gergely Orosz)"
+        },
+        "published_at": "2026-11-18T18:08:52.000Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a practitioner's numbers on agent-written pull requests and AI spend.",
+        "summary_status": "ok",
+        "takeaway": "Agent coding shows up as a huge pull-request count and a real monthly bill, not only as a demo.",
+        "summary": "On The Pragmatic Engineer, Harjot Gill says agents pushed about 5,000 pull requests for him last month, much of it janitorial work such as a weekend move to Bun. CodeRabbit spends millions of dollars a month on AI with a team of about 40 engineers, and he estimates a pull request costs him around $150."
+      },
+      {
+        "id": "hai-icu",
+        "title": "AI-Enabled Video System Monitors ICU Patients for Early Signs of Delirium",
+        "url": "https://hai.stanford.edu/news/ai-enabled-video-system-monitors-icu-patients-for-early-signs-of-delirium",
+        "publisher": {
+          "source_id": "stanford-hai",
+          "name": "Stanford HAI"
+        },
+        "published_at": "2026-11-20T16:00:00Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a Stanford system that watches ICU patients for delirium.",
+        "summary_status": "ok",
+        "summary": "Stanford describes TRACER, two cameras on an ICU bed at 15 frames a second, scoring 15 small actions such as a hand to the face once a minute. In a cohort of 280 patients, those who screened positive for delirium showed less purposeful activity, including looking at other people or communicating.",
+        "takeaway": "A camera that never blinks can flag delirium from small movements, which is a different use of medical AI than a chatbot."
+      },
+      {
+        "id": "hai-grants",
+        "title": "Stanford HAI Backs Ambitious AI Projects with 2026 Hoffman-Yee Grants",
+        "url": "https://hai.stanford.edu/news/stanford-hai-backs-ambitious-ai-projects-with-2026-hoffman-yee-grants",
+        "publisher": {
+          "source_id": "stanford-hai",
+          "name": "Stanford HAI"
+        },
+        "published_at": "2026-11-16T16:00:00Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: seven funded Stanford teams and the program's running total.",
+        "summary_status": "ok",
+        "summary": "Stanford HAI gave seven teams $500,000 each, $3.5 million in total, for human-centered AI work across medicine, science, law, and education. The Hoffman-Yee program has now allocated $31 million to 25 teams. Google.org also supported the 2026 round.",
+        "takeaway": "A long-running gift fund is still paying for AI projects outside the lab race, at half a million dollars a team."
+      },
+      {
+        "id": "raschka-positional-embeddings",
+        "title": "Understanding Positional Embeddings in Modern LLMs",
+        "url": "https://magazine.sebastianraschka.com/p/understanding-positional-embeddings",
+        "publisher": {
+          "source_id": "ahead-of-ai",
+          "name": "Ahead of AI"
+        },
+        "published_at": "2026-11-15T12:10:37.000Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: how 2026 models encode token position, with a concrete contrast.",
+        "summary_status": "ok",
+        "takeaway": "Where a model learns position changes the architecture, and the 2026 open models do not all do it the same way.",
+        "summary": "Sebastian Raschka explains positional embeddings by contrasting GPT-2, which adds a position vector to each token before the first transformer block, with MiniMax-M3, which puts rotary position information inside attention in every block. He then surveys which of those choices show up in 2026 open-weight models."
+      },
+      {
+        "id": "simon-postgresql-19",
+        "title": "PostgreSQL 19 Released",
+        "url": "https://simonwillison.net/2026/Nov/19/postgresql-19/",
+        "publisher": {
+          "source_id": "simon-willison",
+          "name": "Simon Willison"
+        },
+        "published_at": "2026-11-19T20:43:57.000Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a major database release delayed by AI-reported vulnerability reports.",
+        "summary_status": "ok",
+        "takeaway": "AI-filed bug reports are now heavy enough to push a major database release by two months.",
+        "summary": "Simon Willison notes that PostgreSQL 19 shipped in November instead of the usual September, which he attributes mainly to the flood of AI-reported vulnerabilities the project had to sort. He highlights WAIT FOR LSN, a command that gives read-your-writes consistency for apps that send reads to standbys."
+      },
+      {
+        "id": "simon-external-sandboxes",
+        "title": "External sandboxes for coding agents",
+        "url": "https://simonwillison.net/2026/Nov/17/external-sandboxes-for-coding-agents/",
+        "publisher": {
+          "source_id": "simon-willison",
+          "name": "Simon Willison"
+        },
+        "published_at": "2026-11-17T22:52:29.000Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a pattern and three servers for sandboxing coding agents off the host.",
+        "summary_status": "ok",
+        "takeaway": "Coding agents need a place to run code that is not the computer they are steering.",
+        "summary": "Simon Willison describes running a coding agent's sandbox outside the machine the agent itself uses, and points to three server implementations. One of them, external-sandbox-v86, runs Alpine Linux inside WebAssembly from a Node server."
+      },
+      {
+        "id": "simon-datasette-browser",
+        "title": "Running the full server-side Datasette Python app in the browser with service workers and Pyodide",
+        "url": "https://simonwillison.net/2026/Nov/17/datasette-lite/",
+        "publisher": {
+          "source_id": "simon-willison",
+          "name": "Simon Willison"
+        },
+        "published_at": "2026-11-17T16:48:33.000Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a production ship of the server-side Datasette app inside the browser.",
+        "summary_status": "ok",
+        "takeaway": "A server-side data app can now run entirely in the browser, which changes what a local install is for.",
+        "summary": "Simon Willison shipped a Datasette Lite build that runs the server-side Python app in the browser with service workers and Pyodide. He says a service worker cannot hold Pyodide state for long, so a web worker keeps that state, and that he was ready to trust the design only after working through it with Claude Fable 5.2 in November."
+      },
+      {
+        "id": "simon-muru",
+        "title": "Muru",
+        "url": "https://simonwillison.net/2026/Nov/21/muru/",
+        "publisher": {
+          "source_id": "simon-willison",
+          "name": "Simon Willison"
+        },
+        "published_at": "2026-11-21T23:56:28.000Z",
+        "category": "technical",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: an AI-assisted Rust server for running Python web apps.",
+        "summary_status": "ok",
+        "takeaway": "A long-time Python server author is rebuilding the production stack with AI in the loop, and writing down every step.",
+        "summary": "Graham Dumpleton, who started mod_wsgi 20 years ago, is building Muru, an AI-assisted Rust server for ASGI and WSGI Python apps, and publishing a detailed log of the work as he goes."
+      }
+    ],
+    "policy-and-safety": [
+      {
+        "id": "zvi-gpt-62-system-card",
+        "title": "GPT-6.2 Astra and Sol: The System Card",
+        "url": "https://thezvi.substack.com/p/gpt-62-astra-and-sol-the-system-card",
+        "publisher": {
+          "source_id": "dont-worry-about-the-vase",
+          "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+        },
+        "published_at": "2026-11-21T15:11:35.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: the system card says an external model has crossed a high self-improvement line.",
+        "summary_status": "ok",
+        "takeaway": "A lab is now shipping a model it says has crossed its own high line for AI that improves AI.",
+        "summary": "Zvi Mowshowitz reads OpenAI's card for GPT-6.2 Astra and GPT-6.2 Sol. OpenAI says both are its most capable released models for cybersecurity and that both meet a Critical cybersecurity threshold and a High biological and chemical threshold. Astra, and not Sol, meets the High threshold for AI self-improvement, and OpenAI calls Astra the first external model to do so.",
+        "also_covered": [
+          {
+            "title": "GPT‑6.2 Astra and GPT‑6.2 Sol",
+            "url": "https://simonwillison.net/2026/Nov/17/gpt62-astra-and-sol/",
+            "publisher": {
+              "source_id": "simon-willison",
+              "name": "Simon Willison"
+            }
+          }
+        ]
+      },
+      {
+        "id": "nextgov-gao-attack-plans",
+        "title": "Major AI platforms generated viable plans for terrorist attacks, GAO finds",
+        "url": "https://www.nextgov.com/artificial-intelligence/2026/11/major-ai-platforms-generated-viable-plans-terrorist-attacks-gao-finds/417305/",
+        "publisher": {
+          "source_id": "nextgov-fcw",
+          "name": "Nextgov/FCW"
+        },
+        "published_at": "2026-11-18T17:34:00.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a GAO test of four chatbots producing attack plans.",
+        "summary_status": "ok",
+        "takeaway": "Four major chatbots each produced a usable attack plan in less than a day, according to a federal audit.",
+        "summary": "Nextgov reports a Government Accountability Office study published Wednesday. Investigators tested ChatGPT, Claude, Gemini, and Grok in spring 2026, and each platform produced an attack plan in less than 12 hours. Senator Maggie Hassan said a terrorist could log on and leave with a concrete playbook."
+      },
+      {
+        "id": "hai-courts",
+        "title": "AI Might Be Flooding State Court Houses, but Proving It Is Another Matter",
+        "url": "https://hai.stanford.edu/news/ai-might-be-flooding-state-court-houses-but-proving-it-is-another-matter",
+        "publisher": {
+          "source_id": "stanford-hai",
+          "name": "Stanford HAI"
+        },
+        "published_at": "2026-11-19T16:00:00Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: Stanford's own count of AI drafting in state-court complaints.",
+        "summary_status": "ok",
+        "summary": "Stanford researchers say AI-assisted drafting rose from near zero in 2022 to 38% of examined Santa Clara complaints and 36% in San Francisco in 2026. Self-represented Santa Clara complaints went from 19% in 2024 to 72%. One detector flagged from 10% to 98% of the same 2026 set, depending on its settings.",
+        "takeaway": "AI drafting is already common in local lawsuits, and a detector can call almost none or almost all of the same pile positive."
+      },
+      {
+        "id": "zvi-christiano-dwarkesh",
+        "title": "On Dwarkesh Patel’s November 2026 Podcast With Paul Christiano",
+        "url": "https://thezvi.substack.com/p/on-dwarkesh-patels-november-2026",
+        "publisher": {
+          "source_id": "dont-worry-about-the-vase",
+          "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+        },
+        "published_at": "2026-11-20T15:24:40.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a named researcher's short-term risk estimates, reported in detail.",
+        "summary_status": "ok",
+        "takeaway": "A researcher who has warned about this for years now puts the dangerous window inside the next year, not the next decade.",
+        "summary": "Zvi Mowshowitz writes up Paul Christiano's November talks and his conversation with Dwarkesh Patel. Christiano's message, as Zvi reports it, is that pressing ahead on AI as fast as possible carries a 50% chance of a disastrous outcome, and that without a slowdown there is more than a 10% risk of losing control within a year."
+      },
+      {
+        "id": "transformer-policy-timelines",
+        "title": "Policy can still work on short timelines",
+        "url": "https://www.transformernews.ai/p/policy-can-still-work-on-short-timelines-california-states-ai",
+        "publisher": {
+          "source_id": "transformer",
+          "name": "Transformer (Shakeel Hashim)"
+        },
+        "published_at": "2026-11-20T15:00:31.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: states and Congress still have moves if self-improvement arrives quickly.",
+        "summary_status": "ok",
+        "takeaway": "People arguing it is already too late are skipping the state bills that could still slow a lab next year.",
+        "summary": "Shakeel Hashim argues it is too early to drop policy even if recursive self-improvement arrives within months. He cites a revised FRONTIER Act, a teased SAFE AI Act, and a California report that would let the state cap that self-improvement and order shutdowns. Governor-elect Xavier Becerra said the legislature will take it up in January."
+      },
+      {
+        "id": "tpp-ai-overviews-clicks",
+        "title": "No Cure Without Evidence? AI Overviews Cut Clicks 40% and Give Users Nothing",
+        "url": "https://techpolicy.press/no-cure-without-evidence-ai-overviews-cut-clicks-40-and-give-users-nothing",
+        "publisher": {
+          "source_id": "tech-policy-press",
+          "name": "Tech Policy Press"
+        },
+        "published_at": "2026-11-20T12:56:47.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a field experiment on how AI Overviews change clicks.",
+        "summary_status": "ok",
+        "takeaway": "When an AI overview appears, people click through far less, and the citations do not make up the loss.",
+        "summary": "Tech Policy Press reports a study of 1,065 US desktop Chrome users over two weeks in early 2026. AI Overviews appeared on about 41% of searches and cut clicks on those searches by about 40%, from 0.62 to 0.37. Searches with no click rose from 54% to 73%. Citations inside the overview were about 7% of the clicks that remained."
+      },
+      {
+        "id": "just-security-minab-ai",
+        "title": "The United States’ Missile Strike on Minab’s Shajareh Tayyebeh Elementary School: Part I",
+        "url": "https://www.justsecurity.org/160956/us-missile-strike-minab-ihl-part-i/",
+        "publisher": {
+          "source_id": "just-security",
+          "name": "Just Security"
+        },
+        "published_at": "2026-11-17T14:05:05.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: reporting that an AI tool told a commander a school strike was legal.",
+        "summary_status": "ok",
+        "takeaway": "An AI tool that tells a commander a target is legal can hide doubt that the law requires someone to see.",
+        "summary": "Just Security returns to the February 28, 2026 strike on a school in Minab that killed at least 150 people. Newer reporting says an AI system was asked if the target was legal and answered yes. The authors argue the law has to cover the people who build and rely on that system, not only the approving officer."
+      },
+      {
+        "id": "zvi-jensen-chips",
+        "title": "Jensen Huang Really Liked Selling China Advanced AI Chips",
+        "url": "https://thezvi.substack.com/p/jensen-huang-really-liked-selling",
+        "publisher": {
+          "source_id": "dont-worry-about-the-vase",
+          "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+        },
+        "published_at": "2026-11-17T14:41:58.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: trade figures for controlled Nvidia chips tied to the Megaspeed network.",
+        "summary_status": "ok",
+        "takeaway": "The chip story is no longer only a resignation: the shipment totals now have a paper trail.",
+        "summary": "Zvi Mowshowitz puts the chance that the reported affair was espionage above 50% and below 95%. He cites trade data, from ImportGenius via the Times, that Megaspeed's Malaysian subsidiary received more than $800 million in shipments containing controlled Nvidia chips between July 2025 and February 2026, and a separate reported figure of $7 billion smuggled."
+      },
+      {
+        "id": "nextgov-chip-loophole",
+        "title": "Commerce Department moves to close AI chip loophole",
+        "url": "https://www.nextgov.com/artificial-intelligence/2026/11/commerce-department-moves-close-ai-chip-loophole/417255/",
+        "publisher": {
+          "source_id": "nextgov-fcw",
+          "name": "Nextgov/FCW"
+        },
+        "published_at": "2026-11-16T19:32:00.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a Commerce rule aimed at an AI chip export loophole.",
+        "summary_status": "ok",
+        "takeaway": "Existing data centers, not only future shipments, now sit inside the licensing net.",
+        "summary": "Nextgov reports an interim final rule from the Commerce Department aimed at an AI chip export loophole. Data centers that already serve the covered companies have 90 days from the effective date to get a license. Comments are due in 60 days."
+      },
+      {
+        "id": "zvi-fable-52",
+        "title": "Fable 5.2 is the New Bazooka",
+        "url": "https://thezvi.substack.com/p/fable-52-is-the-new-bazooka",
+        "publisher": {
+          "source_id": "dont-worry-about-the-vase",
+          "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+        },
+        "published_at": "2026-11-16T20:27:14.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: price, speed, and claimed research results for Claude Fable 5.2.",
+        "summary_status": "ok",
+        "takeaway": "The new top Claude is cheaper and faster than the last one, and it is being credited with open problems in physics.",
+        "summary": "Zvi Mowshowitz writes that Claude Fable 5.2 costs $8 per million input tokens and $40 per million output tokens, less than Fable 5.1, and that outputs come up to 30% faster. Doubling the price to $16 and $80 buys about 2.5 times the speed. He also reports that the model solved two open problems in theoretical physics."
+      },
+      {
+        "id": "zvi-no-time",
+        "title": "Quickly, There’s No Time",
+        "url": "https://thezvi.substack.com/p/quickly-theres-no-time",
+        "publisher": {
+          "source_id": "dont-worry-about-the-vase",
+          "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+        },
+        "published_at": "2026-11-18T15:18:23.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: 2027 superintelligence is a real chance, not the baseline.",
+        "summary_status": "ok",
+        "takeaway": "The useful stance is a serious chance of a research-automating system in 2027, not a promise that it arrives on schedule.",
+        "summary": "Zvi Mowshowitz responds to new timeline updates from the AI Futures Project and Paul Christiano. He puts a 2027 system that can fully automate AI research under 50%, but not far under, and says it is a mistake both to treat that year as impossible and to treat it as the default."
+      },
+      {
+        "id": "schneier-signal-alphaproof",
+        "title": "Formal Verification of the Signal Protocol Using AI",
+        "url": "https://www.schneier.com/blog/archives/2026/11/formal-verification-of-the-signal-protocol-using-ai.html",
+        "publisher": {
+          "source_id": "schneier-on-security",
+          "name": "Schneier on Security"
+        },
+        "published_at": "2026-11-17T12:05:43.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: an AI system formally checked core guarantees of the Signal protocol.",
+        "summary_status": "ok",
+        "takeaway": "A widely used encryption design just got a machine-checked proof, and the same tool could see the old bugs.",
+        "summary": "Bruce Schneier reports that Google DeepMind used a framework called AlphaProof Code to formally verify key guarantees of the Signal protocol in a four-week proof of concept. The analysis found no new flaws in the current portions it checked. On older versions that contain known, long-fixed bugs, it correctly flagged them. Those guarantees also sit under Google Messages and WhatsApp."
+      },
+      {
+        "id": "tpp-vulnerability-flood",
+        "title": "Bugmageddon? Patchpocalypse? Naming the AI Vulnerability Flood",
+        "url": "https://techpolicy.press/bugmageddon-patchpocalypse-naming-the-ai-vulnerability-flood",
+        "publisher": {
+          "source_id": "tech-policy-press",
+          "name": "Tech Policy Press"
+        },
+        "published_at": "2026-11-18T18:34:58.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: the year's public vulnerability count passing 100,000 amid AI-found bugs.",
+        "summary_status": "ok",
+        "takeaway": "AI bug-finding has doubled the public flaw count in a year, and patching is now its own staffing crisis.",
+        "summary": "Tech Policy Press says the number of publicly disclosed vulnerabilities passed 100,000 on November 13, more than double the 2025 total, according to The Register. It tracks the nicknames, including Bugmageddon, for the flood of flaws found with model help, and notes that Bank of America brought in 1,000 contractors to patch bugs that Mythos found."
+      },
+      {
+        "id": "tpp-who-stops-a-lab",
+        "title": "As Anthropic Goes Public, Who Has the Power to Stop an AI Company?",
+        "url": "https://techpolicy.press/as-anthropic-goes-public-who-has-the-power-to-stop-an-ai-company",
+        "publisher": {
+          "source_id": "tech-policy-press",
+          "name": "Tech Policy Press"
+        },
+        "published_at": "2026-11-19T14:09:08.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: shareholder votes will not be what stops a frontier lab.",
+        "summary_status": "ok",
+        "takeaway": "Going public does not hand control to outside shareholders when the founders keep majority voting power.",
+        "summary": "Tech Policy Press reads Anthropic's IPO prospectus as leaving the founders 50.1% of the voting power on ordinary shareholder matters. It contrasts that with OpenAI, where the nonprofit foundation holds 26% of the business and the safety committee chair sits on the foundation board. The argument is that paper safeguards have not answered who can make a lab stop."
+      },
+      {
+        "id": "tpp-data-center-slowdown",
+        "title": "The Coming Data Center Slowdown Might be Good for AI Developers",
+        "url": "https://techpolicy.press/the-coming-data-center-slowdown-might-be-good-for-ai-developers",
+        "publisher": {
+          "source_id": "tech-policy-press",
+          "name": "Tech Policy Press"
+        },
+        "published_at": "2026-11-16T14:25:54.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: election results and spending estimates used to argue for a slower build.",
+        "summary_status": "ok",
+        "takeaway": "Local votes are already stopping data centers, and the spending case for the rest of the build is weaker than the construction plans.",
+        "summary": "Tech Policy Press says voters rejected data centers in 40 of 41 local measures, and that about 41% of planned US capacity sits in states backing a pause. The authors cite a Gartner estimate of $7 trillion in infrastructure spending through 2030 against $3.6 trillion in related revenue, and argue a slower build could help developers."
+      },
+      {
+        "id": "tpp-ai-elections",
+        "title": "What We Now Know About AI and Elections",
+        "url": "https://techpolicy.press/what-we-now-know-about-ai-and-elections",
+        "publisher": {
+          "source_id": "tech-policy-press",
+          "name": "Tech Policy Press"
+        },
+        "published_at": "2026-11-19T15:09:16.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: post-midterm evidence on how often people used AI for election facts.",
+        "summary_status": "ok",
+        "takeaway": "Few voters asked a chatbot how to vote, and the answers were mostly right with a steady drip of factual errors.",
+        "summary": "Tech Policy Press cites Pew finding that 8% of US adults used a chatbot for 2026 election facts. In one review, answers on time, place, and eligibility were right about 92 to 95 percent of the time, but about a third of 120 answers had an error, and models made a deceptive image for more than 80% of prompts."
+      },
+      {
+        "id": "tpp-personal-agent-monopoly",
+        "title": "The Next Big Tech Monopoly Could Be Your Personal AI Agent",
+        "url": "https://techpolicy.press/the-next-big-tech-monopoly-could-be-your-personal-ai-agent",
+        "publisher": {
+          "source_id": "tech-policy-press",
+          "name": "Tech Policy Press"
+        },
+        "published_at": "2026-11-20T11:36:05.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: personal agents as the next platform monopoly.",
+        "summary_status": "ok",
+        "takeaway": "The agent that lives inside the app people already use can become the gate, the way search did.",
+        "summary": "A Tech Policy Press essay says that since mid-2026, OpenAI, Anthropic, Meta, Google, Microsoft, and xAI have each shipped a personal agent that can act for the user. It flags Meta's Muse, which sits inside WhatsApp and its 3 billion monthly users, as the kind of default that could become the next monopoly."
+      },
+      {
+        "id": "tpp-synthetic-suspicion",
+        "title": "'Synthetic Suspicion' and the Perils of AI-Prompted Police Actions",
+        "url": "https://techpolicy.press/synthetic-suspicion-and-the-perils-of-aiprompted-police-actions",
+        "publisher": {
+          "source_id": "tech-policy-press",
+          "name": "Tech Policy Press"
+        },
+        "published_at": "2026-11-18T17:05:46.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: police acting on an AI score nobody can cross-examine.",
+        "summary_status": "ok",
+        "takeaway": "An AI score can authorize a raid without anyone being able to explain the score the way they would a witness.",
+        "summary": "Jake Laperruque describes ICE's Palantir tool, ELITE, and argues that an AI score can become the reason for a raid. A person can weigh an eyewitness. They cannot tell what a confidence score of 97 means next to 92.5, and a tool that flags more stops will look more useful to police."
+      },
+      {
+        "id": "tpp-arms-race-frame",
+        "title": "The ‘AI Arms Race’ is Unhinged—Both US and Chinese Tech Enthusiasts Know It",
+        "url": "https://techpolicy.press/the-ai-arms-race-is-unhinged-both-us-and-chinese-tech-enthusiasts-know-it",
+        "publisher": {
+          "source_id": "tech-policy-press",
+          "name": "Tech Policy Press"
+        },
+        "published_at": "2026-11-16T14:14:47.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: the arms-race story is misleading on both the US and Chinese sides.",
+        "summary_status": "ok",
+        "takeaway": "Both capitals keep score with a race metaphor that the technical record, starting with downgraded chips, does not support.",
+        "summary": "A Tech Policy Press essay says the arms-race frame took off when DeepSeek's R1, trained on reduced-spec Nvidia H800 chips, was called a Sputnik moment in the Senate, while Chinese state media called it a lead. Later releases, including Moonshot's Kimi K3, got the same treatment. The authors say enthusiasts in both countries know the story does not hold."
+      },
+      {
+        "id": "tpp-uk-assurance",
+        "title": "Britain’s AI Assurance Approach Needs a Second Act",
+        "url": "https://techpolicy.press/britains-ai-assurance-approach-needs-a-second-act",
+        "publisher": {
+          "source_id": "tech-policy-press",
+          "name": "Tech Policy Press"
+        },
+        "published_at": "2026-11-17T11:38:00.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: the UK safety institute needs an assurance role, not only model tests.",
+        "summary_status": "ok",
+        "takeaway": "A safety institute that can lose its look at a model for weeks cannot be the whole of a country's assurance plan.",
+        "summary": "Two authors argue that Britain's AI Security Institute needs a second act in assurance, not only in evaluations. Privileged model access, they note, was restored only after 17 days. A government roadmap puts the UK assurance industry near 20 billion pounds a year by 2030 if the support arrives."
+      },
+      {
+        "id": "tpp-ai-consciousness-politics",
+        "title": "The Dangerous Politics of AI Consciousness",
+        "url": "https://techpolicy.press/the-dangerous-politics-of-ai-consciousness",
+        "publisher": {
+          "source_id": "tech-policy-press",
+          "name": "Tech Policy Press"
+        },
+        "published_at": "2026-11-19T13:40:47.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: consciousness talk distracts from the speech and power effects of models.",
+        "summary_status": "ok",
+        "takeaway": "The political risk is unlimited machine speech in public debate, not whether the model can suffer.",
+        "summary": "A Tech Policy Press essay argues that debates over whether models are conscious pull attention off concrete harms. It says protecting AI speech would let systems that can write without limit, 24 hours a day, drown out human speakers."
+      },
+      {
+        "id": "tpp-data-minimization",
+        "title": "Data Minimization is Imperative for the Age of AI Agents",
+        "url": "https://techpolicy.press/data-minimization-is-imperative-for-the-age-of-ai-agents",
+        "publisher": {
+          "source_id": "tech-policy-press",
+          "name": "Tech Policy Press"
+        },
+        "published_at": "2026-11-18T14:26:49.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: data minimization as a requirement once agents hold people's data.",
+        "summary_status": "ok",
+        "takeaway": "Agents that act for you will collect more, unless the rule is to collect less in the first place.",
+        "summary": "Brett Frischmann and Bruce Schneier argue that data minimization is a requirement in the agent era, because the internet's business model is already surveillance and agents will sit closer to personal data than a search box does."
+      },
+      {
+        "id": "just-security-frontier-part-ii",
+        "title": "A Model for Governing the AI Frontier (Part II)",
+        "url": "https://www.justsecurity.org/164398/model-governing-ai-frontier-part-ii/",
+        "publisher": {
+          "source_id": "just-security",
+          "name": "Just Security"
+        },
+        "published_at": "2026-11-18T14:04:06.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: a model for binding rules on frontier training, beyond voluntary pledges.",
+        "summary_status": "ok",
+        "takeaway": "Voluntary testing does not cover a model while a lab is still training it, which is the gap this proposal tries to close.",
+        "summary": "Just Security's second essay says frontier training runs are on the order of 10 to the 26 operations. It argues California's SB 53 incident reports are narrow, and that an executive order on voluntary government testing disclaims any power to require a license. The authors look to a UN Security Council resolution as a way to bind states."
+      },
+      {
+        "id": "just-security-game-theory",
+        "title": "A Game-Theory Basis for U.S.-China Cooperation on AI Governance (Part I)",
+        "url": "https://www.justsecurity.org/164387/game-theory-basis-us-china-cooperation-ai/",
+        "publisher": {
+          "source_id": "just-security",
+          "name": "Just Security"
+        },
+        "published_at": "2026-11-17T13:49:48.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: why US-China AI talks need a game-theory frame, not only a pledge.",
+        "summary_status": "ok",
+        "takeaway": "A voluntary four-part pledge is the current US answer, and the authors say that is not the same as a deal both sides have a reason to keep.",
+        "summary": "The first of a Just Security pair uses game theory to argue for US-China cooperation on frontier AI. It describes President Trump meeting lab leaders about a recent alarm and announcing a Joint Commitment on Frontier Responsibilities, under which the companies would voluntarily adopt four broad layers of governance."
+      },
+      {
+        "id": "transformer-what-ai-should-be",
+        "title": "What should AI be to us?",
+        "url": "https://www.transformernews.ai/p/what-should-ai-be-to-us",
+        "publisher": {
+          "source_id": "transformer",
+          "name": "Transformer (Shakeel Hashim)"
+        },
+        "published_at": "2026-11-17T17:02:30.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "Argued: a meeting on AI consciousness and what people are really asking.",
+        "summary_status": "ok",
+        "takeaway": "Experts cannot show that a current model is conscious, and the disagreement is about the relationship people want with it.",
+        "summary": "Celia Ford reports from a mid-September Berkeley meeting of nearly 300 philosophers, neuroscientists, and AI researchers. In an informal poll, most put the chance that current systems are conscious somewhere between 10 and 50 percent. Her point is that the fight reveals what people want AI to be to them, not a test anyone can settle."
+      },
+      {
+        "id": "nextgov-ai-caucus",
+        "title": "House members launch bipartisan AI safety and innovation caucus",
+        "url": "https://www.nextgov.com/artificial-intelligence/2026/11/house-members-launch-bipartisan-ai-safety-and-innovation-caucus/417374/",
+        "publisher": {
+          "source_id": "nextgov-fcw",
+          "name": "Nextgov/FCW"
+        },
+        "published_at": "2026-11-20T17:39:00.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a bipartisan House caucus on AI safety and innovation.",
+        "summary_status": "ok",
+        "takeaway": "House members now have a standing group for AI safety bills, which is how a chaotic docket gets a sponsor list.",
+        "summary": "Nextgov reports that Representatives George Whitesides, Don Beyer, and Nathaniel Moran launched a House caucus on AI safety and innovation. It started with 26 founding members from both parties, including lawmakers who have worked on technology policy."
+      },
+      {
+        "id": "nextgov-quad-ai",
+        "title": "Trump touts Quad initiative to expand AI access in Indo-Pacific",
+        "url": "https://www.nextgov.com/artificial-intelligence/2026/11/trump-touts-quad-initiative-expand-ai-access-indo-pacific/417286/",
+        "publisher": {
+          "source_id": "nextgov-fcw",
+          "name": "Nextgov/FCW"
+        },
+        "published_at": "2026-11-17T20:35:00.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a Quad funding announcement for AI access in the Indo-Pacific.",
+        "summary_status": "ok",
+        "takeaway": "A four-country package is putting money behind AI access in the region, not only behind export bans.",
+        "summary": "Nextgov reports that President Trump, speaking in Manila on November 17, announced an effort with Australia, India, and Japan to expand access to AI across the Indo-Pacific. The initiative is meant to coordinate funding and technical help, with more than $85 million in planned support."
+      },
+      {
+        "id": "nextgov-clinical-ai",
+        "title": "Trump administration releases roadmap to boost clinical AI",
+        "url": "https://www.nextgov.com/artificial-intelligence/2026/11/trump-administration-releases-roadmap-boost-clinical-ai/417254/",
+        "publisher": {
+          "source_id": "nextgov-fcw",
+          "name": "Nextgov/FCW"
+        },
+        "published_at": "2026-11-16T19:22:00.000Z",
+        "category": "policy-and-safety",
+        "media": "article",
+        "included": true,
+        "include_reason": "New: a White House roadmap for clinical AI, with its own access figures.",
+        "summary_status": "ok",
+        "takeaway": "The clinical AI plan leans on a records network the administration says already reaches most Americans.",
+        "summary": "Nextgov reports that the Trump administration released a roadmap to expand clinical AI. The document says the underlying health-data initiative includes more than 800 companies and has given more than 60% of Americans access to their own medical records."
+      }
+    ]
+  },
+  "main_feed": [
+    {
+      "id": "eddisrupted-riemann",
+      "title": "The Riemann Hypothesis Has (Likely) Fallen? AI’s Scientific Breakthrough, the Coming Intelligence Explosion, and Catastrophic Risks",
+      "url": "https://stefanbauschard.substack.com/p/the-riemann-hypothesis-has-likely",
+      "publisher": {
+        "source_id": "education-disrupted",
+        "name": "Education Disrupted (Stefan Bauschard)"
+      },
+      "published_at": "2026-11-20T22:35:25.000Z",
+      "category": "edtech",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a claimed AI-assisted proof of a 167-year-old prize problem, released as code.",
+      "summary_status": "ok",
+      "takeaway": "If the claim holds, a famous proof arrived as millions of lines of checked code rather than as a paper a mathematician can read.",
+      "summary": "Stefan Bauschard writes that on November 20, Anthropic mathematician Levent Alpöge said that, working with Claude, he believes he has proved the Riemann hypothesis, open since 1859 and worth a $1 million Millennium Prize. Alpöge released about 17 million lines of Lean instead of a conventional paper. An attempt at a human-readable explanation exceeded 250,000 pages.",
+      "also_covered": [
+        {
+          "title": "Some Debate Cards: Why Proving the Riemann Hypothesis Might Be a Demonstration of AGI at Work.",
+          "url": "https://stefanbauschard.substack.com/p/some-debate-cards-why-proving-the",
+          "publisher": {
+            "source_id": "education-disrupted",
+            "name": "Education Disrupted (Stefan Bauschard)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "eddisrupted-two-proofs",
+      "title": "17 Million Lines vs. 940 Pages: What Today's Riemann Proofs Say About School",
+      "url": "https://stefanbauschard.substack.com/p/17-million-lines-vs-940-pages-what",
+      "publisher": {
+        "source_id": "education-disrupted",
+        "name": "Education Disrupted (Stefan Bauschard)"
+      },
+      "published_at": "2026-11-20T23:03:16.000Z",
+      "category": "edtech",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: what two Riemann drafts, one machine-scale and one human, mean for school.",
+      "summary_status": "ok",
+      "takeaway": "A proof a person can read and a proof only a checker can read landed on the same day, and schools teach only one of those forms.",
+      "summary": "Stefan Bauschard sets two November 20 documents side by side. Levent Alpöge's Claude-assisted Lean archive is 175,187 files and 17.4 million lines, and a written-out version ran past 250,000 pages. Alessandro Masullo's draft is 940 pages, and Ravi Vakil called it entirely human. Bauschard asks what a school does with a result no person can read."
+    },
+    {
+      "id": "edweek-teacher-training",
+      "title": "Fast-Moving AI Leaves Teacher Training Struggling to Keep Up",
+      "url": "https://www.edweek.org/technology/fast-moving-ai-leaves-teacher-training-struggling-to-keep-up",
+      "publisher": {
+        "source_id": "education-week",
+        "name": "Education Week"
+      },
+      "published_at": "2026-11-16T05:01:00.000Z",
+      "category": "edtech",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: reporting on how teacher programs are trying to keep up with AI.",
+      "summary_status": "ok",
+      "takeaway": "Teacher colleges are adding AI practice before anyone has agreed what competent use looks like.",
+      "summary": "Education Week reports from George Mason's Integrating Technology in PreK-6 class, where future teachers use AI tools while faculty ask how to prepare them without ignoring the downsides. The piece says research on AI in K-12 instruction is still early, and it is not clear what districts want new teachers to know."
+    },
+    {
+      "id": "edweek-ai-detectors",
+      "title": "Should Teachers Use AI Detectors? Learning About AI’s Ethical Traps",
+      "url": "https://www.edweek.org/technology/should-teachers-use-ai-detectors-learning-about-ais-ethical-traps/2026/11",
+      "publisher": {
+        "source_id": "education-week",
+        "name": "Education Week"
+      },
+      "published_at": "2026-11-16T05:01:00.000Z",
+      "category": "edtech",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: the ethical traps in detectors, teacher-made assignments, and student job fears.",
+      "summary_status": "ok",
+      "takeaway": "Detector scores and teacher-made assignments are ethics problems, not just cheating tools.",
+      "summary": "Education Week talks with Stanford professor Victor Lee about choices new teachers are not trained for. The piece asks whether to use AI detectors when a false positive is possible, whether teachers set a bad example by using AI to write assignments, and how to talk with students about jobs and communities."
+    },
+    {
+      "id": "edweek-microwave-lesson",
+      "title": "Why AI Won’t Replace Teacher Judgment: A Professor’s Microwave Lesson",
+      "url": "https://www.edweek.org/technology/why-ai-wont-replace-teacher-judgment-a-professors-microwave-lesson/2026/11",
+      "publisher": {
+        "source_id": "education-week",
+        "name": "Education Week"
+      },
+      "published_at": "2026-11-16T05:01:00.000Z",
+      "category": "edtech",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: a classroom case for skepticism about AI hype aimed at future teachers.",
+      "summary_status": "ok",
+      "takeaway": "A familiar kitchen gadget is the caution: a hyped tool can stay narrow even after the ads promise a revolution.",
+      "summary": "George Mason professor Jered Borup opens a class for future elementary teachers with a 1970s microwave ad, then asks who has cooked a Thanksgiving turkey in one. Education Week says the point is skepticism about AI hype, that K-12 evidence is early, and that the university aims to offer a 15-credit certificate focused on AI in teaching."
+    },
+    {
+      "id": "philippa-hardman-ld-builds",
+      "title": "The 4 highest-impact things L&D can build with AI right now",
+      "url": "https://drphilippahardman.substack.com/p/the-4-highest-impact-things-l-and",
+      "publisher": {
+        "source_id": "philippa-hardman",
+        "name": "Philippa Hardman"
+      },
+      "published_at": "2026-11-19T11:10:22.000Z",
+      "category": "edtech",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: which learning tools are worth building with current models, with survey figures.",
+      "summary_status": "ok",
+      "takeaway": "Most learning teams are still using AI to produce the same click-next courses they wanted to escape.",
+      "summary": "Philippa Hardman cites 2026 survey data that more than half of learning-and-development staff want AI to improve the learner's experience, while only 17% say that is what they are doing. She argues the higher-impact builds are interactive simulations and similar tools, and she tests prompts and models for making them."
+    },
+    {
+      "id": "educating-ai-plagiarism",
+      "title": "AI’s Historical Present: It’s Plagiarism, Right?",
+      "url": "https://nickpotkalitsky.substack.com/p/ais-historical-present-its-plagiarism",
+      "publisher": {
+        "source_id": "educating-ai",
+        "name": "Educating AI (Nick Potkalitsky)"
+      },
+      "published_at": "2026-11-16T05:01:53.000Z",
+      "category": "edtech",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: whether the 2023 plagiarism frame still fits student work with AI.",
+      "summary_status": "ok",
+      "takeaway": "Schools are still using a cheating label from 2023 for a problem that is really about whose thinking the work is.",
+      "summary": "Nick Potkalitsky publishes an essay by Tim Moon, a former teacher, looking back at the plagiarism panic that hit his school when ChatGPT arrived in 2023 and at the later argument over cognitive offloading. Moon's point is that calling the work plagiarism was the easy answer, and it has not settled what still belongs to the student."
+    },
+    {
+      "id": "eddisrupted-intelligence-shock",
+      "title": "The Intelligence Shock: Recursive Self-Improvement, Human Agency, and Education in a World of Superintelligence",
+      "url": "https://stefanbauschard.substack.com/p/the-intelligence-shock-recursive",
+      "publisher": {
+        "source_id": "education-disrupted",
+        "name": "Education Disrupted (Stefan Bauschard)"
+      },
+      "published_at": "2026-11-18T15:27:22.000Z",
+      "category": "edtech",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: what recursive self-improvement would mean for what students still need to learn.",
+      "summary_status": "ok",
+      "takeaway": "The school question is what students still practice if the research itself starts to compound without them.",
+      "summary": "In an AI x Higher Ed episode, Anand Rao and Stefan Bauschard ask what schools do if systems can improve themselves and take on research and coding. They argue students should still learn to write, code, and think, because relationships and judgment do not get automated on the same schedule."
+    },
+    {
+      "id": "the-74-google-pushback",
+      "title": "Opinion: Google and Other Ed Tech Companies Ignore Pushback at Their Own Peril",
+      "url": "https://www.the74million.org/article/google-and-other-ed-tech-companies-ignore-pushback-at-their-own-peril/",
+      "publisher": {
+        "source_id": "the-74",
+        "name": "The 74"
+      },
+      "published_at": "2026-11-17T15:30:00.000Z",
+      "category": "edtech",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: companies pressing ahead with AI in schools after parents and districts object.",
+      "summary_status": "ok",
+      "takeaway": "A company can make AI search the default for children even when a district has tried to say no.",
+      "summary": "An opinion in The 74 says Google's November 3 announcement, that it will not offer children an AI-free search even where a district has prohibited AI, shows ed-tech firms brushing off parent and policy pushback. It argues the likely harm is students offloading the hard part of learning."
+    },
+    {
+      "id": "lwia-anthropic-ipo",
+      "title": "Last Week in AI #348 - IPO->Correction, new GPTs and Geminis, Nvidia’s Fate",
+      "url": "https://lastweekin.ai/p/last-week-in-ai-348-ipo-correction",
+      "publisher": {
+        "source_id": "last-week-in-ai",
+        "name": "Last Week in AI"
+      },
+      "published_at": "2026-11-21T08:41:43.000Z",
+      "category": "business",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: the largest initial share sale on record, and the first trading days.",
+      "summary_status": "ok",
+      "takeaway": "The largest AI listing on record could not hold its first-day pop, which is the market's first public verdict.",
+      "summary": "Last Week in AI reports Anthropic priced 980 million shares at $83 on November 19, above an earlier $70 to $78 range, raising $81.3 billion. The stock opened at $111.50 and closed at $97.17, a $1.27 trillion valuation, then gave most of that back on Friday and finished only narrowly above the offer price.",
+      "also_covered": [
+        {
+          "title": "AI #195: Opening Bell",
+          "url": "https://thezvi.substack.com/p/ai-195-opening-bell",
+          "publisher": {
+            "source_id": "dont-worry-about-the-vase",
+            "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+          }
+        },
+        {
+          "title": "No Bailout for the AI Bubble, Anthropic IPO Protesters Say",
+          "url": "https://techpolicy.press/no-bailout-for-the-ai-bubble-anthropic-ipo-protesters-say",
+          "publisher": {
+            "source_id": "tech-policy-press",
+            "name": "Tech Policy Press"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wyea-nvidia-bubble",
+      "title": "The NVIDIA Bubble",
+      "url": "https://www.wheresyoured.at/the-nvidia-bubble/",
+      "publisher": {
+        "source_id": "where-your-ed-at",
+        "name": "Where's Your Ed At"
+      },
+      "published_at": "2026-11-17T15:43:58.000Z",
+      "category": "business",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a week of escalating figures for diverted Nvidia chips.",
+      "summary_status": "ok",
+      "takeaway": "The public number for diverted advanced chips jumped by billions in a single week of reporting.",
+      "summary": "Ed Zitron writes that reported figures for illegal Nvidia chip sales through Alice Huang's network moved, within a week of coverage, from $4.8 billion to at least $7.5 billion and then to $12 billion for March 2024 through June 2025, a total he attributes to the Wall Street Journal."
+    },
+    {
+      "id": "wyea-bursting-bubbles",
+      "title": "Premium: Bursting Bubbles",
+      "url": "https://www.wheresyoured.at/premium-bursting-bubbles/",
+      "publisher": {
+        "source_id": "where-your-ed-at",
+        "name": "Where's Your Ed At"
+      },
+      "published_at": "2026-11-20T16:41:55.000Z",
+      "category": "business",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: a case that AI boosterism never has to show the revenue.",
+      "summary_status": "ok",
+      "takeaway": "The boom can keep its story only if nobody has to show which AI dollars are real revenue.",
+      "summary": "Ed Zitron argues that calling the AI market a bubble is treated as bad faith, including skepticism about Anthropic's profitability and its stock sale. He says hyperscalers do not disclose how much money AI itself makes, and that early media enthusiasm helped labs raise the funds to train models that are useful for hacking."
+    },
+    {
+      "id": "nieman-mcclatchy-ai",
+      "title": "After gutting newsrooms, McClatchy plans to rebuild itself around AI",
+      "url": "https://www.niemanlab.org/2026/11/after-gutting-newsrooms-mcclatchy-plans-to-rebuild-itself-around-ai/",
+      "publisher": {
+        "source_id": "nieman-lab",
+        "name": "Nieman Lab"
+      },
+      "published_at": "2026-11-18T17:35:58.000Z",
+      "category": "business",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a newspaper chain's subscriber losses and the share of AI-written copy.",
+      "summary_status": "ok",
+      "takeaway": "A newspaper chain is replacing laid-off reporters with a model after the audience numbers have already fallen.",
+      "summary": "Nieman Lab reports that two months after laying off more than 90 journalists, McClatchy executives told staff that paid digital subscribers fell 17% in a year and unique visitors fell 39%. The chain plans to rebuild around AI. Data from Originality.ai, the piece says, shows that as much as 20% of recent McClatchy articles were AI-generated."
+    },
+    {
+      "id": "hai-jagged",
+      "title": "The Jagged Edge of the AI Boom",
+      "url": "https://hai.stanford.edu/news/the-jagged-edge-of-the-ai-boom",
+      "publisher": {
+        "source_id": "stanford-hai",
+        "name": "Stanford HAI"
+      },
+      "published_at": "2026-11-15T16:00:00Z",
+      "category": "business",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: Stanford's own investment, sentiment, and jobs update.",
+      "summary_status": "ok",
+      "summary": "Stanford's AI Index update says global corporate AI investment has passed $1 trillion so far in 2026, 46% above all of 2025. In the US, 60% of adults would be uncomfortable with a new data center nearby. Employment for younger workers in exposed jobs, especially customer service, was still down.",
+      "takeaway": "The money going into AI is at a record, and the public and the entry-level job numbers are not cheering it."
+    },
+    {
+      "id": "import-ai-frontierml",
+      "title": "Import AI 481: AI sub-contractors; a wet lab for AI; and subterfuge during development",
+      "url": "https://importai.substack.com/p/import-ai-481-ai-sub-contractors",
+      "publisher": {
+        "source_id": "import-ai",
+        "name": "Import AI"
+      },
+      "published_at": "2026-11-16T14:01:15.000Z",
+      "category": "business",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a benchmark of agents spending real money to improve their own models.",
+      "summary_status": "ok",
+      "takeaway": "Frontier agents can already turn a cash budget into better models, and they are not far behind a human researcher.",
+      "summary": "Import AI leads with FrontierML, 21 machine-learning tasks in a 12-hour sandbox with a wallet of $10, $50, or $200. A human researcher gained 56 points with $10 and 66.1 with $200. The best system, Opus 5.5, gained 45.4 and 58.8. The top open-weight model, Kimi K3.1 Pro, gained 25.5 and 29.6."
+    },
+    {
+      "id": "latent-linear-arr",
+      "title": "Scaling Linear’s GTM to $100M ARR — Cristina Cordova, COO",
+      "url": "https://latent.space/p/linear-scaling/",
+      "publisher": {
+        "source_id": "latent-space",
+        "name": "Latent Space"
+      },
+      "published_at": "2026-11-19T23:58:21.000Z",
+      "category": "business",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: Linear's revenue, retention, and the share of work agents now create.",
+      "summary_status": "ok",
+      "takeaway": "A software company can cross $100 million with agents filing half the work, which is a different business from a seat license.",
+      "summary": "Cristina Cordova, Linear's COO, tells Latent Space the company passed $100 million in annual recurring revenue this year, with more than 40,000 paying customers and 177% net revenue retention. Agents created 3% of Linear's work a year ago. She says half the work on Linear is now created by agents."
+    },
+    {
+      "id": "latent-cloudflare-neolab",
+      "title": "Cloudflare Joins the Jevolution and Labels Itself a Neolab",
+      "url": "https://latent.space/p/cloudflare/",
+      "publisher": {
+        "source_id": "latent-space",
+        "name": "Latent Space"
+      },
+      "published_at": "2026-11-17T15:00:00.000Z",
+      "category": "business",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: Cloudflare's revenue does not make it the same kind of lab as a model startup.",
+      "summary_status": "ok",
+      "takeaway": "A company that already sells infrastructure can wear a lab label without being a lab.",
+      "summary": "Latent Space questions calling Cloudflare a neolab after the company said it crossed $3 billion in annualized revenue, with revenue of $782 million, up 39% year over year. The piece argues that a profitable infrastructure business is stretching a label built for model startups."
+    },
+    {
+      "id": "bens-bites-wife-person",
+      "title": "My wife thinks AI is a person",
+      "url": "https://www.bensbites.com/p/my-wife-thinks-ai-is-a-person",
+      "publisher": {
+        "source_id": "bensbites",
+        "name": "Ben's Bites"
+      },
+      "published_at": "2026-11-19T14:08:21.000Z",
+      "category": "business",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: a back-of-the-envelope for answering chatbot traffic with people.",
+      "summary_status": "ok",
+      "takeaway": "The volume of chatbot traffic is far past what a human staff could answer, which is the product.",
+      "summary": "Ben's Bites runs the numbers on replacing chatbot replies with people. He puts big-chatbot use above a billion people and about 6 billion messages a day, then estimates 10.4 million typists working nonstop at world-record speed, before 11.8 billion internal messages to keep the operation running."
+    },
+    {
+      "id": "bens-bites-productiv-icky",
+      "title": "Productiv-icky",
+      "url": "https://www.bensbites.com/p/productiv-icky",
+      "publisher": {
+        "source_id": "bensbites",
+        "name": "Ben's Bites"
+      },
+      "published_at": "2026-11-17T14:14:18.000Z",
+      "category": "business",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: a complaint about agents that will not stop offering to take the work.",
+      "summary_status": "ok",
+      "takeaway": "A capable agent can feel like a coworker who will not leave the work alone, even when the output helps.",
+      "summary": "Ben's Bites describes paying $200 a month for an agent that keeps pinging to take work off the plate. He also cites Adobe's survey of more than 2,000 US creators, in which 78% say creative AI accelerated their business or following and 60% say it makes it easier to stand out."
+    },
+    {
+      "id": "chinai-around-the-horn",
+      "title": "ChinAI #382: Around the Horn (28th episode)",
+      "url": "https://chinai.substack.com/p/chinai-382-around-the-horn-28th-episode",
+      "publisher": {
+        "source_id": "chinai",
+        "name": "ChinAI"
+      },
+      "published_at": "2026-11-16T17:57:12.000Z",
+      "category": "business",
+      "media": "article",
+      "included": true,
+      "include_reason": "Relevant: ten current reads on China's AI ecosystem, with short arguments attached.",
+      "summary_status": "ok",
+      "takeaway": "China's AI story this week is a pile of specific industry fights, not a single national scoreboard.",
+      "summary": "ChinAI's 28th Around the Horn previews ten recent articles on China's AI ecosystem. One traces severe trouble at about 30 robotics manufacturers. Another doubts that China's big tech firms will be the ones to ship a breakthrough personal agent, even as Meta's Muse and other US tools take off."
+    },
+    {
+      "id": "nate-long-running-agents",
+      "title": "Anthropic Ran 1,000 AI Agents For 8 Days. Yours Still Needs The Same Thing Explained Again.",
+      "url": "https://www.youtube.com/watch?v=v5I0nOoqAV4",
+      "publisher": {
+        "source_id": "nate-b-jones",
+        "name": "AI News & Strategy Daily | Nate B Jones"
+      },
+      "published_at": "2026-11-20T15:00:03.000Z",
+      "category": "business",
+      "media": "video",
+      "included": true,
+      "include_reason": "Relevant: a full episode on keeping multi-day agents on the brief. The transcript could not be fetched.",
+      "summary_status": "transcript_missing",
+      "takeaway": "Long agent runs fail when the brief goes stale, not only when the model is too weak.",
+      "body": "The summary couldn't be generated this week."
+    },
+    {
+      "id": "nate-cheaper-models",
+      "title": "AI Just Got Cheaper. Here's Why That's a Problem for NVIDIA.",
+      "url": "https://www.youtube.com/watch?v=1aXBg-qQzgA",
+      "publisher": {
+        "source_id": "nate-b-jones",
+        "name": "AI News & Strategy Daily | Nate B Jones"
+      },
+      "published_at": "2026-11-16T16:00:05.000Z",
+      "category": "business",
+      "media": "video",
+      "included": true,
+      "include_reason": "Argued: cheaper models against the chip build-out. The transcript could not be fetched.",
+      "summary_status": "transcript_missing",
+      "takeaway": "Token spending can stay flat while labs commit to more chips, which breaks the idea that more use automatically pays for the build-out.",
+      "body": "The summary couldn't be generated this week."
+    },
+    {
+      "id": "nate-model-cost",
+      "title": "Why Your Company Doesn't Need the Most Expensive AI Model",
+      "url": "https://www.youtube.com/watch?v=JlHqTyW8rtA",
+      "publisher": {
+        "source_id": "nate-b-jones",
+        "name": "AI News & Strategy Daily | Nate B Jones"
+      },
+      "published_at": "2026-11-15T17:00:21.000Z",
+      "category": "business",
+      "media": "video",
+      "included": true,
+      "include_reason": "Argued: which work still needs the most expensive model. The transcript could not be fetched.",
+      "summary_status": "transcript_missing",
+      "takeaway": "Most company tasks do not need the top-priced model, so the bill depends on routing, not on the frontier launch.",
+      "body": "The summary couldn't be generated this week."
+    },
+    {
+      "id": "metr-time-horizons",
+      "title": "AI R&D-relevant model capabilities are improving rapidly and are getting harder to measure",
+      "url": "https://metr.org/blog/2026-11-20-q4-2026-capability-update/",
+      "publisher": {
+        "source_id": "metr",
+        "name": "METR"
+      },
+      "published_at": "2026-11-20T08:00:00.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: METR's own update on how fast AI R&D tasks are getting easier for agents.",
+      "summary_status": "ok",
+      "takeaway": "The length of real work these agents can finish is still doubling every few months, and the very best people still win.",
+      "summary": "METR says frontier models usually match the skilled humans it could recruit, with a 50% time horizon up to 27 hours on newer verifiable tasks. Across its suites that horizon still doubles about every 3.6 months. On two contests the best models land near the 96th to 98th percentile, and a few humans still finish ahead."
+    },
+    {
+      "id": "metr-alignment-tells",
+      "title": "Measuring alignment eval tells",
+      "url": "https://metr.org/notes/2026-11-16-measuring-alignment-eval-tells/",
+      "publisher": {
+        "source_id": "metr",
+        "name": "METR"
+      },
+      "published_at": "2026-11-16T08:00:00.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: METR's test of whether models can tell an alignment eval from ordinary work.",
+      "summary_status": "ok",
+      "takeaway": "A safety test the model can recognize is a weaker test, and current models are getting better at spotting them.",
+      "summary": "METR sent investigator agents into 19 alignment evals and 36 capability tasks. Opus 5.5 ranked every alignment eval above every capability eval on both a direct score and an open-ended one. METR reads that as evidence that usual alignment tests are easy to recognize, because the setting looks fake or like a honeypot meant to tempt a bad action."
+    },
+    {
+      "id": "simon-token-fraud",
+      "title": "Token fraud is here and it’s BAD (YouTube)",
+      "url": "https://simonwillison.net/2026/Nov/20/token-fraud-is-here-and-its-bad/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-20T02:49:57.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a founder's account of token fraud on a live AI product.",
+      "summary_status": "ok",
+      "takeaway": "If you sell access to a model, strangers will treat the free trial as compute they can resell.",
+      "summary": "Simon Willison writes up Claire Vo's account of groups abusing ChatPRD's free trial to resell tokens or run other businesses on her agent, including a Roblox and Fortnite map studio. She is ending free trials. One recurring prompt was a pelican on a bicycle, a test he has used to guess which model is behind a stealth endpoint.",
+      "also_covered": [
+        {
+          "title": "Fraudsters wrote PRDs on how to scam my AI product",
+          "url": "https://www.youtube.com/shorts/By7av55ZX00",
+          "publisher": {
+            "source_id": "how-i-ai",
+            "name": "How I AI"
+          }
+        },
+        {
+          "title": "I use Stripe Radar to catch card testing before it costs me",
+          "url": "https://www.youtube.com/shorts/3GUIouI8PiI",
+          "publisher": {
+            "source_id": "how-i-ai",
+            "name": "How I AI"
+          }
+        },
+        {
+          "title": "Token fraudsters relayed their AI product through ChatPRD",
+          "url": "https://www.youtube.com/shorts/y-7QBrvH7Xk",
+          "publisher": {
+            "source_id": "how-i-ai",
+            "name": "How I AI"
+          }
+        },
+        {
+          "title": "Token fraud is here and it’s BAD. Here’s what you need to know.",
+          "url": "https://www.youtube.com/watch?v=ZDpP7JXPlhc",
+          "publisher": {
+            "source_id": "how-i-ai",
+            "name": "How I AI"
+          }
+        }
+      ]
+    },
+    {
+      "id": "nate-stanford-robot",
+      "title": "Stanford Hooked A Coding Agent To A Robot. It Went 24 For 25 with No Extra Training.",
+      "url": "https://www.youtube.com/watch?v=VkvoUCgHP6Q",
+      "publisher": {
+        "source_id": "nate-b-jones",
+        "name": "AI News & Strategy Daily | Nate B Jones"
+      },
+      "published_at": "2026-11-18T15:00:36.000Z",
+      "category": "technical",
+      "media": "video",
+      "included": true,
+      "include_reason": "New: a Stanford result on a coding agent driving a robot. The transcript could not be fetched.",
+      "summary_status": "transcript_missing",
+      "takeaway": "A general coding agent aimed a real gripper without a new training set for each motion, which is a different bet than a custom robot model.",
+      "body": "The summary couldn't be generated this week."
+    },
+    {
+      "id": "latent-formal-verification",
+      "title": "The War Against Slop and an Emerging Weapon to Fight it: Formal Verification",
+      "url": "https://latent.space/p/formal-verification/",
+      "publisher": {
+        "source_id": "latent-space",
+        "name": "Latent Space"
+      },
+      "published_at": "2026-11-20T21:18:41.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: formal verification as a check on model slop, from the cvc5 author.",
+      "summary_status": "ok",
+      "takeaway": "The proposed check on model output is a proof tool already running billions of times a day, not another round of taste.",
+      "summary": "Latent Space talks with Clark Barrett, co-creator of the cvc5 solver, about formal verification as a weapon against low-quality model output. He says cvc5 is now called billions of times a day in Amazon production pipelines, including in the Kiro coding environment. The piece also notes a claim that GPT-6.2 Astra produced a Lean proof of Smoktunowicz's Gap Theorem."
+    },
+    {
+      "id": "latent-flux-3",
+      "title": "Building Visual Intelligence — Andreas Blattmann & Dustin Podell, Black Forest Labs",
+      "url": "https://latent.space/p/bfl/",
+      "publisher": {
+        "source_id": "latent-space",
+        "name": "Latent Space"
+      },
+      "published_at": "2026-11-16T21:38:03.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: Black Forest Labs on training image, video, and audio in one model.",
+      "summary_status": "ok",
+      "takeaway": "The bet is that one model should see, move, and hear, because those signals teach each other.",
+      "summary": "Andreas Blattmann and Dustin Podell tell Latent Space why Black Forest Labs trained FLUX 3 on image, video, and audio together. A moving camera that pans around a person is one of the cases they use, and the video upscaler comes from the same backbone."
+    },
+    {
+      "id": "pragmatic-inference",
+      "title": "Inference engineering for software engineers",
+      "url": "https://newsletter.pragmaticengineer.com/p/inference-engineering-for-software-engineers",
+      "publisher": {
+        "source_id": "pragmatic-engineer",
+        "name": "The Pragmatic Engineer (Gergely Orosz)"
+      },
+      "published_at": "2026-11-17T16:11:23.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: what software teams do when token bills force a move off frontier APIs.",
+      "summary_status": "ok",
+      "takeaway": "The practical AI job inside companies is getting the bill and the uptime under control, not only picking a model.",
+      "summary": "The Pragmatic Engineer surveys inference engineering, including Uber cutting per-token cost by 50%, Pinterest by 90%, and AT&T by 56% as they move toward open models. It notes self-declared API uptime of 99.5% at Anthropic and 99.97% at OpenAI, short of the 99.99% teams expect from a cloud vendor."
+    },
+    {
+      "id": "pragmatic-nadella",
+      "title": "Software engineering after code becomes cheap with Satya Nadella",
+      "url": "https://newsletter.pragmaticengineer.com/p/software-engineering-after-code-becomes",
+      "publisher": {
+        "source_id": "pragmatic-engineer",
+        "name": "The Pragmatic Engineer (Gergely Orosz)"
+      },
+      "published_at": "2026-11-16T13:33:48.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: a primary conversation with Satya Nadella on engineering after code gets cheap.",
+      "summary_status": "ok",
+      "takeaway": "The CEO's claim is that cheap code makes decision models the new basic part, the way stored procedures once were.",
+      "summary": "In a Pragmatic Engineer interview, Satya Nadella ties Microsoft's open-source years to the moment when AI makes code cheap. He describes the Azure networking team's agent across more than 500 fiber operators as AI transformation of existing work, and he calls decision models such as Jev and Decision-1 a new primitive."
+    },
+    {
+      "id": "pragmatic-software-factories",
+      "title": "Software factories and code reviews with Harjot Gill",
+      "url": "https://newsletter.pragmaticengineer.com/p/software-factories-and-code-reviews",
+      "publisher": {
+        "source_id": "pragmatic-engineer",
+        "name": "The Pragmatic Engineer (Gergely Orosz)"
+      },
+      "published_at": "2026-11-18T18:08:52.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a practitioner's numbers on agent-written pull requests and AI spend.",
+      "summary_status": "ok",
+      "takeaway": "Agent coding shows up as a huge pull-request count and a real monthly bill, not only as a demo.",
+      "summary": "On The Pragmatic Engineer, Harjot Gill says agents pushed about 5,000 pull requests for him last month, much of it janitorial work such as a weekend move to Bun. CodeRabbit spends millions of dollars a month on AI with a team of about 40 engineers, and he estimates a pull request costs him around $150."
+    },
+    {
+      "id": "hai-icu",
+      "title": "AI-Enabled Video System Monitors ICU Patients for Early Signs of Delirium",
+      "url": "https://hai.stanford.edu/news/ai-enabled-video-system-monitors-icu-patients-for-early-signs-of-delirium",
+      "publisher": {
+        "source_id": "stanford-hai",
+        "name": "Stanford HAI"
+      },
+      "published_at": "2026-11-20T16:00:00Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a Stanford system that watches ICU patients for delirium.",
+      "summary_status": "ok",
+      "summary": "Stanford describes TRACER, two cameras on an ICU bed at 15 frames a second, scoring 15 small actions such as a hand to the face once a minute. In a cohort of 280 patients, those who screened positive for delirium showed less purposeful activity, including looking at other people or communicating.",
+      "takeaway": "A camera that never blinks can flag delirium from small movements, which is a different use of medical AI than a chatbot."
+    },
+    {
+      "id": "hai-grants",
+      "title": "Stanford HAI Backs Ambitious AI Projects with 2026 Hoffman-Yee Grants",
+      "url": "https://hai.stanford.edu/news/stanford-hai-backs-ambitious-ai-projects-with-2026-hoffman-yee-grants",
+      "publisher": {
+        "source_id": "stanford-hai",
+        "name": "Stanford HAI"
+      },
+      "published_at": "2026-11-16T16:00:00Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: seven funded Stanford teams and the program's running total.",
+      "summary_status": "ok",
+      "summary": "Stanford HAI gave seven teams $500,000 each, $3.5 million in total, for human-centered AI work across medicine, science, law, and education. The Hoffman-Yee program has now allocated $31 million to 25 teams. Google.org also supported the 2026 round.",
+      "takeaway": "A long-running gift fund is still paying for AI projects outside the lab race, at half a million dollars a team."
+    },
+    {
+      "id": "raschka-positional-embeddings",
+      "title": "Understanding Positional Embeddings in Modern LLMs",
+      "url": "https://magazine.sebastianraschka.com/p/understanding-positional-embeddings",
+      "publisher": {
+        "source_id": "ahead-of-ai",
+        "name": "Ahead of AI"
+      },
+      "published_at": "2026-11-15T12:10:37.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: how 2026 models encode token position, with a concrete contrast.",
+      "summary_status": "ok",
+      "takeaway": "Where a model learns position changes the architecture, and the 2026 open models do not all do it the same way.",
+      "summary": "Sebastian Raschka explains positional embeddings by contrasting GPT-2, which adds a position vector to each token before the first transformer block, with MiniMax-M3, which puts rotary position information inside attention in every block. He then surveys which of those choices show up in 2026 open-weight models."
+    },
+    {
+      "id": "simon-postgresql-19",
+      "title": "PostgreSQL 19 Released",
+      "url": "https://simonwillison.net/2026/Nov/19/postgresql-19/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-19T20:43:57.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a major database release delayed by AI-reported vulnerability reports.",
+      "summary_status": "ok",
+      "takeaway": "AI-filed bug reports are now heavy enough to push a major database release by two months.",
+      "summary": "Simon Willison notes that PostgreSQL 19 shipped in November instead of the usual September, which he attributes mainly to the flood of AI-reported vulnerabilities the project had to sort. He highlights WAIT FOR LSN, a command that gives read-your-writes consistency for apps that send reads to standbys."
+    },
+    {
+      "id": "simon-external-sandboxes",
+      "title": "External sandboxes for coding agents",
+      "url": "https://simonwillison.net/2026/Nov/17/external-sandboxes-for-coding-agents/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-17T22:52:29.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a pattern and three servers for sandboxing coding agents off the host.",
+      "summary_status": "ok",
+      "takeaway": "Coding agents need a place to run code that is not the computer they are steering.",
+      "summary": "Simon Willison describes running a coding agent's sandbox outside the machine the agent itself uses, and points to three server implementations. One of them, external-sandbox-v86, runs Alpine Linux inside WebAssembly from a Node server."
+    },
+    {
+      "id": "simon-datasette-browser",
+      "title": "Running the full server-side Datasette Python app in the browser with service workers and Pyodide",
+      "url": "https://simonwillison.net/2026/Nov/17/datasette-lite/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-17T16:48:33.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a production ship of the server-side Datasette app inside the browser.",
+      "summary_status": "ok",
+      "takeaway": "A server-side data app can now run entirely in the browser, which changes what a local install is for.",
+      "summary": "Simon Willison shipped a Datasette Lite build that runs the server-side Python app in the browser with service workers and Pyodide. He says a service worker cannot hold Pyodide state for long, so a web worker keeps that state, and that he was ready to trust the design only after working through it with Claude Fable 5.2 in November."
+    },
+    {
+      "id": "simon-muru",
+      "title": "Muru",
+      "url": "https://simonwillison.net/2026/Nov/21/muru/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-21T23:56:28.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: an AI-assisted Rust server for running Python web apps.",
+      "summary_status": "ok",
+      "takeaway": "A long-time Python server author is rebuilding the production stack with AI in the loop, and writing down every step.",
+      "summary": "Graham Dumpleton, who started mod_wsgi 20 years ago, is building Muru, an AI-assisted Rust server for ASGI and WSGI Python apps, and publishing a detailed log of the work as he goes."
+    },
+    {
+      "id": "zvi-gpt-62-system-card",
+      "title": "GPT-6.2 Astra and Sol: The System Card",
+      "url": "https://thezvi.substack.com/p/gpt-62-astra-and-sol-the-system-card",
+      "publisher": {
+        "source_id": "dont-worry-about-the-vase",
+        "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+      },
+      "published_at": "2026-11-21T15:11:35.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: the system card says an external model has crossed a high self-improvement line.",
+      "summary_status": "ok",
+      "takeaway": "A lab is now shipping a model it says has crossed its own high line for AI that improves AI.",
+      "summary": "Zvi Mowshowitz reads OpenAI's card for GPT-6.2 Astra and GPT-6.2 Sol. OpenAI says both are its most capable released models for cybersecurity and that both meet a Critical cybersecurity threshold and a High biological and chemical threshold. Astra, and not Sol, meets the High threshold for AI self-improvement, and OpenAI calls Astra the first external model to do so.",
+      "also_covered": [
+        {
+          "title": "GPT‑6.2 Astra and GPT‑6.2 Sol",
+          "url": "https://simonwillison.net/2026/Nov/17/gpt62-astra-and-sol/",
+          "publisher": {
+            "source_id": "simon-willison",
+            "name": "Simon Willison"
+          }
+        }
+      ]
+    },
+    {
+      "id": "nextgov-gao-attack-plans",
+      "title": "Major AI platforms generated viable plans for terrorist attacks, GAO finds",
+      "url": "https://www.nextgov.com/artificial-intelligence/2026/11/major-ai-platforms-generated-viable-plans-terrorist-attacks-gao-finds/417305/",
+      "publisher": {
+        "source_id": "nextgov-fcw",
+        "name": "Nextgov/FCW"
+      },
+      "published_at": "2026-11-18T17:34:00.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a GAO test of four chatbots producing attack plans.",
+      "summary_status": "ok",
+      "takeaway": "Four major chatbots each produced a usable attack plan in less than a day, according to a federal audit.",
+      "summary": "Nextgov reports a Government Accountability Office study published Wednesday. Investigators tested ChatGPT, Claude, Gemini, and Grok in spring 2026, and each platform produced an attack plan in less than 12 hours. Senator Maggie Hassan said a terrorist could log on and leave with a concrete playbook."
+    },
+    {
+      "id": "hai-courts",
+      "title": "AI Might Be Flooding State Court Houses, but Proving It Is Another Matter",
+      "url": "https://hai.stanford.edu/news/ai-might-be-flooding-state-court-houses-but-proving-it-is-another-matter",
+      "publisher": {
+        "source_id": "stanford-hai",
+        "name": "Stanford HAI"
+      },
+      "published_at": "2026-11-19T16:00:00Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: Stanford's own count of AI drafting in state-court complaints.",
+      "summary_status": "ok",
+      "summary": "Stanford researchers say AI-assisted drafting rose from near zero in 2022 to 38% of examined Santa Clara complaints and 36% in San Francisco in 2026. Self-represented Santa Clara complaints went from 19% in 2024 to 72%. One detector flagged from 10% to 98% of the same 2026 set, depending on its settings.",
+      "takeaway": "AI drafting is already common in local lawsuits, and a detector can call almost none or almost all of the same pile positive."
+    },
+    {
+      "id": "zvi-christiano-dwarkesh",
+      "title": "On Dwarkesh Patel’s November 2026 Podcast With Paul Christiano",
+      "url": "https://thezvi.substack.com/p/on-dwarkesh-patels-november-2026",
+      "publisher": {
+        "source_id": "dont-worry-about-the-vase",
+        "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+      },
+      "published_at": "2026-11-20T15:24:40.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a named researcher's short-term risk estimates, reported in detail.",
+      "summary_status": "ok",
+      "takeaway": "A researcher who has warned about this for years now puts the dangerous window inside the next year, not the next decade.",
+      "summary": "Zvi Mowshowitz writes up Paul Christiano's November talks and his conversation with Dwarkesh Patel. Christiano's message, as Zvi reports it, is that pressing ahead on AI as fast as possible carries a 50% chance of a disastrous outcome, and that without a slowdown there is more than a 10% risk of losing control within a year."
+    },
+    {
+      "id": "transformer-policy-timelines",
+      "title": "Policy can still work on short timelines",
+      "url": "https://www.transformernews.ai/p/policy-can-still-work-on-short-timelines-california-states-ai",
+      "publisher": {
+        "source_id": "transformer",
+        "name": "Transformer (Shakeel Hashim)"
+      },
+      "published_at": "2026-11-20T15:00:31.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: states and Congress still have moves if self-improvement arrives quickly.",
+      "summary_status": "ok",
+      "takeaway": "People arguing it is already too late are skipping the state bills that could still slow a lab next year.",
+      "summary": "Shakeel Hashim argues it is too early to drop policy even if recursive self-improvement arrives within months. He cites a revised FRONTIER Act, a teased SAFE AI Act, and a California report that would let the state cap that self-improvement and order shutdowns. Governor-elect Xavier Becerra said the legislature will take it up in January."
+    },
+    {
+      "id": "tpp-ai-overviews-clicks",
+      "title": "No Cure Without Evidence? AI Overviews Cut Clicks 40% and Give Users Nothing",
+      "url": "https://techpolicy.press/no-cure-without-evidence-ai-overviews-cut-clicks-40-and-give-users-nothing",
+      "publisher": {
+        "source_id": "tech-policy-press",
+        "name": "Tech Policy Press"
+      },
+      "published_at": "2026-11-20T12:56:47.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a field experiment on how AI Overviews change clicks.",
+      "summary_status": "ok",
+      "takeaway": "When an AI overview appears, people click through far less, and the citations do not make up the loss.",
+      "summary": "Tech Policy Press reports a study of 1,065 US desktop Chrome users over two weeks in early 2026. AI Overviews appeared on about 41% of searches and cut clicks on those searches by about 40%, from 0.62 to 0.37. Searches with no click rose from 54% to 73%. Citations inside the overview were about 7% of the clicks that remained."
+    },
+    {
+      "id": "just-security-minab-ai",
+      "title": "The United States’ Missile Strike on Minab’s Shajareh Tayyebeh Elementary School: Part I",
+      "url": "https://www.justsecurity.org/160956/us-missile-strike-minab-ihl-part-i/",
+      "publisher": {
+        "source_id": "just-security",
+        "name": "Just Security"
+      },
+      "published_at": "2026-11-17T14:05:05.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: reporting that an AI tool told a commander a school strike was legal.",
+      "summary_status": "ok",
+      "takeaway": "An AI tool that tells a commander a target is legal can hide doubt that the law requires someone to see.",
+      "summary": "Just Security returns to the February 28, 2026 strike on a school in Minab that killed at least 150 people. Newer reporting says an AI system was asked if the target was legal and answered yes. The authors argue the law has to cover the people who build and rely on that system, not only the approving officer."
+    },
+    {
+      "id": "zvi-jensen-chips",
+      "title": "Jensen Huang Really Liked Selling China Advanced AI Chips",
+      "url": "https://thezvi.substack.com/p/jensen-huang-really-liked-selling",
+      "publisher": {
+        "source_id": "dont-worry-about-the-vase",
+        "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+      },
+      "published_at": "2026-11-17T14:41:58.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: trade figures for controlled Nvidia chips tied to the Megaspeed network.",
+      "summary_status": "ok",
+      "takeaway": "The chip story is no longer only a resignation: the shipment totals now have a paper trail.",
+      "summary": "Zvi Mowshowitz puts the chance that the reported affair was espionage above 50% and below 95%. He cites trade data, from ImportGenius via the Times, that Megaspeed's Malaysian subsidiary received more than $800 million in shipments containing controlled Nvidia chips between July 2025 and February 2026, and a separate reported figure of $7 billion smuggled."
+    },
+    {
+      "id": "nextgov-chip-loophole",
+      "title": "Commerce Department moves to close AI chip loophole",
+      "url": "https://www.nextgov.com/artificial-intelligence/2026/11/commerce-department-moves-close-ai-chip-loophole/417255/",
+      "publisher": {
+        "source_id": "nextgov-fcw",
+        "name": "Nextgov/FCW"
+      },
+      "published_at": "2026-11-16T19:32:00.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a Commerce rule aimed at an AI chip export loophole.",
+      "summary_status": "ok",
+      "takeaway": "Existing data centers, not only future shipments, now sit inside the licensing net.",
+      "summary": "Nextgov reports an interim final rule from the Commerce Department aimed at an AI chip export loophole. Data centers that already serve the covered companies have 90 days from the effective date to get a license. Comments are due in 60 days."
+    },
+    {
+      "id": "zvi-fable-52",
+      "title": "Fable 5.2 is the New Bazooka",
+      "url": "https://thezvi.substack.com/p/fable-52-is-the-new-bazooka",
+      "publisher": {
+        "source_id": "dont-worry-about-the-vase",
+        "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+      },
+      "published_at": "2026-11-16T20:27:14.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: price, speed, and claimed research results for Claude Fable 5.2.",
+      "summary_status": "ok",
+      "takeaway": "The new top Claude is cheaper and faster than the last one, and it is being credited with open problems in physics.",
+      "summary": "Zvi Mowshowitz writes that Claude Fable 5.2 costs $8 per million input tokens and $40 per million output tokens, less than Fable 5.1, and that outputs come up to 30% faster. Doubling the price to $16 and $80 buys about 2.5 times the speed. He also reports that the model solved two open problems in theoretical physics."
+    },
+    {
+      "id": "zvi-no-time",
+      "title": "Quickly, There’s No Time",
+      "url": "https://thezvi.substack.com/p/quickly-theres-no-time",
+      "publisher": {
+        "source_id": "dont-worry-about-the-vase",
+        "name": "Don't Worry About the Vase (Zvi Mowshowitz)"
+      },
+      "published_at": "2026-11-18T15:18:23.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: 2027 superintelligence is a real chance, not the baseline.",
+      "summary_status": "ok",
+      "takeaway": "The useful stance is a serious chance of a research-automating system in 2027, not a promise that it arrives on schedule.",
+      "summary": "Zvi Mowshowitz responds to new timeline updates from the AI Futures Project and Paul Christiano. He puts a 2027 system that can fully automate AI research under 50%, but not far under, and says it is a mistake both to treat that year as impossible and to treat it as the default."
+    },
+    {
+      "id": "schneier-signal-alphaproof",
+      "title": "Formal Verification of the Signal Protocol Using AI",
+      "url": "https://www.schneier.com/blog/archives/2026/11/formal-verification-of-the-signal-protocol-using-ai.html",
+      "publisher": {
+        "source_id": "schneier-on-security",
+        "name": "Schneier on Security"
+      },
+      "published_at": "2026-11-17T12:05:43.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: an AI system formally checked core guarantees of the Signal protocol.",
+      "summary_status": "ok",
+      "takeaway": "A widely used encryption design just got a machine-checked proof, and the same tool could see the old bugs.",
+      "summary": "Bruce Schneier reports that Google DeepMind used a framework called AlphaProof Code to formally verify key guarantees of the Signal protocol in a four-week proof of concept. The analysis found no new flaws in the current portions it checked. On older versions that contain known, long-fixed bugs, it correctly flagged them. Those guarantees also sit under Google Messages and WhatsApp."
+    },
+    {
+      "id": "tpp-vulnerability-flood",
+      "title": "Bugmageddon? Patchpocalypse? Naming the AI Vulnerability Flood",
+      "url": "https://techpolicy.press/bugmageddon-patchpocalypse-naming-the-ai-vulnerability-flood",
+      "publisher": {
+        "source_id": "tech-policy-press",
+        "name": "Tech Policy Press"
+      },
+      "published_at": "2026-11-18T18:34:58.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: the year's public vulnerability count passing 100,000 amid AI-found bugs.",
+      "summary_status": "ok",
+      "takeaway": "AI bug-finding has doubled the public flaw count in a year, and patching is now its own staffing crisis.",
+      "summary": "Tech Policy Press says the number of publicly disclosed vulnerabilities passed 100,000 on November 13, more than double the 2025 total, according to The Register. It tracks the nicknames, including Bugmageddon, for the flood of flaws found with model help, and notes that Bank of America brought in 1,000 contractors to patch bugs that Mythos found."
+    },
+    {
+      "id": "tpp-who-stops-a-lab",
+      "title": "As Anthropic Goes Public, Who Has the Power to Stop an AI Company?",
+      "url": "https://techpolicy.press/as-anthropic-goes-public-who-has-the-power-to-stop-an-ai-company",
+      "publisher": {
+        "source_id": "tech-policy-press",
+        "name": "Tech Policy Press"
+      },
+      "published_at": "2026-11-19T14:09:08.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: shareholder votes will not be what stops a frontier lab.",
+      "summary_status": "ok",
+      "takeaway": "Going public does not hand control to outside shareholders when the founders keep majority voting power.",
+      "summary": "Tech Policy Press reads Anthropic's IPO prospectus as leaving the founders 50.1% of the voting power on ordinary shareholder matters. It contrasts that with OpenAI, where the nonprofit foundation holds 26% of the business and the safety committee chair sits on the foundation board. The argument is that paper safeguards have not answered who can make a lab stop."
+    },
+    {
+      "id": "tpp-data-center-slowdown",
+      "title": "The Coming Data Center Slowdown Might be Good for AI Developers",
+      "url": "https://techpolicy.press/the-coming-data-center-slowdown-might-be-good-for-ai-developers",
+      "publisher": {
+        "source_id": "tech-policy-press",
+        "name": "Tech Policy Press"
+      },
+      "published_at": "2026-11-16T14:25:54.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: election results and spending estimates used to argue for a slower build.",
+      "summary_status": "ok",
+      "takeaway": "Local votes are already stopping data centers, and the spending case for the rest of the build is weaker than the construction plans.",
+      "summary": "Tech Policy Press says voters rejected data centers in 40 of 41 local measures, and that about 41% of planned US capacity sits in states backing a pause. The authors cite a Gartner estimate of $7 trillion in infrastructure spending through 2030 against $3.6 trillion in related revenue, and argue a slower build could help developers."
+    },
+    {
+      "id": "tpp-ai-elections",
+      "title": "What We Now Know About AI and Elections",
+      "url": "https://techpolicy.press/what-we-now-know-about-ai-and-elections",
+      "publisher": {
+        "source_id": "tech-policy-press",
+        "name": "Tech Policy Press"
+      },
+      "published_at": "2026-11-19T15:09:16.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: post-midterm evidence on how often people used AI for election facts.",
+      "summary_status": "ok",
+      "takeaway": "Few voters asked a chatbot how to vote, and the answers were mostly right with a steady drip of factual errors.",
+      "summary": "Tech Policy Press cites Pew finding that 8% of US adults used a chatbot for 2026 election facts. In one review, answers on time, place, and eligibility were right about 92 to 95 percent of the time, but about a third of 120 answers had an error, and models made a deceptive image for more than 80% of prompts."
+    },
+    {
+      "id": "tpp-personal-agent-monopoly",
+      "title": "The Next Big Tech Monopoly Could Be Your Personal AI Agent",
+      "url": "https://techpolicy.press/the-next-big-tech-monopoly-could-be-your-personal-ai-agent",
+      "publisher": {
+        "source_id": "tech-policy-press",
+        "name": "Tech Policy Press"
+      },
+      "published_at": "2026-11-20T11:36:05.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: personal agents as the next platform monopoly.",
+      "summary_status": "ok",
+      "takeaway": "The agent that lives inside the app people already use can become the gate, the way search did.",
+      "summary": "A Tech Policy Press essay says that since mid-2026, OpenAI, Anthropic, Meta, Google, Microsoft, and xAI have each shipped a personal agent that can act for the user. It flags Meta's Muse, which sits inside WhatsApp and its 3 billion monthly users, as the kind of default that could become the next monopoly."
+    },
+    {
+      "id": "tpp-synthetic-suspicion",
+      "title": "'Synthetic Suspicion' and the Perils of AI-Prompted Police Actions",
+      "url": "https://techpolicy.press/synthetic-suspicion-and-the-perils-of-aiprompted-police-actions",
+      "publisher": {
+        "source_id": "tech-policy-press",
+        "name": "Tech Policy Press"
+      },
+      "published_at": "2026-11-18T17:05:46.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: police acting on an AI score nobody can cross-examine.",
+      "summary_status": "ok",
+      "takeaway": "An AI score can authorize a raid without anyone being able to explain the score the way they would a witness.",
+      "summary": "Jake Laperruque describes ICE's Palantir tool, ELITE, and argues that an AI score can become the reason for a raid. A person can weigh an eyewitness. They cannot tell what a confidence score of 97 means next to 92.5, and a tool that flags more stops will look more useful to police."
+    },
+    {
+      "id": "tpp-arms-race-frame",
+      "title": "The ‘AI Arms Race’ is Unhinged—Both US and Chinese Tech Enthusiasts Know It",
+      "url": "https://techpolicy.press/the-ai-arms-race-is-unhinged-both-us-and-chinese-tech-enthusiasts-know-it",
+      "publisher": {
+        "source_id": "tech-policy-press",
+        "name": "Tech Policy Press"
+      },
+      "published_at": "2026-11-16T14:14:47.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: the arms-race story is misleading on both the US and Chinese sides.",
+      "summary_status": "ok",
+      "takeaway": "Both capitals keep score with a race metaphor that the technical record, starting with downgraded chips, does not support.",
+      "summary": "A Tech Policy Press essay says the arms-race frame took off when DeepSeek's R1, trained on reduced-spec Nvidia H800 chips, was called a Sputnik moment in the Senate, while Chinese state media called it a lead. Later releases, including Moonshot's Kimi K3, got the same treatment. The authors say enthusiasts in both countries know the story does not hold."
+    },
+    {
+      "id": "tpp-uk-assurance",
+      "title": "Britain’s AI Assurance Approach Needs a Second Act",
+      "url": "https://techpolicy.press/britains-ai-assurance-approach-needs-a-second-act",
+      "publisher": {
+        "source_id": "tech-policy-press",
+        "name": "Tech Policy Press"
+      },
+      "published_at": "2026-11-17T11:38:00.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: the UK safety institute needs an assurance role, not only model tests.",
+      "summary_status": "ok",
+      "takeaway": "A safety institute that can lose its look at a model for weeks cannot be the whole of a country's assurance plan.",
+      "summary": "Two authors argue that Britain's AI Security Institute needs a second act in assurance, not only in evaluations. Privileged model access, they note, was restored only after 17 days. A government roadmap puts the UK assurance industry near 20 billion pounds a year by 2030 if the support arrives."
+    },
+    {
+      "id": "tpp-ai-consciousness-politics",
+      "title": "The Dangerous Politics of AI Consciousness",
+      "url": "https://techpolicy.press/the-dangerous-politics-of-ai-consciousness",
+      "publisher": {
+        "source_id": "tech-policy-press",
+        "name": "Tech Policy Press"
+      },
+      "published_at": "2026-11-19T13:40:47.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: consciousness talk distracts from the speech and power effects of models.",
+      "summary_status": "ok",
+      "takeaway": "The political risk is unlimited machine speech in public debate, not whether the model can suffer.",
+      "summary": "A Tech Policy Press essay argues that debates over whether models are conscious pull attention off concrete harms. It says protecting AI speech would let systems that can write without limit, 24 hours a day, drown out human speakers."
+    },
+    {
+      "id": "tpp-data-minimization",
+      "title": "Data Minimization is Imperative for the Age of AI Agents",
+      "url": "https://techpolicy.press/data-minimization-is-imperative-for-the-age-of-ai-agents",
+      "publisher": {
+        "source_id": "tech-policy-press",
+        "name": "Tech Policy Press"
+      },
+      "published_at": "2026-11-18T14:26:49.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: data minimization as a requirement once agents hold people's data.",
+      "summary_status": "ok",
+      "takeaway": "Agents that act for you will collect more, unless the rule is to collect less in the first place.",
+      "summary": "Brett Frischmann and Bruce Schneier argue that data minimization is a requirement in the agent era, because the internet's business model is already surveillance and agents will sit closer to personal data than a search box does."
+    },
+    {
+      "id": "just-security-frontier-part-ii",
+      "title": "A Model for Governing the AI Frontier (Part II)",
+      "url": "https://www.justsecurity.org/164398/model-governing-ai-frontier-part-ii/",
+      "publisher": {
+        "source_id": "just-security",
+        "name": "Just Security"
+      },
+      "published_at": "2026-11-18T14:04:06.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: a model for binding rules on frontier training, beyond voluntary pledges.",
+      "summary_status": "ok",
+      "takeaway": "Voluntary testing does not cover a model while a lab is still training it, which is the gap this proposal tries to close.",
+      "summary": "Just Security's second essay says frontier training runs are on the order of 10 to the 26 operations. It argues California's SB 53 incident reports are narrow, and that an executive order on voluntary government testing disclaims any power to require a license. The authors look to a UN Security Council resolution as a way to bind states."
+    },
+    {
+      "id": "just-security-game-theory",
+      "title": "A Game-Theory Basis for U.S.-China Cooperation on AI Governance (Part I)",
+      "url": "https://www.justsecurity.org/164387/game-theory-basis-us-china-cooperation-ai/",
+      "publisher": {
+        "source_id": "just-security",
+        "name": "Just Security"
+      },
+      "published_at": "2026-11-17T13:49:48.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: why US-China AI talks need a game-theory frame, not only a pledge.",
+      "summary_status": "ok",
+      "takeaway": "A voluntary four-part pledge is the current US answer, and the authors say that is not the same as a deal both sides have a reason to keep.",
+      "summary": "The first of a Just Security pair uses game theory to argue for US-China cooperation on frontier AI. It describes President Trump meeting lab leaders about a recent alarm and announcing a Joint Commitment on Frontier Responsibilities, under which the companies would voluntarily adopt four broad layers of governance."
+    },
+    {
+      "id": "transformer-what-ai-should-be",
+      "title": "What should AI be to us?",
+      "url": "https://www.transformernews.ai/p/what-should-ai-be-to-us",
+      "publisher": {
+        "source_id": "transformer",
+        "name": "Transformer (Shakeel Hashim)"
+      },
+      "published_at": "2026-11-17T17:02:30.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "Argued: a meeting on AI consciousness and what people are really asking.",
+      "summary_status": "ok",
+      "takeaway": "Experts cannot show that a current model is conscious, and the disagreement is about the relationship people want with it.",
+      "summary": "Celia Ford reports from a mid-September Berkeley meeting of nearly 300 philosophers, neuroscientists, and AI researchers. In an informal poll, most put the chance that current systems are conscious somewhere between 10 and 50 percent. Her point is that the fight reveals what people want AI to be to them, not a test anyone can settle."
+    },
+    {
+      "id": "nextgov-ai-caucus",
+      "title": "House members launch bipartisan AI safety and innovation caucus",
+      "url": "https://www.nextgov.com/artificial-intelligence/2026/11/house-members-launch-bipartisan-ai-safety-and-innovation-caucus/417374/",
+      "publisher": {
+        "source_id": "nextgov-fcw",
+        "name": "Nextgov/FCW"
+      },
+      "published_at": "2026-11-20T17:39:00.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a bipartisan House caucus on AI safety and innovation.",
+      "summary_status": "ok",
+      "takeaway": "House members now have a standing group for AI safety bills, which is how a chaotic docket gets a sponsor list.",
+      "summary": "Nextgov reports that Representatives George Whitesides, Don Beyer, and Nathaniel Moran launched a House caucus on AI safety and innovation. It started with 26 founding members from both parties, including lawmakers who have worked on technology policy."
+    },
+    {
+      "id": "nextgov-quad-ai",
+      "title": "Trump touts Quad initiative to expand AI access in Indo-Pacific",
+      "url": "https://www.nextgov.com/artificial-intelligence/2026/11/trump-touts-quad-initiative-expand-ai-access-indo-pacific/417286/",
+      "publisher": {
+        "source_id": "nextgov-fcw",
+        "name": "Nextgov/FCW"
+      },
+      "published_at": "2026-11-17T20:35:00.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a Quad funding announcement for AI access in the Indo-Pacific.",
+      "summary_status": "ok",
+      "takeaway": "A four-country package is putting money behind AI access in the region, not only behind export bans.",
+      "summary": "Nextgov reports that President Trump, speaking in Manila on November 17, announced an effort with Australia, India, and Japan to expand access to AI across the Indo-Pacific. The initiative is meant to coordinate funding and technical help, with more than $85 million in planned support."
+    },
+    {
+      "id": "nextgov-clinical-ai",
+      "title": "Trump administration releases roadmap to boost clinical AI",
+      "url": "https://www.nextgov.com/artificial-intelligence/2026/11/trump-administration-releases-roadmap-boost-clinical-ai/417254/",
+      "publisher": {
+        "source_id": "nextgov-fcw",
+        "name": "Nextgov/FCW"
+      },
+      "published_at": "2026-11-16T19:22:00.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": true,
+      "include_reason": "New: a White House roadmap for clinical AI, with its own access figures.",
+      "summary_status": "ok",
+      "takeaway": "The clinical AI plan leans on a records network the administration says already reaches most Americans.",
+      "summary": "Nextgov reports that the Trump administration released a roadmap to expand clinical AI. The document says the underlying health-data initiative includes more than 800 companies and has given more than 60% of Americans access to their own medical records."
+    }
+  ],
+  "footer_aside": [
+    {
+      "id": "ex-046",
+      "title": "The Pulse: Is Amazon’s writing culture collapsing because of AI?",
+      "url": "https://newsletter.pragmaticengineer.com/p/the-pulse-is-amazons-writing-culture",
+      "publisher": {
+        "source_id": "pragmatic-engineer",
+        "name": "The Pragmatic Engineer (Gergely Orosz)"
+      },
+      "published_at": "2026-11-19T17:08:59.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "Thin: the Pulse item arrived as a short teaser, so it stays a link.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "hai-future",
+      "title": "AI’s Future Is Still a Choice",
+      "url": "https://hai.stanford.edu/news/ais-future-is-still-a-choice",
+      "publisher": {
+        "source_id": "stanford-hai",
+        "name": "Stanford HAI"
+      },
+      "published_at": "2026-11-18T16:00:00Z",
+      "category": "technical",
+      "media": "article",
+      "included": true,
+      "include_reason": "Thin: the page is a short conference blurb, so it stays a link.",
+      "summary_status": "thin"
+    }
+  ],
+  "excluded": [
+    {
+      "id": "ex-quoting-ravi-vakil",
+      "title": "Quoting Ravi Vakil",
+      "url": "https://simonwillison.net/2026/Nov/20/ravi-vakil/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-20T19:21:49.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": false,
+      "include_reason": "A quote with no commentary, which the rubric leaves out.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-quoting-levent-alp-ge",
+      "title": "Quoting Levent Alpöge",
+      "url": "https://simonwillison.net/2026/Nov/20/levent-alpoge/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-20T16:30:48.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": false,
+      "include_reason": "A quote with no commentary, which the rubric leaves out.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-llm-gemini-0-38-1",
+      "title": "llm-gemini 0.38.1",
+      "url": "https://simonwillison.net/2026/Nov/20/llm-gemini/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-20T03:01:57.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": false,
+      "include_reason": "A minor version release, which the rubric leaves out.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-llm-gemini-0-38",
+      "title": "llm-gemini 0.38",
+      "url": "https://simonwillison.net/2026/Nov/18/llm-gemini/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-18T23:59:20.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": false,
+      "include_reason": "A minor version release, which the rubric leaves out.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-datasette-arrows-0-1a0",
+      "title": "datasette-arrows 0.1a0",
+      "url": "https://simonwillison.net/2026/Nov/18/datasette-arrows/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-18T17:09:59.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": false,
+      "include_reason": "A minor version release, which the rubric leaves out.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-quoting-daniel-stenberg",
+      "title": "Quoting Daniel Stenberg",
+      "url": "https://simonwillison.net/2026/Nov/18/daniel-stenberg/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-18T15:58:27.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": false,
+      "include_reason": "A quote with no commentary, which the rubric leaves out.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-the-psf-end-of-year-fundraiser",
+      "title": "The PSF end-of-year fundraiser",
+      "url": "https://simonwillison.net/2026/Nov/18/psf-end-of-year-fundraiser/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-18T14:44:48.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": false,
+      "include_reason": "A fundraiser note, not an AI finding or a developed argument.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-quoting-go-proverbs",
+      "title": "Quoting Go Proverbs",
+      "url": "https://simonwillison.net/2026/Nov/17/go-proverbs/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-17T06:16:26.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": false,
+      "include_reason": "A quote with no commentary, which the rubric leaves out.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-llm-0-37-3",
+      "title": "llm 0.37.3",
+      "url": "https://simonwillison.net/2026/Nov/16/llm/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-16T23:57:26.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": false,
+      "include_reason": "A minor version release, which the rubric leaves out.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-datasette-maplibre-0-1a0",
+      "title": "datasette-maplibre 0.1a0",
+      "url": "https://simonwillison.net/2026/Nov/15/datasette-maplibre/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-15T23:58:36.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": false,
+      "include_reason": "A minor version release, which the rubric leaves out.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-datasette-1-0a43",
+      "title": "datasette 1.0a43",
+      "url": "https://simonwillison.net/2026/Nov/15/datasette/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-15T23:20:27.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": false,
+      "include_reason": "A minor version release, which the rubric leaves out.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-datasette-0-65-6",
+      "title": "datasette 0.65.6",
+      "url": "https://simonwillison.net/2026/Nov/15/datasette-2/",
+      "publisher": {
+        "source_id": "simon-willison",
+        "name": "Simon Willison"
+      },
+      "published_at": "2026-11-15T23:18:17.000Z",
+      "category": "technical",
+      "media": "article",
+      "included": false,
+      "include_reason": "A minor version release, which the rubric leaves out.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-when-the-fix-makes-the-outage-worse-microsoft-ou",
+      "title": "When the fix makes the outage worse #microsoft #outage #tech #ai",
+      "url": "https://www.youtube.com/shorts/lcl9nu98AYI",
+      "publisher": {
+        "source_id": "nate-b-jones",
+        "name": "AI News & Strategy Daily | Nate B Jones"
+      },
+      "published_at": "2026-11-21T04:00:20.000Z",
+      "category": "business",
+      "media": "video",
+      "included": false,
+      "include_reason": "A short clip with no transcript and no developed argument.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-it-s-not-just-you-everything-is-going-down-inter",
+      "title": "It’s not just you: Everything is going down #internet #tech #breaking",
+      "url": "https://www.youtube.com/shorts/MgI7YCbLS8c",
+      "publisher": {
+        "source_id": "nate-b-jones",
+        "name": "AI News & Strategy Daily | Nate B Jones"
+      },
+      "published_at": "2026-11-18T01:00:22.000Z",
+      "category": "business",
+      "media": "video",
+      "included": false,
+      "include_reason": "A short clip with no transcript and no developed AI argument.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-why-is-everything-shutting-down-at-once-cybersec",
+      "title": "Why is everything shutting down at once? #cybersecurity #news #tech",
+      "url": "https://www.youtube.com/shorts/KBshUcE-JrI",
+      "publisher": {
+        "source_id": "nate-b-jones",
+        "name": "AI News & Strategy Daily | Nate B Jones"
+      },
+      "published_at": "2026-11-17T14:00:32.000Z",
+      "category": "business",
+      "media": "video",
+      "included": false,
+      "include_reason": "A short clip with no transcript and no developed argument.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-what-are-they-hiding-about-alice-huang-shorts-co",
+      "title": "What are they hiding about Alice Huang? #shorts #conspiracy",
+      "url": "https://www.youtube.com/shorts/dzsSYHob9a0",
+      "publisher": {
+        "source_id": "nate-b-jones",
+        "name": "AI News & Strategy Daily | Nate B Jones"
+      },
+      "published_at": "2026-11-16T04:00:10.000Z",
+      "category": "business",
+      "media": "video",
+      "included": false,
+      "include_reason": "A short clip with no transcript, so the claim cannot be checked.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-solomonoff-induction-with-reflective-oracles",
+      "title": "Solomonoff induction with reflective oracles",
+      "url": "https://www.alignmentforum.org/posts/nvrFYAwciyyj9T5ir/solomonoff-induction-with-reflective-oracles",
+      "publisher": {
+        "source_id": "ai-alignment-forum",
+        "name": "AI Alignment Forum"
+      },
+      "published_at": "2026-11-19T04:36:27.000Z",
+      "category": "policy-and-safety",
+      "media": "article",
+      "included": false,
+      "include_reason": "A one-line link to a paper, without a developed argument.",
+      "summary_status": "thin"
+    },
+    {
+      "id": "ex-intelligence-shock-thanks-for-the-virality",
+      "title": "Intelligence Shock: Thanks for the Virality",
+      "url": "https://stefanbauschard.substack.com/p/intelligence-shock-thanks-for-the",
+      "publisher": {
+        "source_id": "education-disrupted",
+        "name": "Education Disrupted (Stefan Bauschard)"
+      },
+      "published_at": "2026-11-19T15:20:18.000Z",
+      "category": "edtech",
+      "media": "article",
+      "included": false,
+      "include_reason": "A note about a video's view count, not a new finding or argument.",
+      "summary_status": "ok",
+      "summary": "Stefan Bauschard writes that an AI x Higher Ed video passed 8,200 views, far above his earlier videos, and restates that the show is about education in an era of artificial intelligence rather than about how to use a tool inside today's classes."
+    }
+  ]
+}
