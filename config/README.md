@@ -11,6 +11,8 @@ Swartz writes each week's file, `content/digests/{week_id}.json`, by following t
 | `briefing.md` | The Briefing lead and its five themes |
 | `number-of-week.md` | The Number of the week |
 | `top5-ranking.md` | The order of the Top 5, and the reason shown for each rank |
+| `x-review.md` | How the weekly run reads X, and what X may add to a week |
+| `x-watchlist.yaml` | The X accounts that run reads, by section |
 
 A change to any of these files changes the next week. Earlier weeks stay as they were written.
 
